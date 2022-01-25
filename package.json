@@ -1,14 +1,16 @@
 {
-  "name": "lib-example",
-  "private": true,
-  "workspaces": {
-    "packages": [
-      "packages/*",
-      "sites/*"
-    ]
-  },
-  "devDependencies": {
-    "prettier": "^2.5.1",
-    "pretty-quick": "^3.1.3"
-  }
+    "name": "@revert/main",
+    "private": true,
+    "workspaces": [
+        "packages/*"
+    ],
+    "devDependencies": {
+        "prettier": "2.5.1",
+        "pretty-quick": "3.1.3",
+        "typescript": "^4.8.4"
+    },
+    "scripts": {
+        "build": "yarn workspaces foreach run build"
+    },
+    "packageManager": "yarn@3.2.2"
 }
