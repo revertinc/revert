@@ -1,6 +1,6 @@
 {
-    "name": "@revert/revert-react",
-    "version": "0.0.1",
+    "name": "@revertdotdev/revert-react",
+    "version": "0.0.5",
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",

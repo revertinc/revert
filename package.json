@@ -1,5 +1,5 @@
 {
-    "name": "@revert/main",
+    "name": "@revertdotdev/main",
     "private": true,
     "workspaces": [
         "packages/*"
