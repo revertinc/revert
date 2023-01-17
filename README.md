@@ -6,7 +6,7 @@ Universal API for CRMs
 <br />
 </p>
 
-# @revert/revert-react
+# @revertdotdev/revert-react
 
 ## Overview
 
