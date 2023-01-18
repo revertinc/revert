@@ -33,7 +33,12 @@ yarn add @revert/revert-react
 function App() {
     return (
         <Wrapper>
-            <RevertConnect />
+            <RevertConnect
+                config={{
+                    revertToken: 'YOUR_TOKEN',
+                    tenantId: 'CUSTOMER_TENANT_ID',
+                }}
+            />
         </Wrapper>
     );
 }
@@ -42,7 +47,7 @@ function App() {
 2. If you wish to use your own UI for it you can use the `useRevertConnnect` hook and call the `open()` method when appropriate. For example:
 
 ```javascript
-const { loading, error, open } = useRevertConnect();
+const { loading, error, open } = useRevertConnect({ config: configObject });
 return (
     <button
         disabled={loading || Boolean(error)}

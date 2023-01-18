@@ -1,5 +1,5 @@
 <p align="center">
-<img width="150" style="border-radius:75px;" src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1673932396/Revert/Revert_logo_x5ysgh.png"/>
+<img width="150" style="border-radius:75px;" src="./public/logo.png"/>
 <h1 align="center"><b>Revert</b></h1>
 <p align="center">
 Universal API for CRMs
@@ -22,7 +22,7 @@ This package contains the React sdk with the following:
 First, install the Revert npm package:
 
 ```javascript
-yarn add @revertdotdev/revert-react
+yarn add @revert/revert-react
 ```
 
 ### Usage
@@ -33,7 +33,12 @@ yarn add @revertdotdev/revert-react
 function App() {
     return (
         <Wrapper>
-            <RevertConnect />
+            <RevertConnect
+                config={{
+                    revertToken: 'YOUR_TOKEN',
+                    tenantId: 'CUSTOMER_TENANT_ID',
+                }}
+            />
         </Wrapper>
     );
 }
@@ -42,7 +47,7 @@ function App() {
 2. If you wish to use your own UI for it you can use the `useRevertConnnect` hook and call the `open()` method when appropriate. For example:
 
 ```javascript
-const { loading, error, open } = useRevertConnect();
+const { loading, error, open } = useRevertConnect({ config: configObject });
 return (
     <button
         disabled={loading || Boolean(error)}
