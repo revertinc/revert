@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import useScript from 'react-script-hook';
+import { useRevertConnectProps } from './types';
 
 declare global {
     interface Window {
@@ -9,16 +10,15 @@ declare global {
 
 window.Revert = window.Revert || {};
 
-export default function useRevertConnect() {
+export default function useRevertConnect(props: useRevertConnectProps) {
     const [loading, error] = useScript({
         src: 'https://cdn.revert.dev/revert.js',
         checkForExisting: true,
     });
 
     useEffect(() => {
-        console.log(loading, error);
         if (!loading && window.Revert && window.Revert.init) {
-            window.Revert.init();
+            window.Revert.init(props.config);
         }
     }, [loading]);
 

@@ -1,13 +1,8 @@
-import { CSSProperties, ReactNode } from 'react';
+import { RevertConnectProps } from './types';
 import useRevertConnect from './useRevertConnect';
 
-type RevertConnectProps = {
-    children?: ReactNode;
-    style?: CSSProperties;
-};
-
 const RevertConnect = (props: RevertConnectProps) => {
-    const { loading, error, open } = useRevertConnect();
+    const { loading, error, open } = useRevertConnect({ config: props.config });
     return (
         <button
             disabled={loading || Boolean(error)}
