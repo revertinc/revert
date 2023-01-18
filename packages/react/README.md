@@ -1,5 +1,5 @@
 <p align="center">
-<img width="150" style="border-radius:75px;" src="./public/logo.png"/>
+<img width="150" style="border-radius:75px;" src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1673932396/Revert/Revert_logo_x5ysgh.png"/>
 <h1 align="center"><b>Revert</b></h1>
 <p align="center">
 Universal API for CRMs
