@@ -25,11 +25,11 @@ jobs:
                   echo "Checked out latest build"
             - name: Yarn Install
               run: |
-                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-52-87-237-227.compute-1.amazonaws.com 'export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v14.17.4/bin/; cd ~/services/revert; yarn workspace server install'
+                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-52-87-237-227.compute-1.amazonaws.com 'export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v14.17.4/bin/; cd ~/services/revert; yarn workspace @revertdotdev/backend install'
                   echo "Build success"
             - name: Yarn build
               run: |
-                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-52-87-237-227.compute-1.amazonaws.com 'export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v14.17.4/bin/; cd ~/services/revert; yarn workspace server build'
+                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-52-87-237-227.compute-1.amazonaws.com 'export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v14.17.4/bin/; cd ~/services/revert; yarn workspace @revertdotdev/backend build'
                   echo "Build success"
             - name: Restart Service
               run: |
