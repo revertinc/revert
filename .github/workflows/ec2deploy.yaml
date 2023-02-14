@@ -21,7 +21,7 @@ jobs:
                   echo "${{ secrets.REVERT_SERVER_KNOWN_HOSTS }}" | tr -d '\r' > ~/.ssh/known_hosts
             - name: Git pull latest
               run: |
-                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-52-87-237-227.compute-1.amazonaws.com 'cd ~/services/revert && git pull'
+                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-52-87-237-227.compute-1.amazonaws.com 'cd ~/services/revert && git pull origin main'
                   echo "Checked out latest build"
             - name: Yarn Install
               run: |
