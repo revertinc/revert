@@ -1,0 +1,37 @@
+name: 'Deploy revert-backend-service on EC2'
+
+on:
+    push:
+        branches:
+            - main
+        tags:
+            - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        name: Build and deploy into EC2
+        steps:
+            - name: Create SSH key
+              run: |
+                  install -m 600 -D /dev/null ~/.ssh/id_rsa
+                  echo "${{ secrets.REVERT_SERVER_PKEY }}" > ./revert-server-key-pair.pem
+                  chmod 400 ./revert-server-key-pair.pem 
+                  echo "${{ secrets.REVERT_SERVER_KNOWN_HOSTS }}" | tr -d '\r' > ~/.ssh/known_hosts
+            - name: Git pull latest
+              run: |
+                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-52-87-237-227.compute-1.amazonaws.com 'cd ~/services/revert && git pull'
+                  echo "Checked out latest build"
+            - name: Yarn Install
+              run: |
+                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-52-87-237-227.compute-1.amazonaws.com 'export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v14.17.4/bin/; cd ~/services/revert; yarn workspace server install'
+                  echo "Build success"
+            - name: Yarn build
+              run: |
+                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-52-87-237-227.compute-1.amazonaws.com 'export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v14.17.4/bin/; cd ~/services/revert; yarn workspace server build'
+                  echo "Build success"
+            - name: Restart Service
+              run: |
+                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-52-87-237-227.compute-1.amazonaws.com 'export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v14.17.4/bin/; cd ~/services/revert; pm2 reload all'
+                  echo "Restarted service successfully"

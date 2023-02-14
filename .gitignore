@@ -66,3 +66,18 @@ npm-debug.log*
 
 # VS Code
 .vscode/
+
+# Yarn 2 and others 
+*.yml
+*.code-workspace 
+*.log
+!.yarnrc.yml
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+*.DS_Store
+*.tgz
