@@ -31,7 +31,6 @@ crmRouter.get('/ping', async (_, res) => {
 /**
  * OAuth API
  */
-// FIXME: Fix Zoho bug with same email id.
 crmRouter.get('/oauth-callback', async (req, res) => {
     const integrationId = req.query.integrationId;
 
