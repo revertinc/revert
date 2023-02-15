@@ -1,0 +1,71 @@
+#top-navbar{
+    height: 60px;
+    background: #212121;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    position: absolute;
+    z-index: 3;
+    width: 100%;
+}
+.control-button {
+    background: #00949D;
+    color: white;
+    margin: 13px 24px;
+    padding: 7px 17px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.control-button-secondary {
+    border: 1px #00949D solid;
+    color: white;
+    margin: 13px 24px;
+    padding: 7px 17px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#inspector {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    width: 390px;
+    height: calc(100% - 60px);
+    background: #262626;
+    z-index: 2;
+    overflow-y: scroll;
+}
+
+.react-flow {
+    z-index: 1;
+}
+
+#root {
+    height: 100vh;
+}
+
+.cl-internal-b3fm6y{
+    background-color: #00949D;
+}
+
+td {
+    color: #3E3E3E !important;
+    border-color: #fff !important;
+}
+
+tr {
+    background-color: #fff !important;
+    border-color: #fff !important;
+}
+
+th{
+    color: #3E3E3E !important;
+    background-color: #fff !important;
+    border-color: #B5B5B5 !important;
+    box-shadow: none !important;
+}
