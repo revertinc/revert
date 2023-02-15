@@ -17,7 +17,7 @@ Visit: https://revert.dev to sign up for an account.
 This repo contains a set of packages under `@reverdotdev/` namespace such as:
 
 -   [`@revertdotdev/backend`](./packages/backend): The core Revert API that powers the frontend SDKs.
--   [`@revertdotdev/revert-react`](./packages/sdk-node): Official SDK for React.
+-   [`@revertdotdev/revert-react`](./packages/react): Official SDK for React.
 -   ...
 
 ## Support

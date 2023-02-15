@@ -227,10 +227,11 @@ crmRouter.get('/leads', customerMiddleware(), async (req, res) => {
             });
             res.send({ results: leads.data });
         } else {
-            res.send({});
+            res.send({ error: 'Unrecognized CRM' });
         }
     } catch (error) {
-        console.error('Could not update db', error);
+        console.error('Could not fetch leads', error);
+        res.status(500).send({ error: 'Internal server error' });
     }
 });
 
@@ -280,7 +281,7 @@ crmRouter.get('/lead/:id', customerMiddleware(), async (req, res) => {
             });
         }
     } catch (error: any) {
-        console.error('Could not update db', error);
+        console.error('Could not fetch lead', error);
         res.status(500).send({
             error: 'Internal server error',
         });
@@ -342,7 +343,7 @@ crmRouter.post('/lead', tenantMiddleware(), async (req, res) => {
             });
         }
     } catch (error: any) {
-        console.error('Could not update db', error.response);
+        console.error('Could not create lead', error.response);
         res.status(500).send({
             error: 'Internal server error',
         });
@@ -401,7 +402,7 @@ crmRouter.patch('/lead/:id', tenantMiddleware(), async (req, res) => {
             });
         }
     } catch (error: any) {
-        console.error('Could not update db', error.response);
+        console.error('Could not update lead', error.response);
         res.status(500).send({
             error: 'Internal server error',
         });
@@ -472,45 +473,288 @@ crmRouter.post('/leads/search', tenantMiddleware(), async (req, res) => {
  */
 
 // Get all companies (paginated)
-crmRouter.get('/companies', async (_req, res) => {
-    res.send({
-        data: 'ok',
-    });
+crmRouter.get('/companies', customerMiddleware(), async (req, res) => {
+    try {
+        const connection = res.locals.connection;
+        const thirdPartyId = connection.tp_id;
+        const thirdPartyToken = connection.tp_access_token;
+        const tenantId = connection.t_id;
+        const fields = req.query.fields;
+        console.log('Revert::GET ALL COMPANIES', tenantId, thirdPartyId, thirdPartyToken);
+        if (thirdPartyId === 'hubspot') {
+            const companies = await axios({
+                method: 'get',
+                url: `https://api.hubapi.com/crm/v3/objects/companies?properties=${fields}`,
+                headers: {
+                    authorization: `Bearer ${thirdPartyToken}`,
+                },
+            });
+            res.send({
+                results: companies.data.results,
+            });
+        } else if (thirdPartyId === 'zohocrm') {
+            const companies = await axios({
+                method: 'get',
+                url: `https://www.zohoapis.com/crm/v3/Accounts?fields=${fields}`,
+                headers: {
+                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                },
+            });
+            res.send({ results: companies.data.data });
+        } else if (thirdPartyId === 'sfdc') {
+            // NOTE: Handle "ALL" for Hubspot & Zoho
+            const query =
+                fields === 'ALL'
+                    ? 'SELECT+fields(all)+from+Account+limit+200'
+                    : `SELECT+${(fields as string).split(',').join('+,+')}+from+Account`;
+            const companies = await axios({
+                method: 'get',
+                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/query/?q=${query}`,
+                headers: {
+                    authorization: `Bearer ${thirdPartyToken}`,
+                },
+            });
+            res.send({ results: companies.data });
+        } else {
+            res.send({ error: 'Unrecognized CRM' });
+        }
+    } catch (error) {
+        console.error('Could not fetch companies', error);
+        res.status(500).send({ error: 'Unexpected error. Could not fetch companies' });
+    }
 });
 
 // Get a company object identified by {id}
-crmRouter.get('/company', async (_req, res) => {
+crmRouter.get('/company/:id', customerMiddleware(), async (req, res) => {
     try {
-        res.send({
-            data: 'ok',
-        });
-    } catch (error) {
-        res.send({
-            message: 'Could not create cron',
-            error: error,
+        const connection = res.locals.connection;
+        const thirdPartyId = connection.tp_id;
+        const thirdPartyToken = connection.tp_access_token;
+        const tenantId = connection.t_id;
+        const companyId = req.params.id;
+        const fields = req.query.fields;
+        console.log('Revert::GET COMPANY', tenantId, thirdPartyId, thirdPartyToken, companyId);
+        if (thirdPartyId === 'hubspot') {
+            const company = await axios({
+                method: 'get',
+                url: `https://api.hubapi.com/crm/v3/objects/companies/${companyId}?properties=${fields}`,
+                headers: {
+                    authorization: `Bearer ${thirdPartyToken}`,
+                },
+            });
+
+            res.send({
+                result: [company.data],
+            });
+        } else if (thirdPartyId === 'zohocrm') {
+            const company = await axios({
+                method: 'get',
+                url: `https://www.zohoapis.com/crm/v3/Accounts/${companyId}?fields=${fields}`,
+                headers: {
+                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                },
+            });
+            res.send({ result: company.data.data });
+        } else if (thirdPartyId === 'sfdc') {
+            const company = await axios({
+                method: 'get',
+                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Account/${companyId}`,
+                headers: {
+                    Authorization: `Bearer ${thirdPartyToken}`,
+                },
+            });
+            res.send({ result: company.data });
+        } else {
+            res.status(400).send({
+                error: 'Unrecognised CRM',
+            });
+        }
+    } catch (error: any) {
+        console.error('Could not fetch company', error);
+        res.status(500).send({
+            error: 'Internal server error',
         });
     }
 });
 
 // Create a company
-crmRouter.post('/company', async (_req, res) => {
-    res.send({
-        data: 'ok',
-    });
+crmRouter.post('/company', tenantMiddleware(), async (req, res) => {
+    try {
+        const connection = res.locals.connection;
+        const thirdPartyId = connection.tp_id;
+        const thirdPartyToken = connection.tp_access_token;
+        const tenantId = connection.t_id;
+        const company = req.body;
+        console.log('Revert::CREATE COMPANY', tenantId, company);
+        if (thirdPartyId === 'hubspot') {
+            await axios({
+                method: 'post',
+                url: `https://api.hubapi.com/crm/v3/objects/companies/`,
+                headers: {
+                    'content-type': 'application/json',
+                    authorization: `Bearer ${thirdPartyToken}`,
+                },
+                data: JSON.stringify(company),
+            });
+            res.send({
+                status: 'ok',
+                message: 'Hubspot company created',
+                result: company,
+            });
+        } else if (thirdPartyId === 'zohocrm') {
+            await axios({
+                method: 'post',
+                url: `https://www.zohoapis.com/crm/v3/Accounts`,
+                headers: {
+                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                },
+                data: JSON.stringify(company),
+            });
+            res.send({ status: 'ok', message: 'Zoho company created', result: company });
+        } else if (thirdPartyId === 'sfdc') {
+            const companyCreated = await axios({
+                method: 'post',
+                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Account/`,
+                headers: {
+                    'content-type': 'application/json',
+                    authorization: `Bearer ${thirdPartyToken}`,
+                },
+                data: JSON.stringify(company),
+            });
+            res.send({
+                status: 'ok',
+                message: 'SFDC company created',
+                result: companyCreated.data,
+            });
+        } else {
+            res.status(400).send({
+                error: 'Unrecognised CRM',
+            });
+        }
+    } catch (error: any) {
+        console.error('Could not create company', error.response);
+        res.status(500).send({
+            error: 'Internal server error',
+        });
+    }
 });
 
 // Update a company identified by {id}
-crmRouter.patch('/company', async (_req, res) => {
-    res.send({
-        data: 'ok',
-    });
+crmRouter.patch('/company/:id', tenantMiddleware(), async (req, res) => {
+    try {
+        const connection = res.locals.connection;
+        const thirdPartyId = connection.tp_id;
+        const thirdPartyToken = connection.tp_access_token;
+        const tenantId = connection.t_id;
+        const company = req.body;
+        const companyId = req.params.id;
+        console.log('Revert::UPDATE COMPANY', tenantId, company, companyId);
+        if (thirdPartyId === 'hubspot') {
+            await axios({
+                method: 'patch',
+                url: `https://api.hubapi.com/crm/v3/objects/companies/${companyId}`,
+                headers: {
+                    'content-type': 'application/json',
+                    authorization: `Bearer ${thirdPartyToken}`,
+                },
+                data: JSON.stringify(company),
+            });
+            res.send({
+                status: 'ok',
+                message: 'Hubspot company updated',
+                result: company,
+            });
+        } else if (thirdPartyId === 'zohocrm') {
+            await axios({
+                method: 'put',
+                url: `https://www.zohoapis.com/crm/v3/Accounts/${companyId}`,
+                headers: {
+                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                },
+                data: JSON.stringify(company),
+            });
+            res.send({ status: 'ok', message: 'Zoho company updated', result: company });
+        } else if (thirdPartyId === 'sfdc') {
+            await axios({
+                method: 'patch',
+                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Account/${companyId}`,
+                headers: {
+                    'content-type': 'application/json',
+                    authorization: `Bearer ${thirdPartyToken}`,
+                },
+                data: JSON.stringify(company),
+            });
+            res.send({ status: 'ok', message: 'SFDC company updated', result: company });
+        } else {
+            res.status(400).send({
+                error: 'Unrecognised CRM',
+            });
+        }
+    } catch (error: any) {
+        console.error('Could not update company', error.response);
+        res.status(500).send({
+            error: 'Internal server error',
+        });
+    }
 });
 
 // Search a company with query.
-crmRouter.post('/companies/search', async (_req, res) => {
-    res.send({
-        data: 'ok',
-    });
+crmRouter.post('/companies/search', tenantMiddleware(), async (req, res) => {
+    try {
+        const connection = res.locals.connection;
+        const thirdPartyId = connection.tp_id;
+        const thirdPartyToken = connection.tp_access_token;
+        const tenantId = connection.t_id;
+        const searchCriteria = req.body.searchCriteria;
+        console.log('Revert::SEARCH COMPANY', tenantId, searchCriteria);
+        if (thirdPartyId === 'hubspot') {
+            const result = await axios({
+                method: 'post',
+                url: `https://api.hubapi.com/crm/v3/objects/companies/search`,
+                headers: {
+                    'content-type': 'application/json',
+                    authorization: `Bearer ${thirdPartyToken}`,
+                },
+                data: JSON.stringify({
+                    ...searchCriteria,
+                    properties: ['hs_lead_status', 'firstname', 'email', 'lastname', 'hs_object_id'],
+                }),
+            });
+            res.send({
+                status: 'ok',
+                results: [result?.data.results],
+            });
+        } else if (thirdPartyId === 'zohocrm') {
+            const result = await axios({
+                method: 'get',
+                url: `https://www.zohoapis.com/crm/v3/Accounts/search?criteria=${searchCriteria}`,
+                headers: {
+                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                },
+            });
+
+            res.send({ status: 'ok', results: result?.data });
+        } else if (thirdPartyId === 'sfdc') {
+            const result = await axios({
+                method: 'get',
+                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/search?q=${searchCriteria}`,
+                headers: {
+                    authorization: `Bearer ${thirdPartyToken}`,
+                },
+            });
+
+            res.send({ status: 'ok', results: result?.data });
+        } else {
+            res.status(400).send({
+                error: 'Unrecognised CRM',
+            });
+        }
+    } catch (error) {
+        console.error('Could not search CRM', error);
+        res.status(500).send({
+            error: 'Internal server error',
+        });
+    }
 });
 
 /**
