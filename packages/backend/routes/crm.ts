@@ -147,12 +147,20 @@ crmRouter.get('/oauth-callback', async (req, res) => {
                 },
             });
             console.log('OAuth creds for sfdc', result.data);
+            const info = await axios({
+                method: 'get',
+                url: 'https://login.salesforce.com/services/oauth2/userinfo',
+                headers: {
+                    authorization: `Bearer ${result.data.access_token}`,
+                },
+            });
+            console.log('Oauth token info', info.data);
             const db = createConnectionPool(config.PGSQL_URL);
             try {
                 await db.query(sql`
             INSERT INTO connections (
                t_id, tp_id, tp_access_token, tp_refresh_token, tp_customer_id
-            ) VALUES (${req.query.t_id},'sfdc', ${result.data.access_token}, ${result.data.refresh_token}, 'testSfdcUser')
+            ) VALUES (${req.query.t_id},'sfdc', ${result.data.access_token}, ${result.data.refresh_token}, ${info.data.email})
             ON CONFLICT (tp_customer_id, tp_id)
             DO UPDATE SET
                 tp_access_token = EXCLUDED.tp_access_token, 
