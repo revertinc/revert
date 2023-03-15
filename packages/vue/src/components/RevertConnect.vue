@@ -6,6 +6,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, CSSProperties } from 'vue';
+import { RevertConnectProps } from '../lib/types/index';
 
 declare global {
   interface Window {
@@ -44,7 +45,7 @@ export default defineComponent({
       }),
     },
   },
-  setup(props) {
+  setup(props: RevertConnectProps) {
     const loading = ref(true);
     const error = ref('');
 
@@ -91,7 +92,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-/* Styles for the component go here */
-</style>
