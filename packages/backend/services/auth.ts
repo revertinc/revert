@@ -225,7 +225,7 @@ class AuthService {
             ;`);
                         console.log('OAuth creds refreshed for hubspot');
                     } else if (connection.tp_id === 'zohocrm') {
-                        // Refresh the hubspot token.
+                        // Refresh the zoho-crm token.
                         const url = `${connection.tp_account_url}/oauth/v2/token`;
                         const formData = {
                             grant_type: 'refresh_token',
