@@ -2624,37 +2624,37 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@clerk/clerk-react@npm:^4.2.2":
-  version: 4.12.0
-  resolution: "@clerk/clerk-react@npm:4.12.0"
+"@clerk/clerk-react@npm:4.11.2":
+  version: 4.11.2
+  resolution: "@clerk/clerk-react@npm:4.11.2"
   dependencies:
-    "@clerk/shared": ^0.12.2
-    "@clerk/types": ^3.28.4
+    "@clerk/shared": ^0.11.2
+    "@clerk/types": ^3.27.0
     swr: 1.3.0
     tslib: 2.4.1
   peerDependencies:
     react: ">=16"
     react-dom: ">=16"
-  checksum: d7a2ada53a2acfc18e8d00dcf1699770db37f25432c9d2c3573b44b8a4805330deab8bf9e016298732c6f3f95bb3c4136fcffd611a97bb8506a4e9d173502567
+  checksum: bc7ec22ba2fe7d485cbe6201264910265901d7553ba6bd1267ced6310950dd436fe4b2361171fc62bac7be474c83be2676ea2c456f1aec7ed4d51b44bb7b7529
   languageName: node
   linkType: hard
 
-"@clerk/shared@npm:^0.12.2":
-  version: 0.12.2
-  resolution: "@clerk/shared@npm:0.12.2"
+"@clerk/shared@npm:^0.11.2":
+  version: 0.11.4
+  resolution: "@clerk/shared@npm:0.11.4"
   peerDependencies:
     react: ">=16"
     react-dom: ">=16"
-  checksum: c37eb4e2fd7fcf64c52fb637009038e62b9b7bd8e9cbeceadf5469ee751dd5fc61396220ebcbb701688d1e5aa3e81dcf1b06d3bb8aaad725a6dc8bb785d08dfa
+  checksum: 80aff57fe04972f17c981faf5afabab86210d631975afae81e5aaaf26188bc153a325e42a79a0b06da9f6ea251ab2a808aa4fda7173f03a632c557c5f5eef5b6
   languageName: node
   linkType: hard
 
-"@clerk/types@npm:^3.28.4":
-  version: 3.28.4
-  resolution: "@clerk/types@npm:3.28.4"
+"@clerk/types@npm:^3.27.0":
+  version: 3.31.0
+  resolution: "@clerk/types@npm:3.31.0"
   dependencies:
     csstype: 3.1.1
-  checksum: 60bf80e9c5209206cde5e7c1f3ba579fe3b9ced3244e24994ccaff813c195768d2c689e19cabf775a376952369151c85e9563236cc39f9204efd96b882387133
+  checksum: 18d16174617fb00124b9683a24cf441e4dbef63e6c4fe7bac802aa987a27b4e19b6b398f2a8d8d650e7698e3f4aaed773317ba4dffc788ad3f469e44d5711e58
   languageName: node
   linkType: hard
 
@@ -5150,7 +5150,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@revertdotdev/revert-ui@workspace:packages/client"
   dependencies:
-    "@clerk/clerk-react": ^4.2.2
+    "@clerk/clerk-react": 4.11.2
     "@codemirror/lang-javascript": ^6.0.2
     "@codemirror/lang-sql": ^6.3.0
     "@emotion/react": ^11.10.4

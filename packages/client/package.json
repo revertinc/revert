@@ -4,7 +4,7 @@
   "private": true,
   "proxy": "http://localhost:4001",
   "dependencies": {
-    "@clerk/clerk-react": "^4.2.2",
+    "@clerk/clerk-react": "4.11.2",
     "@codemirror/lang-javascript": "^6.0.2",
     "@codemirror/lang-sql": "^6.3.0",
     "@emotion/react": "^11.10.4",
