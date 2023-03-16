@@ -22,7 +22,7 @@ This package contains the React sdk with the following:
 First, install the Revert npm package:
 
 ```javascript
-yarn add @revert/revert-react
+yarn add @revertdotdev/revert-react
 ```
 
 ### Usage
