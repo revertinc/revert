@@ -18,6 +18,7 @@ This repo contains a set of packages under `@reverdotdev/` namespace such as:
 
 -   [`@revertdotdev/backend`](./packages/backend): The core Revert API that powers the frontend SDKs.
 -   [`@revertdotdev/revert-react`](./packages/react): Official SDK for React.
+-   [`@revertdotdev/revert-vue`](./packages/vue): Official SDK for Vue.
 -   ...
 
 ## Support

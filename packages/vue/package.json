@@ -1,13 +1,34 @@
 {
   "name": "@revertdotdev/revert-vue",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "dev": "vite --host",
     "serve": "vite preview",
-    "build": "vue-tsc --noEmit && vite build"
+    "build": "vue-tsc --noEmit && vite build",
+    "prepack": "json -f package.json -I -e \"delete this.devDependencies; delete this.dependencies\"",
+    "publish": "npm publish --access public"
+  },
+  "license": "UNLICENSED",
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/my-lib.umd.js",
+  "module": "./dist/my-lib.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/my-lib.es.js",
+      "require": "./dist/my-lib.umd.js"
+    }
+  },
+  "engines": {
+    "node": ">=16.0.0"
   },
   "dependencies": {
     "core-js": "^3.8.3",
@@ -30,24 +51,5 @@
     "typescript": "~4.5.5",
     "vite": "^4.1.4",
     "workspace-tools": "^0.30.0"
-  },
-  "license": "UNLICENSED",
-  "peerDependencies": {
-    "vue": "^3.0.0"
-  },
-  "files": [
-    "dist"
-  ],
-  "main": "./dist/my-lib.umd.js",
-  "module": "./dist/my-lib.es.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/my-lib.es.js",
-      "require": "./dist/my-lib.umd.js"
-    }
-  },
-  "engines": {
-    "node": ">=16.0.0"
   }
 }

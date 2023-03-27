@@ -69,6 +69,11 @@ return (
 );
 ```
 
+You can also pass in the `integrationId` inside the `open()` method above to directly open the integration you are interested in. These are the integration IDs that are currently supported:
+- `open('hubspot')`
+- `open('zohocrm')`
+- `open('sfdc')`
+
 ### Support
 
 In case of questions/feedback, you can get in touch in the following ways
