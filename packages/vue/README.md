@@ -104,18 +104,7 @@ export default {
       error,
       open,
     };
-  }<template>
-  <div class="container">
-    <button :disabled="loading || Boolean(error)" 
-    @click="open()" 
-    id="revert-connect-button"
-    :style="{ padding: '10px', outline: 'none', background: 'rgb(39, 45, 192)',
-              border: '1px solid rgb(39, 45, 192)', borderRadius: '5px',
-              cursor: 'pointer', color: '#fff' }">
-      Connect your CRM
-    </button>
-  </div>
-</template>
+  }
 };
 </script>
 <template>
