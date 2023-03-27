@@ -12,7 +12,7 @@ Universal API for CRMs
 
 Revert is the fastest way to integrate with your customer's CRMs with a single set of APIs & SDKs.
 
-This package contains the Vue sdk with the `RevertConnectVue` component
+This package contains the Vue sdk with the `RevertConnectVue` component.
 
 ### Getting Started
 
@@ -53,7 +53,7 @@ export default {
 </template>
 ```
 
-2. If you wish to use your own UI for it, you can pass the values to the `buttonStyle` and `buttonText` props. For example:
+You can optionally also pass your own values to the `buttonStyle` and `buttonText` props:
 
 ```javascript
 <script>
@@ -91,6 +91,51 @@ export default {
   </div>
 </template>
 ```
+
+2. If you wish to use your own UI for it, you can use the `useRevertConnnect` hook and call the `open()` method when appropriate. For example:
+
+```javascript
+<script>
+export default {
+  setup() {
+    const { loading, open, error } = useRevertConnect({ config: configObject });
+    return {
+      loading,
+      error,
+      open,
+    };
+  }<template>
+  <div class="container">
+    <button :disabled="loading || Boolean(error)" 
+    @click="open()" 
+    id="revert-connect-button"
+    :style="{ padding: '10px', outline: 'none', background: 'rgb(39, 45, 192)',
+              border: '1px solid rgb(39, 45, 192)', borderRadius: '5px',
+              cursor: 'pointer', color: '#fff' }">
+      Connect your CRM
+    </button>
+  </div>
+</template>
+};
+</script>
+<template>
+  <div class="container">
+    <button :disabled="loading || Boolean(error)" 
+    @click="open()" 
+    id="revert-connect-button"
+    :style="{ padding: '10px', outline: 'none', background: 'rgb(39, 45, 192)',
+              border: '1px solid rgb(39, 45, 192)', borderRadius: '5px',
+              cursor: 'pointer', color: '#fff' }">
+      Connect your CRM
+    </button>
+  </div>
+</template>
+```
+
+ You can also pass in the `integrationId` inside the `open()` method above to directly open the integration you are interested in. These are the integration IDs that are currently supported:
+- `open('hubspot')`
+- `open('zohocrm')`
+- `open('sfdc')`
 
 ### Support
 
