@@ -390,7 +390,26 @@ const createIntegrationBlock = function (self, integration, padding) {
                 rootElement.appendChild(signInElementWrapper);
                 this.state = 'open';
             } else {
-                // TODO: only show the integration passed on.
+                const selectedIntegration = this.integrations.find(
+                    (integration) => integration.integrationId === integrationId
+                );
+                if (selectedIntegration) {
+                    if (selectedIntegration.integrationId === 'hubspot') {
+                        window.open(
+                            `https://app.hubspot.com/oauth/authorize?client_id=${this.HUBSPOT_CLIENT_ID}&redirect_uri=${this.REDIRECT_URL_BASE}/hubspot&scope=crm.objects.contacts.read%20crm.objects.contacts.write%20crm.objects.marketing_events.read%20crm.objects.marketing_events.write%20crm.schemas.custom.read%20crm.objects.custom.read%20crm.objects.custom.write%20crm.objects.companies.write%20crm.schemas.contacts.read%20crm.objects.companies.read%20crm.objects.deals.read%20crm.objects.deals.write%20crm.schemas.companies.read%20crm.schemas.companies.write%20crm.schemas.contacts.write%20crm.schemas.deals.read%20crm.schemas.deals.write%20crm.objects.owners.read%20crm.objects.quotes.write%20crm.objects.quotes.read%20crm.schemas.quotes.read%20crm.objects.line_items.read%20crm.objects.line_items.write%20crm.schemas.line_items.read&state=${this.tenantId}`
+                        );
+                    } else if (selectedIntegration.integrationId === 'zohocrm') {
+                        window.open(
+                            `https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL,ZohoCRM.settings.ALL&client_id=${this.ZOHOCRM_CLIENT_ID}&response_type=code&access_type=offline&redirect_uri=${this.REDIRECT_URL_BASE}/zohocrm&state=${this.tenantId}`
+                        );
+                    } else if (selectedIntegration.integrationId === 'sfdc') {
+                        window.open(
+                            `https://revert2-dev-ed.develop.my.salesforce.com/services/oauth2/authorize?response_type=code&client_id=${this.SFDC_CLIENT_ID}&redirect_uri=${this.REDIRECT_URL_BASE}/sfdc&scope=offline_access+api+refresh_token&state=${this.tenantId}`
+                        );
+                    }
+                } else {
+                    console.warn("Invalid integration ID provided.");
+                }
             }
         };
 
