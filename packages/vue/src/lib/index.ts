@@ -1,2 +1,3 @@
-import RevertConnectVue from "../components/RevertConnect.vue";
-export { RevertConnectVue }
+import RevertConnect from "../components/RevertConnect.vue";
+import { useRevertConnect } from "./useRevertConnect";
+export { RevertConnect, useRevertConnect }
