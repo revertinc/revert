@@ -6,6 +6,7 @@ import createConnectionPool, { sql } from '@databases/pg';
 import AuthService from '../services/auth';
 import customerMiddleware from '../helpers/customerIdMiddleware';
 import tenantMiddleware from '../helpers/tenantIdMiddleware';
+import { unifyLead } from '../models/unified/unifiedLead';
 
 const crmRouter = express.Router();
 
@@ -254,16 +255,16 @@ crmRouter.get('/lead/:id', customerMiddleware(), async (req, res) => {
         const fields = req.query.fields;
         console.log('Revert::GET LEAD', tenantId, thirdPartyId, thirdPartyToken, leadId);
         if (thirdPartyId === 'hubspot') {
-            const lead = await axios({
+            let lead: any = await axios({
                 method: 'get',
                 url: `https://api.hubapi.com/crm/v3/objects/contacts/${leadId}?properties=${fields}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-
+            lead = filterLeadsFromContactsForHubspot([lead.data] as any[])?.[0];
             res.send({
-                result: filterLeadsFromContactsForHubspot([lead.data] as any[]),
+                result: unifyLead({ ...lead, ...lead?.properties }),
             });
         } else if (thirdPartyId === 'zohocrm') {
             const leads = await axios({
@@ -273,7 +274,8 @@ crmRouter.get('/lead/:id', customerMiddleware(), async (req, res) => {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            res.send({ result: leads.data.data });
+            let lead = leads.data.data?.[0];
+            res.send({ result: unifyLead(lead) });
         } else if (thirdPartyId === 'sfdc') {
             const leads = await axios({
                 method: 'get',
@@ -282,7 +284,8 @@ crmRouter.get('/lead/:id', customerMiddleware(), async (req, res) => {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            res.send({ result: leads.data });
+            let lead = leads.data;
+            res.send({ result: unifyLead(lead) });
         } else {
             res.status(400).send({
                 error: 'Unrecognised CRM',
