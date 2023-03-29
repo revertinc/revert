@@ -6,17 +6,10 @@ import createConnectionPool, { sql } from '@databases/pg';
 import AuthService from '../services/auth';
 import customerMiddleware from '../helpers/customerIdMiddleware';
 import tenantMiddleware from '../helpers/tenantIdMiddleware';
-import { unifyLead } from '../models/unified/unifiedLead';
+import LeadService from '../services/lead';
+import { filterLeadsFromContactsForHubspot } from '../helpers/filterLeadsFromContacts';
 
 const crmRouter = express.Router();
-
-const filterLeadsFromContactsForHubspot = (leads: any[]) => {
-    const updatedLeads = leads
-        .flatMap((l) => l)
-        .filter((lead) => lead.properties?.hs_lead_status === null || lead.properties?.hs_lead_status === undefined);
-    console.log('Filtered Hubspot leads', updatedLeads);
-    return updatedLeads;
-};
 
 /**
  * Test PING
@@ -247,49 +240,11 @@ crmRouter.get('/leads', customerMiddleware(), async (req, res) => {
 // Get a lead object identified by {id}
 crmRouter.get('/lead/:id', customerMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const leadId = req.params.id;
-        const fields = req.query.fields;
-        console.log('Revert::GET LEAD', tenantId, thirdPartyId, thirdPartyToken, leadId);
-        if (thirdPartyId === 'hubspot') {
-            let lead: any = await axios({
-                method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts/${leadId}?properties=${fields}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-            lead = filterLeadsFromContactsForHubspot([lead.data] as any[])?.[0];
-            res.send({
-                result: unifyLead({ ...lead, ...lead?.properties }),
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            const leads = await axios({
-                method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Leads/${leadId}?fields=${fields}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-            });
-            let lead = leads.data.data?.[0];
-            res.send({ result: unifyLead(lead) });
-        } else if (thirdPartyId === 'sfdc') {
-            const leads = await axios({
-                method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Lead/${leadId}`,
-                headers: {
-                    Authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-            let lead = leads.data;
-            res.send({ result: unifyLead(lead) });
+        const result = await LeadService.getUnifiedLead(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.status(400).send({
-                error: 'Unrecognised CRM',
-            });
+            res.send(result);
         }
     } catch (error: any) {
         console.error('Could not fetch lead', error);
