@@ -21,17 +21,17 @@ jobs:
                   echo "${{ secrets.REVERT_SERVER_KNOWN_HOSTS }}" | tr -d '\r' > ~/.ssh/known_hosts
             - name: Git pull latest
               run: |
-                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-54-234-246-18.compute-1.amazonaws.com 'cd ~/services/revert && git pull origin main'
+                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-3-85-159-6.compute-1.amazonaws.com 'cd ~/services/revert && git pull origin main'
                   echo "Checked out latest build"
             - name: Yarn Install
               run: |
-                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-54-234-246-18.compute-1.amazonaws.com 'export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v14.17.4/bin/; cd ~/services/revert; yarn workspace @revertdotdev/backend install'
+                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-3-85-159-6.compute-1.amazonaws.com 'export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v14.17.4/bin/; cd ~/services/revert; yarn workspace @revertdotdev/backend install'
                   echo "Build success"
             - name: Yarn build
               run: |
-                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-54-234-246-18.compute-1.amazonaws.com 'export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v14.17.4/bin/; cd ~/services/revert; yarn workspace @revertdotdev/backend build'
+                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-3-85-159-6.compute-1.amazonaws.com 'export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v14.17.4/bin/; cd ~/services/revert; yarn workspace @revertdotdev/backend build'
                   echo "Build success"
             - name: Restart Service
               run: |
-                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-54-234-246-18.compute-1.amazonaws.com 'export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v14.17.4/bin/; cd ~/services/revert; pm2 reload all'
+                  ssh -o StrictHostKeyChecking=no -i ./revert-server-key-pair.pem ubuntu@ec2-3-85-159-6.compute-1.amazonaws.com 'export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v14.17.4/bin/; cd ~/services/revert; pm2 reload all'
                   echo "Restarted service successfully"
