@@ -7,6 +7,7 @@ import AuthService from '../services/auth';
 import customerMiddleware from '../helpers/customerIdMiddleware';
 import tenantMiddleware from '../helpers/tenantIdMiddleware';
 import LeadService from '../services/lead';
+import ContactService from '../services/contact';
 
 const crmRouter = express.Router();
 
@@ -649,48 +650,11 @@ crmRouter.post('/companies/search', tenantMiddleware(), async (req, res) => {
 // Get all contacts (paginated)
 crmRouter.get('/contacts', customerMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const fields = req.query.fields;
-        console.log('Revert::GET ALL CONTACTS', tenantId, thirdPartyId, thirdPartyToken);
-        if (thirdPartyId === 'hubspot') {
-            const contacts = await axios({
-                method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts?properties=${fields}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-            res.send({
-                results: contacts.data.results,
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            const contacts = await axios({
-                method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Contacts?fields=${fields}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-            });
-            res.send({ results: contacts.data.data });
-        } else if (thirdPartyId === 'sfdc') {
-            // NOTE: Handle "ALL" for Hubspot & Zoho
-            const query =
-                fields === 'ALL'
-                    ? 'SELECT+fields(all)+from+Contact+limit+200'
-                    : `SELECT+${(fields as string).split(',').join('+,+')}+from+Contact`;
-            const contacts = await axios({
-                method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/query/?q=${query}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-            res.send({ results: contacts.data });
+        const result = await ContactService.getUnifiedContacts(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.send({ error: 'Unrecognized CRM' });
+            res.send(result);
         }
     } catch (error) {
         console.error('Could not fetch contacts', error);
@@ -701,47 +665,11 @@ crmRouter.get('/contacts', customerMiddleware(), async (req, res) => {
 // Get a contact object identified by {id}
 crmRouter.get('/contact/:id', customerMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const contactId = req.params.id;
-        const fields = req.query.fields;
-        console.log('Revert::GET CONTACT', tenantId, thirdPartyId, thirdPartyToken, contactId);
-        if (thirdPartyId === 'hubspot') {
-            const contact = await axios({
-                method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}?properties=${fields}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-
-            res.send({
-                result: [contact.data],
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            const contacts = await axios({
-                method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Contacts/${contactId}?fields=${fields}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-            });
-            res.send({ result: contacts.data.data });
-        } else if (thirdPartyId === 'sfdc') {
-            const contacts = await axios({
-                method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Contact/${contactId}`,
-                headers: {
-                    Authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-            res.send({ result: contacts.data });
+        const result = await ContactService.getUnifiedContact(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.status(400).send({
-                error: 'Unrecognised CRM',
-            });
+            res.send(result);
         }
     } catch (error: any) {
         console.error('Could not fetch contact', error);
@@ -875,53 +803,11 @@ crmRouter.patch('/contact/:id', tenantMiddleware(), async (req, res) => {
 // Search a contact with query.
 crmRouter.post('/contacts/search', tenantMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const searchCriteria = req.body.searchCriteria;
-        console.log('Revert::SEARCH LEAD', tenantId, searchCriteria);
-        if (thirdPartyId === 'hubspot') {
-            const result = await axios({
-                method: 'post',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts/search`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify({
-                    ...searchCriteria,
-                    properties: ['hs_lead_status', 'firstname', 'email', 'lastname', 'hs_object_id'],
-                }),
-            });
-            res.send({
-                status: 'ok',
-                results: result?.data.results,
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            const result = await axios({
-                method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Contacts/search?criteria=${searchCriteria}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-            });
-
-            res.send({ status: 'ok', results: result?.data });
-        } else if (thirdPartyId === 'sfdc') {
-            const result = await axios({
-                method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/search?q=${searchCriteria}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-
-            res.send({ status: 'ok', results: result?.data });
+        const result = await ContactService.searchUnifiedContacts(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.status(400).send({
-                error: 'Unrecognised CRM',
-            });
+            res.send(result);
         }
     } catch (error) {
         console.error('Could not search CRM', error);
