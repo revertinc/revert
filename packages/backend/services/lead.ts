@@ -89,7 +89,7 @@ class LeadService {
             leads = leads?.map((l: any) => unifyLead(l));
             return { results: leads };
         } else if (thirdPartyId === 'sfdc') {
-            // NOTE: Handle "ALL" for Hubspot & Zoho
+            // TODO: Handle "ALL" for Hubspot & Zoho
             const query =
                 fields === 'ALL'
                     ? 'SELECT+fields(all)+from+Lead+limit+200'
@@ -106,6 +106,63 @@ class LeadService {
             return { results: leads };
         } else {
             return { error: 'Unrecognized CRM' };
+        }
+    }
+    async searchUnifiedLeads(
+        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
+        res: Response<any, Record<string, any>, number>
+    ) {
+        const connection = res.locals.connection;
+        const thirdPartyId = connection.tp_id;
+        const thirdPartyToken = connection.tp_access_token;
+        const tenantId = connection.t_id;
+        const searchCriteria = req.body.searchCriteria;
+        console.log('Revert::SEARCH LEAD', tenantId, searchCriteria);
+        if (thirdPartyId === 'hubspot') {
+            let leads: any = await axios({
+                method: 'post',
+                url: `https://api.hubapi.com/crm/v3/objects/contacts/search`,
+                headers: {
+                    'content-type': 'application/json',
+                    authorization: `Bearer ${thirdPartyToken}`,
+                },
+                data: JSON.stringify({
+                    ...searchCriteria,
+                    properties: ['hs_lead_status', 'firstname', 'email', 'lastname', 'hs_object_id'],
+                }),
+            });
+            leads = filterLeadsFromContactsForHubspot(leads.data.results as any[]);
+            leads = leads?.map((l: any) => unifyLead({ ...l, ...l?.properties }));
+            return {
+                status: 'ok',
+                results: leads,
+            };
+        } else if (thirdPartyId === 'zohocrm') {
+            let leads: any = await axios({
+                method: 'get',
+                url: `https://www.zohoapis.com/crm/v3/Leads/search?criteria=${searchCriteria}`,
+                headers: {
+                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                },
+            });
+            leads = leads.data.data;
+            leads = leads?.map((l: any) => unifyLead(l));
+            return { status: 'ok', results: leads };
+        } else if (thirdPartyId === 'sfdc') {
+            let leads: any = await axios({
+                method: 'get',
+                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/search?q=${searchCriteria}`,
+                headers: {
+                    authorization: `Bearer ${thirdPartyToken}`,
+                },
+            });
+            leads = leads?.data?.searchRecords;
+            leads = leads?.map((l: any) => unifyLead(l));
+            return { status: 'ok', results: leads };
+        } else {
+            return {
+                error: 'Unrecognised CRM',
+            };
         }
     }
 }

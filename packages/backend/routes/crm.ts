@@ -7,7 +7,6 @@ import AuthService from '../services/auth';
 import customerMiddleware from '../helpers/customerIdMiddleware';
 import tenantMiddleware from '../helpers/tenantIdMiddleware';
 import LeadService from '../services/lead';
-import { filterLeadsFromContactsForHubspot } from '../helpers/filterLeadsFromContacts';
 
 const crmRouter = express.Router();
 
@@ -341,53 +340,11 @@ crmRouter.patch('/lead/:id', tenantMiddleware(), async (req, res) => {
 // Search a lead with query.
 crmRouter.post('/leads/search', tenantMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const searchCriteria = req.body.searchCriteria;
-        console.log('Revert::SEARCH LEAD', tenantId, searchCriteria);
-        if (thirdPartyId === 'hubspot') {
-            const result = await axios({
-                method: 'post',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts/search`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify({
-                    ...searchCriteria,
-                    properties: ['hs_lead_status', 'firstname', 'email', 'lastname', 'hs_object_id'],
-                }),
-            });
-            res.send({
-                status: 'ok',
-                results: filterLeadsFromContactsForHubspot([result?.data.results] as any[]),
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            const result = await axios({
-                method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Leads/search?criteria=${searchCriteria}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-            });
-
-            res.send({ status: 'ok', results: result?.data });
-        } else if (thirdPartyId === 'sfdc') {
-            const result = await axios({
-                method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/search?q=${searchCriteria}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-
-            res.send({ status: 'ok', results: result?.data });
+        const result = await LeadService.searchUnifiedLeads(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.status(400).send({
-                error: 'Unrecognised CRM',
-            });
+            res.send(result);
         }
     } catch (error) {
         console.error('Could not search CRM', error);
