@@ -21,6 +21,10 @@ This repo contains a set of packages under `@reverdotdev/` namespace such as:
 -   [`@revertdotdev/revert-vue`](./packages/vue): Official SDK for Vue.
 -   ...
 
+## Examples
+
+The folder `examples` contains a set of examples how to use revert with different frameworks.
+
 ## Support
 
 In case of questions/feedback, you can get in touch in the following ways
