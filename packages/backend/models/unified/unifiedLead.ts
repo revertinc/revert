@@ -2,6 +2,7 @@ export interface UnifiedLead {
     id: string;
     owner?: string;
     company?: string;
+    name?: string;
     firstName?: string;
     salutation?: string;
     lastName?: string;
@@ -68,6 +69,7 @@ export interface UnifiedLead {
 export function unifyLead(lead: any): UnifiedLead {
     return {
         id: lead.id || lead.Id || lead.vid,
+        name: lead.Name,
         firstName: lead.firstName || lead.First_Name || lead.FirstName,
         lastName: lead.lastName || lead.Last_Name || lead.LastName,
         email: lead.email || lead.Email,

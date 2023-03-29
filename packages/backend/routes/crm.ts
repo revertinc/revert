@@ -188,48 +188,11 @@ crmRouter.get('/oauth/refresh', async (_, res) => {
 // Get all leads (paginated)
 crmRouter.get('/leads', customerMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const fields = req.query.fields;
-        console.log('Revert::GET ALL LEADS', tenantId, thirdPartyId, thirdPartyToken);
-        if (thirdPartyId === 'hubspot') {
-            const leads = await axios({
-                method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts?properties=${fields}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-            res.send({
-                results: filterLeadsFromContactsForHubspot(leads.data.results as any[]),
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            const leads = await axios({
-                method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Leads?fields=${fields}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-            });
-            res.send({ results: leads.data.data });
-        } else if (thirdPartyId === 'sfdc') {
-            // NOTE: Handle "ALL" for Hubspot & Zoho
-            const query =
-                fields === 'ALL'
-                    ? 'SELECT+fields(all)+from+Lead+limit+200'
-                    : `SELECT+${(fields as string).split(',').join('+,+')}+from+Lead`;
-            const leads = await axios({
-                method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/query/?q=${query}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-            res.send({ results: leads.data });
+        const result = await LeadService.getUnifiedLeads(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.send({ error: 'Unrecognized CRM' });
+            res.send(result);
         }
     } catch (error) {
         console.error('Could not fetch leads', error);
