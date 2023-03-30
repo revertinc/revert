@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import RevertConnect from './components/RevertConnect.vue';
+import { RevertConnect } from '@revertdotdev/revert-vue';
 export default {
   name: 'App',
   components: {
