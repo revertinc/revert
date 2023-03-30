@@ -117,7 +117,8 @@ class LeadService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const searchCriteria = req.body.searchCriteria;
-        console.log('Revert::SEARCH LEAD', tenantId, searchCriteria);
+        const fields = String(req.query.fields || '').split(',');
+        console.log('Revert::SEARCH LEAD', tenantId, searchCriteria, fields);
         if (thirdPartyId === 'hubspot') {
             let leads: any = await axios({
                 method: 'post',
@@ -128,7 +129,7 @@ class LeadService {
                 },
                 data: JSON.stringify({
                     ...searchCriteria,
-                    properties: ['hs_lead_status', 'firstname', 'email', 'lastname', 'hs_object_id'],
+                    properties: ['hs_lead_status', 'firstname', 'email', 'lastname', 'hs_object_id', ...fields],
                 }),
             });
             leads = filterLeadsFromContactsForHubspot(leads.data.results as any[]);

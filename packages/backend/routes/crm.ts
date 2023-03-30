@@ -8,6 +8,7 @@ import customerMiddleware from '../helpers/customerIdMiddleware';
 import tenantMiddleware from '../helpers/tenantIdMiddleware';
 import LeadService from '../services/lead';
 import ContactService from '../services/contact';
+import CompanyService from '../services/company';
 
 const crmRouter = express.Router();
 
@@ -362,48 +363,11 @@ crmRouter.post('/leads/search', tenantMiddleware(), async (req, res) => {
 // Get all companies (paginated)
 crmRouter.get('/companies', customerMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const fields = req.query.fields;
-        console.log('Revert::GET ALL COMPANIES', tenantId, thirdPartyId, thirdPartyToken);
-        if (thirdPartyId === 'hubspot') {
-            const companies = await axios({
-                method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/companies?properties=${fields}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-            res.send({
-                results: companies.data.results,
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            const companies = await axios({
-                method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Accounts?fields=${fields}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-            });
-            res.send({ results: companies.data.data });
-        } else if (thirdPartyId === 'sfdc') {
-            // NOTE: Handle "ALL" for Hubspot & Zoho
-            const query =
-                fields === 'ALL'
-                    ? 'SELECT+fields(all)+from+Account+limit+200'
-                    : `SELECT+${(fields as string).split(',').join('+,+')}+from+Account`;
-            const companies = await axios({
-                method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/query/?q=${query}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-            res.send({ results: companies.data });
+        const result = await CompanyService.getUnifiedCompanies(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.send({ error: 'Unrecognized CRM' });
+            res.send(result);
         }
     } catch (error) {
         console.error('Could not fetch companies', error);
@@ -414,47 +378,11 @@ crmRouter.get('/companies', customerMiddleware(), async (req, res) => {
 // Get a company object identified by {id}
 crmRouter.get('/company/:id', customerMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const companyId = req.params.id;
-        const fields = req.query.fields;
-        console.log('Revert::GET COMPANY', tenantId, thirdPartyId, thirdPartyToken, companyId);
-        if (thirdPartyId === 'hubspot') {
-            const company = await axios({
-                method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/companies/${companyId}?properties=${fields}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-
-            res.send({
-                result: [company.data],
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            const company = await axios({
-                method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Accounts/${companyId}?fields=${fields}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-            });
-            res.send({ result: company.data.data });
-        } else if (thirdPartyId === 'sfdc') {
-            const company = await axios({
-                method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Account/${companyId}`,
-                headers: {
-                    Authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-            res.send({ result: company.data });
+        const result = await CompanyService.getUnifiedCompany(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.status(400).send({
-                error: 'Unrecognised CRM',
-            });
+            res.send(result);
         }
     } catch (error: any) {
         console.error('Could not fetch company', error);
@@ -588,53 +516,11 @@ crmRouter.patch('/company/:id', tenantMiddleware(), async (req, res) => {
 // Search a company with query.
 crmRouter.post('/companies/search', tenantMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const searchCriteria = req.body.searchCriteria;
-        console.log('Revert::SEARCH COMPANY', tenantId, searchCriteria);
-        if (thirdPartyId === 'hubspot') {
-            const result = await axios({
-                method: 'post',
-                url: `https://api.hubapi.com/crm/v3/objects/companies/search`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify({
-                    ...searchCriteria,
-                    properties: ['hs_lead_status', 'firstname', 'email', 'lastname', 'hs_object_id'],
-                }),
-            });
-            res.send({
-                status: 'ok',
-                results: [result?.data.results],
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            const result = await axios({
-                method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Accounts/search?criteria=${searchCriteria}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-            });
-
-            res.send({ status: 'ok', results: result?.data });
-        } else if (thirdPartyId === 'sfdc') {
-            const result = await axios({
-                method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/search?q=${searchCriteria}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-
-            res.send({ status: 'ok', results: result?.data });
+        const result = await CompanyService.searchUnifiedCompanies(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.status(400).send({
-                error: 'Unrecognised CRM',
-            });
+            res.send(result);
         }
     } catch (error) {
         console.error('Could not search CRM', error);
