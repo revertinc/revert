@@ -112,3 +112,14 @@ export function unifyLead(lead: any): UnifiedLead {
         },
     };
 }
+
+// TODO: Make the transformation per field
+export function disunifyLead(lead: UnifiedLead, integrationId: string): any {
+    if (integrationId === 'sfdc') {
+        return lead;
+    } else if (integrationId === 'hubspot') {
+        return lead;
+    } else if (integrationId === 'zohocrm') {
+        return lead;
+    }
+}

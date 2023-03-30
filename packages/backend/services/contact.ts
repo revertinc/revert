@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { unifyContact } from '../models/unified/unifiedContact';
+import { disunifyContact, unifyContact } from '../models/unified/unifiedContact';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 
@@ -162,6 +162,115 @@ class ContactService {
             contacts = contacts?.map((l: any) => unifyContact(l));
 
             return { status: 'ok', results: contacts };
+        } else {
+            return {
+                error: 'Unrecognised CRM',
+            };
+        }
+    }
+    async createContact(
+        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
+        res: Response<any, Record<string, any>, number>
+    ) {
+        const connection = res.locals.connection;
+        const thirdPartyId = connection.tp_id;
+        const thirdPartyToken = connection.tp_access_token;
+        const tenantId = connection.t_id;
+        const contact = disunifyContact(req.body, thirdPartyId);
+        console.log('Revert::CREATE CONTACT', tenantId, contact);
+        if (thirdPartyId === 'hubspot') {
+            await axios({
+                method: 'post',
+                url: `https://api.hubapi.com/crm/v3/objects/contacts/`,
+                headers: {
+                    'content-type': 'application/json',
+                    authorization: `Bearer ${thirdPartyToken}`,
+                },
+                data: JSON.stringify(contact),
+            });
+            return {
+                status: 'ok',
+                message: 'Hubspot contact created',
+                result: contact,
+            };
+        } else if (thirdPartyId === 'zohocrm') {
+            await axios({
+                method: 'post',
+                url: `https://www.zohoapis.com/crm/v3/Contacts`,
+                headers: {
+                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                },
+                data: JSON.stringify(contact),
+            });
+            return { status: 'ok', message: 'Zoho contact created', result: contact };
+        } else if (thirdPartyId === 'sfdc') {
+            const contactCreated = await axios({
+                method: 'post',
+                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Contact/`,
+                headers: {
+                    'content-type': 'application/json',
+                    authorization: `Bearer ${thirdPartyToken}`,
+                },
+                data: JSON.stringify(contact),
+            });
+            return {
+                status: 'ok',
+                message: 'SFDC contact created',
+                result: contactCreated.data,
+            };
+        } else {
+            return {
+                error: 'Unrecognised CRM',
+            };
+        }
+    }
+    async updateContact(
+        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
+        res: Response<any, Record<string, any>, number>
+    ) {
+        const connection = res.locals.connection;
+        const thirdPartyId = connection.tp_id;
+        const thirdPartyToken = connection.tp_access_token;
+        const tenantId = connection.t_id;
+        const contact = disunifyContact(req.body, thirdPartyId);
+        const contactId = req.params.id;
+        console.log('Revert::UPDATE CONTACT', tenantId, contact, contactId);
+        if (thirdPartyId === 'hubspot') {
+            await axios({
+                method: 'patch',
+                url: `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}`,
+                headers: {
+                    'content-type': 'application/json',
+                    authorization: `Bearer ${thirdPartyToken}`,
+                },
+                data: JSON.stringify(contact),
+            });
+            return {
+                status: 'ok',
+                message: 'Hubspot contact created',
+                result: contact,
+            };
+        } else if (thirdPartyId === 'zohocrm') {
+            await axios({
+                method: 'put',
+                url: `https://www.zohoapis.com/crm/v3/Contacts/${contactId}`,
+                headers: {
+                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                },
+                data: JSON.stringify(contact),
+            });
+            return { status: 'ok', message: 'Zoho contact updated', result: contact };
+        } else if (thirdPartyId === 'sfdc') {
+            await axios({
+                method: 'patch',
+                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Contact/${contactId}`,
+                headers: {
+                    'content-type': 'application/json',
+                    authorization: `Bearer ${thirdPartyToken}`,
+                },
+                data: JSON.stringify(contact),
+            });
+            return { status: 'ok', message: 'SFDC contact updated', result: contact };
         } else {
             return {
                 error: 'Unrecognised CRM',

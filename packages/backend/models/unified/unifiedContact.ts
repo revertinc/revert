@@ -92,3 +92,13 @@ export function unifyContact(contact: any): UnifiedContact {
 
     return unifiedContact;
 }
+// TODO: Make the transformation per field
+export function disunifyContact(contact: UnifiedContact, integrationId: string): any {
+    if (integrationId === 'sfdc') {
+        return contact;
+    } else if (integrationId === 'hubspot') {
+        return contact;
+    } else if (integrationId === 'zohocrm') {
+        return contact;
+    }
+}

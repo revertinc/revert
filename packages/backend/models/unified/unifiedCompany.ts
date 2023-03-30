@@ -87,3 +87,13 @@ export function unifyCompany(company: any): UnifiedCompany {
 
     return unifiedCompanyObj;
 }
+// TODO: Make the transformation per field
+export function disunifyCompany(company: UnifiedCompany, integrationId: string): any {
+    if (integrationId === 'sfdc') {
+        return company;
+    } else if (integrationId === 'hubspot') {
+        return company;
+    } else if (integrationId === 'zohocrm') {
+        return company;
+    }
+}
