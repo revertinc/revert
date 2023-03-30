@@ -9,6 +9,7 @@ import tenantMiddleware from '../helpers/tenantIdMiddleware';
 import LeadService from '../services/lead';
 import ContactService from '../services/contact';
 import CompanyService from '../services/company';
+import ProxyService from '../services/proxy';
 
 const crmRouter = express.Router();
 
@@ -221,56 +222,11 @@ crmRouter.get('/lead/:id', customerMiddleware(), async (req, res) => {
 // Create a lead
 crmRouter.post('/lead', tenantMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const lead = req.body;
-        console.log('Revert::CREATE LEAD', tenantId, lead);
-        if (thirdPartyId === 'hubspot') {
-            await axios({
-                method: 'post',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts/`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(lead),
-            });
-            res.send({
-                status: 'ok',
-                message: 'Hubspot lead created',
-                result: lead,
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            await axios({
-                method: 'post',
-                url: `https://www.zohoapis.com/crm/v3/Leads`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(lead),
-            });
-            res.send({ status: 'ok', message: 'Zoho lead created', result: lead });
-        } else if (thirdPartyId === 'sfdc') {
-            const leadCreated = await axios({
-                method: 'post',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Lead/`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(lead),
-            });
-            res.send({
-                status: 'ok',
-                message: 'SFDC lead created',
-                result: leadCreated.data,
-            });
+        const result = await LeadService.createLead(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.status(400).send({
-                error: 'Unrecognised CRM',
-            });
+            res.send(result);
         }
     } catch (error: any) {
         console.error('Could not create lead', error.response);
@@ -283,53 +239,11 @@ crmRouter.post('/lead', tenantMiddleware(), async (req, res) => {
 // Update a lead identified by {id}
 crmRouter.patch('/lead/:id', tenantMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const lead = req.body;
-        const leadId = req.params.id;
-        console.log('Revert::UPDATE LEAD', tenantId, lead, leadId);
-        if (thirdPartyId === 'hubspot') {
-            await axios({
-                method: 'patch',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts/${leadId}`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(lead),
-            });
-            res.send({
-                status: 'ok',
-                message: 'Hubspot lead created',
-                result: lead,
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            await axios({
-                method: 'put',
-                url: `https://www.zohoapis.com/crm/v3/Leads/${leadId}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(lead),
-            });
-            res.send({ status: 'ok', message: 'Zoho lead updated', result: lead });
-        } else if (thirdPartyId === 'sfdc') {
-            await axios({
-                method: 'patch',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Lead/${leadId}`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(lead),
-            });
-            res.send({ status: 'ok', message: 'SFDC lead updated', result: lead });
+        const result = await LeadService.updateLead(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.status(400).send({
-                error: 'Unrecognised CRM',
-            });
+            res.send(result);
         }
     } catch (error: any) {
         console.error('Could not update lead', error.response);
@@ -395,56 +309,11 @@ crmRouter.get('/company/:id', customerMiddleware(), async (req, res) => {
 // Create a company
 crmRouter.post('/company', tenantMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const company = req.body;
-        console.log('Revert::CREATE COMPANY', tenantId, company);
-        if (thirdPartyId === 'hubspot') {
-            await axios({
-                method: 'post',
-                url: `https://api.hubapi.com/crm/v3/objects/companies/`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(company),
-            });
-            res.send({
-                status: 'ok',
-                message: 'Hubspot company created',
-                result: company,
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            await axios({
-                method: 'post',
-                url: `https://www.zohoapis.com/crm/v3/Accounts`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(company),
-            });
-            res.send({ status: 'ok', message: 'Zoho company created', result: company });
-        } else if (thirdPartyId === 'sfdc') {
-            const companyCreated = await axios({
-                method: 'post',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Account/`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(company),
-            });
-            res.send({
-                status: 'ok',
-                message: 'SFDC company created',
-                result: companyCreated.data,
-            });
+        const result = await CompanyService.createCompany(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.status(400).send({
-                error: 'Unrecognised CRM',
-            });
+            res.send(result);
         }
     } catch (error: any) {
         console.error('Could not create company', error.response);
@@ -457,53 +326,11 @@ crmRouter.post('/company', tenantMiddleware(), async (req, res) => {
 // Update a company identified by {id}
 crmRouter.patch('/company/:id', tenantMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const company = req.body;
-        const companyId = req.params.id;
-        console.log('Revert::UPDATE COMPANY', tenantId, company, companyId);
-        if (thirdPartyId === 'hubspot') {
-            await axios({
-                method: 'patch',
-                url: `https://api.hubapi.com/crm/v3/objects/companies/${companyId}`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(company),
-            });
-            res.send({
-                status: 'ok',
-                message: 'Hubspot company updated',
-                result: company,
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            await axios({
-                method: 'put',
-                url: `https://www.zohoapis.com/crm/v3/Accounts/${companyId}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(company),
-            });
-            res.send({ status: 'ok', message: 'Zoho company updated', result: company });
-        } else if (thirdPartyId === 'sfdc') {
-            await axios({
-                method: 'patch',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Account/${companyId}`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(company),
-            });
-            res.send({ status: 'ok', message: 'SFDC company updated', result: company });
+        const result = await CompanyService.updateCompany(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.status(400).send({
-                error: 'Unrecognised CRM',
-            });
+            res.send(result);
         }
     } catch (error: any) {
         console.error('Could not update company', error.response);
@@ -568,56 +395,11 @@ crmRouter.get('/contact/:id', customerMiddleware(), async (req, res) => {
 // Create a contact
 crmRouter.post('/contact', tenantMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const contact = req.body;
-        console.log('Revert::CREATE CONTACT', tenantId, contact);
-        if (thirdPartyId === 'hubspot') {
-            await axios({
-                method: 'post',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts/`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(contact),
-            });
-            res.send({
-                status: 'ok',
-                message: 'Hubspot contact created',
-                result: contact,
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            await axios({
-                method: 'post',
-                url: `https://www.zohoapis.com/crm/v3/Contacts`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(contact),
-            });
-            res.send({ status: 'ok', message: 'Zoho contact created', result: contact });
-        } else if (thirdPartyId === 'sfdc') {
-            const contactCreated = await axios({
-                method: 'post',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Contact/`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(contact),
-            });
-            res.send({
-                status: 'ok',
-                message: 'SFDC contact created',
-                result: contactCreated.data,
-            });
+        const result = await ContactService.createContact(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.status(400).send({
-                error: 'Unrecognised CRM',
-            });
+            res.send(result);
         }
     } catch (error: any) {
         console.error('Could not create contact', error.response);
@@ -630,53 +412,11 @@ crmRouter.post('/contact', tenantMiddleware(), async (req, res) => {
 // Update a contact identified by {id}
 crmRouter.patch('/contact/:id', tenantMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const contact = req.body;
-        const contactId = req.params.id;
-        console.log('Revert::UPDATE CONTACT', tenantId, contact, contactId);
-        if (thirdPartyId === 'hubspot') {
-            await axios({
-                method: 'patch',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(contact),
-            });
-            res.send({
-                status: 'ok',
-                message: 'Hubspot contact created',
-                result: contact,
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            await axios({
-                method: 'put',
-                url: `https://www.zohoapis.com/crm/v3/Contacts/${contactId}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(contact),
-            });
-            res.send({ status: 'ok', message: 'Zoho contact updated', result: contact });
-        } else if (thirdPartyId === 'sfdc') {
-            await axios({
-                method: 'patch',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Contact/${contactId}`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(contact),
-            });
-            res.send({ status: 'ok', message: 'SFDC contact updated', result: contact });
+        const result = await ContactService.updateContact(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.status(400).send({
-                error: 'Unrecognised CRM',
-            });
+            res.send(result);
         }
     } catch (error: any) {
         console.error('Could not update contact', error.response);
@@ -705,58 +445,11 @@ crmRouter.post('/contacts/search', tenantMiddleware(), async (req, res) => {
 
 crmRouter.post('/proxy', customerMiddleware(), async (req, res) => {
     try {
-        const connection = res.locals.connection;
-        const thirdPartyId = connection.tp_id;
-        const thirdPartyToken = connection.tp_access_token;
-        const tenantId = connection.t_id;
-        const contactId = req.params.id;
-        const request = req.body;
-        const path = request.path;
-        const body = request.body;
-        const method = request.method;
-        const queryParams = request.queryParams;
-
-        console.log('Revert::POST PROXY', tenantId, thirdPartyId, thirdPartyToken, contactId);
-        if (thirdPartyId === 'hubspot') {
-            const result = await axios({
-                method: method,
-                url: `https://api.hubapi.com/${path}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(body),
-                params: queryParams,
-            });
-
-            res.send({
-                result: result.data,
-            });
-        } else if (thirdPartyId === 'zohocrm') {
-            const result = await axios({
-                method: method,
-                url: `https://www.zohoapis.com/${path}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(body),
-                params: queryParams,
-            });
-            res.send({ result: result.data.data });
-        } else if (thirdPartyId === 'sfdc') {
-            const result = await axios({
-                method: method,
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/${path}`,
-                headers: {
-                    Authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(body),
-                params: queryParams,
-            });
-            res.send({ result: result.data });
+        const result = await ProxyService.tunnel(req, res);
+        if (result.error) {
+            res.status(400).send(result);
         } else {
-            res.status(400).send({
-                error: 'Unrecognised CRM',
-            });
+            res.send(result);
         }
     } catch (error: any) {
         console.error('Could not execute proxy api', error);
