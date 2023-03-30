@@ -68,7 +68,7 @@ export function unifyCompany(company: any): UnifiedCompany {
     if (!company) return company;
     const unifiedCompanyObj = {
         id: company.id || company.Company_Id || company.company_id,
-        name: company.name || company.Company_Name || company.company_name || company.Name,
+        name: company.name || company.Company_Name || company.company_name || company.Name || company.Account_Name,
         website: company.website || company.Website || company.website,
         phone: company.phone || company.Phone || company.phone,
         address: {

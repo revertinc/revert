@@ -28,14 +28,15 @@ class CompanyService {
                 result: unifyCompany({ ...company.data, ...company.data?.properties }),
             };
         } else if (thirdPartyId === 'zohocrm') {
-            const company = await axios({
+            let company: any = await axios({
                 method: 'get',
                 url: `https://www.zohoapis.com/crm/v3/Accounts/${companyId}?fields=${fields}`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            return { result: unifyCompany(company.data.data) };
+            company = unifyCompany(company.data.data?.[0]);
+            return { result: company };
         } else if (thirdPartyId === 'sfdc') {
             const company = await axios({
                 method: 'get',
