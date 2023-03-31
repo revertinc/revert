@@ -1,6 +1,5 @@
 import axios from 'axios';
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
 import config from '../config';
 import qs from 'qs';
 import AuthService from '../services/auth';
@@ -10,7 +9,7 @@ import LeadService from '../services/lead';
 import ContactService from '../services/contact';
 import CompanyService from '../services/company';
 import ProxyService from '../services/proxy';
-const prisma = new PrismaClient();
+import prisma from 'prisma/client';
 
 const crmRouter = express.Router();
 
