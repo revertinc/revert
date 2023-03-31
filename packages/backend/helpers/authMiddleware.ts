@@ -1,6 +1,6 @@
-import createConnectionPool, { sql } from '@databases/pg';
 import { Request, Response } from 'express';
-import config from '../config';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient(); //TODO: check how prisma handles the db connection closing
 
 const revertAuthMiddleware = () => async (req: Request, res: Response, next: () => any) => {
     const nonSecurePaths = ['/oauth-callback', '/oauth/refresh'];
@@ -13,9 +13,12 @@ const revertAuthMiddleware = () => async (req: Request, res: Response, next: () 
         });
         return;
     }
-    const db = createConnectionPool(config.PGSQL_URL);
     try {
-        const account = await db.query(sql`select * from accounts where token = ${token}`);
+        const account = await prisma.accounts.findMany({
+            where: {
+                token: token as string,
+            },
+        });
         if (!account || !account.length) {
             return res.status(401).send({
                 error: 'Api token unauthorized',
@@ -27,8 +30,6 @@ const revertAuthMiddleware = () => async (req: Request, res: Response, next: () 
         return res.status(400).send({
             error: 'Bad request',
         });
-    } finally {
-        await db.dispose();
     }
 };
 
