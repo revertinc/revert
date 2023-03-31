@@ -1,12 +1,12 @@
-import createConnectionPool, { sql } from '@databases/pg';
 import axios from 'axios';
+import { PrismaClient } from '@prisma/client';
 import config from '../config';
 import qs from 'qs';
+const prisma = new PrismaClient();
 class AuthService {
     async refreshOAuthTokensForThirdParty() {
-        const db = createConnectionPool(config.PGSQL_URL);
         try {
-            const connections = await db.query(sql`SELECT * FROM connections`);
+            const connections = await prisma.connections.findMany({});
             for (let i = 0; i < connections.length; i++) {
                 const connection = connections[i];
                 if (connection.tp_refresh_token) {
@@ -28,12 +28,18 @@ class AuthService {
                                 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
                             },
                         });
-                        await db.query(sql` 
-            UPDATE connections SET tp_access_token = ${result.data.access_token}, 
-            tp_refresh_token = ${result.data.refresh_token}
-            WHERE tp_customer_id = ${connection.tp_customer_id}
-            AND tp_id = ${connection.tp_id}
-            ;`);
+                        await prisma.connections.update({
+                            where: {
+                                tp_customer_id_tp_id: {
+                                    tp_customer_id: connection.tp_customer_id,
+                                    tp_id: connection.tp_id,
+                                },
+                            },
+                            data: {
+                                tp_access_token: result.data.access_token,
+                                tp_refresh_token: result.data.refresh_token,
+                            },
+                        });
                         console.log('OAuth creds refreshed for hubspot');
                     } else if (connection.tp_id === 'zohocrm') {
                         // Refresh the zoho-crm token.
@@ -54,11 +60,17 @@ class AuthService {
                             },
                         });
                         if (result.data && result.data.access_token) {
-                            await db.query(sql` 
-            UPDATE connections SET tp_access_token = ${result.data.access_token}
-            WHERE tp_customer_id = ${connection.tp_customer_id}
-            AND tp_id = ${connection.tp_id}
-            ;`);
+                            await prisma.connections.update({
+                                where: {
+                                    tp_customer_id_tp_id: {
+                                        tp_customer_id: connection.tp_customer_id,
+                                        tp_id: connection.tp_id,
+                                    },
+                                },
+                                data: {
+                                    tp_access_token: result.data.access_token,
+                                },
+                            });
                             console.log('OAuth creds refreshed for zohocrm');
                         } else {
                             console.log('Zoho connection could not be refreshed', result);
@@ -82,11 +94,17 @@ class AuthService {
                             },
                         });
                         if (result.data && result.data.access_token) {
-                            await db.query(sql` 
-            UPDATE connections SET tp_access_token = ${result.data.access_token}
-            WHERE tp_customer_id = ${connection.tp_customer_id}
-            AND tp_id = ${connection.tp_id}
-            ;`);
+                            await prisma.connections.update({
+                                where: {
+                                    tp_customer_id_tp_id: {
+                                        tp_customer_id: connection.tp_customer_id,
+                                        tp_id: connection.tp_id,
+                                    },
+                                },
+                                data: {
+                                    tp_access_token: result.data.access_token,
+                                },
+                            });
                             console.log('OAuth creds refreshed for sfdc');
                         } else {
                             console.log('SFDC connection could not be refreshed', result);
@@ -96,8 +114,6 @@ class AuthService {
             }
         } catch (error) {
             console.error('Could not update db', error);
-        } finally {
-            await db.dispose();
         }
         return { status: 'ok', message: 'Tokens refreshed' };
     }
