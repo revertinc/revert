@@ -5156,6 +5156,7 @@ __metadata:
     "@types/express": ^4.17.13
     "@types/jest": ^26.0.24
     "@types/node": "*"
+    "@types/node-cron": ^3.0.7
     axios: ^0.27.2
     babel-jest: ^29.2.2
     bull: ^4.8.5
@@ -5169,6 +5170,7 @@ __metadata:
     jest: ^26.6.3
     mongoose: ^6.6.5
     nanoid: ^3.0.0
+    node-cron: ^3.0.2
     nodemailer: ^6.7.8
     oauth-1.0a: ^2.2.6
     ts-node-dev: ^2.0.0
@@ -8048,6 +8050,13 @@ __metadata:
   version: 1.2.2
   resolution: "@types/minimist@npm:1.2.2"
   checksum: b8da83c66eb4aac0440e64674b19564d9d86c80ae273144db9681e5eeff66f238ade9515f5006ffbfa955ceff8b89ad2bd8ec577d7caee74ba101431fb07045d
+  languageName: node
+  linkType: hard
+
+"@types/node-cron@npm:^3.0.7":
+  version: 3.0.7
+  resolution: "@types/node-cron@npm:3.0.7"
+  checksum: 1a37bd32efe55a285b08299ef4fb8b11edaa1c0d4ef5d541611a9a4a631b4d5db3dbb5b02321ce04b882d4d07f4b3a05c2ff5fd70ce4614d7f8abd45d2f28da2
   languageName: node
   linkType: hard
 
@@ -21447,6 +21456,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-cron@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "node-cron@npm:3.0.2"
+  dependencies:
+    uuid: 8.3.2
+  checksum: dd21585c0d4069a0752022dad9b8380a4393c4783ec78355ffa99ff32b018c3743a35d4ebf9d7c7863949e94e302b440f58c884eb4960e71c7260d817e2d3f25
+  languageName: node
+  linkType: hard
+
 "node-dir@npm:^0.1.10":
   version: 0.1.17
   resolution: "node-dir@npm:0.1.17"
@@ -28117,21 +28135,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"uuid@npm:8.3.2, uuid@npm:^8.0.0, uuid@npm:^8.3.0, uuid@npm:^8.3.2":
+  version: 8.3.2
+  resolution: "uuid@npm:8.3.2"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 5575a8a75c13120e2f10e6ddc801b2c7ed7d8f3c8ac22c7ed0c7b2ba6383ec0abda88c905085d630e251719e0777045ae3236f04c812184b7c765f63a70e58df
+  languageName: node
+  linkType: hard
+
 "uuid@npm:^3.3.2":
   version: 3.4.0
   resolution: "uuid@npm:3.4.0"
   bin:
     uuid: ./bin/uuid
   checksum: 58de2feed61c59060b40f8203c0e4ed7fd6f99d42534a499f1741218a1dd0c129f4aa1de797bcf822c8ea5da7e4137aa3673431a96dae729047f7aca7b27866f
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^8.0.0, uuid@npm:^8.3.0, uuid@npm:^8.3.2":
-  version: 8.3.2
-  resolution: "uuid@npm:8.3.2"
-  bin:
-    uuid: dist/bin/uuid
-  checksum: 5575a8a75c13120e2f10e6ddc801b2c7ed7d8f3c8ac22c7ed0c7b2ba6383ec0abda88c905085d630e251719e0777045ae3236f04c812184b7c765f63a70e58df
   languageName: node
   linkType: hard
 
