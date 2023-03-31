@@ -1,5 +1,6 @@
 import axios from 'axios';
 import express from 'express';
+import { PrismaClient } from '@prisma/client';
 import config from '../config';
 import qs from 'qs';
 import createConnectionPool, { sql } from '@databases/pg';
@@ -10,6 +11,7 @@ import LeadService from '../services/lead';
 import ContactService from '../services/contact';
 import CompanyService from '../services/company';
 import ProxyService from '../services/proxy';
+const prisma = new PrismaClient();
 
 const crmRouter = express.Router();
 
@@ -56,23 +58,30 @@ crmRouter.get('/oauth-callback', async (req, res) => {
                 url: 'https://api.hubapi.com/oauth/v1/access-tokens/' + result.data.access_token,
             });
             console.log('Oauth token info', info.data);
-            const db = createConnectionPool(config.PGSQL_URL);
             try {
-                await db.query(sql`
-            INSERT INTO connections (
-               t_id, tp_id, tp_access_token, tp_refresh_token, tp_customer_id
-            ) VALUES (${req.query.t_id},'hubspot', ${result.data.access_token}, ${result.data.refresh_token}, ${info.data.user})
-            ON CONFLICT (tp_customer_id, tp_id)
-            DO UPDATE SET
-                tp_access_token = EXCLUDED.tp_access_token, 
-                tp_refresh_token = EXCLUDED.tp_refresh_token
-        `);
+                prisma.connections.upsert({
+                    where: {
+                        tp_customer_id_tp_id: {
+                            tp_customer_id: info.data.user,
+                            tp_id: 'hubspot',
+                        },
+                    },
+                    update: {
+                        tp_access_token: result.data.access_token,
+                        tp_refresh_token: result.data.refresh_token,
+                    },
+                    create: {
+                        t_id: req.query.t_id as string,
+                        tp_id: 'hubspot',
+                        tp_access_token: result.data.access_token,
+                        tp_refresh_token: result.data.refresh_token,
+                        tp_customer_id: info.data.user,
+                    },
+                });
                 res.send({ status: 'ok', tp_customer_id: info.data.user });
             } catch (error) {
                 console.error('Could not update db', error);
                 res.send({ status: 'error', error: error });
-            } finally {
-                await db.dispose();
             }
         } else if (integrationId === 'zohocrm' && req.query.code && req.query.accountURL) {
             // Handle the received code
