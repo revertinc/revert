@@ -1,0 +1,27 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PGSQL_URL")
+}
+
+model accounts {
+  id           String  @id
+  token        String
+  tenant_count Int?
+}
+
+model connections {
+  tp_id           String
+  tp_access_token String
+  tp_refresh_token String?
+  tp_customer_id  String
+  t_id            String
+  tp_account_url  String?
+  @@unique([tp_customer_id, tp_id])
+}

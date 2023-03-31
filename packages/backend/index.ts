@@ -33,6 +33,6 @@ mongoose.connect(config.MONGO_URL, (err) => {
         console.warn(`Failed to connect to the database. ${err.stack}`);
     }
     app.listen(config.PORT, () => {
-        console.log(`⚡️[server]: Revert server is running at https://localhost:${config.PORT}`);
+        console.log(`⚡️[server]: Revert server is running at http://localhost:${config.PORT}`);
     }).setTimeout(600000);
 });

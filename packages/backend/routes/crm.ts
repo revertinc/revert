@@ -28,6 +28,7 @@ crmRouter.get('/ping', async (_, res) => {
  * OAuth API
  */
 crmRouter.get('/oauth-callback', async (req, res) => {
+    console.log('OAuth callback', req.query);
     const integrationId = req.query.integrationId;
 
     try {
