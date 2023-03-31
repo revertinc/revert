@@ -3,7 +3,6 @@ import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import config from '../config';
 import qs from 'qs';
-import createConnectionPool, { sql } from '@databases/pg';
 import AuthService from '../services/auth';
 import customerMiddleware from '../helpers/customerIdMiddleware';
 import tenantMiddleware from '../helpers/tenantIdMiddleware';
@@ -115,23 +114,31 @@ crmRouter.get('/oauth-callback', async (req, res) => {
                     },
                 });
                 console.log('Oauth token info', info.data);
-                const db = createConnectionPool(config.PGSQL_URL);
                 try {
-                    await db.query(sql`
-            INSERT INTO connections (
-               t_id, tp_id, tp_access_token, tp_refresh_token, tp_customer_id, tp_account_url
-            ) VALUES (${req.query.t_id},'zohocrm', ${result.data.access_token}, ${result.data.refresh_token}, ${info.data.Email}, ${req.query.accountURL})
-            ON CONFLICT (tp_customer_id, tp_id)
-            DO UPDATE SET
-                tp_access_token = EXCLUDED.tp_access_token, 
-                tp_refresh_token = EXCLUDED.tp_refresh_token
-        `);
+                    await prisma.connections.upsert({
+                        where: {
+                            tp_customer_id_tp_id: {
+                                tp_customer_id: info.data.Email,
+                                tp_id: 'zohocrm',
+                            },
+                        },
+                        create: {
+                            t_id: req.query.t_id as string,
+                            tp_id: 'zohocrm',
+                            tp_access_token: result.data.access_token,
+                            tp_refresh_token: result.data.refresh_token,
+                            tp_customer_id: info.data.Email,
+                            tp_account_url: req.query.accountURL as string,
+                        },
+                        update: {
+                            tp_access_token: result.data.access_token,
+                            tp_refresh_token: result.data.refresh_token,
+                        },
+                    });
                     res.send({ status: 'ok' });
                 } catch (error) {
                     console.error('Could not update db', error);
                     res.send({ status: 'error', error: error });
-                } finally {
-                    await db.dispose();
                 }
             }
         } else if (integrationId === 'sfdc' && req.query.code && req.query.t_id) {
@@ -161,23 +168,30 @@ crmRouter.get('/oauth-callback', async (req, res) => {
                 },
             });
             console.log('Oauth token info', info.data);
-            const db = createConnectionPool(config.PGSQL_URL);
             try {
-                await db.query(sql`
-            INSERT INTO connections (
-               t_id, tp_id, tp_access_token, tp_refresh_token, tp_customer_id
-            ) VALUES (${req.query.t_id},'sfdc', ${result.data.access_token}, ${result.data.refresh_token}, ${info.data.email})
-            ON CONFLICT (tp_customer_id, tp_id)
-            DO UPDATE SET
-                tp_access_token = EXCLUDED.tp_access_token, 
-                tp_refresh_token = EXCLUDED.tp_refresh_token
-        `);
+                await prisma.connections.upsert({
+                    where: {
+                        tp_customer_id_tp_id: {
+                            tp_customer_id: info.data.email,
+                            tp_id: 'sfdc',
+                        },
+                    },
+                    create: {
+                        t_id: req.query.t_id as string,
+                        tp_id: 'sfdc',
+                        tp_access_token: result.data.access_token,
+                        tp_refresh_token: result.data.refresh_token,
+                        tp_customer_id: info.data.email,
+                    },
+                    update: {
+                        tp_access_token: result.data.access_token,
+                        tp_refresh_token: result.data.refresh_token,
+                    },
+                });
                 res.send({ status: 'ok', tp_customer_id: 'testSfdcUser' });
             } catch (error) {
                 console.error('Could not update db', error);
                 res.send({ status: 'error', error: error });
-            } finally {
-                await db.dispose();
             }
         } else {
             res.send({
