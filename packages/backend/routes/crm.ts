@@ -9,7 +9,7 @@ import LeadService from '../services/lead';
 import ContactService from '../services/contact';
 import CompanyService from '../services/company';
 import ProxyService from '../services/proxy';
-import prisma from 'prisma/client';
+import prisma from '../prisma/client';
 
 const crmRouter = express.Router();
 

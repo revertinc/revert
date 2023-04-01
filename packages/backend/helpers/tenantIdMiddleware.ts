@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from 'prisma/client';
+import prisma from '../prisma/client';
 
 const revertTenantMiddleware = () => async (req: Request, res: Response, next: () => any) => {
     const { 'x-revert-t-id': tenantId } = req.headers;

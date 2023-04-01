@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from 'prisma/client';
+import prisma from '../prisma/client';
 
 const revertCustomerMiddleware = () => async (req: Request, res: Response, next: () => any) => {
     const { 'x-revert-customer-id': customerId } = req.headers;

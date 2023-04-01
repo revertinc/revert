@@ -25,3 +25,7 @@ model connections {
   tp_account_url  String?
   @@unique([tp_customer_id, tp_id])
 }
+
+model waitlist {
+  email String @id
+}

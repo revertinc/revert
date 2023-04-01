@@ -1,7 +1,7 @@
 import axios from 'axios';
 import config from '../config';
 import qs from 'qs';
-import prisma from 'prisma/client';
+import prisma from '../prisma/client';
 class AuthService {
     async refreshOAuthTokensForThirdParty() {
         try {
