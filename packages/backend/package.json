@@ -4,13 +4,14 @@
     "description": "Codebase to run revert-backend",
     "private": true,
     "scripts": {
-        "build": "tsc",
+        "build": "tsc && yarn db-deploy",
         "watch": "tsc -w",
         "start": "NODE_ENV=production node ./dist/index.js",
         "start:prod": "NODE_ENV=production node ./dist/index.js",
         "start:dev": "NODE_ENV=development ts-node-dev --respawn index.ts",
         "test": "jest --config=jest.config.json",
         "dev": "ts-node-dev --respawn index.ts",
+        "db-deploy": "prisma migrate deploy",
         "migration:generate": "prisma migrate dev --name %1"
     },
     "author": {
