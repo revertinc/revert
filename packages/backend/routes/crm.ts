@@ -57,7 +57,7 @@ crmRouter.get('/oauth-callback', async (req, res) => {
             });
             console.log('Oauth token info', info.data);
             try {
-                prisma.connections.upsert({
+                await prisma.connections.upsert({
                     where: {
                         tp_customer_id_tp_id: {
                             tp_customer_id: info.data.user,
