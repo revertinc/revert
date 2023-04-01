@@ -1,9 +1,8 @@
-import createConnectionPool, { sql } from '@databases/pg';
+import prisma from '../prisma/client';
 import axios from 'axios';
 import express from 'express';
 import crmRouter from './crm';
 import metadataRouter from './metadata';
-import config from '../config';
 
 const router = express.Router();
 
@@ -20,7 +19,6 @@ router.get('/', (_, response) => {
 });
 
 router.post('/slack-alert', async (req, res) => {
-    const db = createConnectionPool(config.PGSQL_URL);
     try {
         const email = req.body.email;
         await axios({
@@ -28,12 +26,17 @@ router.post('/slack-alert', async (req, res) => {
             url: `https://hooks.slack.com/services/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`,
             data: JSON.stringify({ text: `Woot! :zap: ${email} signed up for Revert!` }),
         });
-        await db.query(sql`
-            INSERT INTO waitlist (
-               email
-            ) VALUES (${email})
-            ON CONFLICT DO NOTHING
-        `);
+        await prisma.waitlist.upsert({
+            where: {
+                email: email,
+            },
+            update: {
+                email: email,
+            },
+            create: {
+                email: email,
+            },
+        });
         res.send({
             status: 'ok',
         });
@@ -42,8 +45,6 @@ router.post('/slack-alert', async (req, res) => {
             status: 'error',
             error: error,
         });
-    } finally {
-        await db.dispose();
     }
 });
 
