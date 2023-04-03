@@ -12,6 +12,7 @@
         "test": "jest --config=jest.config.json",
         "dev": "ts-node-dev --respawn index.ts",
         "db-deploy": "prisma migrate deploy",
+        "studio": "prisma studio",
         "migration:generate": "prisma migrate dev --name %1"
     },
     "author": {
