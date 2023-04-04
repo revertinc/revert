@@ -11,41 +11,41 @@ class DealService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const noteId = req.params.id;
+        const dealId = req.params.id;
         const fields = req.query.fields;
-        console.log('Revert::GET DEAL', tenantId, thirdPartyId, thirdPartyToken, noteId);
+        console.log('Revert::GET DEAL', tenantId, thirdPartyId, thirdPartyToken, dealId);
         if (thirdPartyId === 'hubspot') {
-            let note: any = await axios({
+            let deal: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/deals/${noteId}?properties=${fields}`,
+                url: `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?properties=${fields}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            note = ([note.data] as any[])?.[0];
+            deal = ([deal.data] as any[])?.[0];
             return {
-                result: { ...note, ...note?.properties },
+                result: { ...deal, ...deal?.properties },
             };
         } else if (thirdPartyId === 'zohocrm') {
             const deals = await axios({
                 method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/deals/${noteId}?fields=${fields}`,
+                url: `https://www.zohoapis.com/crm/v3/deals/${dealId}?fields=${fields}`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            let note = deals.data.data?.[0];
-            return { result: note };
+            let deal = deals.data.data?.[0];
+            return { result: deal };
         } else if (thirdPartyId === 'sfdc') {
             const deals = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Opportunity/${noteId}`,
+                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Opportunity/${dealId}`,
                 headers: {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            let note = deals.data;
-            return { result: note };
+            let deal = deals.data;
+            return { result: deal };
         } else {
             return {
                 error: 'Unrecognised CRM',
@@ -127,7 +127,7 @@ class DealService {
                 },
                 data: JSON.stringify({
                     ...searchCriteria,
-                    properties: ['hs_note_status', 'firstname', 'email', 'lastname', 'hs_object_id', ...fields],
+                    properties: ['hs_deal_status', 'firstname', 'email', 'lastname', 'hs_object_id', ...fields],
                 }),
             });
             deals = deals.data.results as any[];
@@ -172,8 +172,8 @@ class DealService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const note = (req.body, thirdPartyId);
-        console.log('Revert::CREATE DEAL', tenantId, note);
+        const deal = (req.body, thirdPartyId);
+        console.log('Revert::CREATE DEAL', tenantId, deal);
         if (thirdPartyId === 'hubspot') {
             await axios({
                 method: 'post',
@@ -182,12 +182,12 @@ class DealService {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
-                data: JSON.stringify(note),
+                data: JSON.stringify(deal),
             });
             return {
                 status: 'ok',
-                message: 'Hubspot note created',
-                result: note,
+                message: 'Hubspot deal created',
+                result: deal,
             };
         } else if (thirdPartyId === 'zohocrm') {
             await axios({
@@ -196,23 +196,23 @@ class DealService {
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
-                data: JSON.stringify(note),
+                data: JSON.stringify(deal),
             });
-            return { status: 'ok', message: 'Zoho note created', result: note };
+            return { status: 'ok', message: 'Zoho deal created', result: deal };
         } else if (thirdPartyId === 'sfdc') {
-            const noteCreated = await axios({
+            const dealCreated = await axios({
                 method: 'post',
                 url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Opportunity/`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
-                data: JSON.stringify(note),
+                data: JSON.stringify(deal),
             });
             return {
                 status: 'ok',
-                message: 'SFDC note created',
-                result: noteCreated.data,
+                message: 'SFDC deal created',
+                result: dealCreated.data,
             };
         } else {
             return {
@@ -228,45 +228,45 @@ class DealService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const note = (req.body, thirdPartyId);
-        const noteId = req.params.id;
-        console.log('Revert::UPDATE DEAL', tenantId, note, noteId);
+        const deal = (req.body, thirdPartyId);
+        const dealId = req.params.id;
+        console.log('Revert::UPDATE DEAL', tenantId, deal, dealId);
         if (thirdPartyId === 'hubspot') {
             await axios({
                 method: 'patch',
-                url: `https://api.hubapi.com/crm/v3/objects/deals/${noteId}`,
+                url: `https://api.hubapi.com/crm/v3/objects/deals/${dealId}`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
-                data: JSON.stringify(note),
+                data: JSON.stringify(deal),
             });
             return {
                 status: 'ok',
-                message: 'Hubspot note created',
-                result: note,
+                message: 'Hubspot deal created',
+                result: deal,
             };
         } else if (thirdPartyId === 'zohocrm') {
             await axios({
                 method: 'put',
-                url: `https://www.zohoapis.com/crm/v3/deals/${noteId}`,
+                url: `https://www.zohoapis.com/crm/v3/deals/${dealId}`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
-                data: JSON.stringify(note),
+                data: JSON.stringify(deal),
             });
-            return { status: 'ok', message: 'Zoho note updated', result: note };
+            return { status: 'ok', message: 'Zoho deal updated', result: deal };
         } else if (thirdPartyId === 'sfdc') {
             await axios({
                 method: 'patch',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Opportunity/${noteId}`,
+                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Opportunity/${dealId}`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
-                data: JSON.stringify(note),
+                data: JSON.stringify(deal),
             });
-            return { status: 'ok', message: 'SFDC note updated', result: note };
+            return { status: 'ok', message: 'SFDC deal updated', result: deal };
         } else {
             return {
                 error: 'Unrecognised CRM',
