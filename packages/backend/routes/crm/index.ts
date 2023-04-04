@@ -1,10 +1,11 @@
 import express from 'express';
-import leadRouter from './crm/lead';
-import contactRouter from './crm/contact';
-import companyRouter from './crm/company';
-import proxyRouter from './crm/proxy';
-import authRouter from './crm/auth';
-import noteRouter from './crm/note';
+import leadRouter from './lead';
+import contactRouter from './contact';
+import companyRouter from './company';
+import proxyRouter from './proxy';
+import authRouter from './auth';
+import noteRouter from './note';
+import dealRouter from './deal';
 
 const crmRouter = express.Router();
 
@@ -24,6 +25,7 @@ crmRouter.use('/leads', leadRouter);
 crmRouter.use('/contacts', contactRouter);
 crmRouter.use('/companies', companyRouter);
 crmRouter.use('/notes', noteRouter);
+crmRouter.use('/deals', dealRouter);
 crmRouter.use('/proxy', proxyRouter);
 
 export default crmRouter;
