@@ -1,18 +1,18 @@
 import express from 'express';
 import customerMiddleware from '../../helpers/customerIdMiddleware';
 import tenantMiddleware from '../../helpers/tenantIdMiddleware';
-import NoteService from '../../services/note';
+import DealService from '../../services/deal';
 
-const noteRouter = express.Router({ mergeParams: true });
+const dealRouter = express.Router({ mergeParams: true });
 
 /**
- * Notess API
+ * Deals API
  */
 
-// Get all notes (paginated)
-noteRouter.get('/', customerMiddleware(), async (req, res) => {
+// Get all deals (paginated)
+dealRouter.get('/', customerMiddleware(), async (req, res) => {
     try {
-        const result = await NoteService.getUnifiedNotes(req, res);
+        const result = await DealService.getUnifiedDeals(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -24,10 +24,10 @@ noteRouter.get('/', customerMiddleware(), async (req, res) => {
     }
 });
 
-// Get a note object identified by {id}
-noteRouter.get('/:id', customerMiddleware(), async (req, res) => {
+// Get a deal object identified by {id}
+dealRouter.get('/:id', customerMiddleware(), async (req, res) => {
     try {
-        const result = await NoteService.getUnifiedNote(req, res);
+        const result = await DealService.getUnifiedDeal(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -41,10 +41,10 @@ noteRouter.get('/:id', customerMiddleware(), async (req, res) => {
     }
 });
 
-// Create a note
-noteRouter.post('/', tenantMiddleware(), async (req, res) => {
+// Create a deal
+dealRouter.post('/', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await NoteService.createNote(req, res);
+        const result = await DealService.createDeal(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -58,10 +58,10 @@ noteRouter.post('/', tenantMiddleware(), async (req, res) => {
     }
 });
 
-// Update a note identified by {id}
-noteRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
+// Update a deal identified by {id}
+dealRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await NoteService.updateNote(req, res);
+        const result = await DealService.updateDeal(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -75,10 +75,10 @@ noteRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
     }
 });
 
-// Search a note with query.
-noteRouter.post('/search', tenantMiddleware(), async (req, res) => {
+// Search a deal with query.
+dealRouter.post('/search', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await NoteService.searchUnifiedNotes(req, res);
+        const result = await DealService.searchUnifiedDeals(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -92,4 +92,4 @@ noteRouter.post('/search', tenantMiddleware(), async (req, res) => {
     }
 });
 
-export default noteRouter;
+export default dealRouter;
