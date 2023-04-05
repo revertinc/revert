@@ -11,19 +11,22 @@ datasource db {
 }
 
 model accounts {
-  id           String  @id
-  x_revert_private_token  String @default("")
-  x_revert_public_token   String @default("")
-  tenant_count Int?
+  id                     String        @id
+  x_revert_private_token String        @default("") @unique
+  x_revert_public_token  String        @default("") @unique
+  tenant_count           Int?
+  connections            connections[]
 }
 
 model connections {
-  tp_id           String
-  tp_access_token String
+  tp_id            String
+  tp_access_token  String
   tp_refresh_token String?
-  tp_customer_id  String
-  t_id            String
-  tp_account_url  String?
+  tp_customer_id   String
+  t_id             String
+  tp_account_url   String?
+  account          accounts? @relation(fields: [owner_account_x_revert_public_token], references: [x_revert_public_token])
+  owner_account_x_revert_public_token String
   @@unique([tp_customer_id, tp_id])
 }
 
