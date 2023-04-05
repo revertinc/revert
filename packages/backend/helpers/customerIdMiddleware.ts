@@ -24,7 +24,7 @@ const revertCustomerMiddleware = () => async (req: Request, res: Response, next:
         }
         if (connection[0]) {
             res.locals.connection = connection[0];
-            next();
+            return next();
         } else {
             return res.status(400).send({
                 error: 'Customer not found',
