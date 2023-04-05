@@ -262,7 +262,7 @@ const createIntegrationBlock = function (self, integration, padding) {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-revert-token': this.API_REVERT_TOKEN,
+                    'x-revert-private-token': this.API_REVERT_TOKEN,
                 },
             };
 
