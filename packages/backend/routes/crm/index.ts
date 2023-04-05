@@ -7,6 +7,7 @@ import authRouter from './auth';
 import noteRouter from './note';
 import dealRouter from './deal';
 import taskRouter from './task';
+import eventRouter from './event';
 
 const crmRouter = express.Router();
 
@@ -28,6 +29,7 @@ crmRouter.use('/companies', companyRouter);
 crmRouter.use('/notes', noteRouter);
 crmRouter.use('/deals', dealRouter);
 crmRouter.use('/tasks', taskRouter);
+crmRouter.use('/events', eventRouter);
 crmRouter.use('/proxy', proxyRouter);
 
 export default crmRouter;
