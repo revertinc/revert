@@ -13,6 +13,7 @@ datasource db {
 model accounts {
   id           String  @id
   x_revert_private_token  String @default("")
+  x_revert_public_token   String @default("")
   tenant_count Int?
 }
 
