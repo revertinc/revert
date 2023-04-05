@@ -1,18 +1,18 @@
 import express from 'express';
 import customerMiddleware from '../../helpers/customerIdMiddleware';
 import tenantMiddleware from '../../helpers/tenantIdMiddleware';
-import NoteService from '../../services/note';
+import TaskService from '../../services/task';
 
-const noteRouter = express.Router({ mergeParams: true });
+const taskRouter = express.Router({ mergeParams: true });
 
 /**
- * Notes API
+ * Tasks API
  */
 
-// Get all notes (paginated)
-noteRouter.get('/', customerMiddleware(), async (req, res) => {
+// Get all tasks (paginated)
+taskRouter.get('/', customerMiddleware(), async (req, res) => {
     try {
-        const result = await NoteService.getUnifiedNotes(req, res);
+        const result = await TaskService.getUnifiedTasks(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -24,10 +24,10 @@ noteRouter.get('/', customerMiddleware(), async (req, res) => {
     }
 });
 
-// Get a note object identified by {id}
-noteRouter.get('/:id', customerMiddleware(), async (req, res) => {
+// Get a task object identified by {id}
+taskRouter.get('/:id', customerMiddleware(), async (req, res) => {
     try {
-        const result = await NoteService.getUnifiedNote(req, res);
+        const result = await TaskService.getUnifiedTask(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -41,10 +41,10 @@ noteRouter.get('/:id', customerMiddleware(), async (req, res) => {
     }
 });
 
-// Create a note
-noteRouter.post('/', tenantMiddleware(), async (req, res) => {
+// Create a task
+taskRouter.post('/', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await NoteService.createNote(req, res);
+        const result = await TaskService.createTask(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -58,10 +58,10 @@ noteRouter.post('/', tenantMiddleware(), async (req, res) => {
     }
 });
 
-// Update a note identified by {id}
-noteRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
+// Update a task identified by {id}
+taskRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await NoteService.updateNote(req, res);
+        const result = await TaskService.updateTask(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -75,10 +75,10 @@ noteRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
     }
 });
 
-// Search a note with query.
-noteRouter.post('/search', tenantMiddleware(), async (req, res) => {
+// Search a task with query.
+taskRouter.post('/search', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await NoteService.searchUnifiedNotes(req, res);
+        const result = await TaskService.searchUnifiedTasks(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -92,4 +92,4 @@ noteRouter.post('/search', tenantMiddleware(), async (req, res) => {
     }
 });
 
-export default noteRouter;
+export default taskRouter;
