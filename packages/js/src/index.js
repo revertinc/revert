@@ -85,9 +85,13 @@ const createConnectButton = function (self, integration) {
     );
     if (!isInActive) {
         if (integration.integrationId === 'hubspot') {
+            const state = JSON.stringify({
+                tenantId: self.tenantId,
+                revertPublicToken: self.API_REVERT_PUBLIC_TOKEN,
+            });
             button.addEventListener('click', () => {
                 window.open(
-                    `https://app.hubspot.com/oauth/authorize?client_id=${self.HUBSPOT_CLIENT_ID}&redirect_uri=${self.REDIRECT_URL_BASE}/hubspot&scope=crm.objects.contacts.read%20crm.objects.contacts.write%20crm.objects.marketing_events.read%20crm.objects.marketing_events.write%20crm.schemas.custom.read%20crm.objects.custom.read%20crm.objects.custom.write%20crm.objects.companies.write%20crm.schemas.contacts.read%20crm.objects.companies.read%20crm.objects.deals.read%20crm.objects.deals.write%20crm.schemas.companies.read%20crm.schemas.companies.write%20crm.schemas.contacts.write%20crm.schemas.deals.read%20crm.schemas.deals.write%20crm.objects.owners.read%20crm.objects.quotes.write%20crm.objects.quotes.read%20crm.schemas.quotes.read%20crm.objects.line_items.read%20crm.objects.line_items.write%20crm.schemas.line_items.read&state=${self.tenantId}`
+                    `https://app.hubspot.com/oauth/authorize?client_id=${self.HUBSPOT_CLIENT_ID}&redirect_uri=${self.REDIRECT_URL_BASE}/hubspot&scope=crm.objects.contacts.read%20crm.objects.contacts.write%20crm.objects.marketing_events.read%20crm.objects.marketing_events.write%20crm.schemas.custom.read%20crm.objects.custom.read%20crm.objects.custom.write%20crm.objects.companies.write%20crm.schemas.contacts.read%20crm.objects.companies.read%20crm.objects.deals.read%20crm.objects.deals.write%20crm.schemas.companies.read%20crm.schemas.companies.write%20crm.schemas.contacts.write%20crm.schemas.deals.read%20crm.schemas.deals.write%20crm.objects.owners.read%20crm.objects.quotes.write%20crm.objects.quotes.read%20crm.schemas.quotes.read%20crm.objects.line_items.read%20crm.objects.line_items.write%20crm.schemas.line_items.read&state=${state}`
                 );
                 self.close();
             });
@@ -244,16 +248,16 @@ const createIntegrationBlock = function (self, integration, padding) {
 (function () {
     class Revert {
         constructor() {
-            this.CORE_API_BASE_URL = 'https://api.revert.dev/';
+            this.CORE_API_BASE_URL = 'http://localhost:4001/';
             this.API_CRM_PREFIX = 'v1/crm/';
             this.API_CRM_METADATA_SUFFIX = 'v1/metadata/crms';
             this.integrations = [];
             this.state = 'close';
-            this.HUBSPOT_CLIENT_ID = '98c4040c-fc8c-4e36-872f-1afe30a7ed35';
+            this.HUBSPOT_CLIENT_ID = '7e5a712e-79a8-4cdb-87c2-5c0435e6ee5c';
             this.ZOHOCRM_CLIENT_ID = '1000.J6XYQN1AOUWTQPRIZVJZ9AKNQXRL1D';
             this.SFDC_CLIENT_ID =
                 '3MVG9n_HvETGhr3DqXEaT8BJkxX0ubyKWtbaQb.AnYrpdb8cxsXN2JOwD71T8gPyd8gE.jFgar02Y29Leu7dC';
-            this.REDIRECT_URL_BASE = 'https://app.revert.dev/oauth-callback';
+            this.REDIRECT_URL_BASE = 'http://localhost:3000/oauth-callback';
         }
 
         loadIntegrations = function () {
@@ -262,7 +266,7 @@ const createIntegrationBlock = function (self, integration, padding) {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-revert-private-token': this.API_REVERT_TOKEN,
+                    'x-revert-public-token': this.API_REVERT_PUBLIC_TOKEN,
                 },
             };
 
@@ -280,7 +284,7 @@ const createIntegrationBlock = function (self, integration, padding) {
         };
 
         init = function (config) {
-            this.API_REVERT_TOKEN = config.revertToken; // TODO: Make this more secure with frontendApi flow.
+            this.API_REVERT_PUBLIC_TOKEN = config.revertToken; // TODO: Make this more secure with frontendApi flow.
             this.tenantId = config.tenantId;
             addStyle(`
         @font-face {
@@ -394,9 +398,13 @@ const createIntegrationBlock = function (self, integration, padding) {
                     (integration) => integration.integrationId === integrationId
                 );
                 if (selectedIntegration) {
+                    const state = JSON.stringify({
+                        tenantId: this.tenantId,
+                        revertPublicToken: this.API_REVERT_PUBLIC_TOKEN,
+                    });
                     if (selectedIntegration.integrationId === 'hubspot') {
                         window.open(
-                            `https://app.hubspot.com/oauth/authorize?client_id=${this.HUBSPOT_CLIENT_ID}&redirect_uri=${this.REDIRECT_URL_BASE}/hubspot&scope=crm.objects.contacts.read%20crm.objects.contacts.write%20crm.objects.marketing_events.read%20crm.objects.marketing_events.write%20crm.schemas.custom.read%20crm.objects.custom.read%20crm.objects.custom.write%20crm.objects.companies.write%20crm.schemas.contacts.read%20crm.objects.companies.read%20crm.objects.deals.read%20crm.objects.deals.write%20crm.schemas.companies.read%20crm.schemas.companies.write%20crm.schemas.contacts.write%20crm.schemas.deals.read%20crm.schemas.deals.write%20crm.objects.owners.read%20crm.objects.quotes.write%20crm.objects.quotes.read%20crm.schemas.quotes.read%20crm.objects.line_items.read%20crm.objects.line_items.write%20crm.schemas.line_items.read&state=${this.tenantId}`
+                            `https://app.hubspot.com/oauth/authorize?client_id=${this.HUBSPOT_CLIENT_ID}&redirect_uri=${this.REDIRECT_URL_BASE}/hubspot&scope=crm.objects.contacts.read%20crm.objects.contacts.write%20crm.objects.marketing_events.read%20crm.objects.marketing_events.write%20crm.schemas.custom.read%20crm.objects.custom.read%20crm.objects.custom.write%20crm.objects.companies.write%20crm.schemas.contacts.read%20crm.objects.companies.read%20crm.objects.deals.read%20crm.objects.deals.write%20crm.schemas.companies.read%20crm.schemas.companies.write%20crm.schemas.contacts.write%20crm.schemas.deals.read%20crm.schemas.deals.write%20crm.objects.owners.read%20crm.objects.quotes.write%20crm.objects.quotes.read%20crm.schemas.quotes.read%20crm.objects.line_items.read%20crm.objects.line_items.write%20crm.schemas.line_items.read&state=${state}`
                         );
                     } else if (selectedIntegration.integrationId === 'zohocrm') {
                         window.open(

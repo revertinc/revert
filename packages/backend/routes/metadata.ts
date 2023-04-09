@@ -4,7 +4,7 @@ import prisma from '../prisma/client';
 const metadataRouter = express.Router();
 
 metadataRouter.get('/crms', async (req, res) => {
-    const { 'x-revert-private-token': token } = req.headers;
+    const { 'x-revert-public-token': token } = req.headers;
 
     if (!token) {
         res.status(401).send({
@@ -15,7 +15,7 @@ metadataRouter.get('/crms', async (req, res) => {
     try {
         const account = await prisma.accounts.findMany({
             where: {
-                x_revert_private_token: token as string,
+                x_revert_public_token: token as string,
             },
         });
         if (!account || !account.length) {
