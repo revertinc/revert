@@ -291,7 +291,7 @@ const createIntegrationBlock = function (self, integration, padding) {
         };
 
         init = function (config) {
-            this.API_REVERT_PUBLIC_TOKEN = config.revertToken; // TODO: Make this more secure with frontendApi flow.
+            this.API_REVERT_PUBLIC_TOKEN = config.revertToken;
             this.tenantId = config.tenantId;
             addStyle(`
         @font-face {
