@@ -129,10 +129,9 @@ export const OAuthCallback = (props) => {
                     });
             } else if (rootParams.integrationId === 'zohocrm') {
                 console.log('Post crm installation', rootParams.integrationId, params);
+                const { tenantId, revertPublicToken } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=zohocrm&code=${
-                        params.code
-                    }&t_id=${String(params.state)}&location=${params.location}&accountURL=${params['accounts-server']}`,
+                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=zohocrm&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}&location=${params.location}&accountURL=${params['accounts-server']}`,
                     {
                         method: 'GET',
                         headers: {
@@ -153,10 +152,9 @@ export const OAuthCallback = (props) => {
                     });
             } else if (rootParams.integrationId === 'sfdc') {
                 console.log('Post crm installation', rootParams.integrationId, params);
+                const { tenantId, revertPublicToken } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=sfdc&code=${params.code}&t_id=${String(
-                        params.state
-                    )}`,
+                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=sfdc&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}`,
                     {
                         method: 'GET',
                         headers: {
