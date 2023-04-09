@@ -14,7 +14,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
     console.log('OAuth callback', req.query);
     const integrationId = req.query.integrationId;
     const revertPublicKey = req.query.x_revert_public_token as string;
-    console.log({ revertPublicKey });
     try {
         if (integrationId === 'hubspot' && req.query.code && req.query.t_id && revertPublicKey) {
             // Handle the received code

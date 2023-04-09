@@ -1,4 +1,11 @@
 var revert;
+//TODO:further improve this when prod and staging environments are ready. And control the env form script in package.json
+var env = process.env.NODE_ENV || 'dev';
+var envConfig = {
+    CORE_API_BASE_URL: env === 'dev' ? 'http://localhost:4001/' : 'https://api.revert.dev/',
+    HUBSPOT_CLIENT_ID: env === 'dev' ? '7e5a712e-79a8-4cdb-87c2-5c0435e6ee5c' : '98c4040c-fc8c-4e36-872f-1afe30a7ed35',
+    REDIRECT_URL_BASE: env === 'dev' ? 'http://localhost:3000/oauth-callback' : 'https://app.revert.dev/oauth-callback',
+};
 
 const transformStyle = function (style) {
     for (let [key, value] of Object.entries(style)) {
@@ -83,12 +90,12 @@ const createConnectButton = function (self, integration) {
         [],
         'Connect'
     );
+    const state = JSON.stringify({
+        tenantId: self.tenantId,
+        revertPublicToken: self.API_REVERT_PUBLIC_TOKEN,
+    });
     if (!isInActive) {
         if (integration.integrationId === 'hubspot') {
-            const state = JSON.stringify({
-                tenantId: self.tenantId,
-                revertPublicToken: self.API_REVERT_PUBLIC_TOKEN,
-            });
             button.addEventListener('click', () => {
                 window.open(
                     `https://app.hubspot.com/oauth/authorize?client_id=${self.HUBSPOT_CLIENT_ID}&redirect_uri=${self.REDIRECT_URL_BASE}/hubspot&scope=crm.objects.contacts.read%20crm.objects.contacts.write%20crm.objects.marketing_events.read%20crm.objects.marketing_events.write%20crm.schemas.custom.read%20crm.objects.custom.read%20crm.objects.custom.write%20crm.objects.companies.write%20crm.schemas.contacts.read%20crm.objects.companies.read%20crm.objects.deals.read%20crm.objects.deals.write%20crm.schemas.companies.read%20crm.schemas.companies.write%20crm.schemas.contacts.write%20crm.schemas.deals.read%20crm.schemas.deals.write%20crm.objects.owners.read%20crm.objects.quotes.write%20crm.objects.quotes.read%20crm.schemas.quotes.read%20crm.objects.line_items.read%20crm.objects.line_items.write%20crm.schemas.line_items.read&state=${state}`
@@ -98,14 +105,14 @@ const createConnectButton = function (self, integration) {
         } else if (integration.integrationId === 'zohocrm') {
             button.addEventListener('click', () => {
                 window.open(
-                    `https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.users.READ,AaaServer.profile.READ&client_id=${self.ZOHOCRM_CLIENT_ID}&response_type=code&access_type=offline&redirect_uri=${self.REDIRECT_URL_BASE}/zohocrm&state=${self.tenantId}`
+                    `https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.users.READ,AaaServer.profile.READ&client_id=${self.ZOHOCRM_CLIENT_ID}&response_type=code&access_type=offline&redirect_uri=${self.REDIRECT_URL_BASE}/zohocrm&state=${state}`
                 );
                 self.close();
             });
         } else if (integration.integrationId === 'sfdc') {
             button.addEventListener('click', () => {
                 window.open(
-                    `https://revert2-dev-ed.develop.my.salesforce.com/services/oauth2/authorize?response_type=code&client_id=${self.SFDC_CLIENT_ID}&redirect_uri=${self.REDIRECT_URL_BASE}/sfdc&scope=offline_access+api+refresh_token&state=${self.tenantId}`
+                    `https://revert2-dev-ed.develop.my.salesforce.com/services/oauth2/authorize?response_type=code&client_id=${self.SFDC_CLIENT_ID}&redirect_uri=${self.REDIRECT_URL_BASE}/sfdc&scope=offline_access+api+refresh_token&state=${state}`
                 );
                 self.close();
             });
@@ -248,16 +255,16 @@ const createIntegrationBlock = function (self, integration, padding) {
 (function () {
     class Revert {
         constructor() {
-            this.CORE_API_BASE_URL = 'http://localhost:4001/';
+            this.CORE_API_BASE_URL = envConfig.CORE_API_BASE_URL;
             this.API_CRM_PREFIX = 'v1/crm/';
             this.API_CRM_METADATA_SUFFIX = 'v1/metadata/crms';
             this.integrations = [];
             this.state = 'close';
-            this.HUBSPOT_CLIENT_ID = '7e5a712e-79a8-4cdb-87c2-5c0435e6ee5c';
+            this.HUBSPOT_CLIENT_ID = envConfig.HUBSPOT_CLIENT_ID;
             this.ZOHOCRM_CLIENT_ID = '1000.J6XYQN1AOUWTQPRIZVJZ9AKNQXRL1D';
             this.SFDC_CLIENT_ID =
                 '3MVG9n_HvETGhr3DqXEaT8BJkxX0ubyKWtbaQb.AnYrpdb8cxsXN2JOwD71T8gPyd8gE.jFgar02Y29Leu7dC';
-            this.REDIRECT_URL_BASE = 'http://localhost:3000/oauth-callback';
+            this.REDIRECT_URL_BASE = envConfig.REDIRECT_URL_BASE;
         }
 
         loadIntegrations = function () {
@@ -408,11 +415,11 @@ const createIntegrationBlock = function (self, integration, padding) {
                         );
                     } else if (selectedIntegration.integrationId === 'zohocrm') {
                         window.open(
-                            `https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.users.READ,AaaServer.profile.READ&client_id=${this.ZOHOCRM_CLIENT_ID}&response_type=code&access_type=offline&redirect_uri=${this.REDIRECT_URL_BASE}/zohocrm&state=${this.tenantId}`
+                            `https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.users.READ,AaaServer.profile.READ&client_id=${this.ZOHOCRM_CLIENT_ID}&response_type=code&access_type=offline&redirect_uri=${this.REDIRECT_URL_BASE}/zohocrm&state=${state}`
                         );
                     } else if (selectedIntegration.integrationId === 'sfdc') {
                         window.open(
-                            `https://revert2-dev-ed.develop.my.salesforce.com/services/oauth2/authorize?response_type=code&client_id=${this.SFDC_CLIENT_ID}&redirect_uri=${this.REDIRECT_URL_BASE}/sfdc&scope=offline_access+api+refresh_token&state=${this.tenantId}`
+                            `https://revert2-dev-ed.develop.my.salesforce.com/services/oauth2/authorize?response_type=code&client_id=${this.SFDC_CLIENT_ID}&redirect_uri=${this.REDIRECT_URL_BASE}/sfdc&scope=offline_access+api+refresh_token&state=${state}`
                         );
                     }
                 } else {

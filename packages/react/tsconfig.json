@@ -16,5 +16,5 @@
         "noEmit": true,
         "jsx": "react-jsx"
     },
-    "include": ["./src", "revert-dev.js"]
+    "include": ["./src", "src/lib/revert-dev.js"]
 }
