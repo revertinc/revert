@@ -6,6 +6,10 @@ var envConfig = {
     HUBSPOT_CLIENT_ID: env === 'dev' ? '7e5a712e-79a8-4cdb-87c2-5c0435e6ee5c' : '98c4040c-fc8c-4e36-872f-1afe30a7ed35',
     REDIRECT_URL_BASE: env === 'dev' ? 'http://localhost:3000/oauth-callback' : 'https://app.revert.dev/oauth-callback',
     ZOHOCRM_CLIENT_ID: env === 'dev' ? '1000.7IWVVHZBEWSWC31L12OEVJH4L3DOHJ' : '1000.J6XYQN1AOUWTQPRIZVJZ9AKNQXRL1D',
+    SFDC_CLIENT_ID:
+        env === 'dev'
+            ? '3MVG9n_HvETGhr3DqXEaT8BJkxX0ubyKWtbaQb.AnYrpdb8cxsXN2JOwD71T8gPyd8gE.jFgar02Y29Leu7dC'
+            : '3MVG9n_HvETGhr3DqXEaT8BJkxX0ubyKWtbaQb.AnYrpdb8cxsXN2JOwD71T8gPyd8gE.jFgar02Y29Leu7dC',
 };
 
 const transformStyle = function (style) {
@@ -267,8 +271,7 @@ const createIntegrationBlock = function (self, integration, padding) {
             this.state = 'close';
             this.HUBSPOT_CLIENT_ID = envConfig.HUBSPOT_CLIENT_ID;
             this.ZOHOCRM_CLIENT_ID = envConfig.ZOHOCRM_CLIENT_ID;
-            this.SFDC_CLIENT_ID =
-                '3MVG9n_HvETGhr3DqXEaT8BJkxX0ubyKWtbaQb.AnYrpdb8cxsXN2JOwD71T8gPyd8gE.jFgar02Y29Leu7dC';
+            this.SFDC_CLIENT_ID = envConfig.SFDC_CLIENT_ID;
             this.REDIRECT_URL_BASE = envConfig.REDIRECT_URL_BASE;
         }
 
