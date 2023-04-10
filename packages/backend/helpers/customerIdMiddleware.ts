@@ -2,13 +2,13 @@ import { Request, Response } from 'express';
 import prisma from '../prisma/client';
 
 const revertCustomerMiddleware = () => async (req: Request, res: Response, next: () => any) => {
-    const { 'x-revert-customer-id': customerId, 'x-revert-private-token': revertPrivateToken } = req.headers;
+    const { 'x-revert-customer-id': customerId, 'x-revert-api-token': revertPrivateToken } = req.headers;
     try {
         const connection = await prisma.connections.findMany({
             where: {
                 tp_customer_id: customerId as string,
                 account: {
-                    x_revert_private_token: revertPrivateToken as string,
+                    private_token: revertPrivateToken as string,
                 },
             },
             select: {

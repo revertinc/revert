@@ -58,7 +58,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.user,
                         account: {
-                            connect: { x_revert_public_token: revertPublicKey },
+                            connect: { public_token: revertPublicKey },
                         },
                     },
                 });
@@ -115,7 +115,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                             tp_customer_id: info.data.Email,
                             tp_account_url: req.query.accountURL as string,
                             account: {
-                                connect: { x_revert_public_token: revertPublicKey },
+                                connect: { public_token: revertPublicKey },
                             },
                         },
                         update: {
@@ -171,7 +171,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.email,
                         account: {
-                            connect: { x_revert_public_token: revertPublicKey },
+                            connect: { public_token: revertPublicKey },
                         },
                     },
                     update: {

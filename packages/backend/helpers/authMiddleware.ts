@@ -4,7 +4,7 @@ import prisma from '../prisma/client';
 const revertAuthMiddleware = () => async (req: Request, res: Response, next: () => any) => {
     const nonSecurePaths = ['/oauth-callback', '/oauth/refresh'];
     if (nonSecurePaths.includes(req.path)) return next();
-    const { 'x-revert-private-token': token } = req.headers;
+    const { 'x-revert-api-token': token } = req.headers;
 
     if (!token) {
         res.status(401).send({
@@ -15,7 +15,7 @@ const revertAuthMiddleware = () => async (req: Request, res: Response, next: () 
     try {
         const account = await prisma.accounts.findMany({
             where: {
-                x_revert_private_token: token as string,
+                private_token: token as string,
             },
         });
         if (!account || !account.length) {

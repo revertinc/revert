@@ -15,7 +15,7 @@ metadataRouter.get('/crms', async (req, res) => {
     try {
         const account = await prisma.accounts.findMany({
             where: {
-                x_revert_public_token: token as string,
+                public_token: token as string,
             },
         });
         if (!account || !account.length) {
