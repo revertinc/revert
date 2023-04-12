@@ -13,9 +13,9 @@ const authRouter = express.Router({ mergeParams: true });
 authRouter.get('/oauth-callback', async (req, res) => {
     console.log('OAuth callback', req.query);
     const integrationId = req.query.integrationId;
-
+    const revertPublicKey = req.query.x_revert_public_token as string;
     try {
-        if (integrationId === 'hubspot' && req.query.code && req.query.t_id) {
+        if (integrationId === 'hubspot' && req.query.code && req.query.t_id && revertPublicKey) {
             // Handle the received code
             const url = 'https://api.hubapi.com/oauth/v1/token';
             const formData = {
@@ -57,6 +57,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.user,
+                        account: {
+                            connect: { public_token: revertPublicKey },
+                        },
                     },
                 });
                 res.send({ status: 'ok', tp_customer_id: info.data.user });
@@ -111,6 +114,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
                             tp_refresh_token: result.data.refresh_token,
                             tp_customer_id: info.data.Email,
                             tp_account_url: req.query.accountURL as string,
+                            account: {
+                                connect: { public_token: revertPublicKey },
+                            },
                         },
                         update: {
                             tp_access_token: result.data.access_token,
@@ -164,6 +170,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.email,
+                        account: {
+                            connect: { public_token: revertPublicKey },
+                        },
                     },
                     update: {
                         tp_access_token: result.data.access_token,

@@ -13,10 +13,10 @@ app.use(cors());
 
 app.use('/', indexRouter);
 app.use('/v1/crm', cors(), revertAuthMiddleware(), crmRouter);
-app.use('/v1/metadata', cors(), revertAuthMiddleware(), metadataRouter);
+app.use('/v1/metadata', cors(), metadataRouter);
 
 app.listen(config.PORT, () => {
-    console.log(`⚡️[server]: Revert server is running at https://localhost:${config.PORT}`);
+    console.log(`⚡️[server]: Revert server is running at http://localhost:${config.PORT}`);
     // Refresh tokens on a schedule.
     // TODO: do this optimistically.
     cron.schedule(`*/2 * * * *`, async () => {

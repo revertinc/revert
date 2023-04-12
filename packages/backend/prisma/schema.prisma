@@ -11,18 +11,23 @@ datasource db {
 }
 
 model accounts {
-  id           String  @id
-  token        String
-  tenant_count Int?
+  id            String        @id
+  private_token String        @unique
+  public_token  String        @unique
+  tenant_count  Int?
+  connections   connections[]
 }
 
 model connections {
-  tp_id           String
-  tp_access_token String
-  tp_refresh_token String?
-  tp_customer_id  String
-  t_id            String
-  tp_account_url  String?
+  tp_id                      String
+  tp_access_token            String
+  tp_refresh_token           String?
+  tp_customer_id             String
+  t_id                       String
+  tp_account_url             String?
+  account                    accounts? @relation(fields: [owner_account_public_token], references: [public_token])
+  owner_account_public_token String
+
   @@unique([tp_customer_id, tp_id])
 }
 

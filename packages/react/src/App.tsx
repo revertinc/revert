@@ -11,7 +11,7 @@ function App() {
         >
             <RevertConnect
                 config={{
-                    revertToken: 'test',
+                    revertToken: 'test-public-token',
                     tenantId: 'testTenantId',
                 }}
             />

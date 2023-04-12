@@ -4,6 +4,9 @@ import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
 export default defineConfig({
+    server: {
+        port: 3001,
+    },
     plugins: [
         react(),
         dts({
@@ -14,9 +17,9 @@ export default defineConfig({
         sourcemap: true,
         lib: {
             entry: path.resolve(__dirname, 'src/lib/index.ts'),
-            name: 'MyLib',
+            name: 'revert-react',
             formats: ['es', 'umd'],
-            fileName: (format) => `my-lib.${format}.js`,
+            fileName: (format) => `revert-react.${format}.js`,
         },
         rollupOptions: {
             external: ['react', 'react-dom', 'styled-components'],

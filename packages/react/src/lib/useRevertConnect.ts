@@ -12,7 +12,7 @@ window.Revert = window.Revert || {};
 
 export default function useRevertConnect(props: useRevertConnectProps) {
     const [loading, error] = useScript({
-        src: 'https://cdn.revert.dev/revert.js',
+        src: import.meta.env.MODE === 'development' ? 'src/lib/revert-dev.js' : 'https://cdn.revert.dev/revert.js',
         checkForExisting: true,
     });
 
