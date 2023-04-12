@@ -3,7 +3,7 @@ import './App.css';
 
 function App() {
     //This you can get from the Revert team
-    const REVERT_TOKEN = 'test';
+    const REVERT_TOKEN = 'pk_test_Y2xlcmsuc3Ryb25nLmRlZXItNTYubGNsLmRldiQ';
     //This can be any unique string that identifies the user
     const UNIQUE_TENANT_ID = 'testTenantId';
     return (
