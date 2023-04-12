@@ -5072,11 +5072,13 @@ __metadata:
     "@babel/preset-env": ^7.12.11
     "@fingerprintjs/fingerprintjs": ^3.0.5
     browserify: ^17.0.0
+    dotenv: ^16.0.3
     javascript-obfuscator: ^2.10.3
     loose-envify: ^1.4.0
     scroll-into-view-if-needed: ^2.2.26
     tinycolor2: ^1.4.2
     uuid: ^8.3.2
+    vite: ^4.2.1
   languageName: unknown
   linkType: soft
 
@@ -13854,7 +13856,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^16.0.1":
+"dotenv@npm:^16.0.1, dotenv@npm:^16.0.3":
   version: 16.0.3
   resolution: "dotenv@npm:16.0.3"
   checksum: afcf03f373d7a6d62c7e9afea6328e62851d627a4e73f2e12d0a8deae1cd375892004f3021883f8aec85932cd2834b091f568ced92b4774625b321db83b827f8
@@ -27989,7 +27991,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^4.1.4":
+"vite@npm:^4.1.4, vite@npm:^4.2.1":
   version: 4.2.1
   resolution: "vite@npm:4.2.1"
   dependencies:

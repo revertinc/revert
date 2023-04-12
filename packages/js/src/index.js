@@ -1,15 +1,10 @@
 var revert;
-//TODO:further improve this when prod and staging environments are ready. And control the env form script in package.json
-var env = process.env.NODE_ENV || 'production';
 var envConfig = {
-    CORE_API_BASE_URL: env === 'dev' ? 'http://localhost:4001/' : 'https://api.revert.dev/',
-    HUBSPOT_CLIENT_ID: env === 'dev' ? '7e5a712e-79a8-4cdb-87c2-5c0435e6ee5c' : '98c4040c-fc8c-4e36-872f-1afe30a7ed35',
-    REDIRECT_URL_BASE: env === 'dev' ? 'http://localhost:3000/oauth-callback' : 'https://app.revert.dev/oauth-callback',
-    ZOHOCRM_CLIENT_ID: env === 'dev' ? '1000.7IWVVHZBEWSWC31L12OEVJH4L3DOHJ' : '1000.J6XYQN1AOUWTQPRIZVJZ9AKNQXRL1D',
-    SFDC_CLIENT_ID:
-        env === 'dev'
-            ? '3MVG9n_HvETGhr3DqXEaT8BJkxX0ubyKWtbaQb.AnYrpdb8cxsXN2JOwD71T8gPyd8gE.jFgar02Y29Leu7dC'
-            : '3MVG9n_HvETGhr3DqXEaT8BJkxX0ubyKWtbaQb.AnYrpdb8cxsXN2JOwD71T8gPyd8gE.jFgar02Y29Leu7dC',
+    CORE_API_BASE_URL: `${__CORE_API_BASE_URL__}`,
+    HUBSPOT_CLIENT_ID: `${__HUBSPOT_CLIENT_ID__}`,
+    REDIRECT_URL_BASE: `${__REDIRECT_URL_BASE__}`,
+    ZOHOCRM_CLIENT_ID: `${__ZOHOCRM_CLIENT_ID__}`,
+    SFDC_CLIENT_ID: `${__SFDC_CLIENT_ID__}`,
 };
 
 const transformStyle = function (style) {
