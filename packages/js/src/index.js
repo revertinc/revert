@@ -1,6 +1,6 @@
 var revert;
 //TODO:further improve this when prod and staging environments are ready. And control the env form script in package.json
-var env = process.env.NODE_ENV || 'dev';
+var env = process.env.NODE_ENV || 'production';
 var envConfig = {
     CORE_API_BASE_URL: env === 'dev' ? 'http://localhost:4001/' : 'https://api.revert.dev/',
     HUBSPOT_CLIENT_ID: env === 'dev' ? '7e5a712e-79a8-4cdb-87c2-5c0435e6ee5c' : '98c4040c-fc8c-4e36-872f-1afe30a7ed35',
