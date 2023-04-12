@@ -4,13 +4,11 @@
     "description": "Client side javascript sdk",
     "scripts": {
         "test": "npm test",
-        "build": "babel src -d lib && browserify lib/index.js -o lib/bundle.js",
-        "build-dev": "babel src --out-file lib/index-dev.js && browserify lib/index-dev.js -o lib/bundle-dev.js",
+        "build": "npm run prebuild && vite build",
+        "prebuild": "babel src -d lib && browserify lib/index.js -o lib/bundle.js",
         "bundle": "browserify lib/index.js -o lib/bundle.js",
-        "pre-deploy": "javascript-obfuscator lib/bundle.js --output build/revert.js",
-        "pre-deploy-dev": "javascript-obfuscator lib/bundle-dev.js --output build/revert-dev.js",
-        "deploy": "npm run build && npm run pre-deploy",
-        "deploy-dev": "npm run build-dev && npm run pre-deploy-dev"
+        "pre-deploy": "javascript-obfuscator dist/revert.js --output build/revert.js",
+        "deploy": "npm run build && npm run pre-deploy"
     },
     "author": "Jatin Sandilya",
     "license": "ISC",
@@ -20,7 +18,9 @@
         "@babel/plugin-proposal-class-properties": "^7.12.1",
         "@babel/preset-env": "^7.12.11",
         "browserify": "^17.0.0",
-        "javascript-obfuscator": "^2.10.3"
+        "dotenv": "^16.0.3",
+        "javascript-obfuscator": "^2.10.3",
+        "vite": "^4.2.1"
     },
     "dependencies": {
         "@fingerprintjs/fingerprintjs": "^3.0.5",
