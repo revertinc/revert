@@ -11,7 +11,7 @@ function App() {
         >
             <RevertConnect
                 config={{
-                    revertToken: 'test',
+                    revertToken: 'pk_test_Y2xlcmsuc3Ryb25nLmRlZXItNTYubGNsLmRldiQ',
                     tenantId: 'testTenantId',
                 }}
             />
