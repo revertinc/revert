@@ -131,7 +131,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             }
         } else if (integrationId === 'sfdc' && req.query.code && req.query.t_id) {
             // Handle the received code
-            const url = 'https://revert2-dev-ed.develop.my.salesforce.com/services/oauth2/token';
+            const url = 'https://login.salesforce.com/services/oauth2/token';
             const formData = {
                 grant_type: 'authorization_code',
                 client_id: config.SFDC_CLIENT_ID,
