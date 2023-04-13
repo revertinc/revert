@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "target": "esnext",
+        "module": "esnext",
+        "strict": false, // TODO: Make this strict eventually
+        "outDir": "lib/",
+        "skipLibCheck": true
+    },
+    "include": [
+        "src/*.ts",
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

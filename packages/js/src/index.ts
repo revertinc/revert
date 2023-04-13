@@ -1,4 +1,11 @@
 var revert;
+
+declare var __CORE_API_BASE_URL__: string;
+declare var __HUBSPOT_CLIENT_ID__: string;
+declare var __REDIRECT_URL_BASE__: string;
+declare var __ZOHOCRM_CLIENT_ID__: string;
+declare var __SFDC_CLIENT_ID__: string;
+
 var envConfig = {
     CORE_API_BASE_URL: `${__CORE_API_BASE_URL__}`,
     HUBSPOT_CLIENT_ID: `${__HUBSPOT_CLIENT_ID__}`,
@@ -11,6 +18,7 @@ const transformStyle = function (style) {
     for (let [key, value] of Object.entries(style)) {
         let new_key = toKebabCase(key);
         if (key !== new_key) {
+            //@ts-ignore
             Object.defineProperty(style, new_key, Object.getOwnPropertyDescriptor(style, key));
             delete style[key];
         }
@@ -30,7 +38,7 @@ const addStyle = function (styleString) {
 const toKebabCase = function (string) {
     return string.replace(/([a-z0-9]|(?=[A-Z]))([A-Z])/g, '$1-$2').toLowerCase();
 };
-const createViewElement = function (tag, id, style, children, innerHTML) {
+const createViewElement = function (tag, id, style, children, innerHTML?) {
     const element = document.createElement(tag);
     element.setAttribute('id', id);
     Object.assign(element.style, style);
@@ -175,7 +183,7 @@ const openInNewTab = function () {
         'https://revert.dev?utm_campaign=powered&utm_medium=signin&utm_source=' + currentUrl,
         '_blank'
     );
-    win.focus();
+    window.focus();
 };
 
 const createPoweredByBanner = function (self) {
@@ -207,7 +215,6 @@ const createPoweredByBanner = function (self) {
         transformStyle({
             display: 'flex',
             width: '100%',
-            color: 'rgba(40, 30, 65,0.62)',
             justifyContent: 'center',
             alignItems: 'center',
             cursor: 'pointer',
@@ -226,7 +233,7 @@ const createPoweredByBanner = function (self) {
 const createIntegrationBlock = function (self, integration, padding) {
     const isInActive = integration.status !== 'active';
     let integrationConnect = document.createElement('div');
-    integrationConnect.style.flex = 1;
+    integrationConnect.style.flex = '1';
     integrationConnect.style.width = '100%';
     integrationConnect.style.padding = padding;
     integrationConnect.style.display = 'flex';
@@ -234,7 +241,7 @@ const createIntegrationBlock = function (self, integration, padding) {
     let connectButton = createConnectButton(self, integration);
     let integrationDisplay = createIntegraionDisplay(integration);
     let container = document.createElement('div');
-    container.style.flex = 1;
+    container.style.flex = '1';
     container.style.width = '100%';
     container.style.padding = '33px';
     container.style.border = '2px solid #f7f7f7';
@@ -264,21 +271,43 @@ const createIntegrationBlock = function (self, integration, padding) {
 
 (function () {
     class Revert {
+        #CORE_API_BASE_URL: string;
+        #API_CRM_METADATA_SUFFIX: string;
+        #integrations: any[];
+        #state: string;
+        #HUBSPOT_CLIENT_ID: string;
+        #ZOHOCRM_CLIENT_ID: string;
+        #SFDC_CLIENT_ID: string;
+        #REDIRECT_URL_BASE: string;
+
+        get SFDC_CLIENT_ID() {
+            return this.#SFDC_CLIENT_ID;
+        }
+        get ZOHOCRM_CLIENT_ID() {
+            return this.#ZOHOCRM_CLIENT_ID;
+        }
+
+        get HUBSPOT_CLIENT_ID() {
+            return this.#HUBSPOT_CLIENT_ID;
+        }
+        get REDIRECT_URL_BASE() {
+            return this.#REDIRECT_URL_BASE;
+        }
+
         constructor() {
-            this.CORE_API_BASE_URL = envConfig.CORE_API_BASE_URL;
-            this.API_CRM_PREFIX = 'v1/crm/';
-            this.API_CRM_METADATA_SUFFIX = 'v1/metadata/crms';
-            this.integrations = [];
-            this.state = 'close';
-            this.HUBSPOT_CLIENT_ID = envConfig.HUBSPOT_CLIENT_ID;
-            this.ZOHOCRM_CLIENT_ID = envConfig.ZOHOCRM_CLIENT_ID;
-            this.SFDC_CLIENT_ID = envConfig.SFDC_CLIENT_ID;
-            this.REDIRECT_URL_BASE = envConfig.REDIRECT_URL_BASE;
+            this.#CORE_API_BASE_URL = envConfig.CORE_API_BASE_URL;
+            this.#API_CRM_METADATA_SUFFIX = 'v1/metadata/crms';
+            this.#integrations = [];
+            this.#state = 'close';
+            this.#HUBSPOT_CLIENT_ID = envConfig.HUBSPOT_CLIENT_ID;
+            this.#ZOHOCRM_CLIENT_ID = envConfig.ZOHOCRM_CLIENT_ID;
+            this.#SFDC_CLIENT_ID = envConfig.SFDC_CLIENT_ID;
+            this.#REDIRECT_URL_BASE = envConfig.REDIRECT_URL_BASE;
         }
 
         loadIntegrations = function () {
             var requestOptions = {
-                mode: 'cors',
+                mode: 'cors' as RequestMode,
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -286,13 +315,13 @@ const createIntegrationBlock = function (self, integration, padding) {
                 },
             };
 
-            let fetchURL = this.CORE_API_BASE_URL + this.API_CRM_METADATA_SUFFIX;
+            let fetchURL = this.#CORE_API_BASE_URL + this.#API_CRM_METADATA_SUFFIX;
 
             fetch(fetchURL, requestOptions)
                 .then((response) => response.json())
                 .then((result) => {
                     console.log('Revert crm integrations ', result);
-                    this.integrations = result.data;
+                    this.#integrations = result.data;
                 })
                 .catch((error) => {
                     console.log('error', error);
@@ -348,12 +377,16 @@ const createIntegrationBlock = function (self, integration, padding) {
                 signInElement.style.width = '370px';
                 signInElement.style.minHeight = '528px';
                 signInElement.style.display = 'flex';
-                signInElement.style.flexSirection = 'column';
+                signInElement.style.flexDirection = 'column';
                 signInElement.style.justifyContent = 'center';
                 signInElement.style.alignItems = 'center';
                 signInElement.style.background = '#fff';
                 signInElement.style.flexDirection = 'column';
                 let rootElement = document.getElementById('revert-ui-root');
+                if (!rootElement) {
+                    console.error('Root element does not exist!');
+                    return;
+                }
                 let closeButton = createCloseButton();
                 closeButton.addEventListener('click', this.close.bind(this));
                 signInElement.appendChild(closeButton);
@@ -370,12 +403,12 @@ const createIntegrationBlock = function (self, integration, padding) {
                     'Select CRM'
                 );
                 signInElement.appendChild(headerText);
-                for (let index = 0; index < this.integrations.length; index++) {
-                    const integration = this.integrations[index];
+                for (let index = 0; index < this.#integrations.length; index++) {
+                    const integration = this.#integrations[index];
                     let integrationConnectBlock = createIntegrationBlock(
                         this,
                         integration,
-                        index === this.integrations.length - 1 ? '33px' : '33px 33px 0px 33px'
+                        index === this.#integrations.length - 1 ? '33px' : '33px 33px 0px 33px'
                     );
                     signInElement.appendChild(integrationConnectBlock);
                 }
@@ -410,7 +443,7 @@ const createIntegrationBlock = function (self, integration, padding) {
                 rootElement.appendChild(signInElementWrapper);
                 this.state = 'open';
             } else {
-                const selectedIntegration = this.integrations.find(
+                const selectedIntegration = this.#integrations.find(
                     (integration) => integration.integrationId === integrationId
                 );
                 if (selectedIntegration) {
@@ -420,29 +453,30 @@ const createIntegrationBlock = function (self, integration, padding) {
                     });
                     if (selectedIntegration.integrationId === 'hubspot') {
                         window.open(
-                            `https://app.hubspot.com/oauth/authorize?client_id=${this.HUBSPOT_CLIENT_ID}&redirect_uri=${this.REDIRECT_URL_BASE}/hubspot&scope=crm.objects.contacts.read%20crm.objects.contacts.write%20crm.objects.marketing_events.read%20crm.objects.marketing_events.write%20crm.schemas.custom.read%20crm.objects.custom.read%20crm.objects.custom.write%20crm.objects.companies.write%20crm.schemas.contacts.read%20crm.objects.companies.read%20crm.objects.deals.read%20crm.objects.deals.write%20crm.schemas.companies.read%20crm.schemas.companies.write%20crm.schemas.contacts.write%20crm.schemas.deals.read%20crm.schemas.deals.write%20crm.objects.owners.read%20crm.objects.quotes.write%20crm.objects.quotes.read%20crm.schemas.quotes.read%20crm.objects.line_items.read%20crm.objects.line_items.write%20crm.schemas.line_items.read&state=${state}`
+                            `https://app.hubspot.com/oauth/authorize?client_id=${
+                                this.#HUBSPOT_CLIENT_ID
+                            }&redirect_uri=${
+                                this.#REDIRECT_URL_BASE
+                            }/hubspot&scope=crm.objects.contacts.read%20crm.objects.contacts.write%20crm.objects.marketing_events.read%20crm.objects.marketing_events.write%20crm.schemas.custom.read%20crm.objects.custom.read%20crm.objects.custom.write%20crm.objects.companies.write%20crm.schemas.contacts.read%20crm.objects.companies.read%20crm.objects.deals.read%20crm.objects.deals.write%20crm.schemas.companies.read%20crm.schemas.companies.write%20crm.schemas.contacts.write%20crm.schemas.deals.read%20crm.schemas.deals.write%20crm.objects.owners.read%20crm.objects.quotes.write%20crm.objects.quotes.read%20crm.schemas.quotes.read%20crm.objects.line_items.read%20crm.objects.line_items.write%20crm.schemas.line_items.read&state=${state}`
                         );
                     } else if (selectedIntegration.integrationId === 'zohocrm') {
                         window.open(
                             `https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.users.READ,AaaServer.profile.READ&client_id=${
-                                this.ZOHOCRM_CLIENT_ID
+                                this.#ZOHOCRM_CLIENT_ID
                             }&response_type=code&access_type=offline&redirect_uri=${
-                                this.REDIRECT_URL_BASE
+                                this.#REDIRECT_URL_BASE
                             }/zohocrm&state=${encodeURIComponent(state)}`
                         );
                     } else if (selectedIntegration.integrationId === 'sfdc') {
                         const queryParams = {
                             response_type: 'code',
-                            client_id: self.SFDC_CLIENT_ID,
-                            redirect_uri: `${self.REDIRECT_URL_BASE}/sfdc`,
+                            client_id: this.#SFDC_CLIENT_ID,
+                            redirect_uri: `${this.#REDIRECT_URL_BASE}/sfdc`,
                             state,
                         };
                         const urlSearchParams = new URLSearchParams(queryParams);
                         const queryString = urlSearchParams.toString();
-                        button.addEventListener('click', () => {
-                            window.open(`https://login.salesforce.com/services/oauth2/authorize?${queryString}`);
-                            self.close();
-                        });
+                        window.open(`https://login.salesforce.com/services/oauth2/authorize?${queryString}`);
                     }
                 } else {
                     console.warn('Invalid integration ID provided.');
@@ -453,7 +487,7 @@ const createIntegrationBlock = function (self, integration, padding) {
         close = function () {
             let rootElement = document.getElementById('revert-ui-root');
 
-            while (rootElement.firstChild) {
+            while (rootElement?.firstChild) {
                 rootElement.firstChild.remove();
             }
             this.state = 'close';
@@ -462,4 +496,4 @@ const createIntegrationBlock = function (self, integration, padding) {
     revert = new Revert();
 })();
 module.exports = revert;
-window.Revert = revert;
+(window as any).Revert = revert;
