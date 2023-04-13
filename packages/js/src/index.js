@@ -114,10 +114,16 @@ const createConnectButton = function (self, integration) {
                 self.close();
             });
         } else if (integration.integrationId === 'sfdc') {
+            const queryParams = {
+                response_type: 'code',
+                client_id: self.SFDC_CLIENT_ID,
+                redirect_uri: `${self.REDIRECT_URL_BASE}/sfdc`,
+                state,
+            };
+            const urlSearchParams = new URLSearchParams(queryParams);
+            const queryString = urlSearchParams.toString();
             button.addEventListener('click', () => {
-                window.open(
-                    `https://revert2-dev-ed.develop.my.salesforce.com/services/oauth2/authorize?response_type=code&client_id=${self.SFDC_CLIENT_ID}&redirect_uri=${self.REDIRECT_URL_BASE}/sfdc&scope=offline_access+api+refresh_token&state=${state}`
-                );
+                window.open(`https://login.salesforce.com/services/oauth2/authorize?${queryString}`);
                 self.close();
             });
         }
@@ -425,9 +431,18 @@ const createIntegrationBlock = function (self, integration, padding) {
                             }/zohocrm&state=${encodeURIComponent(state)}`
                         );
                     } else if (selectedIntegration.integrationId === 'sfdc') {
-                        window.open(
-                            `https://revert2-dev-ed.develop.my.salesforce.com/services/oauth2/authorize?response_type=code&client_id=${this.SFDC_CLIENT_ID}&redirect_uri=${this.REDIRECT_URL_BASE}/sfdc&scope=offline_access+api+refresh_token&state=${state}`
-                        );
+                        const queryParams = {
+                            response_type: 'code',
+                            client_id: self.SFDC_CLIENT_ID,
+                            redirect_uri: `${self.REDIRECT_URL_BASE}/sfdc`,
+                            state,
+                        };
+                        const urlSearchParams = new URLSearchParams(queryParams);
+                        const queryString = urlSearchParams.toString();
+                        button.addEventListener('click', () => {
+                            window.open(`https://login.salesforce.com/services/oauth2/authorize?${queryString}`);
+                            self.close();
+                        });
                     }
                 } else {
                     console.warn('Invalid integration ID provided.');
