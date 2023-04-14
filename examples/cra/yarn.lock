@@ -2229,14 +2229,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@revertdotdev/revert-react@npm:0.0.8":
-  version: 0.0.8
-  resolution: "@revertdotdev/revert-react@npm:0.0.8"
+"@revertdotdev/revert-react@npm:0.0.11":
+  version: 0.0.11
+  resolution: "@revertdotdev/revert-react@npm:0.0.11"
   peerDependencies:
     react: 16.8.0 || 17.x
     react-dom: 16.8.0 || 17.x
     styled-components: 5.0.0
-  checksum: cceca131b9f5e9456ed71e5c01e1ced205f2a5e0c1f62207e02c18d82f40bf510cc5964252da16d9c07f2d06f007a08d5b37d00ef4c289a62508a4b2cb46953d
+  checksum: e1b671b9b911a620273f1850e7701e6fff643b26187d484b5d7a311bcc13163b45d2f186cfa53d7a5beb5c1792f8a5792704f221c84dad5c950116e4a44c9078
   languageName: node
   linkType: hard
 
@@ -4610,7 +4610,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "cra-ts@workspace:."
   dependencies:
-    "@revertdotdev/revert-react": 0.0.8
+    "@revertdotdev/revert-react": 0.0.11
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.4.0
     "@testing-library/user-event": ^13.5.0

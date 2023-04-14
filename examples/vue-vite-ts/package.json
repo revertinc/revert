@@ -1,6 +1,6 @@
 {
-    "name": "vue-vite-ts",
-    "version": "0.0.4",
+    "name": "@example/revert-vue-vite-ts",
+    "version": "0.0.5",
     "publishConfig": {
         "access": "public"
     },
@@ -18,20 +18,11 @@
     "files": [
         "dist"
     ],
-    "main": "./dist/my-lib.umd.js",
-    "module": "./dist/my-lib.es.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "import": "./dist/my-lib.es.js",
-            "require": "./dist/my-lib.umd.js"
-        }
-    },
     "engines": {
         "node": ">=16.0.0"
     },
     "dependencies": {
-        "@revertdotdev/revert-vue": "^0.0.4",
+        "@revertdotdev/revert-vue": "^0.0.5",
         "core-js": "^3.8.3",
         "vite-plugin-dts": "latest",
         "vue": "^3.2.13",

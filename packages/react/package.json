@@ -1,6 +1,6 @@
 {
     "name": "@revertdotdev/revert-react",
-    "version": "0.0.9",
+    "version": "0.0.11",
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
@@ -45,13 +45,13 @@
     "files": [
         "dist"
     ],
-    "main": "./dist/my-lib.umd.js",
-    "module": "./dist/my-lib.es.js",
+    "main": "./dist/revert-react.umd.j",
+    "module": "./dist/revert-react.es.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "import": "./dist/my-lib.es.js",
-            "require": "./dist/my-lib.umd.js"
+            "import": "./dist/revert-react.es.js",
+            "require": "./dist/revert-react.umd.js"
         }
     },
     "engines": {
