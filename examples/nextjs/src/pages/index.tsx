@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import styles from '@/styles/Home.module.css';
-//TODO:Once the changes are live on npm in the revert package we can import the package directly and remove the lib folder
-import { RevertConnect } from '@/lib';
+import { RevertConnect } from '@revertdotdev/revert-react';
 
 export default function Home() {
     return (
