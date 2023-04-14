@@ -39,10 +39,10 @@ export function useRevertConnectScript() {
         };
     }, []);
 
-    return [loading, error];
+    return { loading, error };
 }
 export default function useRevertConnect(props: useRevertConnectProps) {
-    const [loading, error] = useRevertConnectScript();
+    const { loading, error } = useRevertConnectScript();
 
     useEffect(() => {
         if (!loading && typeof window !== 'undefined' && window.Revert && window.Revert.init) {
