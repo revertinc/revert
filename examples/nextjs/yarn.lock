@@ -201,14 +201,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@revertdotdev/revert-react@npm:^0.0.10":
-  version: 0.0.10
-  resolution: "@revertdotdev/revert-react@npm:0.0.10"
+"@revertdotdev/revert-react@npm:^0.0.11":
+  version: 0.0.11
+  resolution: "@revertdotdev/revert-react@npm:0.0.11"
   peerDependencies:
     react: 16.8.0 || 17.x
     react-dom: 16.8.0 || 17.x
     styled-components: 5.0.0
-  checksum: 5bf16e1db08251bf6aff8d8e5e7a464df01f4a94b64861f6132ced236459cd75bfdbdc843d7f92010029bb9143eebcef897b9e0c79860bddf351cffde4514c01
+  checksum: e1b671b9b911a620273f1850e7701e6fff643b26187d484b5d7a311bcc13163b45d2f186cfa53d7a5beb5c1792f8a5792704f221c84dad5c950116e4a44c9078
   languageName: node
   linkType: hard
 
@@ -1967,7 +1967,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "nextjs@workspace:."
   dependencies:
-    "@revertdotdev/revert-react": ^0.0.10
+    "@revertdotdev/revert-react": ^0.0.11
     "@types/node": 18.15.11
     "@types/react": 18.0.35
     "@types/react-dom": 18.0.11

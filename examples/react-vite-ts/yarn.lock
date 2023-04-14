@@ -1954,14 +1954,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@revertdotdev/revert-react@npm:^0.0.9":
-  version: 0.0.9
-  resolution: "@revertdotdev/revert-react@npm:0.0.9"
+"@revertdotdev/revert-react@npm:^0.0.11":
+  version: 0.0.11
+  resolution: "@revertdotdev/revert-react@npm:0.0.11"
   peerDependencies:
     react: 16.8.0 || 17.x
     react-dom: 16.8.0 || 17.x
     styled-components: 5.0.0
-  checksum: 92127170b814727c0a61975e7b5f0d42b15c2ad44667ca9acf2d66df6b668e97bab7b292b85deebc00ec377f88c9a1b148ed21849cae02d55fe0c2cd45eb5921
+  checksum: e1b671b9b911a620273f1850e7701e6fff643b26187d484b5d7a311bcc13163b45d2f186cfa53d7a5beb5c1792f8a5792704f221c84dad5c950116e4a44c9078
   languageName: node
   linkType: hard
 
@@ -1970,7 +1970,7 @@ __metadata:
   resolution: "@revertdotdev/revert-react@workspace:."
   dependencies:
     "@babel/core": 7.17.8
-    "@revertdotdev/revert-react": ^0.0.9
+    "@revertdotdev/revert-react": ^0.0.11
     "@storybook/addon-a11y": 6.5.0-alpha.50
     "@storybook/addon-actions": 6.5.0-alpha.50
     "@storybook/addon-docs": 6.5.0-alpha.50
