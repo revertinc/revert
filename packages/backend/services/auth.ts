@@ -16,7 +16,7 @@ class AuthService {
                             grant_type: 'refresh_token',
                             client_id: config.HUBSPOT_CLIENT_ID,
                             client_secret: config.HUBSPOT_CLIENT_SECRET,
-                            redirect_uri: 'https://app.buildwithforest.com/oauth-callback/hubspot',
+                            redirect_uri: `${config.OAUTH_REDIRECT_BASE}/hubspot`,
                             refresh_token: connection.tp_refresh_token,
                         };
                         const result = await axios({
@@ -47,7 +47,7 @@ class AuthService {
                             grant_type: 'refresh_token',
                             client_id: config.ZOHOCRM_CLIENT_ID,
                             client_secret: config.ZOHOCRM_CLIENT_SECRET,
-                            redirect_uri: 'https://app.buildwithforest.com/oauth-callback/zohocrm',
+                            redirect_uri: `${config.OAUTH_REDIRECT_BASE}/zohocrm`,
                             refresh_token: connection.tp_refresh_token,
                         };
                         const result = await axios({
@@ -81,7 +81,7 @@ class AuthService {
                             grant_type: 'refresh_token',
                             client_id: config.SFDC_CLIENT_ID,
                             client_secret: config.SFDC_CLIENT_SECRET,
-                            redirect_uri: 'https://app.buildwithforest.com/oauth-callback/sfdc',
+                            redirect_uri: `${config.OAUTH_REDIRECT_BASE}/sfdc`,
                             refresh_token: connection.tp_refresh_token,
                         };
                         const result = await axios({

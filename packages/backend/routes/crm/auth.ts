@@ -4,6 +4,7 @@ import config from '../../config';
 import qs from 'qs';
 import AuthService from '../../services/auth';
 import prisma from '../../prisma/client';
+import { Prisma } from '@prisma/client';
 
 const authRouter = express.Router({ mergeParams: true });
 
@@ -64,6 +65,14 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 });
                 res.send({ status: 'ok', tp_customer_id: info.data.user });
             } catch (error) {
+                if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                    // The .code property can be accessed in a type-safe manner
+                    if (error.code === 'P2002') {
+                        console.log(
+                            'There is a unique constraint violation, a new customer with the same creds exist for the tenant'
+                        );
+                    }
+                }
                 console.error('Could not update db', error);
                 res.send({ status: 'error', error: error });
             }
@@ -125,6 +134,14 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     });
                     res.send({ status: 'ok' });
                 } catch (error) {
+                    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                        // The .code property can be accessed in a type-safe manner
+                        if (error.code === 'P2002') {
+                            console.log(
+                                'There is a unique constraint violation, a new customer with the same creds exist for the tenant'
+                            );
+                        }
+                    }
                     console.error('Could not update db', error);
                     res.send({ status: 'error', error: error });
                 }
@@ -181,6 +198,14 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 });
                 res.send({ status: 'ok', tp_customer_id: 'testSfdcUser' });
             } catch (error) {
+                if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                    // The .code property can be accessed in a type-safe manner
+                    if (error.code === 'P2002') {
+                        console.log(
+                            'There is a unique constraint violation, a new customer with the same creds exist for the tenant'
+                        );
+                    }
+                }
                 console.error('Could not update db', error);
                 res.send({ status: 'error', error: error });
             }
