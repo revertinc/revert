@@ -4834,6 +4834,7 @@ __metadata:
     nodemailer: ^6.7.8
     oauth-1.0a: ^2.2.6
     prisma: ^4.12.0
+    ts-node: ^10.9.1
     ts-node-dev: ^2.0.0
     typescript: ^4.8.4
   languageName: unknown
@@ -24757,7 +24758,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.4.0":
+"ts-node@npm:^10.4.0, ts-node@npm:^10.9.1":
   version: 10.9.1
   resolution: "ts-node@npm:10.9.1"
   dependencies:
