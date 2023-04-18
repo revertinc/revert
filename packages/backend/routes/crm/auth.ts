@@ -3,7 +3,7 @@ import express from 'express';
 import config from '../../config';
 import qs from 'qs';
 import AuthService from '../../services/auth';
-import prisma from '../../prisma/client';
+import prisma, { Prisma } from '../../prisma/client';
 
 const authRouter = express.Router({ mergeParams: true });
 
@@ -42,9 +42,10 @@ authRouter.get('/oauth-callback', async (req, res) => {
             try {
                 await prisma.connections.upsert({
                     where: {
-                        uniqueCustomerPerTenant: {
+                        uniqueCustomerPerTenantPerThirdParty: {
                             tp_customer_id: info.data.user,
                             t_id: String(req.query.t_id),
+                            tp_id: integrationId,
                         },
                     },
                     update: {
@@ -64,6 +65,14 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 });
                 res.send({ status: 'ok', tp_customer_id: info.data.user });
             } catch (error) {
+                if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                    // The .code property can be accessed in a type-safe manner
+                    if (error?.code === 'P2002') {
+                        console.error(
+                            'There is a unique constraint violation, a new user cannot be created with this email'
+                        );
+                    }
+                }
                 console.error('Could not update db', error);
                 res.send({ status: 'error', error: error });
             }
@@ -102,9 +111,10 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 try {
                     await prisma.connections.upsert({
                         where: {
-                            uniqueCustomerPerTenant: {
+                            uniqueCustomerPerTenantPerThirdParty: {
                                 tp_customer_id: info.data.Email,
                                 t_id: String(req.query.t_id),
+                                tp_id: integrationId,
                             },
                         },
                         create: {
@@ -124,7 +134,15 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         },
                     });
                     res.send({ status: 'ok' });
-                } catch (error) {
+                } catch (error: any) {
+                    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                        // The .code property can be accessed in a type-safe manner
+                        if (error?.code === 'P2002') {
+                            console.error(
+                                'There is a unique constraint violation, a new user cannot be created with this email'
+                            );
+                        }
+                    }
                     console.error('Could not update db', error);
                     res.send({ status: 'error', error: error });
                 }
@@ -159,9 +177,10 @@ authRouter.get('/oauth-callback', async (req, res) => {
             try {
                 await prisma.connections.upsert({
                     where: {
-                        uniqueCustomerPerTenant: {
+                        uniqueCustomerPerTenantPerThirdParty: {
                             tp_customer_id: info.data.email,
                             t_id: String(req.query.t_id),
+                            tp_id: integrationId,
                         },
                     },
                     create: {
@@ -181,6 +200,14 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 });
                 res.send({ status: 'ok', tp_customer_id: 'testSfdcUser' });
             } catch (error) {
+                if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                    // The .code property can be accessed in a type-safe manner
+                    if (error?.code === 'P2002') {
+                        console.error(
+                            'There is a unique constraint violation, a new user cannot be created with this email'
+                        );
+                    }
+                }
                 console.error('Could not update db', error);
                 res.send({ status: 'error', error: error });
             }

@@ -29,9 +29,17 @@ export const OAuthCallback = (props) => {
                     .then((d) => d.json())
                     .then((data) => {
                         console.log('OAuth flow succeeded', data);
-                        window.close();
+                        if (data.error) {
+                            const errorMessage =
+                                data.error?.code === 'P2002'
+                                    ? ': Already connected another CRM. Please disconnect first.'
+                                    : '';
+                            setStatus('Errored out' + errorMessage);
+                        } else {
+                            setStatus('Succeeded. Please feel free to close this window.');
+                            window.close();
+                        }
                         setIsLoading(false);
-                        setStatus('Succeeded. Please feel free to close this window.');
                     })
                     .catch((err) => {
                         setIsLoading(false);
@@ -53,9 +61,17 @@ export const OAuthCallback = (props) => {
                     .then((d) => d.json())
                     .then((data) => {
                         console.log('OAuth flow succeeded', data);
-                        window.close();
+                        if (data.error) {
+                            const errorMessage =
+                                data.error?.code === 'P2002'
+                                    ? ': Already connected another CRM. Please disconnect first.'
+                                    : '';
+                            setStatus('Errored out' + errorMessage);
+                        } else {
+                            setStatus('Succeeded. Please feel free to close this window.');
+                            window.close();
+                        }
                         setIsLoading(false);
-                        setStatus('Succeeded. Please feel free to close this window.');
                     })
                     .catch((err) => {
                         setIsLoading(false);
@@ -77,9 +93,17 @@ export const OAuthCallback = (props) => {
                     .then((d) => d.json())
                     .then((data) => {
                         console.log('OAuth flow succeeded', data);
-                        window.close();
+                        if (data.error) {
+                            const errorMessage =
+                                data.error?.code === 'P2002'
+                                    ? ': Already connected another CRM. Please disconnect first.'
+                                    : '';
+                            setStatus('Errored out' + errorMessage);
+                        } else {
+                            setStatus('Succeeded. Please feel free to close this window.');
+                            window.close();
+                        }
                         setIsLoading(false);
-                        setStatus('Succeeded. Please feel free to close this window.');
                     })
                     .catch((err) => {
                         setIsLoading(false);
