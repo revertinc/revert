@@ -28,7 +28,8 @@ model connections {
   account                    accounts? @relation(fields: [owner_account_public_token], references: [public_token])
   owner_account_public_token String
 
-  @@unique([tp_customer_id, tp_id])
+  @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")
+  @@unique([tp_id, t_id], name: "uniqueThirdPartyPerTenant")
 }
 
 model waitlist {
