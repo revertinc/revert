@@ -29,9 +29,9 @@ class AuthService {
                         });
                         await prisma.connections.update({
                             where: {
-                                tp_customer_id_tp_id: {
+                                uniqueCustomerPerTenant: {
                                     tp_customer_id: connection.tp_customer_id,
-                                    tp_id: connection.tp_id,
+                                    t_id: connection.t_id,
                                 },
                             },
                             data: {
@@ -61,9 +61,9 @@ class AuthService {
                         if (result.data && result.data.access_token) {
                             await prisma.connections.update({
                                 where: {
-                                    tp_customer_id_tp_id: {
+                                    uniqueCustomerPerTenant: {
                                         tp_customer_id: connection.tp_customer_id,
-                                        tp_id: connection.tp_id,
+                                        t_id: connection.t_id,
                                     },
                                 },
                                 data: {
@@ -75,7 +75,7 @@ class AuthService {
                             console.log('Zoho connection could not be refreshed', result);
                         }
                     } else if (connection.tp_id === 'sfdc') {
-                        // Refresh the hubspot token.
+                        // Refresh the sfdc token.
                         const url = `https://login.salesforce.com/services/oauth2/token`;
                         const formData = {
                             grant_type: 'refresh_token',
@@ -95,9 +95,9 @@ class AuthService {
                         if (result.data && result.data.access_token) {
                             await prisma.connections.update({
                                 where: {
-                                    tp_customer_id_tp_id: {
+                                    uniqueCustomerPerTenant: {
                                         tp_customer_id: connection.tp_customer_id,
-                                        tp_id: connection.tp_id,
+                                        t_id: connection.t_id,
                                     },
                                 },
                                 data: {

@@ -42,9 +42,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
             try {
                 await prisma.connections.upsert({
                     where: {
-                        tp_customer_id_tp_id: {
+                        uniqueCustomerPerTenant: {
                             tp_customer_id: info.data.user,
-                            tp_id: 'hubspot',
+                            t_id: String(req.query.t_id),
                         },
                     },
                     update: {
@@ -102,9 +102,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 try {
                     await prisma.connections.upsert({
                         where: {
-                            tp_customer_id_tp_id: {
-                                tp_customer_id: info.data.Email,
-                                tp_id: 'zohocrm',
+                            uniqueCustomerPerTenant: {
+                                tp_customer_id: info.data.user,
+                                t_id: String(req.query.t_id),
                             },
                         },
                         create: {
@@ -159,9 +159,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
             try {
                 await prisma.connections.upsert({
                     where: {
-                        tp_customer_id_tp_id: {
-                            tp_customer_id: info.data.email,
-                            tp_id: 'sfdc',
+                        uniqueCustomerPerTenant: {
+                            tp_customer_id: info.data.user,
+                            t_id: String(req.query.t_id),
                         },
                     },
                     create: {
