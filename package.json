@@ -12,5 +12,9 @@
     "scripts": {
         "build": "yarn workspaces foreach run build"
     },
+    "prisma": {
+        "schema": "packages/backend/prisma/schema.prisma",
+        "seed": "ts-node --transpile-only ./packages/backend/prisma/seed.ts"
+    },
     "packageManager": "yarn@3.2.2"
 }
