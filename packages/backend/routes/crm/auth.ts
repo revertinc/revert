@@ -103,7 +103,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     await prisma.connections.upsert({
                         where: {
                             uniqueCustomerPerTenant: {
-                                tp_customer_id: info.data.user,
+                                tp_customer_id: info.data.Email,
                                 t_id: String(req.query.t_id),
                             },
                         },
@@ -160,7 +160,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 await prisma.connections.upsert({
                     where: {
                         uniqueCustomerPerTenant: {
-                            tp_customer_id: info.data.user,
+                            tp_customer_id: info.data.email,
                             t_id: String(req.query.t_id),
                         },
                     },
