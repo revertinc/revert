@@ -14,14 +14,6 @@ export function RouterComponent() {
                     </div>
                 }
             />
-            <Route
-                path="/oauth-callback"
-                element={
-                    <div className="mt-10">
-                        <OAuthCallback />
-                    </div>
-                }
-            />
         </Routes>
     );
 }
