@@ -11,8 +11,7 @@
         "typescript": "^4.8.4"
     },
     "scripts": {
-        "build": "yarn workspaces foreach run build",
-        "postinstall": "fern generate"
+        "build": "yarn workspaces foreach run build"
     },
     "prisma": {
         "schema": "packages/backend/prisma/schema.prisma",
