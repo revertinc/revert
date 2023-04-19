@@ -5,12 +5,14 @@
         "packages/*"
     ],
     "devDependencies": {
+        "fern-api": "*",
         "prettier": "2.5.1",
         "pretty-quick": "3.1.3",
         "typescript": "^4.8.4"
     },
     "scripts": {
-        "build": "yarn workspaces foreach run build"
+        "build": "yarn workspaces foreach run build",
+        "postinstall": "fern generate"
     },
     "prisma": {
         "schema": "packages/backend/prisma/schema.prisma",
