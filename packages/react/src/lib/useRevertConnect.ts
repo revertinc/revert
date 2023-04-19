@@ -43,12 +43,26 @@ export function useRevertConnectScript() {
 }
 export default function useRevertConnect(props: useRevertConnectProps) {
     const { loading, error } = useRevertConnectScript();
+    const [integrationsLoading, setIntegrationsLoading] = useState(true);
 
     useEffect(() => {
         if (!loading && typeof window !== 'undefined' && window.Revert && window.Revert.init) {
             window.Revert.init(props.config);
+            setIntegrationsLoading(window.Revert.getIntegrationsLoading);
         }
     }, [loading]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.Revert) {
+            const checkIntegrationsLoading = setInterval(() => {
+                setIntegrationsLoading(window.Revert.getIntegrationsLoading);
+            }, 1000);
+
+            return () => {
+                clearInterval(checkIntegrationsLoading);
+            };
+        }
+    }, []);
 
     const open = (integrationId?: string) => {
         if (error) {
@@ -61,5 +75,5 @@ export default function useRevertConnect(props: useRevertConnectProps) {
         window.Revert.open(integrationId);
     };
 
-    return { open, error, loading };
+    return { open, error, loading, integrationsLoading };
 }

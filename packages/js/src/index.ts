@@ -279,6 +279,7 @@ const createIntegrationBlock = function (self, integration, padding) {
         #ZOHOCRM_CLIENT_ID: string;
         #SFDC_CLIENT_ID: string;
         #REDIRECT_URL_BASE: string;
+        #integrationsLoading: boolean;
 
         get SFDC_CLIENT_ID() {
             return this.#SFDC_CLIENT_ID;
@@ -294,6 +295,10 @@ const createIntegrationBlock = function (self, integration, padding) {
             return this.#REDIRECT_URL_BASE;
         }
 
+        get getIntegrationsLoading() {
+            return this.#integrationsLoading;
+        }
+
         constructor() {
             this.#CORE_API_BASE_URL = envConfig.CORE_API_BASE_URL;
             this.#API_CRM_METADATA_SUFFIX = 'v1/metadata/crms';
@@ -303,6 +308,7 @@ const createIntegrationBlock = function (self, integration, padding) {
             this.#ZOHOCRM_CLIENT_ID = envConfig.ZOHOCRM_CLIENT_ID;
             this.#SFDC_CLIENT_ID = envConfig.SFDC_CLIENT_ID;
             this.#REDIRECT_URL_BASE = envConfig.REDIRECT_URL_BASE;
+            this.#integrationsLoading = true;
         }
 
         loadIntegrations = function () {
@@ -322,9 +328,11 @@ const createIntegrationBlock = function (self, integration, padding) {
                 .then((result) => {
                     console.log('Revert crm integrations ', result);
                     this.#integrations = result.data;
+                    this.#integrationsLoading = false;
                 })
                 .catch((error) => {
                     console.log('error', error);
+                    this.#integrationsLoading = false;
                 });
         };
 
