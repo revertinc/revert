@@ -74,7 +74,6 @@ npm-debug.log*
 !.yarnrc.yml
 .pnp.*
 .yarn/*
-!fern/**/*.yml
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases

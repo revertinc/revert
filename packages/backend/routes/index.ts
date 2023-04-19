@@ -2,6 +2,7 @@ import prisma from '../prisma/client';
 import axios from 'axios';
 import express from 'express';
 import crmRouter from './crm';
+import metadataRouter from './metadata';
 
 const router = express.Router();
 
@@ -48,4 +49,4 @@ router.post('/slack-alert', async (req, res) => {
 });
 
 export default router;
-export { crmRouter };
+export { crmRouter, metadataRouter };
