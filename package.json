@@ -10,6 +10,7 @@
         "typescript": "^4.8.4"
     },
     "scripts": {
+        "fern": "fern generate",
         "build": "yarn workspaces foreach run build"
     },
     "prisma": {
