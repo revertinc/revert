@@ -81,3 +81,5 @@ npm-debug.log*
 !.yarn/versions
 *.DS_Store
 *.tgz
+
+!fern/**/*.yml
