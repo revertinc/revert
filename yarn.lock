@@ -4875,6 +4875,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@revertdotdev/main@workspace:."
   dependencies:
+    fern-api: 0.6.12
     prettier: 2.5.1
     pretty-quick: 3.1.3
     typescript: ^4.8.4
@@ -14431,6 +14432,15 @@ __metadata:
   dependencies:
     bser: 2.1.1
   checksum: b15a124cef28916fe07b400eb87cbc73ca082c142abf7ca8e8de6af43eca79ca7bd13eb4d4d48240b3bd3136eaac40d16e42d6edf87a8e5d1dd8070626860c78
+  languageName: node
+  linkType: hard
+
+"fern-api@npm:0.6.12":
+  version: 0.6.12
+  resolution: "fern-api@npm:0.6.12"
+  bin:
+    fern: cli.cjs
+  checksum: 91e4a3278795d742649856d46d1ac3262377d4597cf265fd7224e1e800e792c10f71e3eea778744c3d3d351e83e846fac22af1152ae14e2471b0d5c465d63e56
   languageName: node
   linkType: hard
 
