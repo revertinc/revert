@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+types:
+    CrmMetadataResponse:
+        properties:
+            status: string
+            data: list<CrmMetadata>
+            error: optional<string>
+
+    CrmMetadata:
+        properties:
+            integrationId: string
+            name: string
+            imageSrc: string
+            status: CrmStatus
+    BaseError:
+        properties:
+            error: string
+    CrmStatus:
+        enum:
+            - active
+            - inactive
+
+service:
+    base-path: /v1
+    auth: false
+    endpoints:
+        getCrms:
+            docs: Retrieve a list of CRMs available for this account from the database based on the public token.
+            method: GET
+            path: /metadata/crms
+            request:
+                name: CrmMetadataRequest
+            response: CrmMetadataResponse
+            auth: true
+            errors:
+                - UnAuthorizedError
+                - InternalServerError
+
+errors:
+    UnAuthorizedError:
+        status-code: 401
+        type: BaseError
+    InternalServerError:
+        status-code: 500
+        type: BaseError
