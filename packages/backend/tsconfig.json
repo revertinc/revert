@@ -25,6 +25,7 @@
         "strictPropertyInitialization": false,
         "esModuleInterop": true,
         "moduleResolution": "NodeNext",
+        "allowSyntheticDefaultImports": true
     },
     "exclude": [
         "**/node_modules/*.d.ts"
