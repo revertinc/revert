@@ -1,6 +1,9 @@
 FROM node:alpine
 WORKDIR /app/
-COPY . /app/
+COPY ./fern/ /app/fern/
+COPY ./packages/backend /app/packages/backend
+COPY ./yarn.lock /app/yarn.lock
+COPY ./package.json /app/package.json
 
 ARG SERVER_PORT
 ARG REDIS_SERVER_URL
@@ -16,7 +19,7 @@ ARG FERN_TOKEN
 ARG PORT
 
 RUN echo $PGSQL_URL
-ENV SERVER_PORT $SERVER_PORT
+ENV SERVER_PORT $PORT
 ENV REDIS_SERVER_URL $REDIS_SERVER_URL
 ENV HUBSPOT_CLIENT_ID $HUBSPOT_CLIENT_ID
 ENV HUBSPOT_CLIENT_SECRET $HUBSPOT_CLIENT_SECRET
@@ -30,24 +33,23 @@ ENV PORT $PORT
 ENV FERN_TOKEN $FERN_TOKEN
 
 # create .env from the vars passed.
-RUN cat > .env <<EOF 
-SERVER_PORT=$SERVER_PORT
-REDIS_SERVER_URL=$REDIS_SERVER_URL
-HUBSPOT_CLIENT_ID=$HUBSPOT_CLIENT_ID
-HUBSPOT_CLIENT_SECRET=$HUBSPOT_CLIENT_SECRET
-ZOHOCRM_CLIENT_ID=$ZOHOCRM_CLIENT_ID
-ZOHOCRM_CLIENT_SECRET=$ZOHOCRM_CLIENT_SECRET
-PGSQL_URL=$PGSQL_URL
-SFDC_CLIENT_ID=$SFDC_CLIENT_ID
-SFDC_CLIENT_SECRET=$SFDC_CLIENT_SECRET
-OAUTH_REDIRECT_BASE=$OAUTH_REDIRECT_BASE
-PORT=$PORT
-FERN_TOKEN=$FERN_TOKEN
-EOF
+RUN echo "SERVER_PORT=$SERVER_PORT" > .env \
+    && echo "REDIS_SERVER_URL=$REDIS_SERVER_URL" >> .env \
+    && echo "HUBSPOT_CLIENT_ID=$HUBSPOT_CLIENT_ID" >> .env \
+    && echo "HUBSPOT_CLIENT_SECRET=$HUBSPOT_CLIENT_SECRET" >> .env \
+    && echo "ZOHOCRM_CLIENT_ID=$ZOHOCRM_CLIENT_ID" >> .env \
+    && echo "ZOHOCRM_CLIENT_SECRET=$ZOHOCRM_CLIENT_SECRET" >> .env \
+    && echo "PGSQL_URL=$PGSQL_URL" >> .env \
+    && echo "SFDC_CLIENT_ID=$SFDC_CLIENT_ID" >> .env \
+    && echo "SFDC_CLIENT_SECRET=$SFDC_CLIENT_SECRET" >> .env \
+    && echo "OAUTH_REDIRECT_BASE=$OAUTH_REDIRECT_BASE" >> .env \
+    && echo "PORT=$PORT" >> .env \
+    && echo "FERN_TOKEN=$FERN_TOKEN" >> .env
 
-RUN npm install -g npm@9.6.5
 RUN yarn install --check-cache
 RUN npm install -g fern-api@0.6.12 && fern -v && fern generate --log-level debug
+RUN mkdir -p /app/packages/backend/dist/generated && cp -r /app/packages/backend/generated/typescript /app/packages/backend/dist/generated
 RUN yarn workspace @revertdotdev/backend build
 RUN ls -l './packages/backend/dist/'
-CMD ["node", "./packages/backend/dist/index.js"]
+WORKDIR /app/packages/backend/dist/
+CMD ["node", "index.js"]
