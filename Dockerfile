@@ -47,6 +47,7 @@ EOF
 
 RUN npm install -g npm@9.6.5
 RUN yarn install --check-cache
-RUN ls && npm install -g fern-api@0.6.12 && fern -v && fern generate --log-level debug
+RUN npm install -g fern-api@0.6.12 && fern -v && fern generate --log-level debug
 RUN yarn workspace @revertdotdev/backend build
+RUN ls -l './packages/backend/dist/'
 CMD ["node", "./packages/backend/dist/index.js"]
