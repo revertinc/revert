@@ -1536,7 +1536,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@example/revert-vue-vite-ts@workspace:."
   dependencies:
-    "@revertdotdev/revert-vue": ^0.0.5
+    "@revertdotdev/revert-vue": ^0.0.6
     "@typescript-eslint/eslint-plugin": ^5.4.0
     "@typescript-eslint/parser": ^5.4.0
     "@vitejs/plugin-vue": ^4.0.0
@@ -1785,12 +1785,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@revertdotdev/revert-vue@npm:^0.0.5":
-  version: 0.0.5
-  resolution: "@revertdotdev/revert-vue@npm:0.0.5"
+"@revertdotdev/revert-vue@npm:^0.0.6":
+  version: 0.0.6
+  resolution: "@revertdotdev/revert-vue@npm:0.0.6"
   peerDependencies:
     vue: ^3.0.0
-  checksum: aac2cd5b667e96991853b5b0ad218b5f52f705cf94d6eab53635776d040f952c03ae95862b63443f1cfede97e2bc77f8eb1124e222ee5c421ef7bbc1c760a96e
+  checksum: 77ddf4d6b4a681903e7eedabb037d68903db0bd02f2363537fd79facb1ebde82937fe02d5d360981df6c2c308c227d81f87d02c91df3c1b86d9c7bcd1ef4b90f
   languageName: node
   linkType: hard
 
