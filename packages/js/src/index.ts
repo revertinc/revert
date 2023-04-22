@@ -279,7 +279,7 @@ const createIntegrationBlock = function (self, integration, padding) {
         #ZOHOCRM_CLIENT_ID: string;
         #SFDC_CLIENT_ID: string;
         #REDIRECT_URL_BASE: string;
-        #integrationsLoading: boolean;
+        #integrationsLoaded: boolean;
 
         get SFDC_CLIENT_ID() {
             return this.#SFDC_CLIENT_ID;
@@ -295,8 +295,8 @@ const createIntegrationBlock = function (self, integration, padding) {
             return this.#REDIRECT_URL_BASE;
         }
 
-        get getIntegrationsLoading() {
-            return this.#integrationsLoading;
+        get getIntegrationsLoaded() {
+            return this.#integrationsLoaded;
         }
 
         constructor() {
@@ -308,10 +308,10 @@ const createIntegrationBlock = function (self, integration, padding) {
             this.#ZOHOCRM_CLIENT_ID = envConfig.ZOHOCRM_CLIENT_ID;
             this.#SFDC_CLIENT_ID = envConfig.SFDC_CLIENT_ID;
             this.#REDIRECT_URL_BASE = envConfig.REDIRECT_URL_BASE;
-            this.#integrationsLoading = true;
+            this.#integrationsLoaded = false;
         }
 
-        loadIntegrations = function () {
+        loadIntegrations = function (config) {
             var requestOptions = {
                 mode: 'cors' as RequestMode,
                 method: 'GET',
@@ -328,11 +328,13 @@ const createIntegrationBlock = function (self, integration, padding) {
                 .then((result) => {
                     console.log('Revert crm integrations ', result);
                     this.#integrations = result.data;
-                    this.#integrationsLoading = false;
+                    this.#integrationsLoaded = true;
+                    config.onLoad();
                 })
                 .catch((error) => {
                     console.log('error', error);
-                    this.#integrationsLoading = false;
+                    this.#integrationsLoaded = false;
+                    config.onError && config.onError();
                 });
         };
 
@@ -370,7 +372,7 @@ const createIntegrationBlock = function (self, integration, padding) {
             }
 
             (async () => {
-                this.loadIntegrations();
+                this.loadIntegrations(config);
             })();
         };
 

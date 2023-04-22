@@ -1,5 +1,5 @@
 <template>
-  <button :disabled="loading || Boolean(error) || integrationsLoading" @click="open()" id="revert-connect-button" :style="buttonStyle">
+  <button :disabled="loading || Boolean(error)" @click="open()" id="revert-connect-button" :style="buttonStyle">
     {{ buttonText }}
   </button>
 </template>
@@ -50,13 +50,12 @@ export default defineComponent({
     },
   },
   setup(props: RevertConnectProps) {
-    const { loading, open, error, integrationsLoading } = useRevertConnect(props.config);
+    const { loading, open, error } = useRevertConnect(props.config);
 
     return {
       loading,
       error,
-      open,
-      integrationsLoading
+      open
     };
   },
 });

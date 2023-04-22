@@ -2,10 +2,10 @@ import { RevertConnectProps } from './types';
 import useRevertConnect from './useRevertConnect';
 
 const RevertConnect = (props: RevertConnectProps) => {
-    const { loading, error, open, integrationsLoading } = useRevertConnect({ config: props.config });
+    const { loading, error, open } = useRevertConnect({ config: props.config });
     return (
         <button
-            disabled={loading || Boolean(error) || integrationsLoading}
+            disabled={loading || Boolean(error)}
             id="revert-connect-button"
             onClick={() => open()}
             style={{

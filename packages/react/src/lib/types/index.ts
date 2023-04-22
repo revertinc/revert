@@ -3,6 +3,9 @@ import { CSSProperties, ReactNode } from 'react';
 type RevertConfig = {
     revertToken: string;
     tenantId: string;
+    onLoad?: () => void;
+    onClose?: () => void;
+    onError?: () => void;
 };
 
 export type RevertConnectProps = {
