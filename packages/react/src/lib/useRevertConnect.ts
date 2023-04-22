@@ -43,10 +43,17 @@ export function useRevertConnectScript() {
 }
 export default function useRevertConnect(props: useRevertConnectProps) {
     const { loading, error } = useRevertConnectScript();
+    const [integrationsLoaded, setIntegrationsLoaded] = useState(false);
 
     useEffect(() => {
         if (!loading && typeof window !== 'undefined' && window.Revert && window.Revert.init) {
-            window.Revert.init(props.config);
+            window.Revert.init({
+                ...props.config,
+                onLoad: () => {
+                    props.config.onLoad && props.config.onLoad();
+                    setIntegrationsLoaded(window.Revert.getIntegrationsLoaded);
+                },
+            });
         }
     }, [loading]);
 
@@ -61,5 +68,5 @@ export default function useRevertConnect(props: useRevertConnectProps) {
         window.Revert.open(integrationId);
     };
 
-    return { open, error, loading };
+    return { open, error, loading: loading || !integrationsLoaded };
 }

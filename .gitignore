@@ -83,3 +83,4 @@ npm-debug.log*
 *.tgz
 
 !fern/**/*.yml
+revert-dev.js

@@ -22,7 +22,7 @@
         "node": ">=16.0.0"
     },
     "dependencies": {
-        "@revertdotdev/revert-vue": "^0.0.5",
+        "@revertdotdev/revert-vue": "^0.0.6",
         "core-js": "^3.8.3",
         "vite-plugin-dts": "latest",
         "vue": "^3.2.13",

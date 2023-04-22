@@ -15,7 +15,9 @@ declare global {
   }
 }
 
-window.Revert = window.Revert || {};
+if (typeof window !== 'undefined') {
+    window.Revert = window.Revert || {};
+}
 
 interface RevertConfig {
   revertToken: string;
@@ -53,7 +55,7 @@ export default defineComponent({
     return {
       loading,
       error,
-      open,
+      open
     };
   },
 });
