@@ -50,7 +50,6 @@ export default function useRevertConnect(props: useRevertConnectProps) {
             window.Revert.init({
                 ...props.config,
                 onLoad: () => {
-                    console.log('integrations loaded');
                     props.config.onLoad && props.config.onLoad();
                     setIntegrationsLoaded(window.Revert.getIntegrationsLoaded);
                 },
