@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
+import { unifyUser } from '../models/unified/user';
 import { ParsedQs } from 'qs';
 
 class UserService {
@@ -23,6 +24,7 @@ class UserService {
                 },
             });
             user = ([user.data] as any[])?.[0];
+            user = unifyUser({ ...user, ...user?.properties });
             return {
                 result: { ...user, ...user?.properties },
             };
@@ -34,7 +36,7 @@ class UserService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            let user = users.data.data?.[0];
+            let user = unifyUser(users.data.data?.[0]);
             return { result: user };
         } else if (thirdPartyId === 'sfdc') {
             const users = await axios({
@@ -44,7 +46,7 @@ class UserService {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            let user = users.data;
+            let user = unifyUser(users.data);
             return { result: user };
         } else {
             return {
@@ -71,7 +73,7 @@ class UserService {
                 },
             });
             users = users.data.results as any[];
-            users = users?.map((l: any) => ({ ...l, ...l?.properties }));
+            users = users?.map((l: any) => unifyUser({ ...l, ...l?.properties }));
             return {
                 results: users,
             };
@@ -84,7 +86,7 @@ class UserService {
                 },
             });
             users = users.data.data;
-            users = users?.map((l: any) => l);
+            users = users?.map((l: any) => unifyUser(l));
             return { results: users };
         } else if (thirdPartyId === 'sfdc') {
             // TODO: Handle "ALL" for Hubspot & Zoho
@@ -100,7 +102,7 @@ class UserService {
                 },
             });
             users = users.data?.records;
-            users = users?.map((l: any) => l);
+            users = users?.map((l: any) => unifyUser(l));
             return { results: users };
         } else {
             return { error: 'Unrecognized CRM' };
