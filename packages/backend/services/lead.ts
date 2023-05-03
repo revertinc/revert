@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { disunifyLead, unifyLead } from '../models/unified/unifiedLead';
+import { disunifyLead, unifyLead } from '../models/unified/lead';
 import { filterLeadsFromContactsForHubspot } from '../helpers/filterLeadsFromContacts';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';

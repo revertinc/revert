@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
+import { unifyNote } from '../models/unified';
 import { ParsedQs } from 'qs';
 
 class NoteService {
@@ -23,6 +24,7 @@ class NoteService {
                 },
             });
             note = ([note.data] as any[])?.[0];
+            note = unifyNote({ ...note, ...note?.properties });
             return {
                 result: { ...note, ...note?.properties },
             };
@@ -34,7 +36,7 @@ class NoteService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            let note = notes.data.data?.[0];
+            let note = unifyNote(notes.data.data?.[0]);
             return { result: note };
         } else if (thirdPartyId === 'sfdc') {
             const notes = await axios({
@@ -44,7 +46,7 @@ class NoteService {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            let note = notes.data;
+            let note = unifyNote(notes.data);
             return { result: note };
         } else {
             return {
@@ -71,7 +73,7 @@ class NoteService {
                 },
             });
             notes = notes.data.results as any[];
-            notes = notes?.map((l: any) => ({ ...l, ...l?.properties }));
+            notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }));
             return {
                 results: notes,
             };
@@ -84,7 +86,7 @@ class NoteService {
                 },
             });
             notes = notes.data.data;
-            notes = notes?.map((l: any) => l);
+            notes = notes?.map((l: any) => unifyNote(l));
             return { results: notes };
         } else if (thirdPartyId === 'sfdc') {
             // TODO: Handle "ALL" for Hubspot & Zoho
@@ -100,7 +102,7 @@ class NoteService {
                 },
             });
             notes = notes.data?.records;
-            notes = notes?.map((l: any) => l);
+            notes = notes?.map((l: any) => unifyNote(l));
             return { results: notes };
         } else {
             return { error: 'Unrecognized CRM' };
@@ -131,7 +133,7 @@ class NoteService {
                 }),
             });
             notes = notes.data.results as any[];
-            notes = notes?.map((l: any) => ({ ...l, ...l?.properties }));
+            notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }));
             return {
                 status: 'ok',
                 results: notes,
@@ -145,7 +147,7 @@ class NoteService {
                 },
             });
             notes = notes.data.data;
-            notes = notes?.map((l: any) => l);
+            notes = notes?.map((l: any) => unifyNote(l));
             return { status: 'ok', results: notes };
         } else if (thirdPartyId === 'sfdc') {
             let notes: any = await axios({
@@ -156,7 +158,7 @@ class NoteService {
                 },
             });
             notes = notes?.data?.searchRecords;
-            notes = notes?.map((l: any) => l);
+            notes = notes?.map((l: any) => unifyNote(l));
             return { status: 'ok', results: notes };
         } else {
             return {

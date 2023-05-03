@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
+import { unifyEvent } from '../models/unified';
 import { ParsedQs } from 'qs';
 
 class EventService {
@@ -23,8 +24,9 @@ class EventService {
                 },
             });
             event = ([event.data] as any[])?.[0];
+            event = unifyEvent({ ...event, ...event?.properties });
             return {
-                result: { ...event, ...event?.properties },
+                result: event,
             };
         } else if (thirdPartyId === 'zohocrm') {
             const events = await axios({
@@ -34,7 +36,7 @@ class EventService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            let event = events.data.data?.[0];
+            let event = unifyEvent(events.data.data?.[0]);
             return { result: event };
         } else if (thirdPartyId === 'sfdc') {
             const events = await axios({
@@ -44,7 +46,7 @@ class EventService {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            let event = events.data;
+            let event = unifyEvent(events.data);
             return { result: event };
         } else {
             return {
@@ -71,7 +73,7 @@ class EventService {
                 },
             });
             events = events.data.results as any[];
-            events = events?.map((l: any) => ({ ...l, ...l?.properties }));
+            events = events?.map((l: any) => unifyEvent({ ...l, ...l?.properties }));
             return {
                 results: events,
             };
@@ -84,7 +86,7 @@ class EventService {
                 },
             });
             events = events.data.data;
-            events = events?.map((l: any) => l);
+            events = events?.map((l: any) => unifyEvent(l));
             return { results: events };
         } else if (thirdPartyId === 'sfdc') {
             // TODO: Handle "ALL" for Hubspot & Zoho
@@ -100,7 +102,7 @@ class EventService {
                 },
             });
             events = events.data?.records;
-            events = events?.map((l: any) => l);
+            events = events?.map((l: any) => unifyEvent(l));
             return { results: events };
         } else {
             return { error: 'Unrecognized CRM' };
@@ -131,7 +133,7 @@ class EventService {
                 }),
             });
             events = events.data.results as any[];
-            events = events?.map((l: any) => ({ ...l, ...l?.properties }));
+            events = events?.map((l: any) => unifyEvent({ ...l, ...l?.properties }));
             return {
                 status: 'ok',
                 results: events,
@@ -145,7 +147,7 @@ class EventService {
                 },
             });
             events = events.data.data;
-            events = events?.map((l: any) => l);
+            events = events?.map((l: any) => unifyEvent(l));
             return { status: 'ok', results: events };
         } else if (thirdPartyId === 'sfdc') {
             let events: any = await axios({
@@ -156,7 +158,7 @@ class EventService {
                 },
             });
             events = events?.data?.searchRecords;
-            events = events?.map((l: any) => l);
+            events = events?.map((l: any) => unifyEvent(l));
             return { status: 'ok', results: events };
         } else {
             return {
