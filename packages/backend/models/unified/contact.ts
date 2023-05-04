@@ -7,7 +7,7 @@ export interface UnifiedContact {
     createdTimestamp: Date;
     updatedTimestamp: Date;
     associations?: any; // TODO: Support associations
-    additional?: any; // TODO: Handle additional fields
+    additional: any;
 }
 
 export function unifyContact(contact: any): UnifiedContact {
@@ -19,6 +19,7 @@ export function unifyContact(contact: any): UnifiedContact {
         phone: contact.phone || contact.phone_number || '',
         createdTimestamp: contact.createdDate || contact.CreatedDate || contact.Created_Time || contact.hs_timestamp,
         updatedTimestamp: contact.lastModifiedDate || contact.LastModifiedDate || contact.Modified_Time,
+        additional: {},
     };
 
     // Map additional fields

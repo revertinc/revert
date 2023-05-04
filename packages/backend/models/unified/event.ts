@@ -11,7 +11,7 @@ export interface UnifiedEvent {
     createdTimestamp: Date;
     updatedTimestamp: Date;
     associations?: any; // TODO: Support associations
-    additional?: any; // TODO: Handle additional fields
+    additional: any;
 }
 
 export function unifyEvent(event: any): UnifiedEvent {
@@ -27,6 +27,7 @@ export function unifyEvent(event: any): UnifiedEvent {
         startDateTime: event.Start_DateTime || event.hs_meeting_start_time,
         endDateTime: event.End_DateTime || event.hs_meeting_end_time,
         location: event.hs_meeting_location || event.location || event.Location,
+        additional: {},
     };
 
     // Map additional fields

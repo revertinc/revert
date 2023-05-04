@@ -9,7 +9,7 @@ export interface UnifiedTask {
     createdTimestamp: Date;
     updatedTimestamp: Date;
     associations?: any; // TODO: Support associations
-    additional?: any; // TODO: Handle additional fields
+    additional: any;
 }
 
 export function unifyTask(task: any): UnifiedTask {
@@ -23,6 +23,7 @@ export function unifyTask(task: any): UnifiedTask {
         priority: task.priority || task.Priority || task.hs_task_priority,
         status: task.status || task.Status || task.hs_task_status,
         dueDate: task.hs_timestamp || task.Due_Date || task.ActivityDate,
+        additional: {},
     };
 
     // Map additional fields

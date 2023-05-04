@@ -18,7 +18,7 @@ export interface UnifiedCompany {
     createdTimestamp: Date;
     updatedTimestamp: Date;
     associations?: any; // TODO: Support associations
-    additional?: any; // TODO: Handle additional fields
+    additional: any;
 }
 
 export function unifyCompany(company: any): UnifiedCompany {
@@ -42,6 +42,7 @@ export function unifyCompany(company: any): UnifiedCompany {
         size: company.size || company.Size || company.size,
         createdTimestamp: company.createdDate || company.Created_Date || company.created_date,
         updatedTimestamp: company.modifiedDate || company.Modified_Date || company.modified_date,
+        additional: {},
     };
 
     // Map additional fields

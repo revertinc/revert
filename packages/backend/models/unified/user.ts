@@ -8,7 +8,7 @@ export interface UnifiedUser {
     createdTimestamp: Date;
     updatedTimestamp: Date;
     associations?: any; // TODO: Support associations
-    additional?: any; // TODO: Handle additional fields
+    additional: any;
 }
 
 export function unifyUser(user: any): UnifiedUser {
@@ -21,6 +21,7 @@ export function unifyUser(user: any): UnifiedUser {
         lastName: user.lastname || user.Last_Name || user.LastName,
         phone: user.phone || user.phone_number || '',
         email: user.email || user.Email,
+        additional: {},
     };
 
     // Map additional fields
