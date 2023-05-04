@@ -1,77 +1,34 @@
 export interface UnifiedCompany {
-    id?: string;
-    name?: string;
-    description?: string;
-    website?: string;
-    phone?: string;
-    industry?: string;
-    annualRevenue?: number;
-    numberOfEmployees?: number;
-    tickerSymbol?: string;
-    type?: string;
-    parentCompanyId?: string;
-    isPublic?: boolean;
-    foundedYear?: number;
-    timeZone?: string;
-    address?: {
+    name: string;
+    industry: string;
+    description: string;
+    annualRevenue: number;
+    size: number;
+    phone: string;
+    address: {
         street: string;
         city: string;
         state: string;
-        postalCode?: string;
         country: string;
-        zipCode?: string;
+        zip: string;
+        postalCode: string;
     };
-    address2?: string;
-    city?: string;
-    state?: string;
-    zip?: string;
-    country?: string;
-    facebookPage?: string;
-    twitterUsername?: string;
-    linkedinPage?: string;
-    googlePlusPage?: string;
-    numAssociations?: number;
-    hsNumAssociatedContacts?: number;
-    hsNumAssociatedDeals?: number;
-    hsLastActivityDate?: Date;
-    hsLastContacted?: Date;
-    hsLifecycleStage?: string;
-    hsDealAmount?: number;
-    hsDealCloseDate?: Date;
-    hsLastMeetingBooked?: Date;
-    hsLastMeetingBookedCampaign?: string;
-    hsLastMeetingBookedMedium?: string;
-    hsLastMeetingBookedSource?: string;
-    hsSalesEmailLastReplied?: Date;
-    sfIndustry?: string;
-    sfNumberOfEmployees?: number;
-    sfType?: string;
-    sfTickerSymbol?: string;
-    sfParentCompanyId?: string;
-    zohoOwner?: string;
-    zohoLastActivityTime?: Date;
-    zohoLastModifiedTime?: Date;
-    zohoNumActivities?: number;
-    zohoNumNotes?: number;
-    zohoOwnerID?: string;
-    zohoParentCompanyId?: string;
-    hubspotOwnerId?: string;
-    hubspotFirstDealCreatedDate?: Date;
-    hubspotLastModifiedDate?: Date;
-    hubspotNumBlockers?: number;
-    hubspotNumContacts?: number;
-    hubspotNumDecisionMakers?: number;
-    hubspotNumOpenDeals?: number;
-    hubspotTotalDealValue?: number;
-    customFields?: { [key: string]: any };
+    id: string;
+    remoteId: string;
+    createdTimestamp: Date;
+    updatedTimestamp: Date;
+    associations?: any; // TODO: Support associations
+    additional?: any; // TODO: Handle additional fields
 }
 
 export function unifyCompany(company: any): UnifiedCompany {
     if (!company) return company;
-    const unifiedCompanyObj = {
+    const unifiedCompany: UnifiedCompany = {
+        annualRevenue: company.Annual_Revenue || company.AnnualRevenue,
+        remoteId: company.id || company.Company_Id || company.company_id,
+        description: company.Description || company.description,
         id: company.id || company.Company_Id || company.company_id,
         name: company.name || company.Company_Name || company.company_name || company.Name || company.Account_Name,
-        website: company.website || company.Website || company.website,
         phone: company.phone || company.Phone || company.phone,
         address: {
             street: company.street || company.Address || company.address,
@@ -79,15 +36,22 @@ export function unifyCompany(company: any): UnifiedCompany {
             state: company.state || company.State || company.state,
             country: company.country || company.Country || company.country,
             zip: company.zip || company.Zip || company.zip,
+            postalCode: company.postalCode,
         },
         industry: company.industry || company.Industry || company.industry,
         size: company.size || company.Size || company.size,
-        owner: company.owner || company.Owner || company.owner,
-        createdDate: company.createdDate || company.Created_Date || company.created_date,
-        modifiedDate: company.modifiedDate || company.Modified_Date || company.modified_date,
+        createdTimestamp: company.createdDate || company.Created_Date || company.created_date,
+        updatedTimestamp: company.modifiedDate || company.Modified_Date || company.modified_date,
     };
 
-    return unifiedCompanyObj;
+    // Map additional fields
+    Object.keys(company).forEach((key) => {
+        if (!(key in unifiedCompany)) {
+            unifiedCompany['additional'][key] = company[key];
+        }
+    });
+
+    return unifiedCompany;
 }
 
 export interface HubspotCompany {
@@ -475,13 +439,6 @@ export interface SalesforceCompany {
     SicDesc: string;
     DandbCompanyId: string;
     OperatingHoursId: string;
-    revertdotdev__CustomerPriority__c: string;
-    revertdotdev__SLA__c: string;
-    revertdotdev__Active__c: string;
-    revertdotdev__NumberofLocations__c: number;
-    revertdotdev__UpsellOpportunity__c: string;
-    revertdotdev__SLASerialNumber__c: string;
-    revertdotdev__SLAExpirationDate__c: Date;
 }
 
 export function toSalesforceCompany(unifiedCompany: UnifiedCompany): Partial<SalesforceCompany> {
@@ -489,8 +446,8 @@ export function toSalesforceCompany(unifiedCompany: UnifiedCompany): Partial<Sal
         Id: unifiedCompany.id!,
         IsDeleted: false,
         Name: unifiedCompany.name,
-        Type: unifiedCompany.type,
-        ParentId: unifiedCompany.parentCompanyId,
+        Type: unifiedCompany.additional?.type,
+        ParentId: unifiedCompany.additional?.parentCompanyId,
         BillingStreet: unifiedCompany.address?.street,
         BillingCity: unifiedCompany.address?.city,
         BillingState: unifiedCompany.address?.state,
@@ -499,19 +456,19 @@ export function toSalesforceCompany(unifiedCompany: UnifiedCompany): Partial<Sal
         BillingAddress: {},
         ShippingAddress: {},
         Phone: unifiedCompany.phone,
-        Website: unifiedCompany.website,
+        Website: unifiedCompany.additional?.website,
         Industry: unifiedCompany.industry,
         AnnualRevenue: unifiedCompany.annualRevenue,
-        NumberOfEmployees: unifiedCompany.numberOfEmployees,
-        TickerSymbol: unifiedCompany.tickerSymbol,
+        NumberOfEmployees: unifiedCompany.size,
+        TickerSymbol: unifiedCompany.additional?.tickerSymbol,
         Description: unifiedCompany.description,
-        LastActivityDate: unifiedCompany.hsLastActivityDate,
+        LastActivityDate: unifiedCompany.additional?.hsLastActivityDate,
     };
 
     // Map custom fields
-    if (unifiedCompany.customFields) {
-        Object.keys(unifiedCompany.customFields).forEach((key) => {
-            salesforceCompany[key] = unifiedCompany.customFields?.[key];
+    if (unifiedCompany.additional) {
+        Object.keys(unifiedCompany.additional).forEach((key) => {
+            salesforceCompany[key] = unifiedCompany.additional?.[key];
         });
     }
     return salesforceCompany;
@@ -519,27 +476,27 @@ export function toSalesforceCompany(unifiedCompany: UnifiedCompany): Partial<Sal
 
 export function toZohoCompany(unified: UnifiedCompany): Partial<ZohoCompany> {
     const zoho: any = {};
-    zoho.Owner = unified.zohoOwnerID || '';
+    zoho.Owner = unified.additional?.zohoOwnerID || '';
     zoho.Rating = '';
     zoho.Account_Name = unified.name || '';
     zoho.Phone = unified.phone || '';
-    zoho.Account_Site = unified.website || '';
+    zoho.Account_Site = unified.additional?.website || '';
     zoho.Fax = '';
-    zoho.Parent_Account = unified.parentCompanyId || '';
-    zoho.Website = unified.website || '';
+    zoho.Parent_Account = unified.additional?.parentCompanyId || '';
+    zoho.Website = unified.additional?.website || '';
     zoho.Account_Number = BigInt(0);
-    zoho.Ticker_Symbol = unified.tickerSymbol || '';
-    zoho.Account_Type = unified.type || '';
+    zoho.Ticker_Symbol = unified.additional?.tickerSymbol || '';
+    zoho.Account_Type = unified.additional?.type || '';
     zoho.Ownership = '';
     zoho.Industry = unified.industry || '';
-    zoho.Employees = unified.numberOfEmployees || 0;
+    zoho.Employees = unified.additional?.numberOfEmployees || 0;
     zoho.Annual_Revenue = unified.annualRevenue || 0;
     zoho.SIC_Code = 0;
     zoho.Created_By = '';
     zoho.Modified_By = '';
     zoho.Created_Time = new Date();
     zoho.Modified_Time = new Date();
-    zoho.Last_Activity_Time = unified.zohoLastActivityTime || new Date();
+    zoho.Last_Activity_Time = unified.additional?.zohoLastActivityTime || new Date();
     zoho.Last_Enriched_Time__s = new Date();
     zoho.Enrich_Status__s = '';
     zoho.Billing_Street = unified.address?.street || '';
@@ -556,30 +513,37 @@ export function toZohoCompany(unified: UnifiedCompany): Partial<ZohoCompany> {
     zoho.Record_Image = '';
 
     // Map custom fields
-    if (unified.customFields) {
-        Object.keys(unified.customFields).forEach((key) => {
-            zoho[key] = unified.customFields?.[key];
+    if (unified.additional) {
+        Object.keys(unified.additional).forEach((key) => {
+            zoho[key] = unified.additional?.[key];
         });
     }
     return zoho;
 }
 
 export function toHubspotCompany(unifiedCompany: UnifiedCompany): Partial<HubspotCompany> {
-    const hubspotCompany: Partial<HubspotCompany> = {
+    const hubspotCompany: any = {
         firstname: unifiedCompany.name?.split(' ')[0],
         lastname: unifiedCompany.name?.split(' ')[1],
         industry: unifiedCompany.industry || '',
         phone: unifiedCompany.phone || '',
-        website: unifiedCompany.website || '',
+        website: unifiedCompany.additional?.website || '',
         address: {
             street: unifiedCompany.address?.street || '',
-            city: unifiedCompany.city || '',
-            state: unifiedCompany.state || '',
-            country: unifiedCompany.country || '',
+            city: unifiedCompany.address?.city || '',
+            state: unifiedCompany.address?.state || '',
+            country: unifiedCompany.address?.country || '',
             postalCode: unifiedCompany.address?.postalCode || '',
-            zipCode: unifiedCompany.address?.zipCode || '',
+            zipCode: unifiedCompany.address?.zip || '',
         },
     };
+
+    // Map custom fields
+    if (unifiedCompany.additional) {
+        Object.keys(unifiedCompany.additional).forEach((key) => {
+            hubspotCompany[key] = unifiedCompany.additional?.[key];
+        });
+    }
 
     return hubspotCompany;
 }

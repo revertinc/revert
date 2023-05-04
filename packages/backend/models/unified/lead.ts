@@ -1,120 +1,36 @@
 export interface UnifiedLead {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email: string;
     id: string;
-    remoteId: string;
-    owner?: string;
-    company?: string;
-    name?: string;
-    firstName?: string;
-    salutation?: string;
-    lastName?: string;
-    fullName?: string;
-    designation?: string;
-    email?: string;
-    phone?: string;
-    mobile?: string;
-    fax?: string;
-    leadSource?: string;
-    website?: string;
-    annualRevenue?: number;
-    leadStatus?: string;
-    industry?: string;
-    emailOptOut?: boolean;
-    numberOfEmployees?: number;
-    modifiedBy?: string;
-    rating?: string;
-    exchangeRate?: number;
-    createdBy?: string;
-    skypeId?: string;
-    secondaryEmail?: string;
-    twitter?: string;
-    modifiedTime?: Date;
-    currency?: string;
-    tag?: string[];
-    lastActivityTime?: Date;
-    createdTime?: Date;
-    unsubscribedMode?: boolean;
-    convertedAccount?: string;
-    leadConversionTime?: Date;
-    convertedDeal?: string;
-    unsubscribedTime?: Date;
-    dataProcessingBasisDetails?: string;
-    convertedContact?: string;
-    dataSource?: string;
-    dataProcessingBasis?: string;
-    wizard?: boolean;
-    street?: string;
-    city?: string;
-    state?: string;
-    zipCode?: string;
-    country?: string;
-    description?: string;
-    recordImage?: string;
-    alternateAddress?: string;
-    address?: {
-        street: string;
-        city: string;
-        state: string;
-        postalCode: string;
-        country: string;
-        zipCode: string;
-    };
-    status?: string;
-    tags?: string;
-    social?: {
-        twitter: string;
-        linkedin: string;
-        facebook: string;
-    };
-    customFields?: { [key: string]: any };
+    remoteId: string; // TODO: Make this unique.
+    createdTimestamp: Date;
+    updatedTimestamp: Date;
+    associations?: any; // TODO: Support associations
+    additional?: any; // TODO: Handle additional fields
 }
 
 export function unifyLead(lead: any): UnifiedLead {
-    return {
+    const unifiedlead: UnifiedLead = {
         id: lead.id || lead.Id || lead.vid,
         remoteId: lead.id || lead.Id || lead.vid,
-        name: lead.Name,
         firstName: lead.firstName || lead.First_Name || lead.FirstName,
         lastName: lead.lastName || lead.Last_Name || lead.LastName,
         email: lead.email || lead.Email,
         phone: lead.phone || lead.Phone || lead.PhoneNumber,
-        company: lead.company || lead.Company,
-        website: lead.website || lead.Website,
-        address: {
-            street: lead.street || lead.Street || lead.Address,
-            city: lead.city || lead.City,
-            zipCode: lead.zip || lead.zipCode || lead.Zip_Code,
-            state:
-                lead.state ||
-                lead.State ||
-                lead.province ||
-                lead.Province ||
-                lead.StateCode ||
-                lead.State_Code ||
-                lead.StateCode__c,
-            postalCode: lead.postalCode || lead.Zip_Code || lead.PostalCode,
-            country: lead.country || lead.Country || lead.CountryCode || lead.Country_Code || lead.Country__c,
-        },
-        leadSource: lead.leadSource || lead.Lead_Source || lead.utm_source || lead.Original_Source_Type__c,
-        status: lead.status || lead.Lead_Status || lead.lead_status || lead.Status__c,
-        industry: lead.industry || lead.Industry || lead.Industry__c,
-        rating: lead.rating || lead.Rating,
-        owner: lead.owner || lead.Owner || lead.ownerId || lead.OwnerId,
-        createdBy: lead.createdBy || lead.Created_By || lead.CreatedById,
-        createdTime: lead.createdTime || lead.Created_Time || lead.created_at,
-        modifiedBy: lead.modifiedBy || lead.Modified_By || lead.ModifiedById,
-        modifiedTime: lead.modifiedTime || lead.Modified_Time || lead.updated_at,
-        description: lead.description || lead.Description,
-        tags: lead.tags || lead.Tag?.split(',') || lead.tags,
-        social: {
-            twitter: lead.twitter || lead.Twitter_Handle__c,
-            linkedin: lead.linkedin || lead.LinkedIn_Profile_URL__c,
-            facebook: lead.facebook || lead.Facebook_Profile_URL__c,
-        },
-        customFields: {
-            annualRevenue: lead.annualRevenue || lead.Annual_Revenue || lead.AnnualRevenue,
-            designation: lead.designation || lead.Designation || lead.Job_Title__c,
-        },
+        createdTimestamp: lead.createdDate || lead.CreatedDate || lead.Created_Time || lead.hs_timestamp,
+        updatedTimestamp: lead.lastModifiedDate || lead.LastModifiedDate || lead.Modified_Time,
     };
+
+    // Map additional fields
+    Object.keys(lead).forEach((key) => {
+        if (!(key in unifiedlead)) {
+            unifiedlead['additional'][key] = lead[key];
+        }
+    });
+
+    return unifiedlead;
 }
 
 export interface HubspotLead {
@@ -261,7 +177,7 @@ export interface HubspotLead {
     start_date: string;
     total_revenue: number;
     work_email: string;
-    firstname?: string;
+    firstname: string;
     hs_analytics_first_url: string;
     hs_email_delivered: number;
     hs_email_optout_78547538: number;
@@ -270,12 +186,12 @@ export interface HubspotLead {
     followercount: number;
     hs_analytics_last_url: string;
     hs_email_open: number;
-    lastname?: string;
+    lastname: string;
     hs_analytics_num_page_views: number;
     hs_email_click: number;
     salutation: string;
     twitterprofilephoto: string;
-    email?: string;
+    email: string;
     hs_analytics_num_visits: number;
     hs_email_bounce: number;
     hs_persona: number;
@@ -284,7 +200,7 @@ export interface HubspotLead {
     hs_email_optout: boolean;
     hs_social_twitter_clicks: number;
     mobilephone: string;
-    phone?: string;
+    phone: string;
     fax: string;
     hs_analytics_first_timestamp: Date;
     hs_email_last_email_name: string;
@@ -358,7 +274,7 @@ export interface HubspotLead {
     hs_lifecyclestage_evangelist_date: Date;
     hs_lifecyclestage_customer_date: Date;
     hubspotscore: number;
-    company?: string;
+    company: string;
     hs_lifecyclestage_subscriber_date: Date;
     hs_lifecyclestage_other_date: Date;
     website?: string;
@@ -469,83 +385,6 @@ export interface SalesforceLead {
     EmailBouncedReason: string;
     EmailBouncedDate: Date;
     IndividualId: string;
-    revertdotdev__SICCode__c: string;
-    revertdotdev__ProductInterest__c: string;
-    revertdotdev__Primary__c: string;
-    revertdotdev__CurrentGenerators__c: string;
-    revertdotdev__NumberofLocations__c: number;
-}
-
-export function toUnifiedLead(lead: HubspotLead): UnifiedLead {
-    const unifiedLead: UnifiedLead = {
-        id: String(lead.hs_object_id),
-        remoteId: String(lead.hs_object_id),
-        company: lead.company,
-        name: lead.firstname && lead.lastname ? `${lead.firstname} ${lead.lastname}` : undefined,
-        firstName: lead.firstname,
-        lastName: lead.lastname,
-        email: lead.email,
-        phone: lead.phone,
-        mobile: lead.mobilephone,
-        leadSource: lead.hs_lead_source,
-        website: lead.website,
-        leadStatus: String(lead.hs_lead_status),
-        industry: lead.industry,
-        numberOfEmployees: lead.numemployees,
-        createdBy: String(lead.hs_created_by_user_id),
-        createdTime: lead.createdate,
-        modifiedTime: lead.hs_lastmodifieddate,
-        status: String(lead.hs_lead_status),
-        tags: lead.hs_analytics_source_data_1,
-        social: {
-            twitter: lead.twitterhandle,
-            linkedin: lead.hs_linkedinid,
-            facebook: lead.hs_facebookid,
-        },
-        customFields: {
-            company_size: lead.company_size,
-            date_of_birth: lead.date_of_birth,
-            degree: lead.degree,
-            field_of_study: lead.field_of_study,
-            gender: lead.gender,
-            graduation_date: lead.graduation_date,
-            buying_role: lead.hs_buying_role,
-            clicked_linkedin_ad: lead.hs_clicked_linkedin_ad,
-            conversations_visitor_email: lead.hs_conversations_visitor_email,
-            count_is_unworked: lead.hs_count_is_unworked,
-            count_is_worked: lead.hs_count_is_worked,
-            document_last_revisited: lead.hs_document_last_revisited,
-            email_bad_address: lead.hs_email_bad_address,
-            email_customer_quarantined_reason: lead.hs_email_customer_quarantined_reason,
-            email_hard_bounce_reason: lead.hs_email_hard_bounce_reason,
-            email_hard_bounce_reason_number: lead.hs_email_hard_bounce_reason_number,
-            email_quarantined: lead.hs_email_quarantined,
-            email_quarantined_reason: lead.hs_email_quarantined_reason,
-            email_recipient_fatigue_recovery_time: lead.hs_email_recipient_fatigue_recovery_time,
-            email_sends_since_last_engagement: lead.hs_email_sends_since_last_engagement,
-            emailconfirmationstatus: lead.hs_emailconfirmationstatus,
-            facebook_ad_clicked: lead.hs_facebook_ad_clicked,
-            facebook_click_id: lead.hs_facebook_click_id,
-            facebookid: lead.hs_facebookid,
-            feedback_last_nps_follow_up: lead.hs_feedback_last_nps_follow_up,
-            feedback_last_nps_rating: lead.hs_feedback_last_nps_rating,
-            feedback_last_survey_date: lead.hs_feedback_last_survey_date,
-            feedback_show_nps_web_survey: lead.hs_feedback_show_nps_web_survey,
-            google_click_id: lead.hs_google_click_id,
-            googleplusid: lead.hs_googleplusid,
-            has_active_subscription: lead.hs_has_active_subscription,
-            ip_timezone: lead.hs_ip_timezone,
-            is_unworked: lead.hs_is_unworked,
-            last_sales_activity_date: lead.hs_last_sales_activity_date,
-            last_sales_activity_timestamp: lead.hs_last_sales_activity_timestamp,
-            last_sales_activity_type: lead.hs_last_sales_activity_type,
-            latest_sequence_enrolled: lead.hs_latest_sequence_enrolled,
-            latest_sequence_enrolled_date: lead.hs_latest_sequence_enrolled_date,
-            latest_sequence_finished_date: lead.hs_latest_sequence_finished_date,
-            latest_sequence_unenrolled_date: lead.hs_latest_sequence_unenrolled_date,
-        },
-    };
-    return unifiedLead;
 }
 
 export function toSalesforceLead(unifiedLead: UnifiedLead): SalesforceLead {
@@ -553,41 +392,18 @@ export function toSalesforceLead(unifiedLead: UnifiedLead): SalesforceLead {
 
     // Map common fields
     salesforceLead.Id = unifiedLead.id;
-    salesforceLead.LastName = unifiedLead.lastName || '';
-    salesforceLead.FirstName = unifiedLead.firstName || '';
-    salesforceLead.Salutation = unifiedLead.salutation || '';
-    salesforceLead.Name = unifiedLead.name || '';
-    salesforceLead.Title = unifiedLead.designation || '';
-    salesforceLead.Company = unifiedLead.company || '';
-    salesforceLead.Street = unifiedLead.street || '';
-    salesforceLead.City = unifiedLead.city || '';
-    salesforceLead.State = unifiedLead.state || '';
-    salesforceLead.PostalCode = unifiedLead.zipCode || '';
-    salesforceLead.Country = unifiedLead.country || '';
-    salesforceLead.Phone = unifiedLead.phone || '';
-    salesforceLead.MobilePhone = unifiedLead.mobile || '';
-    salesforceLead.Fax = unifiedLead.fax || '';
-    salesforceLead.Email = unifiedLead.email || '';
-    salesforceLead.Website = unifiedLead.website || '';
-    salesforceLead.Description = unifiedLead.description || '';
-    salesforceLead.LeadSource = unifiedLead.leadSource || '';
-    salesforceLead.Status = unifiedLead.leadStatus || '';
-    salesforceLead.Industry = unifiedLead.industry || '';
-    salesforceLead.Rating = unifiedLead.rating || '';
-    salesforceLead.AnnualRevenue = unifiedLead.annualRevenue || 0;
-    salesforceLead.NumberOfEmployees = unifiedLead.numberOfEmployees || 0;
-    salesforceLead.OwnerId = unifiedLead.owner || '';
-    salesforceLead.IsConverted = false;
-    salesforceLead.CreatedDate = unifiedLead.createdTime || new Date();
-    salesforceLead.CreatedById = unifiedLead.createdBy || '';
-    salesforceLead.LastModifiedDate = unifiedLead.modifiedTime || new Date();
-    salesforceLead.LastModifiedById = unifiedLead.modifiedBy || '';
-    salesforceLead.LastActivityDate = unifiedLead.lastActivityTime || new Date();
+    salesforceLead.LastName = unifiedLead.lastName;
+    salesforceLead.FirstName = unifiedLead.firstName;
+    salesforceLead.Phone = unifiedLead.phone;
+    salesforceLead.MobilePhone = unifiedLead.phone;
+    salesforceLead.Email = unifiedLead.email;
+    salesforceLead.CreatedDate = unifiedLead.createdTimestamp;
+    salesforceLead.LastModifiedDate = unifiedLead.updatedTimestamp;
 
     // Map custom fields
-    if (unifiedLead.customFields) {
-        Object.keys(unifiedLead.customFields).forEach((key) => {
-            salesforceLead[key] = unifiedLead.customFields?.[key];
+    if (unifiedLead.additional) {
+        Object.keys(unifiedLead.additional).forEach((key) => {
+            salesforceLead[key] = unifiedLead.additional?.[key];
         });
     }
 
@@ -597,55 +413,21 @@ export function toSalesforceLead(unifiedLead: UnifiedLead): SalesforceLead {
 export function toZohoLead(unifiedLead: UnifiedLead): ZohoLead {
     const zohoLead: any = {};
 
-    zohoLead.Owner = unifiedLead.owner;
-    zohoLead.Company = unifiedLead.company;
     zohoLead.First_Name = unifiedLead.firstName;
     zohoLead.Last_Name = unifiedLead.lastName;
-    zohoLead.Full_Name = unifiedLead.fullName;
-    zohoLead.Designation = unifiedLead.designation;
     zohoLead.Email = unifiedLead.email;
     zohoLead.Phone = unifiedLead.phone;
-    zohoLead.Fax = unifiedLead.fax;
-    zohoLead.Mobile = unifiedLead.mobile;
-    zohoLead.Website = unifiedLead.website;
-    zohoLead.Lead_Source = unifiedLead.leadSource;
-    zohoLead.Lead_Status = unifiedLead.leadStatus;
-    zohoLead.Industry = unifiedLead.industry;
-    zohoLead.No_of_Employees = unifiedLead.numberOfEmployees;
-    zohoLead.Annual_Revenue = unifiedLead.annualRevenue;
-    zohoLead.Rating = unifiedLead.rating;
-    zohoLead.Created_By = unifiedLead.createdBy;
-    zohoLead.Email_Opt_Out = unifiedLead.emailOptOut;
-    zohoLead.Skype_ID = unifiedLead.skypeId;
-    zohoLead.Modified_By = unifiedLead.modifiedBy;
-    zohoLead.Created_Time = unifiedLead.createdTime;
-    zohoLead.Modified_Time = unifiedLead.modifiedTime;
-    zohoLead.Salutation = unifiedLead.salutation;
-    zohoLead.Secondary_Email = unifiedLead.secondaryEmail;
-    zohoLead.Twitter = unifiedLead.twitter;
-    zohoLead.Last_Activity_Time = unifiedLead.lastActivityTime;
-    zohoLead.Lead_Conversion_Time = unifiedLead.leadConversionTime;
-    zohoLead.Unsubscribed_Mode = unifiedLead.unsubscribedMode;
-    zohoLead.Unsubscribed_Time = unifiedLead.unsubscribedTime;
-    zohoLead.Converted_Account = unifiedLead.convertedAccount;
-    zohoLead.Converted_Contact = unifiedLead.convertedContact;
-    zohoLead.Converted_Deal = unifiedLead.convertedDeal;
-    zohoLead.Street = unifiedLead.street;
-    zohoLead.City = unifiedLead.city;
-    zohoLead.State = unifiedLead.state;
-    zohoLead.Zip_Code = unifiedLead.zipCode;
-    zohoLead.Country = unifiedLead.country;
-    zohoLead.Description = unifiedLead.description;
-    zohoLead.Record_Image = unifiedLead.recordImage;
+    zohoLead.Created_Time = unifiedLead.createdTimestamp;
+    zohoLead.Modified_Time = unifiedLead.updatedTimestamp;
 
     // Map custom fields
-    if (unifiedLead.customFields) {
-        Object.keys(unifiedLead.customFields).forEach((key) => {
-            zohoLead[key] = unifiedLead.customFields?.[key];
+    if (unifiedLead.additional) {
+        Object.keys(unifiedLead.additional).forEach((key) => {
+            zohoLead[key] = unifiedLead.additional?.[key];
         });
     }
 
-    return zohoLead as ZohoLead;
+    return zohoLead;
 }
 
 export function toHubspotLead(lead: UnifiedLead): Partial<HubspotLead> {
@@ -653,20 +435,20 @@ export function toHubspotLead(lead: UnifiedLead): Partial<HubspotLead> {
         firstname: lead.firstName,
         lastname: lead.lastName,
         email: lead.email,
-        company: lead.company,
+        company: lead.additional?.company,
         phone: lead.phone,
-        city: lead.address?.city,
-        state: lead.address?.state,
-        zip: lead.address?.zipCode,
-        country: lead.address?.country,
-        website: lead.website,
-        hs_lead_source: lead.leadSource!,
+        city: lead.additional?.address?.city,
+        state: lead.additional?.address?.state,
+        zip: lead.additional?.address?.zipCode,
+        country: lead.additional?.address?.country,
+        website: lead.additional?.website,
+        hs_lead_source: lead.additional?.leadSource!,
     };
 
     // Map custom fields
-    if (lead.customFields) {
-        Object.keys(lead.customFields).forEach((key) => {
-            hubspotLead[key] = lead.customFields?.[key];
+    if (lead.additional) {
+        Object.keys(lead.additional).forEach((key) => {
+            hubspotLead[key] = lead.additional?.[key];
         });
     }
     return hubspotLead;

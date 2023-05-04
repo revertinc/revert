@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { disunifyContact, unifyContact } from '../models/unified/unifiedContact';
+import { disunifyContact, unifyContact } from '../models/unified/contact';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 

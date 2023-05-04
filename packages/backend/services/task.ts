@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
+import { disunifyTask, unifyTask } from '../models/unified';
 import { ParsedQs } from 'qs';
 
 class TaskService {
@@ -23,8 +24,9 @@ class TaskService {
                 },
             });
             task = ([task.data] as any[])?.[0];
+            task = unifyTask({ ...task, ...task?.properties });
             return {
-                result: { ...task, ...task?.properties },
+                result: task,
             };
         } else if (thirdPartyId === 'zohocrm') {
             const tasks = await axios({
@@ -34,7 +36,7 @@ class TaskService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            let task = tasks.data.data?.[0];
+            let task = unifyTask(tasks.data.data?.[0]);
             return { result: task };
         } else if (thirdPartyId === 'sfdc') {
             const tasks = await axios({
@@ -44,7 +46,7 @@ class TaskService {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            let task = tasks.data;
+            let task = unifyTask(tasks.data);
             return { result: task };
         } else {
             return {
@@ -71,7 +73,7 @@ class TaskService {
                 },
             });
             tasks = tasks.data.results as any[];
-            tasks = tasks?.map((l: any) => ({ ...l, ...l?.properties }));
+            tasks = tasks?.map((l: any) => unifyTask({ ...l, ...l?.properties }));
             return {
                 results: tasks,
             };
@@ -84,7 +86,7 @@ class TaskService {
                 },
             });
             tasks = tasks.data.data;
-            tasks = tasks?.map((l: any) => l);
+            tasks = tasks?.map((l: any) => unifyTask(l));
             return { results: tasks };
         } else if (thirdPartyId === 'sfdc') {
             // TODO: Handle "ALL" for Hubspot & Zoho
@@ -100,7 +102,7 @@ class TaskService {
                 },
             });
             tasks = tasks.data?.records;
-            tasks = tasks?.map((l: any) => l);
+            tasks = tasks?.map((l: any) => unifyTask(l));
             return { results: tasks };
         } else {
             return { error: 'Unrecognized CRM' };
@@ -131,7 +133,7 @@ class TaskService {
                 }),
             });
             tasks = tasks.data.results as any[];
-            tasks = tasks?.map((l: any) => ({ ...l, ...l?.properties }));
+            tasks = tasks?.map((l: any) => unifyTask({ ...l, ...l?.properties }));
             return {
                 status: 'ok',
                 results: tasks,
@@ -145,7 +147,7 @@ class TaskService {
                 },
             });
             tasks = tasks.data.data;
-            tasks = tasks?.map((l: any) => l);
+            tasks = tasks?.map((l: any) => unifyTask(l));
             return { status: 'ok', results: tasks };
         } else if (thirdPartyId === 'sfdc') {
             let tasks: any = await axios({
@@ -156,7 +158,7 @@ class TaskService {
                 },
             });
             tasks = tasks?.data?.searchRecords;
-            tasks = tasks?.map((l: any) => l);
+            tasks = tasks?.map((l: any) => unifyTask(l));
             return { status: 'ok', results: tasks };
         } else {
             return {
@@ -172,7 +174,7 @@ class TaskService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const task = (req.body, thirdPartyId);
+        const task = disunifyTask(req.body, thirdPartyId);
         console.log('Revert::CREATE TASK', tenantId, task);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -228,7 +230,7 @@ class TaskService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const task = (req.body, thirdPartyId);
+        const task = disunifyTask(req.body, thirdPartyId);
         const taskId = req.params.id;
         console.log('Revert::UPDATE TASK', tenantId, task, taskId);
         if (thirdPartyId === 'hubspot') {

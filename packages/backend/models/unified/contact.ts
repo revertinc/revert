@@ -1,95 +1,32 @@
 export interface UnifiedContact {
-    id: string;
-    isDeleted: boolean;
-    masterRecordId?: string;
-    accountId: string;
-    lastName: string;
     firstName: string;
-    salutation?: string;
-    name?: string;
-    otherStreet?: string;
-    otherCity?: string;
-    otherState?: string;
-    otherPostalCode?: string;
-    otherCountry?: string;
-    otherLatitude?: number;
-    otherLongitude?: number;
-    otherGeocodeAccuracy?: string;
-    otherAddress?: { [key: string]: any };
-    mailingStreet?: string;
-    mailingCity?: string;
-    mailingState?: string;
-    mailingPostalCode?: string;
-    mailingCountry?: string;
-    mailingLatitude?: number;
-    mailingLongitude?: number;
-    mailingGeocodeAccuracy?: string;
-    mailingAddress?: { [key: string]: any };
-    phone?: string;
-    fax?: string;
-    mobilePhone?: string;
-    homePhone?: string;
-    otherPhone?: string;
-    assistantPhone?: string;
-    reportsToId?: string;
-    email?: string;
-    title?: string;
-    department?: string;
-    assistantName?: string;
-    leadSource?: string;
-    birthdate?: Date;
-    description?: string;
-    ownerId: string;
-    createdDate: Date;
-    createdById: string;
-    lastModifiedDate: Date;
-    lastModifiedById: string;
-    systemModstamp: Date;
-    lastActivityDate?: Date;
-    lastCURequestDate?: Date;
-    lastCUUpdateDate?: Date;
-    lastViewedDate?: Date;
-    lastReferencedDate?: Date;
-    emailBouncedReason?: string;
-    emailBouncedDate?: Date;
-    isEmailBounced?: boolean;
-    photoUrl?: string;
-    jigsaw?: string;
-    jigsawContactId?: string;
-    cleanStatus?: string;
-    individualId?: string;
-    level?: string;
-    languages?: string[];
-    customFields?: { [key: string]: any };
+    lastName: string;
+    phone: string;
+    id: string;
+    remoteId: string; // TODO: Make this unique.
+    createdTimestamp: Date;
+    updatedTimestamp: Date;
+    associations?: any; // TODO: Support associations
+    additional?: any; // TODO: Handle additional fields
 }
 
 export function unifyContact(contact: any): UnifiedContact {
-    const unifiedContact = {
+    const unifiedContact: UnifiedContact = {
+        remoteId: contact.id || contact.ContactID || contact.contact_id,
         id: contact.id || contact.ContactID || contact.contact_id,
-        name: contact.Name,
-        isDeleted: contact.isDeleted || false,
         firstName: contact.firstName || contact.firstname || contact.FirstName || contact.First_Name,
         lastName: contact.lastName || contact.lastname || contact.LastName || contact.Last_Name,
-        email: contact.email || contact.emailaddress || '',
         phone: contact.phone || contact.phone_number || '',
-        address: contact.address || contact.address1 || '',
-        city: contact.city || contact.city_name || '',
-        state: contact.state || contact.state_name || '',
-        country: contact.country || contact.country_name || '',
-        zip: contact.zip || contact.postalcode || '',
-        createdAt: contact.createdAt || contact.created_time || '',
-        updatedAt: contact.updatedAt || contact.last_modified_time || '',
-        source: contact.source || '',
-        description: contact.description || '',
-        owner: contact.owner || contact.owner_name || '',
-        accountId: contact.accountId,
-        ownerId: contact.ownerId,
-        createdDate: contact.createdDate,
-        createdById: contact.createdById,
-        lastModifiedDate: contact.lastModifiedDate,
-        lastModifiedById: contact.lastModifiedById,
-        systemModstamp: contact.systemModstamp,
+        createdTimestamp: contact.createdDate || contact.CreatedDate || contact.Created_Time || contact.hs_timestamp,
+        updatedTimestamp: contact.lastModifiedDate || contact.LastModifiedDate || contact.Modified_Time,
     };
+
+    // Map additional fields
+    Object.keys(contact).forEach((key) => {
+        if (!(key in unifiedContact)) {
+            unifiedContact['additional'][key] = contact[key];
+        }
+    });
 
     return unifiedContact;
 }
@@ -452,79 +389,75 @@ export interface SalesforceContact {
     JigsawContactId: string;
     CleanStatus: string;
     IndividualId: string;
-    revertdotdev__Level__c: string;
-    revertdotdev__Languages__c: string;
 }
 
 export function toSalesforceContact(unifiedContact: UnifiedContact): Partial<SalesforceContact> {
     const salesforceContact: any = {
         Id: unifiedContact.id,
-        IsDeleted: unifiedContact.isDeleted,
-        MasterRecordId: unifiedContact.masterRecordId || '',
-        AccountId: unifiedContact.accountId,
+        IsDeleted: unifiedContact.additional?.isDeleted,
+        MasterRecordId: unifiedContact.additional?.masterRecordId || '',
+        AccountId: unifiedContact.additional?.accountId,
         LastName: unifiedContact.lastName,
         FirstName: unifiedContact.firstName,
-        Salutation: unifiedContact.salutation || '',
-        Name: unifiedContact.name || '',
-        OtherStreet: unifiedContact.otherStreet || '',
-        OtherCity: unifiedContact.otherCity || '',
-        OtherState: unifiedContact.otherState || '',
-        OtherPostalCode: unifiedContact.otherPostalCode || '',
-        OtherCountry: unifiedContact.otherCountry || '',
-        OtherLatitude: unifiedContact.otherLatitude || 0,
-        OtherLongitude: unifiedContact.otherLongitude || 0,
-        OtherGeocodeAccuracy: unifiedContact.otherGeocodeAccuracy || '',
-        OtherAddress: unifiedContact.otherAddress || {},
-        MailingStreet: unifiedContact.mailingStreet || '',
-        MailingCity: unifiedContact.mailingCity || '',
-        MailingState: unifiedContact.mailingState || '',
-        MailingPostalCode: unifiedContact.mailingPostalCode || '',
-        MailingCountry: unifiedContact.mailingCountry || '',
-        MailingLatitude: unifiedContact.mailingLatitude || 0,
-        MailingLongitude: unifiedContact.mailingLongitude || 0,
-        MailingGeocodeAccuracy: unifiedContact.mailingGeocodeAccuracy || '',
-        MailingAddress: unifiedContact.mailingAddress || {},
+        Salutation: unifiedContact.additional?.salutation || '',
+        Name: unifiedContact.additional?.name || '',
+        OtherStreet: unifiedContact.additional?.otherStreet || '',
+        OtherCity: unifiedContact.additional?.otherCity || '',
+        OtherState: unifiedContact.additional?.otherState || '',
+        OtherPostalCode: unifiedContact.additional?.otherPostalCode || '',
+        OtherCountry: unifiedContact.additional?.otherCountry || '',
+        OtherLatitude: unifiedContact.additional?.otherLatitude || 0,
+        OtherLongitude: unifiedContact.additional?.otherLongitude || 0,
+        OtherGeocodeAccuracy: unifiedContact.additional?.otherGeocodeAccuracy || '',
+        OtherAddress: unifiedContact.additional?.otherAddress || {},
+        MailingStreet: unifiedContact.additional?.mailingStreet || '',
+        MailingCity: unifiedContact.additional?.mailingCity || '',
+        MailingState: unifiedContact.additional?.mailingState || '',
+        MailingPostalCode: unifiedContact.additional?.mailingPostalCode || '',
+        MailingCountry: unifiedContact.additional?.mailingCountry || '',
+        MailingLatitude: unifiedContact.additional?.mailingLatitude || 0,
+        MailingLongitude: unifiedContact.additional?.mailingLongitude || 0,
+        MailingGeocodeAccuracy: unifiedContact.additional?.mailingGeocodeAccuracy || '',
+        MailingAddress: unifiedContact.additional?.mailingAddress || {},
         Phone: unifiedContact.phone || '',
-        Fax: unifiedContact.fax || '',
-        MobilePhone: unifiedContact.mobilePhone || '',
-        HomePhone: unifiedContact.homePhone || '',
-        OtherPhone: unifiedContact.otherPhone || '',
-        AssistantPhone: unifiedContact.assistantPhone || '',
-        ReportsToId: unifiedContact.reportsToId || '',
-        Email: unifiedContact.email || '',
-        Title: unifiedContact.title || '',
-        Department: unifiedContact.department || '',
-        AssistantName: unifiedContact.assistantName || '',
-        LeadSource: unifiedContact.leadSource || '',
-        Birthdate: unifiedContact.birthdate!,
-        Description: unifiedContact.description || '',
-        OwnerId: unifiedContact.ownerId,
-        CreatedDate: unifiedContact.createdDate,
-        CreatedById: unifiedContact.createdById,
-        LastModifiedDate: unifiedContact.lastModifiedDate,
-        LastModifiedById: unifiedContact.lastModifiedById,
-        SystemModstamp: unifiedContact.systemModstamp,
-        LastActivityDate: unifiedContact.lastActivityDate!,
-        LastCURequestDate: unifiedContact.lastCURequestDate!,
-        LastCUUpdateDate: unifiedContact.lastCUUpdateDate!,
-        LastViewedDate: unifiedContact.lastViewedDate!,
-        LastReferencedDate: unifiedContact.lastReferencedDate!,
-        EmailBouncedReason: unifiedContact.emailBouncedReason!,
-        EmailBouncedDate: unifiedContact.emailBouncedDate!,
-        IsEmailBounced: unifiedContact.isEmailBounced || false,
-        PhotoUrl: unifiedContact.photoUrl || '',
-        Jigsaw: unifiedContact.jigsaw || '',
-        JigsawContactId: unifiedContact.jigsawContactId || '',
-        CleanStatus: unifiedContact.cleanStatus || '',
-        IndividualId: unifiedContact.individualId || '',
-        revertdotdev__Level__c: unifiedContact.level || '',
-        revertdotdev__Languages__c: unifiedContact.languages ? unifiedContact.languages.join(';') : '',
+        Fax: unifiedContact.additional?.fax || '',
+        MobilePhone: unifiedContact.additional?.mobilePhone || '',
+        HomePhone: unifiedContact.additional?.homePhone || '',
+        OtherPhone: unifiedContact.additional?.otherPhone || '',
+        AssistantPhone: unifiedContact.additional?.assistantPhone || '',
+        ReportsToId: unifiedContact.additional?.reportsToId || '',
+        Email: unifiedContact.additional?.email || '',
+        Title: unifiedContact.additional?.title || '',
+        Department: unifiedContact.additional?.department || '',
+        AssistantName: unifiedContact.additional?.assistantName || '',
+        LeadSource: unifiedContact.additional?.leadSource || '',
+        Birthdate: unifiedContact.additional?.birthdate!,
+        Description: unifiedContact.additional?.description || '',
+        OwnerId: unifiedContact.additional?.ownerId,
+        CreatedDate: unifiedContact.additional?.createdDate,
+        CreatedById: unifiedContact.additional?.createdById,
+        LastModifiedDate: unifiedContact.additional?.lastModifiedDate,
+        LastModifiedById: unifiedContact.additional?.lastModifiedById,
+        SystemModstamp: unifiedContact.additional?.systemModstamp,
+        LastActivityDate: unifiedContact.additional?.lastActivityDate!,
+        LastCURequestDate: unifiedContact.additional?.lastCURequestDate!,
+        LastCUUpdateDate: unifiedContact.additional?.lastCUUpdateDate!,
+        LastViewedDate: unifiedContact.additional?.lastViewedDate!,
+        LastReferencedDate: unifiedContact.additional?.lastReferencedDate!,
+        EmailBouncedReason: unifiedContact.additional?.emailBouncedReason!,
+        EmailBouncedDate: unifiedContact.additional?.emailBouncedDate!,
+        IsEmailBounced: unifiedContact.additional?.isEmailBounced || false,
+        PhotoUrl: unifiedContact.additional?.photoUrl || '',
+        Jigsaw: unifiedContact.additional?.jigsaw || '',
+        JigsawContactId: unifiedContact.additional?.jigsawContactId || '',
+        CleanStatus: unifiedContact.additional?.cleanStatus || '',
+        IndividualId: unifiedContact.additional?.individualId || '',
     };
 
     // Map custom fields
-    if (unifiedContact.customFields) {
-        Object.keys(unifiedContact.customFields).forEach((key) => {
-            salesforceContact[key] = unifiedContact.customFields?.[key];
+    if (unifiedContact.additional) {
+        Object.keys(unifiedContact.additional).forEach((key) => {
+            salesforceContact[key] = unifiedContact.additional?.[key];
         });
     }
 
@@ -533,107 +466,76 @@ export function toSalesforceContact(unifiedContact: UnifiedContact): Partial<Sal
 
 export function toZohoContact(unifiedContact: UnifiedContact): ZohoContact {
     const zohoContact: any = {
-        Owner: unifiedContact.ownerId,
-        Lead_Source: unifiedContact.leadSource,
+        Owner: unifiedContact.additional?.ownerId,
+        Lead_Source: unifiedContact.additional?.leadSource,
         First_Name: unifiedContact.firstName,
         Last_Name: unifiedContact.lastName,
-        Full_Name: unifiedContact.name,
-        Account_Name: unifiedContact.accountId,
-        Email: unifiedContact.email,
-        Title: unifiedContact.title,
-        Department: unifiedContact.department,
+        Full_Name: unifiedContact.additional?.name,
+        Account_Name: unifiedContact.additional?.accountId,
+        Email: unifiedContact.additional?.email,
+        Title: unifiedContact.additional?.title,
+        Department: unifiedContact.additional?.department,
         Phone: unifiedContact.phone,
-        Home_Phone: unifiedContact.homePhone,
-        Other_Phone: unifiedContact.otherPhone,
-        Fax: unifiedContact.fax,
-        Mobile: unifiedContact.mobilePhone,
-        Date_of_Birth: unifiedContact.birthdate,
-        Assistant: unifiedContact.assistantName,
-        Asst_Phone: unifiedContact.assistantPhone,
-        Email_Opt_Out: unifiedContact.isEmailBounced,
-        Created_By: unifiedContact.createdById,
-        Skype_ID: undefined, // Zoho does not have this field
-        Modified_By: unifiedContact.lastModifiedById,
-        Created_Time: unifiedContact.createdDate,
-        Modified_Time: unifiedContact.lastModifiedDate,
-        Salutation: unifiedContact.salutation,
-        Secondary_Email: undefined, // Zoho does not have this field
-        Last_Activity_Time: unifiedContact.lastActivityDate,
-        Twitter: undefined, // Zoho does not have this field
-        Reporting_To: unifiedContact.reportsToId,
-        Unsubscribed_Mode: undefined, // Zoho does not have this field
-        Unsubscribed_Time: undefined, // Zoho does not have this field
-        Last_Enriched_Time__s: undefined, // Zoho does not have this field
-        Enrich_Status__s: undefined, // Zoho does not have this field
-        Mailing_Street: unifiedContact.mailingStreet,
-        Other_Street: unifiedContact.otherStreet,
-        Mailing_City: unifiedContact.mailingCity,
-        Other_City: unifiedContact.otherCity,
-        Mailing_State: unifiedContact.mailingState,
-        Other_State: unifiedContact.otherState,
-        Mailing_Zip: unifiedContact.mailingPostalCode,
-        Other_Zip: unifiedContact.otherPostalCode,
-        Mailing_Country: unifiedContact.mailingCountry,
-        Other_Country: unifiedContact.otherCountry,
-        Description: unifiedContact.description,
-        Record_Image: unifiedContact.photoUrl,
+        Home_Phone: unifiedContact.additional?.homePhone,
+        Other_Phone: unifiedContact.additional?.otherPhone,
+        Fax: unifiedContact.additional?.fax,
+        Mobile: unifiedContact.additional?.mobilePhone,
+        Date_of_Birth: unifiedContact.additional?.birthdate,
+        Assistant: unifiedContact.additional?.assistantName,
+        Asst_Phone: unifiedContact.additional?.assistantPhone,
+        Email_Opt_Out: unifiedContact.additional?.isEmailBounced,
+        Created_By: unifiedContact.additional?.createdById,
+        Modified_By: unifiedContact.additional?.lastModifiedById,
+        Created_Time: unifiedContact.createdTimestamp,
+        Modified_Time: unifiedContact.updatedTimestamp,
+        Salutation: unifiedContact.additional?.salutation,
+        Last_Activity_Time: unifiedContact.additional?.lastActivityDate,
+        Reporting_To: unifiedContact.additional?.reportsToId,
+        Mailing_Street: unifiedContact.additional?.mailingStreet,
+        Other_Street: unifiedContact.additional?.otherStreet,
+        Mailing_City: unifiedContact.additional?.mailingCity,
+        Other_City: unifiedContact.additional?.otherCity,
+        Mailing_State: unifiedContact.additional?.mailingState,
+        Other_State: unifiedContact.additional?.otherState,
+        Mailing_Zip: unifiedContact.additional?.mailingPostalCode,
+        Other_Zip: unifiedContact.additional?.otherPostalCode,
+        Mailing_Country: unifiedContact.additional?.mailingCountry,
+        Other_Country: unifiedContact.additional?.otherCountry,
+        Description: unifiedContact.additional?.description,
+        Record_Image: unifiedContact.additional?.photoUrl,
     };
     return zohoContact;
 }
 
-export function toHubspotContact(unifiedContact: any): Partial<HubspotContact> {
-    const hubspotContact = {
-        company_size: unifiedContact.companySize,
-        date_of_birth: unifiedContact.birthdate,
-        degree: unifiedContact.degree,
-        field_of_study: unifiedContact.fieldOfStudy,
-        first_deal_created_date: unifiedContact.firstDealCreatedDate,
-        gender: unifiedContact.gender,
-        graduation_date: unifiedContact.graduationDate,
-        hs_all_assigned_business_unit_ids: unifiedContact.allAssignedBusinessUnitIds,
-        hs_analytics_first_touch_converting_campaign: unifiedContact.analyticsFirstTouchConvertingCampaign,
-        hs_analytics_last_touch_converting_campaign: unifiedContact.analyticsLastTouchConvertingCampaign,
-        hs_avatar_filemanager_key: unifiedContact.avatarFilemanagerKey,
-        hs_buying_role: unifiedContact.buyingRole,
-        hs_clicked_linkedin_ad: unifiedContact.clickedLinkedinAd,
-        hs_content_membership_email: unifiedContact.contentMembershipEmail,
-        hs_content_membership_email_confirmed: unifiedContact.contentMembershipEmailConfirmed,
-        hs_content_membership_follow_up_enqueued_at: unifiedContact.contentMembershipFollowUpEnqueuedAt,
-        hs_content_membership_notes: unifiedContact.contentMembershipNotes,
-        hs_content_membership_registered_at: unifiedContact.contentMembershipRegisteredAt,
-        hs_content_membership_registration_domain_sent_to: unifiedContact.contentMembershipRegistrationDomainSentTo,
-        hs_content_membership_registration_email_sent_at: unifiedContact.contentMembershipRegistrationEmailSentAt,
-        hs_content_membership_status: unifiedContact.contentMembershipStatus,
-        hs_conversations_visitor_email: unifiedContact.conversationsVisitorEmail,
-        hs_count_is_unworked: unifiedContact.countIsUnworked,
-        hs_count_is_worked: unifiedContact.countIsWorked,
-        hs_created_by_conversations: unifiedContact.createdByConversations,
-        hs_created_by_user_id: unifiedContact.createdByUserId,
-        hs_createdate: unifiedContact.createdDate,
-        hs_date_entered_customer: unifiedContact.dateEnteredCustomer,
-        hs_date_entered_evangelist: unifiedContact.dateEnteredEvangelist,
-        hs_date_entered_lead: unifiedContact.dateEnteredLead,
-        hs_date_entered_marketingqualifiedlead: unifiedContact.dateEnteredMarketingQualifiedLead,
-        hs_date_entered_opportunity: unifiedContact.dateEnteredOpportunity,
-        hs_date_entered_other: unifiedContact.dateEnteredOther,
-        hs_date_entered_salesqualifiedlead: unifiedContact.dateEnteredSalesQualifiedLead,
-        hs_date_entered_subscriber: unifiedContact.dateEnteredSubscriber,
-        hs_date_exited_customer: unifiedContact.dateExitedCustomer,
-        hs_date_exited_evangelist: unifiedContact.dateExitedEvangelist,
-        hs_date_exited_lead: unifiedContact.dateExitedLead,
-        hs_date_exited_marketingqualifiedlead: unifiedContact.dateExitedMarketingQualifiedLead,
-        hs_date_exited_opportunity: unifiedContact.dateExitedOpportunity,
-        hs_date_exited_other: unifiedContact.dateExitedOther,
-        hs_date_exited_salesqualifiedlead: unifiedContact.dateExitedSalesQualifiedLead,
-        hs_date_exited_subscriber: unifiedContact.dateExitedSubscriber,
-        hs_document_last_revisited: unifiedContact.documentLastRevisited,
-        hs_email_bad_address: unifiedContact.emailBadAddress,
-        hs_email_customer_quarantined_reason: unifiedContact.emailCustomerQuarantinedReason,
-        hs_email_hard_bounce_reason: unifiedContact.emailHardBounceReason,
-        hs_email_hard_bounce_reason_number: unifiedContact.emailHardBounceReasonNumber,
-        hs_email_quarantined: unifiedContact.emailQuarantined,
-        hs_email_quarantined_reason: unifiedContact.emailQuarantinedReason,
+export function toHubspotContact(unifiedContact: UnifiedContact): Partial<HubspotContact> {
+    const hubspotContact: any = {
+        firstname: unifiedContact.firstName,
+        lastname: unifiedContact.lastName,
+        phone: unifiedContact.phone,
+        company_size: unifiedContact.additional?.companySize,
+        date_of_birth: unifiedContact.additional?.birthdate,
+        degree: unifiedContact.additional?.degree,
+        field_of_study: unifiedContact.additional?.fieldOfStudy,
+        first_deal_created_date: unifiedContact.additional?.firstDealCreatedDate,
+        gender: unifiedContact.additional?.gender,
+        graduation_date: unifiedContact.additional?.graduationDate,
+        hs_all_assigned_business_unit_ids: unifiedContact.additional?.allAssignedBusinessUnitIds,
+        hs_analytics_first_touch_converting_campaign: unifiedContact.additional?.analyticsFirstTouchConvertingCampaign,
+        hs_analytics_last_touch_converting_campaign: unifiedContact.additional?.analyticsLastTouchConvertingCampaign,
+        hs_avatar_filemanager_key: unifiedContact.additional?.avatarFilemanagerKey,
+        hs_buying_role: unifiedContact.additional?.buyingRole,
+        hs_clicked_linkedin_ad: unifiedContact.additional?.clickedLinkedinAd,
+        hs_content_membership_email: unifiedContact.additional?.contentMembershipEmail,
+        hs_content_membership_email_confirmed: unifiedContact.additional?.contentMembershipEmailConfirmed,
     };
+
+    // Map custom fields
+    if (unifiedContact.additional) {
+        Object.keys(unifiedContact.additional).forEach((key) => {
+            hubspotContact[key] = unifiedContact.additional?.[key];
+        });
+    }
+
     return hubspotContact;
 }
 

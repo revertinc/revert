@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
+import { disunifyDeal, unifyDeal } from '../models/unified';
 import { ParsedQs } from 'qs';
 
 class DealService {
@@ -23,8 +24,9 @@ class DealService {
                 },
             });
             deal = ([deal.data] as any[])?.[0];
+            deal = unifyDeal({ ...deal, ...deal?.properties });
             return {
-                result: { ...deal, ...deal?.properties },
+                result: deal,
             };
         } else if (thirdPartyId === 'zohocrm') {
             const deals = await axios({
@@ -34,7 +36,7 @@ class DealService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            let deal = deals.data.data?.[0];
+            let deal = unifyDeal(deals.data.data?.[0]);
             return { result: deal };
         } else if (thirdPartyId === 'sfdc') {
             const deals = await axios({
@@ -44,7 +46,7 @@ class DealService {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            let deal = deals.data;
+            let deal = unifyDeal(deals.data);
             return { result: deal };
         } else {
             return {
@@ -71,7 +73,7 @@ class DealService {
                 },
             });
             deals = deals.data.results as any[];
-            deals = deals?.map((l: any) => ({ ...l, ...l?.properties }));
+            deals = deals?.map((l: any) => unifyDeal({ ...l, ...l?.properties }));
             return {
                 results: deals,
             };
@@ -84,7 +86,7 @@ class DealService {
                 },
             });
             deals = deals.data.data;
-            deals = deals?.map((l: any) => l);
+            deals = deals?.map((l: any) => unifyDeal(l));
             return { results: deals };
         } else if (thirdPartyId === 'sfdc') {
             // TODO: Handle "ALL" for Hubspot & Zoho
@@ -100,7 +102,7 @@ class DealService {
                 },
             });
             deals = deals.data?.records;
-            deals = deals?.map((l: any) => l);
+            deals = deals?.map((l: any) => unifyDeal(l));
             return { results: deals };
         } else {
             return { error: 'Unrecognized CRM' };
@@ -131,7 +133,7 @@ class DealService {
                 }),
             });
             deals = deals.data.results as any[];
-            deals = deals?.map((l: any) => ({ ...l, ...l?.properties }));
+            deals = deals?.map((l: any) => unifyDeal({ ...l, ...l?.properties }));
             return {
                 status: 'ok',
                 results: deals,
@@ -145,7 +147,7 @@ class DealService {
                 },
             });
             deals = deals.data.data;
-            deals = deals?.map((l: any) => l);
+            deals = deals?.map((l: any) => unifyDeal(l));
             return { status: 'ok', results: deals };
         } else if (thirdPartyId === 'sfdc') {
             let deals: any = await axios({
@@ -156,7 +158,7 @@ class DealService {
                 },
             });
             deals = deals?.data?.searchRecords;
-            deals = deals?.map((l: any) => l);
+            deals = deals?.map((l: any) => unifyDeal(l));
             return { status: 'ok', results: deals };
         } else {
             return {
@@ -172,7 +174,7 @@ class DealService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const deal = (req.body, thirdPartyId);
+        const deal = disunifyDeal(req.body, thirdPartyId);
         console.log('Revert::CREATE DEAL', tenantId, deal);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -228,7 +230,7 @@ class DealService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const deal = (req.body, thirdPartyId);
+        const deal = disunifyDeal(req.body, thirdPartyId);
         const dealId = req.params.id;
         console.log('Revert::UPDATE DEAL', tenantId, deal, dealId);
         if (thirdPartyId === 'hubspot') {

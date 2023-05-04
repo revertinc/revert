@@ -54,6 +54,7 @@ export const useRevertConnect = (config: RevertConfig) => {
             return;
         }
         if (window.Revert && !window.Revert.getIntegrationsLoaded) {
+            // TODO: Ideally, disable button here.
             console.error('Revert is not loaded');
             return;
         }
