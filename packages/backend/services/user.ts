@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
-import { unifyUser } from '../models/unified/user';
+import { disunifyUser, unifyUser } from '../models/unified/user';
 import { ParsedQs } from 'qs';
 
 class UserService {
@@ -116,7 +116,7 @@ class UserService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const user = (req.body, thirdPartyId);
+        const user = disunifyUser(req.body, thirdPartyId);
         console.log('Revert::CREATE USER', tenantId, user);
         if (thirdPartyId === 'hubspot') {
             await axios({

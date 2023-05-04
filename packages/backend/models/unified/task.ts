@@ -34,3 +34,70 @@ export function unifyTask(task: any): UnifiedTask {
 
     return unifiedTask;
 }
+
+export function toSalesforceTask(unified: UnifiedTask): any {
+    const salesforce: any = {
+        Id: unified.remoteId,
+        Description: unified.body,
+        Subject: unified.subject,
+        Priority: unified.priority,
+        Status: unified.status,
+        ActivityDate: unified.dueDate,
+    };
+
+    // Map custom fields
+    if (unified.additional) {
+        Object.keys(unified.additional).forEach((key) => {
+            salesforce[key] = unified.additional?.[key];
+        });
+    }
+    return salesforce;
+}
+
+export function toZohoTask(unified: UnifiedTask): any {
+    const zoho: any = {};
+    zoho.id = unified.remoteId;
+    zoho.Description = unified.body;
+    zoho.Subject = unified.subject;
+    zoho.Priority = unified.priority;
+    zoho.Status = unified.status;
+    zoho.Due_Date = unified.dueDate;
+
+    // Map custom fields
+    if (unified.additional) {
+        Object.keys(unified.additional).forEach((key) => {
+            zoho[key] = unified.additional?.[key];
+        });
+    }
+    return zoho;
+}
+
+export function toHubspotTask(unified: UnifiedTask): any {
+    const hubspotTask: any = {
+        hs_object_id: unified.remoteId,
+        hs_task_body: unified.body,
+        hs_task_subject: unified.subject,
+        hs_task_priority: unified.priority,
+        hs_task_status: unified.status,
+        hs_timestamp: unified.dueDate,
+    };
+
+    // Map custom fields
+    if (unified.additional) {
+        Object.keys(unified.additional).forEach((key) => {
+            hubspotTask[key] = unified.additional?.[key];
+        });
+    }
+
+    return hubspotTask;
+}
+
+export function disunifyTask(task: UnifiedTask, integrationId: string): any {
+    if (integrationId === 'sfdc') {
+        return toSalesforceTask(task);
+    } else if (integrationId === 'hubspot') {
+        return toHubspotTask(task);
+    } else if (integrationId === 'zohocrm') {
+        return toZohoTask(task);
+    }
+}

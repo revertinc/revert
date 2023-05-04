@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
-import { unifyTask } from '../models/unified';
+import { disunifyTask, unifyTask } from '../models/unified';
 import { ParsedQs } from 'qs';
 
 class TaskService {
@@ -174,7 +174,7 @@ class TaskService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const task = (req.body, thirdPartyId);
+        const task = disunifyTask(req.body, thirdPartyId);
         console.log('Revert::CREATE TASK', tenantId, task);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -230,7 +230,7 @@ class TaskService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const task = (req.body, thirdPartyId);
+        const task = disunifyTask(req.body, thirdPartyId);
         const taskId = req.params.id;
         console.log('Revert::UPDATE TASK', tenantId, task, taskId);
         if (thirdPartyId === 'hubspot') {

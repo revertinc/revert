@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
-import { unifyNote } from '../models/unified';
+import { disunifyNote, unifyNote } from '../models/unified';
 import { ParsedQs } from 'qs';
 
 class NoteService {
@@ -174,7 +174,7 @@ class NoteService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const note = (req.body, thirdPartyId);
+        const note = disunifyNote(req.body, thirdPartyId);
         console.log('Revert::CREATE NOTE', tenantId, note);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -230,7 +230,7 @@ class NoteService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const note = (req.body, thirdPartyId);
+        const note = disunifyNote(req.body, thirdPartyId);
         const noteId = req.params.id;
         console.log('Revert::UPDATE NOTE', tenantId, note, noteId);
         if (thirdPartyId === 'hubspot') {

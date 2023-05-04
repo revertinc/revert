@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
-import { unifyEvent } from '../models/unified';
+import { disunifyEvent, unifyEvent } from '../models/unified';
 import { ParsedQs } from 'qs';
 
 class EventService {
@@ -174,7 +174,7 @@ class EventService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const event = (req.body, thirdPartyId);
+        const event = disunifyEvent(req.body, thirdPartyId);
         console.log('Revert::CREATE EVENT', tenantId, event);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -230,7 +230,7 @@ class EventService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const event = (req.body, thirdPartyId);
+        const event = disunifyEvent(req.body, thirdPartyId);
         const eventId = req.params.id;
         console.log('Revert::UPDATE EVENT', tenantId, event, eventId);
         if (thirdPartyId === 'hubspot') {

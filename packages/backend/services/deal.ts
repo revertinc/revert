@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
-import { unifyDeal } from '../models/unified';
+import { disunifyDeal, unifyDeal } from '../models/unified';
 import { ParsedQs } from 'qs';
 
 class DealService {
@@ -174,7 +174,7 @@ class DealService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const deal = (req.body, thirdPartyId);
+        const deal = disunifyDeal(req.body, thirdPartyId);
         console.log('Revert::CREATE DEAL', tenantId, deal);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -230,7 +230,7 @@ class DealService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const deal = (req.body, thirdPartyId);
+        const deal = disunifyDeal(req.body, thirdPartyId);
         const dealId = req.params.id;
         console.log('Revert::UPDATE DEAL', tenantId, deal, dealId);
         if (thirdPartyId === 'hubspot') {
