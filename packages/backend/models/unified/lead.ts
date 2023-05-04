@@ -8,19 +8,20 @@ export interface UnifiedLead {
     createdTimestamp: Date;
     updatedTimestamp: Date;
     associations?: any; // TODO: Support associations
-    additional?: any; // TODO: Handle additional fields
+    additional: any;
 }
 
 export function unifyLead(lead: any): UnifiedLead {
     const unifiedlead: UnifiedLead = {
         id: lead.id || lead.Id || lead.vid,
         remoteId: lead.id || lead.Id || lead.vid,
-        firstName: lead.firstName || lead.First_Name || lead.FirstName,
-        lastName: lead.lastName || lead.Last_Name || lead.LastName,
+        firstName: lead.firstName || lead.First_Name || lead.FirstName || lead.firstname,
+        lastName: lead.lastName || lead.Last_Name || lead.LastName || lead.lastname,
         email: lead.email || lead.Email,
         phone: lead.phone || lead.Phone || lead.PhoneNumber,
         createdTimestamp: lead.createdDate || lead.CreatedDate || lead.Created_Time || lead.hs_timestamp,
         updatedTimestamp: lead.lastModifiedDate || lead.LastModifiedDate || lead.Modified_Time,
+        additional: {},
     };
 
     // Map additional fields
@@ -29,7 +30,6 @@ export function unifyLead(lead: any): UnifiedLead {
             unifiedlead['additional'][key] = lead[key];
         }
     });
-
     return unifiedlead;
 }
 

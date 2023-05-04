@@ -11,7 +11,7 @@ export interface UnifiedDeal {
     createdTimestamp: Date;
     updatedTimestamp: Date;
     associations?: any; // TODO: Support associations
-    additional?: any; // TODO: Handle additional fields
+    additional: any;
 }
 
 export function unifyDeal(deal: any): UnifiedDeal {
@@ -26,6 +26,7 @@ export function unifyDeal(deal: any): UnifiedDeal {
         expectedCloseDate: deal.closedate || deal.CloseDate || deal.Close_Date || deal.Closing_Date,
         isWon: deal.hs_is_closed_won,
         probability: deal.hs_deal_stage_probability || deal.Probability,
+        additional: {},
     };
 
     // Map additional fields

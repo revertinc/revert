@@ -5,7 +5,7 @@ export interface UnifiedNote {
     createdTimestamp: Date;
     updatedTimestamp: Date;
     associations?: any; // TODO: Support associations
-    additional?: any; // TODO: Handle additional fields
+    additional: any;
 }
 
 export function unifyNote(note: any): UnifiedNote {
@@ -15,6 +15,7 @@ export function unifyNote(note: any): UnifiedNote {
         createdTimestamp: note.createdDate || note.CreatedDate || note.Created_Time || note.hs_timestamp,
         updatedTimestamp: note.lastModifiedDate || note.LastModifiedDate || note.Modified_Time,
         content: note.content || note.hs_note_body || note.Body || note.Note_Content,
+        additional: {},
     };
 
     // Map additional fields
