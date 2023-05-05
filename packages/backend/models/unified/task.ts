@@ -16,8 +16,10 @@ export function unifyTask(task: any): UnifiedTask {
     const unifiedTask: UnifiedTask = {
         remoteId: task.id || task.Id,
         id: task.id || task.Id,
-        createdTimestamp: task.createdDate || task.CreatedDate || task.Created_Time || task.hs_timestamp,
-        updatedTimestamp: task.lastModifiedDate || task.LastModifiedDate || task.Modified_Time,
+        createdTimestamp:
+            task.createdDate || task.CreatedDate || task.Created_Time || task.hs_timestamp || task.hs_createdate,
+        updatedTimestamp:
+            task.lastModifiedDate || task.LastModifiedDate || task.Modified_Time || task.hs_lastmodifieddate,
         body: task.Description || task.description || task.hs_task_body,
         subject: task.hs_task_subject || task.Subject,
         priority: task.priority || task.Priority || task.hs_task_priority,

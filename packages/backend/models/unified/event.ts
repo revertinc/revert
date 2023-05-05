@@ -18,10 +18,12 @@ export function unifyEvent(event: any): UnifiedEvent {
     const unifiedEvent: UnifiedEvent = {
         remoteId: event.id || event.Id,
         id: event.id || event.eventID || event.event_id,
-        createdTimestamp: event.createdDate || event.CreatedDate || event.Created_Time || event.hs_timestamp,
-        updatedTimestamp: event.lastModifiedDate || event.LastModifiedDate || event.Modified_Time,
+        createdTimestamp:
+            event.createdDate || event.CreatedDate || event.Created_Time || event.hs_timestamp || event.hs_createdate,
+        updatedTimestamp:
+            event.lastModifiedDate || event.LastModifiedDate || event.Modified_Time || event.hs_lastmodifieddate,
         type: event.type || event.Type || event.hs_activity_type,
-        subject: event.subject || event.Subject,
+        subject: event.subject || event.Subject || event.hs_meeting_title,
         description: event.description || event.Description || event.hs_meeting_body,
         isAllDayEvent: event.All_day || event.isAllDay,
         startDateTime: event.Start_DateTime || event.hs_meeting_start_time,

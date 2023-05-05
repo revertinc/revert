@@ -19,7 +19,7 @@ export function unifyUser(user: any): UnifiedUser {
         updatedTimestamp: user.lastModifiedDate || user.LastModifiedDate || user.Modified_Time,
         firstName: user.firstname || user.First_Name || user.FirstName,
         lastName: user.lastname || user.Last_Name || user.LastName,
-        phone: user.phone || user.phone_number || '',
+        phone: user.phone || user.phone_number,
         email: user.email || user.Email,
         additional: {},
     };

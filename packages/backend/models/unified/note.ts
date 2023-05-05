@@ -12,8 +12,10 @@ export function unifyNote(note: any): UnifiedNote {
     const unifiednote: UnifiedNote = {
         remoteId: note.id || note.Id,
         id: note.id || note.noteID || note.note_id,
-        createdTimestamp: note.createdDate || note.CreatedDate || note.Created_Time || note.hs_timestamp,
-        updatedTimestamp: note.lastModifiedDate || note.LastModifiedDate || note.Modified_Time,
+        createdTimestamp:
+            note.createdDate || note.CreatedDate || note.Created_Time || note.hs_timestamp || note.hs_createdate,
+        updatedTimestamp:
+            note.lastModifiedDate || note.LastModifiedDate || note.Modified_Time || note.hs_lastmodifieddate,
         content: note.content || note.hs_note_body || note.Body || note.Note_Content,
         additional: {},
     };

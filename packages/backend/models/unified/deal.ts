@@ -2,7 +2,7 @@ export interface UnifiedDeal {
     amount: Number;
     priority: string;
     stage: string;
-    name?: string;
+    name: string;
     expectedCloseDate: Date;
     isWon: boolean;
     probability: Number;
@@ -18,10 +18,12 @@ export function unifyDeal(deal: any): UnifiedDeal {
     const unifiedDeal: UnifiedDeal = {
         remoteId: deal.id || deal.dealID || deal.deal_id,
         id: deal.id || deal.dealID || deal.deal_id,
-        createdTimestamp: deal.createdDate || deal.CreatedDate || deal.Created_Time,
-        updatedTimestamp: deal.lastModifiedDate || deal.LastModifiedDate || deal.Modified_Time,
+        name: deal.dealname,
+        createdTimestamp: deal.createdDate || deal.CreatedDate || deal.Created_Time || deal.createdate,
+        updatedTimestamp:
+            deal.lastModifiedDate || deal.LastModifiedDate || deal.Modified_Time || deal.hs_lastmodifieddate,
         amount: deal.amount || deal.Amount,
-        priority: deal.priority || deal.Priority,
+        priority: deal.priority || deal.Priority || deal.hs_priority,
         stage: deal.stage || deal.Stage || deal.dealstage,
         expectedCloseDate: deal.closedate || deal.CloseDate || deal.Close_Date || deal.Closing_Date,
         isWon: deal.hs_is_closed_won,
