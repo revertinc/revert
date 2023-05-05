@@ -31,7 +31,7 @@ export function unifyCompany(company: any): UnifiedCompany {
         name: company.name || company.Company_Name || company.company_name || company.Name || company.Account_Name,
         phone: company.phone || company.Phone || company.phone,
         address: {
-            street: company.street || company.Address || company.address,
+            street: company.street || company.Address?.street || company.address?.street,
             city: company.city || company.City || company.city,
             state: company.state || company.State || company.state,
             country: company.country || company.Country || company.country,
@@ -40,8 +40,9 @@ export function unifyCompany(company: any): UnifiedCompany {
         },
         industry: company.industry || company.Industry || company.industry,
         size: company.size || company.Size || company.size,
-        createdTimestamp: company.createdDate || company.Created_Date || company.created_date,
-        updatedTimestamp: company.modifiedDate || company.Modified_Date || company.modified_date,
+        createdTimestamp: company.createdDate || company.Created_Date || company.created_date || company.createdate,
+        updatedTimestamp:
+            company.modifiedDate || company.Modified_Date || company.modified_date || company.hs_lastmodifieddate,
         additional: {},
     };
 

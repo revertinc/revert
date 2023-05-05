@@ -19,8 +19,9 @@ export function unifyLead(lead: any): UnifiedLead {
         lastName: lead.lastName || lead.Last_Name || lead.LastName || lead.lastname,
         email: lead.email || lead.Email,
         phone: lead.phone || lead.Phone || lead.PhoneNumber,
-        createdTimestamp: lead.createdDate || lead.CreatedDate || lead.Created_Time || lead.hs_timestamp,
-        updatedTimestamp: lead.lastModifiedDate || lead.LastModifiedDate || lead.Modified_Time,
+        createdTimestamp:
+            lead.createdDate || lead.CreatedDate || lead.Created_Time || lead.hs_timestamp || lead.createdate,
+        updatedTimestamp: lead.lastModifiedDate || lead.LastModifiedDate || lead.Modified_Time || lead.lastmodifieddate,
         additional: {},
     };
 
