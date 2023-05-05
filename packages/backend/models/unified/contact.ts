@@ -2,6 +2,7 @@ export interface UnifiedContact {
     firstName: string;
     lastName: string;
     phone: string;
+    email: string;
     id: string;
     remoteId: string; // TODO: Make this unique.
     createdTimestamp: Date;
@@ -16,9 +17,16 @@ export function unifyContact(contact: any): UnifiedContact {
         id: contact.id || contact.ContactID || contact.contact_id,
         firstName: contact.firstName || contact.firstname || contact.FirstName || contact.First_Name,
         lastName: contact.lastName || contact.lastname || contact.LastName || contact.Last_Name,
-        phone: contact.phone || contact.phone_number || '',
-        createdTimestamp: contact.createdDate || contact.CreatedDate || contact.Created_Time || contact.hs_timestamp,
-        updatedTimestamp: contact.lastModifiedDate || contact.LastModifiedDate || contact.Modified_Time,
+        phone: contact.phone || contact.phone_number,
+        email: contact.email || contact.Email,
+        createdTimestamp:
+            contact.createdDate ||
+            contact.CreatedDate ||
+            contact.Created_Time ||
+            contact.hs_timestamp ||
+            contact.createdate,
+        updatedTimestamp:
+            contact.lastModifiedDate || contact.LastModifiedDate || contact.Modified_Time || contact.lastmodifieddate,
         additional: {},
     };
 
@@ -427,7 +435,7 @@ export function toSalesforceContact(unifiedContact: UnifiedContact): Partial<Sal
         OtherPhone: unifiedContact.additional?.otherPhone || '',
         AssistantPhone: unifiedContact.additional?.assistantPhone || '',
         ReportsToId: unifiedContact.additional?.reportsToId || '',
-        Email: unifiedContact.additional?.email || '',
+        Email: unifiedContact.email || '',
         Title: unifiedContact.additional?.title || '',
         Department: unifiedContact.additional?.department || '',
         AssistantName: unifiedContact.additional?.assistantName || '',
@@ -473,7 +481,7 @@ export function toZohoContact(unifiedContact: UnifiedContact): ZohoContact {
         Last_Name: unifiedContact.lastName,
         Full_Name: unifiedContact.additional?.name,
         Account_Name: unifiedContact.additional?.accountId,
-        Email: unifiedContact.additional?.email,
+        Email: unifiedContact.email,
         Title: unifiedContact.additional?.title,
         Department: unifiedContact.additional?.department,
         Phone: unifiedContact.phone,
