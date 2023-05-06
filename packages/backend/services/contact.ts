@@ -38,9 +38,10 @@ class ContactService {
             contact = unifyContact(contact.data.data?.[0]);
             return { result: contact };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             let contact: any = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Contact/${contactId}`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Contact/${contactId}`,
                 headers: {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -89,6 +90,7 @@ class ContactService {
             contacts = contacts?.map((l: any) => unifyContact(l));
             return { results: contacts };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             // NOTE: Handle "ALL" for Hubspot & Zoho
             const query =
                 fields === 'ALL'
@@ -96,7 +98,7 @@ class ContactService {
                     : `SELECT+${(fields as string).split(',').join('+,+')}+from+Contact`;
             let contacts: any = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/query/?q=${query}`,
+                url: `${instanceUrl}/services/data/v56.0/query/?q=${query}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -150,9 +152,10 @@ class ContactService {
             contacts = contacts?.map((l: any) => unifyContact(l));
             return { status: 'ok', results: contacts };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             let contacts: any = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/search?q=${searchCriteria}`,
+                url: `${instanceUrl}/services/data/v56.0/search?q=${searchCriteria}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -204,9 +207,10 @@ class ContactService {
             });
             return { status: 'ok', message: 'Zoho contact created', result: contact };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             const contactCreated = await axios({
                 method: 'post',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Contact/`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Contact/`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,
@@ -261,9 +265,10 @@ class ContactService {
             });
             return { status: 'ok', message: 'Zoho contact updated', result: contact };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             await axios({
                 method: 'patch',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Contact/${contactId}`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Contact/${contactId}`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,

@@ -39,9 +39,10 @@ class DealService {
             let deal = unifyDeal(deals.data.data?.[0]);
             return { result: deal };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             const deals = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Opportunity/${dealId}`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Opportunity/${dealId}`,
                 headers: {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -89,6 +90,7 @@ class DealService {
             deals = deals?.map((l: any) => unifyDeal(l));
             return { results: deals };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             // TODO: Handle "ALL" for Hubspot & Zoho
             const query =
                 fields === 'ALL'
@@ -96,7 +98,7 @@ class DealService {
                     : `SELECT+${(fields as string).split(',').join('+,+')}+from+Opportunity`;
             let deals: any = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/query/?q=${query}`,
+                url: `${instanceUrl}/services/data/v56.0/query/?q=${query}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -150,9 +152,10 @@ class DealService {
             deals = deals?.map((l: any) => unifyDeal(l));
             return { status: 'ok', results: deals };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             let deals: any = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/search?q=${searchCriteria}`,
+                url: `${instanceUrl}/services/data/v56.0/search?q=${searchCriteria}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -202,9 +205,10 @@ class DealService {
             });
             return { status: 'ok', message: 'Zoho deal created', result: deal };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             const dealCreated = await axios({
                 method: 'post',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Opportunity/`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Opportunity/`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,
@@ -259,9 +263,10 @@ class DealService {
             });
             return { status: 'ok', message: 'Zoho deal updated', result: deal };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             await axios({
                 method: 'patch',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Opportunity/${dealId}`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Opportunity/${dealId}`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,

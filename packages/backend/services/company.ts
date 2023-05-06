@@ -38,9 +38,10 @@ class CompanyService {
             company = unifyCompany(company.data.data?.[0]);
             return { result: company };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             const company = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Account/${companyId}`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Account/${companyId}`,
                 headers: {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -87,6 +88,7 @@ class CompanyService {
             companies = companies?.map((l: any) => unifyCompany(l));
             return { results: companies };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             // NOTE: Handle "ALL" for Hubspot & Zoho
             const query =
                 fields === 'ALL'
@@ -94,7 +96,7 @@ class CompanyService {
                     : `SELECT+${(fields as string).split(',').join('+,+')}+from+Account`;
             let companies: any = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/query/?q=${query}`,
+                url: `${instanceUrl}/services/data/v56.0/query/?q=${query}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -148,9 +150,10 @@ class CompanyService {
             companies = companies?.map((c: any) => unifyCompany(c));
             return { status: 'ok', results: companies };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             let companies: any = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/search?q=${searchCriteria}`,
+                url: `${instanceUrl}/services/data/v56.0/search?q=${searchCriteria}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -200,9 +203,10 @@ class CompanyService {
             });
             return { status: 'ok', message: 'Zoho company created', result: company };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             const companyCreated = await axios({
                 method: 'post',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Account/`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Account/`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,
@@ -257,9 +261,10 @@ class CompanyService {
             });
             return { status: 'ok', message: 'Zoho company updated', result: company };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             await axios({
                 method: 'patch',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Account/${companyId}`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Account/${companyId}`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,

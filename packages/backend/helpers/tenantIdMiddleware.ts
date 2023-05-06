@@ -12,6 +12,7 @@ const revertTenantMiddleware = () => async (req: Request, res: Response, next: (
                 tp_access_token: true,
                 tp_id: true,
                 t_id: true,
+                tp_account_url: true,
             },
         });
 
