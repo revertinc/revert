@@ -39,9 +39,10 @@ class EventService {
             let event = unifyEvent(events.data.data?.[0]);
             return { result: event };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             const events = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Event/${eventId}`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Event/${eventId}`,
                 headers: {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -89,6 +90,7 @@ class EventService {
             events = events?.map((l: any) => unifyEvent(l));
             return { results: events };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             // TODO: Handle "ALL" for Hubspot & Zoho
             const query =
                 fields === 'ALL'
@@ -96,7 +98,7 @@ class EventService {
                     : `SELECT+${(fields as string).split(',').join('+,+')}+from+Event`;
             let events: any = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/query/?q=${query}`,
+                url: `${instanceUrl}/services/data/v56.0/query/?q=${query}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -150,9 +152,10 @@ class EventService {
             events = events?.map((l: any) => unifyEvent(l));
             return { status: 'ok', results: events };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             let events: any = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/search?q=${searchCriteria}`,
+                url: `${instanceUrl}/services/data/v56.0/search?q=${searchCriteria}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -202,9 +205,10 @@ class EventService {
             });
             return { status: 'ok', message: 'Zoho event created', result: event };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             const eventCreated = await axios({
                 method: 'post',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Event/`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Event/`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,
@@ -259,9 +263,10 @@ class EventService {
             });
             return { status: 'ok', message: 'Zoho event updated', result: event };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             await axios({
                 method: 'patch',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Event/${eventId}`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Event/${eventId}`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,

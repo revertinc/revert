@@ -39,9 +39,10 @@ class NoteService {
             let note = unifyNote(notes.data.data?.[0]);
             return { result: note };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             const notes = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Note/${noteId}`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Note/${noteId}`,
                 headers: {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -89,6 +90,7 @@ class NoteService {
             notes = notes?.map((l: any) => unifyNote(l));
             return { results: notes };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             // TODO: Handle "ALL" for Hubspot & Zoho
             const query =
                 fields === 'ALL'
@@ -96,7 +98,7 @@ class NoteService {
                     : `SELECT+${(fields as string).split(',').join('+,+')}+from+Note`;
             let notes: any = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/query/?q=${query}`,
+                url: `${instanceUrl}/services/data/v56.0/query/?q=${query}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -150,9 +152,10 @@ class NoteService {
             notes = notes?.map((l: any) => unifyNote(l));
             return { status: 'ok', results: notes };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             let notes: any = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/search?q=${searchCriteria}`,
+                url: `${instanceUrl}/services/data/v56.0/search?q=${searchCriteria}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -202,9 +205,10 @@ class NoteService {
             });
             return { status: 'ok', message: 'Zoho note created', result: note };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             const noteCreated = await axios({
                 method: 'post',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Note/`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Note/`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,
@@ -259,9 +263,10 @@ class NoteService {
             });
             return { status: 'ok', message: 'Zoho note updated', result: note };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             await axios({
                 method: 'patch',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Note/${noteId}`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Note/${noteId}`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,

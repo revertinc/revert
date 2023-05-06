@@ -39,9 +39,10 @@ class TaskService {
             let task = unifyTask(tasks.data.data?.[0]);
             return { result: task };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             const tasks = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Task/${taskId}`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Task/${taskId}`,
                 headers: {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -89,6 +90,7 @@ class TaskService {
             tasks = tasks?.map((l: any) => unifyTask(l));
             return { results: tasks };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             // TODO: Handle "ALL" for Hubspot & Zoho
             const query =
                 fields === 'ALL'
@@ -96,7 +98,7 @@ class TaskService {
                     : `SELECT+${(fields as string).split(',').join('+,+')}+from+Task`;
             let tasks: any = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/query/?q=${query}`,
+                url: `${instanceUrl}/services/data/v56.0/query/?q=${query}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -150,9 +152,10 @@ class TaskService {
             tasks = tasks?.map((l: any) => unifyTask(l));
             return { status: 'ok', results: tasks };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             let tasks: any = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/search?q=${searchCriteria}`,
+                url: `${instanceUrl}/services/data/v56.0/search?q=${searchCriteria}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -202,9 +205,10 @@ class TaskService {
             });
             return { status: 'ok', message: 'Zoho task created', result: task };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             const taskCreated = await axios({
                 method: 'post',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Task/`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Task/`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,
@@ -259,9 +263,10 @@ class TaskService {
             });
             return { status: 'ok', message: 'Zoho task updated', result: task };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             await axios({
                 method: 'patch',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/Task/${taskId}`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/Task/${taskId}`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,

@@ -39,9 +39,10 @@ class UserService {
             let user = unifyUser(users.data.data?.[0]);
             return { result: user };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             const users = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/User/${userId}`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/User/${userId}`,
                 headers: {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -89,6 +90,7 @@ class UserService {
             users = users?.map((l: any) => unifyUser(l));
             return { results: users };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             // TODO: Handle "ALL" for Hubspot & Zoho
             const query =
                 fields === 'ALL'
@@ -96,7 +98,7 @@ class UserService {
                     : `SELECT+${(fields as string).split(',').join('+,+')}+from+User`;
             let users: any = await axios({
                 method: 'get',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/query/?q=${query}`,
+                url: `${instanceUrl}/services/data/v56.0/query/?q=${query}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
@@ -144,9 +146,10 @@ class UserService {
             });
             return { status: 'ok', message: 'Zoho user created', result: user };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             const userCreated = await axios({
                 method: 'post',
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/services/data/v56.0/sobjects/User/`,
+                url: `${instanceUrl}/services/data/v56.0/sobjects/User/`,
                 headers: {
                     'content-type': 'application/json',
                     authorization: `Bearer ${thirdPartyToken}`,

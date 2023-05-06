@@ -189,6 +189,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.email,
+                        tp_account_url: info.data.urls['custom_domain'],
                         account: {
                             connect: { public_token: revertPublicKey },
                         },
