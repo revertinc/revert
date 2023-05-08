@@ -25,24 +25,33 @@ export function unifyCompany(company: any): UnifiedCompany {
     if (!company) return company;
     const unifiedCompany: UnifiedCompany = {
         annualRevenue: company.Annual_Revenue || company.AnnualRevenue,
-        remoteId: company.id || company.Company_Id || company.company_id,
+        remoteId: company.id || company.Company_Id || company.company_id || company.Id,
         description: company.Description || company.description,
-        id: company.id || company.Company_Id || company.company_id,
+        id: company.id || company.Company_Id || company.company_id || company.Id,
         name: company.name || company.Company_Name || company.company_name || company.Name || company.Account_Name,
         phone: company.phone || company.Phone || company.phone,
         address: {
-            street: company.street || company.Address?.street || company.address?.street,
-            city: company.city || company.City || company.city,
-            state: company.state || company.State || company.state,
-            country: company.country || company.Country || company.country,
-            zip: company.zip || company.Zip || company.zip,
-            postalCode: company.postalCode,
+            street: company.street || company.BillingAddress?.street || company.address?.street,
+            city: company.city || company.City || company.city || company.BillingAddress?.city,
+            state: company.state || company.State || company.state || company.BillingAddress?.state,
+            country: company.country || company.Country || company.country || company.BillingAddress?.country,
+            zip: company.zip || company.Zip || company.zip || company.BillingAddress?.zipCode,
+            postalCode: company.postalCode || company.BillingAddress?.postalCode,
         },
         industry: company.industry || company.Industry || company.industry,
-        size: company.size || company.Size || company.size,
-        createdTimestamp: company.createdDate || company.Created_Date || company.created_date || company.createdate,
+        size: company.size || company.Size || company.size || company.NumberOfEmployees,
+        createdTimestamp:
+            company.createdDate ||
+            company.Created_Date ||
+            company.created_date ||
+            company.createdate ||
+            company.CreatedDate,
         updatedTimestamp:
-            company.modifiedDate || company.Modified_Date || company.modified_date || company.hs_lastmodifieddate,
+            company.modifiedDate ||
+            company.Modified_Date ||
+            company.modified_date ||
+            company.hs_lastmodifieddate ||
+            company.LastModifiedDate,
         additional: {},
     };
 

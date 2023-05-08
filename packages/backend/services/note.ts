@@ -93,7 +93,7 @@ class NoteService {
             const instanceUrl = connection.tp_account_url;
             // TODO: Handle "ALL" for Hubspot & Zoho
             const query =
-                fields === 'ALL'
+                !fields || fields === 'ALL'
                     ? 'SELECT+fields(all)+from+Note+limit+200'
                     : `SELECT+${(fields as string).split(',').join('+,+')}+from+Note`;
             let notes: any = await axios({

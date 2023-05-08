@@ -93,7 +93,7 @@ class LeadService {
             const instanceUrl = connection.tp_account_url;
             // TODO: Handle "ALL" for Hubspot & Zoho
             const query =
-                fields === 'ALL'
+                !fields || fields === 'ALL'
                     ? 'SELECT+fields(all)+from+Lead+limit+200'
                     : `SELECT+${(fields as string).split(',').join('+,+')}+from+Lead`;
             let leads: any = await axios({

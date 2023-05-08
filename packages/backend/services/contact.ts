@@ -93,7 +93,7 @@ class ContactService {
             const instanceUrl = connection.tp_account_url;
             // NOTE: Handle "ALL" for Hubspot & Zoho
             const query =
-                fields === 'ALL'
+                !fields || fields === 'ALL'
                     ? 'SELECT+fields(all)+from+Contact+limit+200'
                     : `SELECT+${(fields as string).split(',').join('+,+')}+from+Contact`;
             let contacts: any = await axios({
