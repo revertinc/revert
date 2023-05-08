@@ -13,11 +13,11 @@ export interface UnifiedContact {
 
 export function unifyContact(contact: any): UnifiedContact {
     const unifiedContact: UnifiedContact = {
-        remoteId: contact.id || contact.ContactID || contact.contact_id,
-        id: contact.id || contact.ContactID || contact.contact_id,
+        remoteId: contact.id || contact.ContactID || contact.contact_id || contact.Id,
+        id: contact.id || contact.ContactID || contact.contact_id || contact.Id,
         firstName: contact.firstName || contact.firstname || contact.FirstName || contact.First_Name,
         lastName: contact.lastName || contact.lastname || contact.LastName || contact.Last_Name,
-        phone: contact.phone || contact.phone_number,
+        phone: contact.phone || contact.phone_number || contact.Phone,
         email: contact.email || contact.Email,
         createdTimestamp:
             contact.createdDate ||

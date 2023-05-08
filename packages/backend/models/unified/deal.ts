@@ -16,17 +16,17 @@ export interface UnifiedDeal {
 
 export function unifyDeal(deal: any): UnifiedDeal {
     const unifiedDeal: UnifiedDeal = {
-        remoteId: deal.id || deal.dealID || deal.deal_id,
-        id: deal.id || deal.dealID || deal.deal_id,
-        name: deal.dealname,
+        remoteId: deal.id || deal.dealID || deal.deal_id || deal.Id,
+        id: deal.id || deal.dealID || deal.deal_id || deal.Id,
+        name: deal.dealname || deal.Name,
         createdTimestamp: deal.createdDate || deal.CreatedDate || deal.Created_Time || deal.createdate,
         updatedTimestamp:
             deal.lastModifiedDate || deal.LastModifiedDate || deal.Modified_Time || deal.hs_lastmodifieddate,
         amount: deal.amount || deal.Amount,
-        priority: deal.priority || deal.Priority || deal.hs_priority,
-        stage: deal.stage || deal.Stage || deal.dealstage,
+        priority: deal.priority || deal.Priority || deal.hs_priority || deal.Priority__c, // Note: `Priority__c` may not be present in every SFDC instance
+        stage: deal.stage || deal.Stage || deal.dealstage || deal.StageName,
         expectedCloseDate: deal.closedate || deal.CloseDate || deal.Close_Date || deal.Closing_Date,
-        isWon: deal.hs_is_closed_won,
+        isWon: deal.hs_is_closed_won || deal.isWon,
         probability: deal.hs_deal_stage_probability || deal.Probability,
         additional: {},
     };
