@@ -11,7 +11,7 @@ export interface UnifiedNote {
 export function unifyNote(note: any): UnifiedNote {
     const unifiednote: UnifiedNote = {
         remoteId: note.id || note.Id,
-        id: note.id || note.noteID || note.note_id,
+        id: note.id || note.noteID || note.note_id || note.Id,
         createdTimestamp:
             note.createdDate || note.CreatedDate || note.Created_Time || note.hs_timestamp || note.hs_createdate,
         updatedTimestamp:
