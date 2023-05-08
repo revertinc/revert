@@ -31,7 +31,7 @@ class NoteService {
         } else if (thirdPartyId === 'zohocrm') {
             const notes = await axios({
                 method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/notes/${noteId}?fields=${fields}`,
+                url: `https://www.zohoapis.com/crm/v3/Notes/${noteId}?fields=${fields}`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
@@ -81,7 +81,7 @@ class NoteService {
         } else if (thirdPartyId === 'zohocrm') {
             let notes: any = await axios({
                 method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/notes?fields=${fields}`,
+                url: `https://www.zohoapis.com/crm/v3/Notes?fields=${fields}`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },

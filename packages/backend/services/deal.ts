@@ -31,7 +31,7 @@ class DealService {
         } else if (thirdPartyId === 'zohocrm') {
             const deals = await axios({
                 method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/deals/${dealId}?fields=${fields}`,
+                url: `https://www.zohoapis.com/crm/v3/Deals/${dealId}?fields=${fields}`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
@@ -81,7 +81,7 @@ class DealService {
         } else if (thirdPartyId === 'zohocrm') {
             let deals: any = await axios({
                 method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/deals?fields=${fields}`,
+                url: `https://www.zohoapis.com/crm/v3/Deals?fields=${fields}`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
