@@ -15,11 +15,12 @@ export function unifyUser(user: any): UnifiedUser {
     const unifiedUser: UnifiedUser = {
         remoteId: user.id || user.Id,
         id: user.id || user.Id,
-        createdTimestamp: user.createdDate || user.CreatedDate || user.Created_Time || user.hs_timestamp,
+        createdTimestamp:
+            user.createdDate || user.CreatedDate || user.Created_Time || user.hs_timestamp || user.created_time,
         updatedTimestamp: user.lastModifiedDate || user.LastModifiedDate || user.Modified_Time,
-        firstName: user.firstname || user.First_Name || user.FirstName,
-        lastName: user.lastname || user.Last_Name || user.LastName,
-        phone: user.phone || user.phone_number || user.Phone,
+        firstName: user.firstname || user.First_Name || user.FirstName || user.first_name,
+        lastName: user.lastname || user.Last_Name || user.LastName || user.last_name,
+        phone: user.phone || user.phone_number || user.Phone || user.mobile,
         email: user.email || user.Email,
         additional: {},
     };

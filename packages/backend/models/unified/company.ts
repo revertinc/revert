@@ -31,24 +31,35 @@ export function unifyCompany(company: any): UnifiedCompany {
         name: company.name || company.Company_Name || company.company_name || company.Name || company.Account_Name,
         phone: company.phone || company.Phone || company.phone,
         address: {
-            street: company.street || company.BillingAddress?.street || company.address?.street,
-            city: company.city || company.City || company.city || company.BillingAddress?.city,
-            state: company.state || company.State || company.state || company.BillingAddress?.state,
-            country: company.country || company.Country || company.country || company.BillingAddress?.country,
-            zip: company.zip || company.Zip || company.zip || company.BillingAddress?.zipCode,
-            postalCode: company.postalCode || company.BillingAddress?.postalCode,
+            street:
+                company.street || company.BillingAddress?.street || company.address?.street || company.Billing_Street,
+            city: company.city || company.City || company.city || company.BillingAddress?.city || company.Billing_City,
+            state:
+                company.state ||
+                company.State ||
+                company.state ||
+                company.BillingAddress?.state ||
+                company.Billing_State,
+            country:
+                company.country ||
+                company.Country ||
+                company.country ||
+                company.BillingAddress?.country ||
+                company.Billing_Country,
+            zip: company.zip || company.Zip || company.zip || company.BillingAddress?.zipCode || company.Billing_Code,
+            postalCode: company.postalCode || company.BillingAddress?.postalCode || company.Billing_Code,
         },
         industry: company.industry || company.Industry || company.industry,
-        size: company.size || company.Size || company.size || company.NumberOfEmployees,
+        size: company.size || company.Size || company.size || company.NumberOfEmployees || company.Employees,
         createdTimestamp:
             company.createdDate ||
-            company.Created_Date ||
+            company.Created_Time ||
             company.created_date ||
             company.createdate ||
             company.CreatedDate,
         updatedTimestamp:
             company.modifiedDate ||
-            company.Modified_Date ||
+            company.Modified_Time ||
             company.modified_date ||
             company.hs_lastmodifieddate ||
             company.LastModifiedDate,
@@ -505,8 +516,8 @@ export function toZohoCompany(unified: UnifiedCompany): Partial<ZohoCompany> {
     zoho.SIC_Code = 0;
     zoho.Created_By = '';
     zoho.Modified_By = '';
-    zoho.Created_Time = new Date();
-    zoho.Modified_Time = new Date();
+    zoho.Created_Time = unified.createdTimestamp;
+    zoho.Modified_Time = unified.updatedTimestamp;
     zoho.Last_Activity_Time = unified.additional?.zohoLastActivityTime || new Date();
     zoho.Last_Enriched_Time__s = new Date();
     zoho.Enrich_Status__s = '';

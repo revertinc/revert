@@ -31,12 +31,12 @@ class UserService {
         } else if (thirdPartyId === 'zohocrm') {
             const users = await axios({
                 method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/users/${userId}?fields=${fields}`,
+                url: `https://www.zohoapis.com/crm/v3/users/${userId}`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            let user = unifyUser(users.data.data?.[0]);
+            let user = unifyUser(users.data.users?.[0]);
             return { result: user };
         } else if (thirdPartyId === 'sfdc') {
             const instanceUrl = connection.tp_account_url;
@@ -81,12 +81,12 @@ class UserService {
         } else if (thirdPartyId === 'zohocrm') {
             let users: any = await axios({
                 method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Users?fields=${fields}`,
+                url: `https://www.zohoapis.com/crm/v3/users`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            users = users.data.data;
+            users = users.data.users;
             users = users?.map((l: any) => unifyUser(l));
             return { results: users };
         } else if (thirdPartyId === 'sfdc') {
