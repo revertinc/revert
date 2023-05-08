@@ -433,23 +433,26 @@ export function toZohoLead(unifiedLead: UnifiedLead): ZohoLead {
 
 export function toHubspotLead(lead: UnifiedLead): Partial<HubspotLead> {
     const hubspotLead: any = {
-        firstname: lead.firstName,
-        lastname: lead.lastName,
-        email: lead.email,
-        company: lead.additional?.company,
-        phone: lead.phone,
-        city: lead.additional?.address?.city,
-        state: lead.additional?.address?.state,
-        zip: lead.additional?.address?.zipCode,
-        country: lead.additional?.address?.country,
-        website: lead.additional?.website,
-        hs_lead_source: lead.additional?.leadSource!,
+        properties: {
+            firstname: lead.firstName,
+            lastname: lead.lastName,
+            email: lead.email,
+            company: lead.additional?.company,
+            phone: lead.phone,
+            city: lead.additional?.address?.city,
+            state: lead.additional?.address?.state,
+            zip: lead.additional?.address?.zipCode,
+            country: lead.additional?.address?.country,
+            website: lead.additional?.website,
+            hs_lead_source: lead.additional?.leadSource!,
+            hs_lead_status: lead.additional?.hs_lead_status || undefined,
+        },
     };
 
     // Map custom fields
     if (lead.additional) {
         Object.keys(lead.additional).forEach((key) => {
-            hubspotLead[key] = lead.additional?.[key];
+            hubspotLead['properties'][key] = lead.additional?.[key];
         });
     }
     return hubspotLead;
