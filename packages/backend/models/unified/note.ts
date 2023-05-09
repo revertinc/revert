@@ -61,14 +61,17 @@ export function toZohoNote(unified: UnifiedNote): any {
 
 export function toHubspotNote(unified: UnifiedNote): any {
     const hubspotEvent: any = {
-        hs_object_id: unified.remoteId,
-        hs_note_body: unified.content,
+        properties: {
+            id: unified.remoteId,
+            hs_note_body: unified.content,
+            hs_timestamp: unified.createdTimestamp,
+        },
     };
 
     // Map custom fields
     if (unified.additional) {
         Object.keys(unified.additional).forEach((key) => {
-            hubspotEvent[key] = unified.additional?.[key];
+            hubspotEvent['properties'][key] = unified.additional?.[key];
         });
     }
 

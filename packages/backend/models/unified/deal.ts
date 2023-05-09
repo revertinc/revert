@@ -83,21 +83,21 @@ export function toZohoDeal(unified: UnifiedDeal): any {
 
 export function toHubspotDeal(unifiedDeal: UnifiedDeal): any {
     const hubspotDeal: any = {
-        hs_object_id: unifiedDeal.remoteId,
-        hs_forecast_amount: unifiedDeal.amount,
-        firstname: unifiedDeal.name?.split(' ')[0],
-        lastname: unifiedDeal.name?.split(' ')[1],
-        hs_priority: unifiedDeal.priority,
-        dealstage: unifiedDeal.stage,
-        closedate: unifiedDeal.expectedCloseDate,
-        hs_deal_stage_probability: unifiedDeal.probability,
-        dealname: unifiedDeal.name,
+        properties: {
+            id: unifiedDeal.remoteId,
+            amount: unifiedDeal.amount,
+            hs_priority: unifiedDeal.priority,
+            dealstage: unifiedDeal.stage,
+            closedate: unifiedDeal.expectedCloseDate,
+            hs_deal_stage_probability: unifiedDeal.probability,
+            dealname: unifiedDeal.name,
+        },
     };
 
     // Map custom fields
     if (unifiedDeal.additional) {
         Object.keys(unifiedDeal.additional).forEach((key) => {
-            hubspotDeal[key] = unifiedDeal.additional?.[key];
+            hubspotDeal['properties'][key] = unifiedDeal.additional?.[key];
         });
     }
 
