@@ -249,7 +249,7 @@ class TaskService {
             });
             return {
                 status: 'ok',
-                message: 'Hubspot task created',
+                message: 'Hubspot task updated',
                 result: task,
             };
         } else if (thirdPartyId === 'zohocrm') {

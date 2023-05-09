@@ -251,7 +251,7 @@ class ContactService {
             });
             return {
                 status: 'ok',
-                message: 'Hubspot contact created',
+                message: 'Hubspot contact updated',
                 result: contact,
             };
         } else if (thirdPartyId === 'zohocrm') {

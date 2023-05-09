@@ -249,7 +249,7 @@ class DealService {
             });
             return {
                 status: 'ok',
-                message: 'Hubspot deal created',
+                message: 'Hubspot deal updated',
                 result: deal,
             };
         } else if (thirdPartyId === 'zohocrm') {

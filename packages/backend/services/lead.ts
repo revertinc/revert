@@ -249,7 +249,7 @@ class LeadService {
             });
             return {
                 status: 'ok',
-                message: 'Hubspot lead created',
+                message: 'Hubspot lead updated',
                 result: lead,
             };
         } else if (thirdPartyId === 'zohocrm') {

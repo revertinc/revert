@@ -249,7 +249,7 @@ class NoteService {
             });
             return {
                 status: 'ok',
-                message: 'Hubspot note created',
+                message: 'Hubspot note updated',
                 result: note,
             };
         } else if (thirdPartyId === 'zohocrm') {

@@ -249,7 +249,7 @@ class EventService {
             });
             return {
                 status: 'ok',
-                message: 'Hubspot event created',
+                message: 'Hubspot event updated',
                 result: event,
             };
         } else if (thirdPartyId === 'zohocrm') {
