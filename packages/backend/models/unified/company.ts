@@ -6,7 +6,7 @@ export interface UnifiedCompany {
     size: number;
     phone: string;
     address: {
-        street: string;
+        street: string; // Note: No street field in Hubspot.
         city: string;
         state: string;
         country: string;
@@ -545,25 +545,24 @@ export function toZohoCompany(unified: UnifiedCompany): Partial<ZohoCompany> {
 
 export function toHubspotCompany(unifiedCompany: UnifiedCompany): Partial<HubspotCompany> {
     const hubspotCompany: any = {
-        firstname: unifiedCompany.name?.split(' ')[0],
-        lastname: unifiedCompany.name?.split(' ')[1],
-        industry: unifiedCompany.industry || '',
-        phone: unifiedCompany.phone || '',
-        website: unifiedCompany.additional?.website || '',
-        address: {
-            street: unifiedCompany.address?.street || '',
-            city: unifiedCompany.address?.city || '',
-            state: unifiedCompany.address?.state || '',
-            country: unifiedCompany.address?.country || '',
-            postalCode: unifiedCompany.address?.postalCode || '',
-            zipCode: unifiedCompany.address?.zip || '',
+        properties: {
+            name: unifiedCompany.name,
+            industry: unifiedCompany.industry,
+            phone: unifiedCompany.phone,
+            description: unifiedCompany.description,
+            city: unifiedCompany.address?.city,
+            state: unifiedCompany.address?.state,
+            country: unifiedCompany.address?.country,
+            zip: unifiedCompany.address?.postalCode || unifiedCompany.address?.zip,
+            numberofemployees: unifiedCompany.size,
+            annualrevenue: unifiedCompany.annualRevenue,
         },
     };
 
     // Map custom fields
     if (unifiedCompany.additional) {
         Object.keys(unifiedCompany.additional).forEach((key) => {
-            hubspotCompany[key] = unifiedCompany.additional?.[key];
+            hubspotCompany['properties'][key] = unifiedCompany.additional?.[key];
         });
     }
 
