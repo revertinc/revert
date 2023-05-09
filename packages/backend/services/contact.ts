@@ -180,7 +180,7 @@ class ContactService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const contact = disunifyContact(req.body, thirdPartyId);
-        console.log('Revert::CREATE CONTACT', tenantId, contact);
+        console.log('Revert::CREATE CONTACT', tenantId, contact, thirdPartyId);
         if (thirdPartyId === 'hubspot') {
             await axios({
                 method: 'post',

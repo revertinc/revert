@@ -54,6 +54,7 @@ companyRouter.post('/', tenantMiddleware(), async (req, res) => {
         console.error('Could not create company', error.response);
         res.status(500).send({
             error: 'Internal server error',
+            errorResponse: error.response?.data,
         });
     }
 });

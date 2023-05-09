@@ -518,30 +518,19 @@ export function toZohoContact(unifiedContact: UnifiedContact): ZohoContact {
 
 export function toHubspotContact(unifiedContact: UnifiedContact): Partial<HubspotContact> {
     const hubspotContact: any = {
-        firstname: unifiedContact.firstName,
-        lastname: unifiedContact.lastName,
-        phone: unifiedContact.phone,
-        company_size: unifiedContact.additional?.companySize,
-        date_of_birth: unifiedContact.additional?.birthdate,
-        degree: unifiedContact.additional?.degree,
-        field_of_study: unifiedContact.additional?.fieldOfStudy,
-        first_deal_created_date: unifiedContact.additional?.firstDealCreatedDate,
-        gender: unifiedContact.additional?.gender,
-        graduation_date: unifiedContact.additional?.graduationDate,
-        hs_all_assigned_business_unit_ids: unifiedContact.additional?.allAssignedBusinessUnitIds,
-        hs_analytics_first_touch_converting_campaign: unifiedContact.additional?.analyticsFirstTouchConvertingCampaign,
-        hs_analytics_last_touch_converting_campaign: unifiedContact.additional?.analyticsLastTouchConvertingCampaign,
-        hs_avatar_filemanager_key: unifiedContact.additional?.avatarFilemanagerKey,
-        hs_buying_role: unifiedContact.additional?.buyingRole,
-        hs_clicked_linkedin_ad: unifiedContact.additional?.clickedLinkedinAd,
-        hs_content_membership_email: unifiedContact.additional?.contentMembershipEmail,
-        hs_content_membership_email_confirmed: unifiedContact.additional?.contentMembershipEmailConfirmed,
+        properties: {
+            id: unifiedContact.remoteId,
+            firstname: unifiedContact.firstName,
+            lastname: unifiedContact.lastName,
+            email: unifiedContact.email,
+            phone: unifiedContact.phone,
+        },
     };
 
     // Map custom fields
     if (unifiedContact.additional) {
         Object.keys(unifiedContact.additional).forEach((key) => {
-            hubspotContact[key] = unifiedContact.additional?.[key];
+            hubspotContact['properties'][key] = unifiedContact.additional?.[key];
         });
     }
 
