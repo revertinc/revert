@@ -64,7 +64,7 @@ export function toHubspotNote(unified: UnifiedNote): any {
         properties: {
             id: unified.remoteId,
             hs_note_body: unified.content,
-            hs_timestamp: unified.createdTimestamp,
+            hs_timestamp: Date.now().toString(),
         },
     };
 

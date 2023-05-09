@@ -85,20 +85,22 @@ export function toZohoEvent(unified: UnifiedEvent): any {
 
 export function toHubspotEvent(unifiedEvent: UnifiedEvent): any {
     const hubspotEvent: any = {
-        hs_object_id: unifiedEvent.remoteId,
-        hs_activity_type: unifiedEvent.type,
-        subject: unifiedEvent.subject,
-        hs_meeting_start_time: unifiedEvent.startDateTime,
-        hs_meeting_end_time: unifiedEvent.endDateTime,
-        hs_meeting_location: unifiedEvent.location,
-        hs_meeting_body: unifiedEvent.description,
-        isAllDay: unifiedEvent.isAllDayEvent,
+        properties: {
+            id: unifiedEvent.remoteId,
+            hs_activity_type: unifiedEvent.type,
+            hs_meeting_title: unifiedEvent.subject,
+            hs_meeting_start_time: unifiedEvent.startDateTime,
+            hs_meeting_end_time: unifiedEvent.endDateTime,
+            hs_meeting_location: unifiedEvent.location,
+            hs_meeting_body: unifiedEvent.description,
+            hs_timestamp: Date.now().toString(),
+        },
     };
 
     // Map custom fields
     if (unifiedEvent.additional) {
         Object.keys(unifiedEvent.additional).forEach((key) => {
-            hubspotEvent[key] = unifiedEvent.additional?.[key];
+            hubspotEvent['properties'][key] = unifiedEvent.additional?.[key];
         });
     }
 

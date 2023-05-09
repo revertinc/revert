@@ -77,18 +77,20 @@ export function toZohoTask(unified: UnifiedTask): any {
 
 export function toHubspotTask(unified: UnifiedTask): any {
     const hubspotTask: any = {
-        hs_object_id: unified.remoteId,
-        hs_task_body: unified.body,
-        hs_task_subject: unified.subject,
-        hs_task_priority: unified.priority,
-        hs_task_status: unified.status,
-        hs_timestamp: unified.dueDate,
+        properties: {
+            id: unified.remoteId,
+            hs_task_body: unified.body,
+            hs_task_subject: unified.subject,
+            hs_task_priority: unified.priority,
+            hs_task_status: unified.status,
+            hs_timestamp: Date.now().toString(),
+        },
     };
 
     // Map custom fields
     if (unified.additional) {
         Object.keys(unified.additional).forEach((key) => {
-            hubspotTask[key] = unified.additional?.[key];
+            hubspotTask['properties'][key] = unified.additional?.[key];
         });
     }
 

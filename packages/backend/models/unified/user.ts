@@ -71,13 +71,12 @@ export function toZohoUser(unified: UnifiedUser): any {
 
 export function toHubspotUser(unified: UnifiedUser): any {
     const hubspotUser: any = {
-        hs_object_id: unified.remoteId,
+        id: unified.remoteId,
         firstname: unified.firstName,
         lastname: unified.lastName,
         phone: unified.phone,
         email: unified.email,
     };
-
     // Map custom fields
     if (unified.additional) {
         Object.keys(unified.additional).forEach((key) => {
