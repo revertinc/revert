@@ -421,44 +421,27 @@ export function toSalesforceContact(unifiedContact: UnifiedContact): Partial<Sal
 
 export function toZohoContact(unifiedContact: UnifiedContact): ZohoContact {
     const zohoContact: any = {
-        Owner: unifiedContact.additional?.ownerId,
-        Lead_Source: unifiedContact.additional?.leadSource,
-        First_Name: unifiedContact.firstName,
-        Last_Name: unifiedContact.lastName,
-        Full_Name: unifiedContact.additional?.name,
-        Account_Name: unifiedContact.additional?.accountId,
-        Email: unifiedContact.email,
-        Title: unifiedContact.additional?.title,
-        Department: unifiedContact.additional?.department,
-        Phone: unifiedContact.phone,
-        Home_Phone: unifiedContact.additional?.homePhone,
-        Other_Phone: unifiedContact.additional?.otherPhone,
-        Fax: unifiedContact.additional?.fax,
-        Mobile: unifiedContact.additional?.mobilePhone,
-        Date_of_Birth: unifiedContact.additional?.birthdate,
-        Assistant: unifiedContact.additional?.assistantName,
-        Asst_Phone: unifiedContact.additional?.assistantPhone,
-        Email_Opt_Out: unifiedContact.additional?.isEmailBounced,
-        Created_By: unifiedContact.additional?.createdById,
-        Modified_By: unifiedContact.additional?.lastModifiedById,
-        Created_Time: unifiedContact.createdTimestamp,
-        Modified_Time: unifiedContact.updatedTimestamp,
-        Salutation: unifiedContact.additional?.salutation,
-        Last_Activity_Time: unifiedContact.additional?.lastActivityDate,
-        Reporting_To: unifiedContact.additional?.reportsToId,
-        Mailing_Street: unifiedContact.additional?.mailingStreet,
-        Other_Street: unifiedContact.additional?.otherStreet,
-        Mailing_City: unifiedContact.additional?.mailingCity,
-        Other_City: unifiedContact.additional?.otherCity,
-        Mailing_State: unifiedContact.additional?.mailingState,
-        Other_State: unifiedContact.additional?.otherState,
-        Mailing_Zip: unifiedContact.additional?.mailingPostalCode,
-        Other_Zip: unifiedContact.additional?.otherPostalCode,
-        Mailing_Country: unifiedContact.additional?.mailingCountry,
-        Other_Country: unifiedContact.additional?.otherCountry,
-        Description: unifiedContact.additional?.description,
-        Record_Image: unifiedContact.additional?.photoUrl,
+        data: [{}],
+        apply_feature_execution: [
+            {
+                name: 'layout_rules',
+            },
+        ],
+        trigger: ['approval', 'workflow', 'blueprint'],
     };
+    zohoContact.data[0].Id = unifiedContact.remoteId;
+    zohoContact.data[0].First_Name = unifiedContact.firstName;
+    zohoContact.data[0].Last_Name = unifiedContact.lastName;
+    zohoContact.data[0].Email = unifiedContact.email;
+    zohoContact.data[0].Phone = unifiedContact.phone;
+
+    // Map custom fields
+    if (unifiedContact.additional) {
+        Object.keys(unifiedContact.additional).forEach((key) => {
+            zohoContact.data[0][key] = unifiedContact.additional?.[key];
+        });
+    }
+
     return zohoContact;
 }
 

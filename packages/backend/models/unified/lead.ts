@@ -409,19 +409,25 @@ export function toSalesforceLead(unifiedLead: UnifiedLead): SalesforceLead {
 }
 
 export function toZohoLead(unifiedLead: UnifiedLead): ZohoLead {
-    const zohoLead: any = {};
-
-    zohoLead.First_Name = unifiedLead.firstName;
-    zohoLead.Last_Name = unifiedLead.lastName;
-    zohoLead.Email = unifiedLead.email;
-    zohoLead.Phone = unifiedLead.phone;
-    zohoLead.Created_Time = unifiedLead.createdTimestamp;
-    zohoLead.Modified_Time = unifiedLead.updatedTimestamp;
+    const zohoLead: any = {
+        data: [{}],
+        apply_feature_execution: [
+            {
+                name: 'layout_rules',
+            },
+        ],
+        trigger: ['approval', 'workflow', 'blueprint'],
+    };
+    zohoLead.data[0].Id = unifiedLead.remoteId;
+    zohoLead.data[0].First_Name = unifiedLead.firstName;
+    zohoLead.data[0].Last_Name = unifiedLead.lastName;
+    zohoLead.data[0].Email = unifiedLead.email;
+    zohoLead.data[0].Phone = unifiedLead.phone;
 
     // Map custom fields
     if (unifiedLead.additional) {
         Object.keys(unifiedLead.additional).forEach((key) => {
-            zohoLead[key] = unifiedLead.additional?.[key];
+            zohoLead.data[0][key] = unifiedLead.additional?.[key];
         });
     }
 
