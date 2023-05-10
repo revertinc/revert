@@ -47,9 +47,9 @@ export function toSalesforceEvent(unified: UnifiedEvent): any {
         Id: unified.remoteId,
         Type: unified.type,
         Subject: unified.subject,
-        Start_DateTime: unified.startDateTime,
-        End_DateTime: unified.endDateTime,
-        All_day: unified.isAllDayEvent,
+        StartDateTime: unified.startDateTime,
+        EndDateTime: unified.endDateTime,
+        IsAllDayEvent: unified.isAllDayEvent,
         Location: unified.location,
         Description: unified.description,
     };

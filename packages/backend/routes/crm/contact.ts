@@ -71,6 +71,7 @@ contactRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
         console.error('Could not update contact', error.response);
         res.status(500).send({
             error: 'Internal server error',
+            errorResponse: error.response?.data,
         });
     }
 });

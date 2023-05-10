@@ -72,6 +72,7 @@ noteRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
         console.error('Could not update lead', error.response);
         res.status(500).send({
             error: 'Internal server error',
+            errorResponse: error.response?.data,
         });
     }
 });
