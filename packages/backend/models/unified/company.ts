@@ -466,25 +466,18 @@ export interface SalesforceCompany {
 export function toSalesforceCompany(unifiedCompany: UnifiedCompany): Partial<SalesforceCompany> {
     const salesforceCompany: any = {
         Id: unifiedCompany.id!,
-        IsDeleted: false,
         Name: unifiedCompany.name,
         Type: unifiedCompany.additional?.type,
-        ParentId: unifiedCompany.additional?.parentCompanyId,
         BillingStreet: unifiedCompany.address?.street,
         BillingCity: unifiedCompany.address?.city,
         BillingState: unifiedCompany.address?.state,
-        BillingPostalCode: unifiedCompany.address?.postalCode,
+        BillingPostalCode: unifiedCompany.address?.postalCode || unifiedCompany.address?.zip,
         BillingCountry: unifiedCompany.address?.country,
-        BillingAddress: {},
-        ShippingAddress: {},
         Phone: unifiedCompany.phone,
-        Website: unifiedCompany.additional?.website,
         Industry: unifiedCompany.industry,
         AnnualRevenue: unifiedCompany.annualRevenue,
         NumberOfEmployees: unifiedCompany.size,
-        TickerSymbol: unifiedCompany.additional?.tickerSymbol,
         Description: unifiedCompany.description,
-        LastActivityDate: unifiedCompany.additional?.hsLastActivityDate,
     };
 
     // Map custom fields

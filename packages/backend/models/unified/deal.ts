@@ -46,11 +46,10 @@ export function toSalesforceDeal(unifiedDeal: UnifiedDeal): any {
         Id: unifiedDeal.remoteId,
         Amount: unifiedDeal.amount,
         Name: unifiedDeal.name,
-        Probability: unifiedDeal.probability,
+        Probability: String(Number(unifiedDeal.probability) * 100),
         IsWon: unifiedDeal.isWon,
         StageName: unifiedDeal.stage,
         CloseDate: unifiedDeal.expectedCloseDate,
-        Priority__c: unifiedDeal.priority,
     };
 
     // Map custom fields

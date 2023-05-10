@@ -392,14 +392,11 @@ export function toSalesforceLead(unifiedLead: UnifiedLead): SalesforceLead {
     const salesforceLead: any = {};
 
     // Map common fields
-    salesforceLead.Id = unifiedLead.id;
+    salesforceLead.Id = unifiedLead.remoteId;
     salesforceLead.LastName = unifiedLead.lastName;
     salesforceLead.FirstName = unifiedLead.firstName;
     salesforceLead.Phone = unifiedLead.phone;
-    salesforceLead.MobilePhone = unifiedLead.phone;
     salesforceLead.Email = unifiedLead.email;
-    salesforceLead.CreatedDate = unifiedLead.createdTimestamp;
-    salesforceLead.LastModifiedDate = unifiedLead.updatedTimestamp;
 
     // Map custom fields
     if (unifiedLead.additional) {
