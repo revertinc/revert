@@ -64,20 +64,28 @@ export function toSalesforceEvent(unified: UnifiedEvent): any {
 }
 
 export function toZohoEvent(unified: UnifiedEvent): any {
-    const zoho: any = {};
-    zoho.Type = unified.type;
-    zoho.id = unified.remoteId;
-    zoho.Subject = unified.subject;
-    zoho.Start_DateTime = unified.startDateTime;
-    zoho.End_DateTime = unified.endDateTime;
-    zoho.All_day = unified.isAllDayEvent;
-    zoho.Location = unified.location;
-    zoho.Description = unified.description;
+    const zoho: any = {
+        data: [{}],
+        apply_feature_execution: [
+            {
+                name: 'layout_rules',
+            },
+        ],
+        trigger: ['approval', 'workflow', 'blueprint'],
+    };
+    zoho.data[0].Type = unified.type;
+    zoho.data[0].id = unified.remoteId;
+    zoho.data[0].Event_Title = unified.subject;
+    zoho.data[0].Start_DateTime = unified.startDateTime;
+    zoho.data[0].End_DateTime = unified.endDateTime;
+    zoho.data[0].All_day = unified.isAllDayEvent;
+    zoho.data[0].Location = unified.location;
+    zoho.data[0].Description = unified.description;
 
     // Map custom fields
     if (unified.additional) {
         Object.keys(unified.additional).forEach((key) => {
-            zoho[key] = unified.additional?.[key];
+            zoho.data[0][key] = unified.additional?.[key];
         });
     }
     return zoho;

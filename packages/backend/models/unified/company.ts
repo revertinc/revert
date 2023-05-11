@@ -500,7 +500,7 @@ export function toZohoCompany(unified: UnifiedCompany): Partial<ZohoCompany> {
         trigger: ['approval', 'workflow', 'blueprint'],
     };
     zoho.data[0].Account_Name = unified.name;
-    zoho.data[0].Phone = unified.phone;
+    zoho.data[0].Phone = unified.phone; // TODO: Unify mobile number
     zoho.data[0].Account_Site = unified.additional?.website;
     zoho.data[0].Website = unified.additional?.website;
     zoho.data[0].Account_Type = unified.additional?.type;

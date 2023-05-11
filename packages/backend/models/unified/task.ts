@@ -58,18 +58,26 @@ export function toSalesforceTask(unified: UnifiedTask): any {
 }
 
 export function toZohoTask(unified: UnifiedTask): any {
-    const zoho: any = {};
-    zoho.id = unified.remoteId;
-    zoho.Description = unified.body;
-    zoho.Subject = unified.subject;
-    zoho.Priority = unified.priority;
-    zoho.Status = unified.status;
-    zoho.Due_Date = unified.dueDate;
+    const zoho: any = {
+        data: [{}],
+        apply_feature_execution: [
+            {
+                name: 'layout_rules',
+            },
+        ],
+        trigger: ['approval', 'workflow', 'blueprint'],
+    };
+    zoho.data[0].id = unified.remoteId;
+    zoho.data[0].Description = unified.body;
+    zoho.data[0].Subject = unified.subject;
+    zoho.data[0].Priority = unified.priority;
+    zoho.data[0].Status = unified.status;
+    zoho.data[0].Due_Date = unified.dueDate; // TODO: Unify format
 
     // Map custom fields
     if (unified.additional) {
         Object.keys(unified.additional).forEach((key) => {
-            zoho[key] = unified.additional?.[key];
+            zoho.data[0][key] = unified.additional?.[key];
         });
     }
     return zoho;

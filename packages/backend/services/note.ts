@@ -197,7 +197,7 @@ class NoteService {
         } else if (thirdPartyId === 'zohocrm') {
             await axios({
                 method: 'post',
-                url: `https://www.zohoapis.com/crm/v3/notes`,
+                url: `https://www.zohoapis.com/crm/v3/Notes`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
@@ -255,7 +255,7 @@ class NoteService {
         } else if (thirdPartyId === 'zohocrm') {
             await axios({
                 method: 'put',
-                url: `https://www.zohoapis.com/crm/v3/notes/${noteId}`,
+                url: `https://www.zohoapis.com/crm/v3/Notes/${noteId}`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },

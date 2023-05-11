@@ -46,14 +46,22 @@ export function toSalesforceNote(unified: UnifiedNote): any {
 }
 
 export function toZohoNote(unified: UnifiedNote): any {
-    const zoho: any = {};
-    zoho.Note_Content = unified.content;
-    zoho.id = unified.remoteId;
+    const zoho: any = {
+        data: [{}],
+        apply_feature_execution: [
+            {
+                name: 'layout_rules',
+            },
+        ],
+        trigger: ['approval', 'workflow', 'blueprint'],
+    };
+    zoho.data[0].Note_Content = unified.content;
+    zoho.data[0].id = unified.remoteId;
 
     // Map custom fields
     if (unified.additional) {
         Object.keys(unified.additional).forEach((key) => {
-            zoho[key] = unified.additional?.[key];
+            zoho.data[0][key] = unified.additional?.[key];
         });
     }
     return zoho;
