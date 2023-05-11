@@ -54,16 +54,24 @@ export function toSalesforceUser(unified: UnifiedUser): any {
 }
 
 export function toZohoUser(unified: UnifiedUser): any {
-    const zoho: any = {};
-    zoho.First_Name = unified.firstName;
-    zoho.Last_Name = unified.lastName;
-    zoho.Phone = unified.phone;
-    zoho.Email = unified.email;
+    const zoho: any = {
+        users: [{}],
+        apply_feature_execution: [
+            {
+                name: 'layout_rules',
+            },
+        ],
+        trigger: ['approval', 'workflow', 'blueprint'],
+    };
+    zoho.users[0].first_name = unified.firstName;
+    zoho.users[0].last_name = unified.lastName;
+    zoho.users[0].phone = unified.phone;
+    zoho.users[0].email = unified.email;
 
     // Map custom fields
     if (unified.additional) {
         Object.keys(unified.additional).forEach((key) => {
-            zoho[key] = unified.additional?.[key];
+            zoho.users[0][key] = unified.additional?.[key];
         });
     }
     return zoho;

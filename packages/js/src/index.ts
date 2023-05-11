@@ -113,7 +113,7 @@ const createConnectButton = function (self, integration) {
         } else if (integration.integrationId === 'zohocrm') {
             button.addEventListener('click', () => {
                 window.open(
-                    `https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.users.READ,AaaServer.profile.READ&client_id=${
+                    `https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.users.ALL,AaaServer.profile.READ&client_id=${
                         self.ZOHOCRM_CLIENT_ID
                     }&response_type=code&access_type=offline&redirect_uri=${
                         self.REDIRECT_URL_BASE
@@ -471,7 +471,7 @@ const createIntegrationBlock = function (self, integration, padding) {
                         );
                     } else if (selectedIntegration.integrationId === 'zohocrm') {
                         window.open(
-                            `https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.users.READ,AaaServer.profile.READ&client_id=${
+                            `https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.users.ALL,AaaServer.profile.READ&client_id=${
                                 this.#ZOHOCRM_CLIENT_ID
                             }&response_type=code&access_type=offline&redirect_uri=${
                                 this.#REDIRECT_URL_BASE
