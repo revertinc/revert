@@ -62,19 +62,27 @@ export function toSalesforceDeal(unifiedDeal: UnifiedDeal): any {
 }
 
 export function toZohoDeal(unified: UnifiedDeal): any {
-    const zoho: any = {};
-    zoho.Amount = unified.amount;
-    zoho.id = unified.remoteId;
-    zoho.Deal_Name = unified.name;
-    zoho.Priority = unified.priority;
-    zoho.Stage = unified.stage;
-    zoho.closedate = unified.expectedCloseDate;
-    zoho.Probability = unified.probability;
+    const zoho: any = {
+        data: [{}],
+        apply_feature_execution: [
+            {
+                name: 'layout_rules',
+            },
+        ],
+        trigger: ['approval', 'workflow', 'blueprint'],
+    };
+    zoho.data[0].Amount = unified.amount;
+    zoho.data[0].id = unified.remoteId;
+    zoho.data[0].Deal_Name = unified.name;
+    zoho.data[0].Priority = unified.priority;
+    zoho.data[0].Stage = unified.stage;
+    zoho.data[0].closedate = unified.expectedCloseDate;
+    zoho.data[0].Probability = Number(unified.probability) * 100;
 
     // Map custom fields
     if (unified.additional) {
         Object.keys(unified.additional).forEach((key) => {
-            zoho[key] = unified.additional?.[key];
+            zoho.data[0][key] = unified.additional?.[key];
         });
     }
     return zoho;

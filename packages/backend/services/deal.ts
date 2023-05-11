@@ -197,7 +197,7 @@ class DealService {
         } else if (thirdPartyId === 'zohocrm') {
             await axios({
                 method: 'post',
-                url: `https://www.zohoapis.com/crm/v3/deals`,
+                url: `https://www.zohoapis.com/crm/v3/Deals`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
@@ -255,7 +255,7 @@ class DealService {
         } else if (thirdPartyId === 'zohocrm') {
             await axios({
                 method: 'put',
-                url: `https://www.zohoapis.com/crm/v3/deals/${dealId}`,
+                url: `https://www.zohoapis.com/crm/v3/Deals/${dealId}`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },

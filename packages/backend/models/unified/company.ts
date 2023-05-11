@@ -490,47 +490,34 @@ export function toSalesforceCompany(unifiedCompany: UnifiedCompany): Partial<Sal
 }
 
 export function toZohoCompany(unified: UnifiedCompany): Partial<ZohoCompany> {
-    const zoho: any = {};
-    zoho.Owner = unified.additional?.zohoOwnerID || '';
-    zoho.Rating = '';
-    zoho.Account_Name = unified.name || '';
-    zoho.Phone = unified.phone || '';
-    zoho.Account_Site = unified.additional?.website || '';
-    zoho.Fax = '';
-    zoho.Parent_Account = unified.additional?.parentCompanyId || '';
-    zoho.Website = unified.additional?.website || '';
-    zoho.Account_Number = BigInt(0);
-    zoho.Ticker_Symbol = unified.additional?.tickerSymbol || '';
-    zoho.Account_Type = unified.additional?.type || '';
-    zoho.Ownership = '';
-    zoho.Industry = unified.industry || '';
-    zoho.Employees = unified.additional?.numberOfEmployees || 0;
-    zoho.Annual_Revenue = unified.annualRevenue || 0;
-    zoho.SIC_Code = 0;
-    zoho.Created_By = '';
-    zoho.Modified_By = '';
-    zoho.Created_Time = unified.createdTimestamp;
-    zoho.Modified_Time = unified.updatedTimestamp;
-    zoho.Last_Activity_Time = unified.additional?.zohoLastActivityTime || new Date();
-    zoho.Last_Enriched_Time__s = new Date();
-    zoho.Enrich_Status__s = '';
-    zoho.Billing_Street = unified.address?.street || '';
-    zoho.Shipping_Street = '';
-    zoho.Billing_City = unified.address?.city || '';
-    zoho.Shipping_City = '';
-    zoho.Billing_State = unified.address?.state || '';
-    zoho.Shipping_State = '';
-    zoho.Billing_Code = unified.address?.postalCode || '';
-    zoho.Shipping_Code = '';
-    zoho.Billing_Country = unified.address?.country || '';
-    zoho.Shipping_Country = '';
-    zoho.Description = unified.description || '';
-    zoho.Record_Image = '';
+    const zoho: any = {
+        data: [{}],
+        apply_feature_execution: [
+            {
+                name: 'layout_rules',
+            },
+        ],
+        trigger: ['approval', 'workflow', 'blueprint'],
+    };
+    zoho.data[0].Account_Name = unified.name;
+    zoho.data[0].Phone = unified.phone;
+    zoho.data[0].Account_Site = unified.additional?.website;
+    zoho.data[0].Website = unified.additional?.website;
+    zoho.data[0].Account_Type = unified.additional?.type;
+    zoho.data[0].Industry = unified.industry;
+    zoho.data[0].Employees = unified.additional?.numberOfEmployees;
+    zoho.data[0].Annual_Revenue = unified.annualRevenue;
+    zoho.data[0].Billing_Street = unified.address?.street;
+    zoho.data[0].Billing_City = unified.address?.city;
+    zoho.data[0].Billing_State = unified.address?.state;
+    zoho.data[0].Billing_Code = unified.address?.postalCode;
+    zoho.data[0].Billing_Country = unified.address?.country;
+    zoho.data[0].Description = unified.description;
 
     // Map custom fields
     if (unified.additional) {
         Object.keys(unified.additional).forEach((key) => {
-            zoho[key] = unified.additional?.[key];
+            zoho.data[0][key] = unified.additional?.[key];
         });
     }
     return zoho;
