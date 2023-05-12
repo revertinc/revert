@@ -10,6 +10,10 @@ function App() {
         <div className="App">
             <header className="App-header">
                 <RevertConnect
+                    style={{
+                        background: 'rgb(22, 22, 22)',
+                        borderColor: 'rgb(22, 22, 22)',
+                    }}
                     config={{
                         revertToken: REVERT_TOKEN,
                         tenantId: UNIQUE_TENANT_ID,
