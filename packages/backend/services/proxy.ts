@@ -45,9 +45,10 @@ class ProxyService {
             });
             return { result: result.data.data };
         } else if (thirdPartyId === 'sfdc') {
+            const instanceUrl = connection.tp_account_url;
             const result = await axios({
                 method: method,
-                url: `https://revert2-dev-ed.develop.my.salesforce.com/${path}`,
+                url: `${instanceUrl}/${path}`,
                 headers: {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
