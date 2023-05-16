@@ -27,26 +27,38 @@ We are an ideal match for you, If:-
 
 Roadmap  
 
-Salesforce 
-1. Events 
-![Progress](https://progress-bar.dev/40?title=completed)
-2. Tasks ![Progress](https://progress-bar.dev/100?title=completed)
-3. Notes ![Progress](https://progress-bar.dev/100?title=completed)
-4. Deals ![Progress](https://progress-bar.dev/100?title=completed)
-5. Contacts API ![Progress](https://progress-bar.dev/100?title=completed)
-6. Proxy ![Progress](https://progress-bar.dev/100?title=completed)
-7. Company ![Progress](https://progress-bar.dev/100?title=completed)
-8. Search API ![Progress](https://progress-bar.dev/100?title=completed)
+- [] Salesforce 
+    1. Events 
+    ![Progress](https://progress-bar.dev/40?title=completed)
+    2. Tasks ![Progress](https://progress-bar.dev/100?title=completed)
+    3. Notes ![Progress](https://progress-bar.dev/100?title=completed)
+    4. Deals ![Progress](https://progress-bar.dev/100?title=completed)
+    5. Contacts API ![Progress](https://progress-bar.dev/100?title=completed)
+    6. Proxy ![Progress](https://progress-bar.dev/100?title=completed)
+    7. Company ![Progress](https://progress-bar.dev/100?title=completed)
+    8. Search API ![Progress](https://progress-bar.dev/100?title=completed)
 
-Hubspot
-1. Events ![Progress](https://progress-bar.dev/100?title=completed)
-2. Tasks ![Progress](https://progress-bar.dev/100?title=completed)
-3. Notes ![Progress](https://progress-bar.dev/100?title=completed)
-4. Deals ![Progress](https://progress-bar.dev/100?title=completed)
-5. Contacts API ![Progress](https://progress-bar.dev/100?title=completed)
-6. Proxy ![Progress](https://progress-bar.dev/100?title=completed)
-7. Company ![Progress](https://progress-bar.dev/100?title=completed)
-8. Search API ![Progress](https://progress-bar.dev/100?title=completed)
+- [] Hubspot
+    1. Events ![Progress](https://progress-bar.dev/100?title=completed)
+    2. Tasks ![Progress](https://progress-bar.dev/100?title=completed)
+    3. Notes ![Progress](https://progress-bar.dev/100?title=completed)
+    4. Deals ![Progress](https://progress-bar.dev/100?title=completed)
+    5. Contacts API ![Progress](https://progress-bar.dev/100?title=completed)
+    6. Proxy ![Progress](https://progress-bar.dev/100?title=completed)
+    7. Company ![Progress](https://progress-bar.dev/100?title=completed)
+    8. Search API ![Progress](https://progress-bar.dev/100?title=completed)
+
+- [] Pipedrive 
+    1. Events ![Progress](https://progress-bar.dev/0?title=todo)
+    2. Tasks ![Progress](https://progress-bar.dev/0?title=todo)
+    3. Notes ![Progress](https://progress-bar.dev/0?title=todo)
+    4. Deals ![Progress](https://progress-bar.dev/0?title=todo)
+    5. Contacts API ![Progress](https://progress-bar.dev/0?title=todo)
+    6. Proxy ![Progress](https://progress-bar.dev/0?title=todo)
+    7. Company ![Progress](https://progress-bar.dev/0?title=todo)
+    8. Search API ![Progress](https://progress-bar.dev/0?title=todo)
+- [] Soc 2 Compliance
+- [] 
 
 Known Issues  
 We are in the process to make self hosting easy it might not work as of today but if you are interested reach out to us we would be happy to help you.
