@@ -1,5 +1,5 @@
 import express from 'express';
-import customerMiddleware from '../../helpers/customerIdMiddleware';
+import tenantMiddleware from '../../helpers/tenantIdMiddleware';
 import ProxyService from '../../services/proxy';
 
 const proxyRouter = express.Router({ mergeParams: true });
@@ -8,7 +8,7 @@ const proxyRouter = express.Router({ mergeParams: true });
  * Proxy API
  */
 
-proxyRouter.post('/', customerMiddleware(), async (req, res) => {
+proxyRouter.post('/', tenantMiddleware(), async (req, res) => {
     try {
         const result = await ProxyService.tunnel(req, res);
         if (result.error) {

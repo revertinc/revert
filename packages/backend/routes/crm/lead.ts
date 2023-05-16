@@ -1,5 +1,5 @@
 import express from 'express';
-import customerMiddleware from '../../helpers/customerIdMiddleware';
+
 import tenantMiddleware from '../../helpers/tenantIdMiddleware';
 import LeadService from '../../services/lead';
 

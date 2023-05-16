@@ -1,5 +1,4 @@
 import express from 'express';
-import customerMiddleware from '../../helpers/customerIdMiddleware';
 import tenantMiddleware from '../../helpers/tenantIdMiddleware';
 import EventService from '../../services/event';
 
@@ -10,7 +9,7 @@ const eventRouter = express.Router({ mergeParams: true });
  */
 
 // Get all notes (paginated)
-eventRouter.get('/', customerMiddleware(), async (req, res) => {
+eventRouter.get('/', tenantMiddleware(), async (req, res) => {
     try {
         const result = await EventService.getUnifiedEvents(req, res);
         if (result.error) {
@@ -25,7 +24,7 @@ eventRouter.get('/', customerMiddleware(), async (req, res) => {
 });
 
 // Get a note object identified by {id}
-eventRouter.get('/:id', customerMiddleware(), async (req, res) => {
+eventRouter.get('/:id', tenantMiddleware(), async (req, res) => {
     try {
         const result = await EventService.getUnifiedEvent(req, res);
         if (result.error) {
