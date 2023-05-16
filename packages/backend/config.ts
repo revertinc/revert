@@ -14,6 +14,7 @@ const config = {
     SFDC_CLIENT_SECRET: process.env.SFDC_CLIENT_SECRET,
     PGSQL_URL: process.env.PGSQL_URL,
     OAUTH_REDIRECT_BASE: process.env.OAUTH_REDIRECT_BASE,
+    SLACK_URL: process.env.SLACK_HOOK_URL,
 };
 
 export default config;

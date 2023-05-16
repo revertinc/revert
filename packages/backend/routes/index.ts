@@ -2,6 +2,7 @@ import prisma from '../prisma/client';
 import axios from 'axios';
 import express from 'express';
 import crmRouter from './crm';
+import config from '../config';
 
 const router = express.Router();
 
@@ -22,7 +23,7 @@ router.post('/slack-alert', async (req, res) => {
         const email = req.body.email;
         await axios({
             method: 'post',
-            url: `https://hooks.slack.com/services/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`,
+            url: config.SLACK_URL,
             data: JSON.stringify({ text: `Woot! :zap: ${email} signed up for Revert!` }),
         });
         await prisma.waitlist.upsert({
