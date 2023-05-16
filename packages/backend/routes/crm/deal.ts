@@ -1,5 +1,5 @@
 import express from 'express';
-import customerMiddleware from '../../helpers/customerIdMiddleware';
+
 import tenantMiddleware from '../../helpers/tenantIdMiddleware';
 import DealService from '../../services/deal';
 
@@ -10,7 +10,7 @@ const dealRouter = express.Router({ mergeParams: true });
  */
 
 // Get all deals (paginated)
-dealRouter.get('/', customerMiddleware(), async (req, res) => {
+dealRouter.get('/', tenantMiddleware(), async (req, res) => {
     try {
         const result = await DealService.getUnifiedDeals(req, res);
         if (result.error) {
@@ -25,7 +25,7 @@ dealRouter.get('/', customerMiddleware(), async (req, res) => {
 });
 
 // Get a deal object identified by {id}
-dealRouter.get('/:id', customerMiddleware(), async (req, res) => {
+dealRouter.get('/:id', tenantMiddleware(), async (req, res) => {
     try {
         const result = await DealService.getUnifiedDeal(req, res);
         if (result.error) {

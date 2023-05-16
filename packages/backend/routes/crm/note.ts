@@ -1,5 +1,5 @@
 import express from 'express';
-import customerMiddleware from '../../helpers/customerIdMiddleware';
+
 import tenantMiddleware from '../../helpers/tenantIdMiddleware';
 import NoteService from '../../services/note';
 
@@ -10,7 +10,7 @@ const noteRouter = express.Router({ mergeParams: true });
  */
 
 // Get all notes (paginated)
-noteRouter.get('/', customerMiddleware(), async (req, res) => {
+noteRouter.get('/', tenantMiddleware(), async (req, res) => {
     try {
         const result = await NoteService.getUnifiedNotes(req, res);
         if (result.error) {
@@ -25,7 +25,7 @@ noteRouter.get('/', customerMiddleware(), async (req, res) => {
 });
 
 // Get a note object identified by {id}
-noteRouter.get('/:id', customerMiddleware(), async (req, res) => {
+noteRouter.get('/:id', tenantMiddleware(), async (req, res) => {
     try {
         const result = await NoteService.getUnifiedNote(req, res);
         if (result.error) {

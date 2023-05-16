@@ -1,5 +1,5 @@
 import express from 'express';
-import customerMiddleware from '../../helpers/customerIdMiddleware';
+
 import tenantMiddleware from '../../helpers/tenantIdMiddleware';
 import LeadService from '../../services/lead';
 
@@ -10,7 +10,7 @@ const leadRouter = express.Router({ mergeParams: true });
  */
 
 // Get all leads (paginated)
-leadRouter.get('/', customerMiddleware(), async (req, res) => {
+leadRouter.get('/', tenantMiddleware(), async (req, res) => {
     try {
         const result = await LeadService.getUnifiedLeads(req, res);
         if (result.error) {
@@ -25,7 +25,7 @@ leadRouter.get('/', customerMiddleware(), async (req, res) => {
 });
 
 // Get a lead object identified by {id}
-leadRouter.get('/:id', customerMiddleware(), async (req, res) => {
+leadRouter.get('/:id', tenantMiddleware(), async (req, res) => {
     try {
         const result = await LeadService.getUnifiedLead(req, res);
         if (result.error) {

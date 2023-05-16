@@ -1,5 +1,5 @@
 import express from 'express';
-import customerMiddleware from '../../helpers/customerIdMiddleware';
+
 import tenantMiddleware from '../../helpers/tenantIdMiddleware';
 import TaskService from '../../services/task';
 
@@ -10,7 +10,7 @@ const taskRouter = express.Router({ mergeParams: true });
  */
 
 // Get all tasks (paginated)
-taskRouter.get('/', customerMiddleware(), async (req, res) => {
+taskRouter.get('/', tenantMiddleware(), async (req, res) => {
     try {
         const result = await TaskService.getUnifiedTasks(req, res);
         if (result.error) {
@@ -25,7 +25,7 @@ taskRouter.get('/', customerMiddleware(), async (req, res) => {
 });
 
 // Get a task object identified by {id}
-taskRouter.get('/:id', customerMiddleware(), async (req, res) => {
+taskRouter.get('/:id', tenantMiddleware(), async (req, res) => {
     try {
         const result = await TaskService.getUnifiedTask(req, res);
         if (result.error) {

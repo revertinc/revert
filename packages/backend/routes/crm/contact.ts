@@ -1,5 +1,5 @@
 import express from 'express';
-import customerMiddleware from '../../helpers/customerIdMiddleware';
+
 import tenantMiddleware from '../../helpers/tenantIdMiddleware';
 import ContactService from '../../services/contact';
 
@@ -9,7 +9,7 @@ const contactRouter = express.Router({ mergeParams: true });
  * Contacts API
  */
 // Get all contacts (paginated)
-contactRouter.get('/', customerMiddleware(), async (req, res) => {
+contactRouter.get('/', tenantMiddleware(), async (req, res) => {
     try {
         const result = await ContactService.getUnifiedContacts(req, res);
         if (result.error) {
@@ -24,7 +24,7 @@ contactRouter.get('/', customerMiddleware(), async (req, res) => {
 });
 
 // Get a contact object identified by {id}
-contactRouter.get('/:id', customerMiddleware(), async (req, res) => {
+contactRouter.get('/:id', tenantMiddleware(), async (req, res) => {
     try {
         const result = await ContactService.getUnifiedContact(req, res);
         if (result.error) {
