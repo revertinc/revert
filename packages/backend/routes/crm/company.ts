@@ -1,5 +1,5 @@
 import express from 'express';
-import customerMiddleware from '../../helpers/customerIdMiddleware';
+
 import tenantMiddleware from '../../helpers/tenantIdMiddleware';
 import CompanyService from '../../services/company';
 
@@ -10,7 +10,7 @@ const companyRouter = express.Router({ mergeParams: true });
  */
 
 // Get all companies (paginated)
-companyRouter.get('/', customerMiddleware(), async (req, res) => {
+companyRouter.get('/', tenantMiddleware(), async (req, res) => {
     try {
         const result = await CompanyService.getUnifiedCompanies(req, res);
         if (result.error) {
@@ -25,7 +25,7 @@ companyRouter.get('/', customerMiddleware(), async (req, res) => {
 });
 
 // Get a company object identified by {id}
-companyRouter.get('/:id', customerMiddleware(), async (req, res) => {
+companyRouter.get('/:id', tenantMiddleware(), async (req, res) => {
     try {
         const result = await CompanyService.getUnifiedCompany(req, res);
         if (result.error) {
