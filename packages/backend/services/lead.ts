@@ -64,18 +64,23 @@ class LeadService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const fields = req.query.fields;
+        const pageSize = parseInt(String(req.query.pageSize));
+        const cursor = req.query.cursor;
+        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
         console.log('Revert::GET ALL LEADS', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
             let leads: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts?properties=${fields}`,
+                url: `https://api.hubapi.com/crm/v3/objects/contacts?properties=${fields}&${pagingString}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
+            const nextCursor = leads.data?.paging?.next?.after || null;
             leads = filterLeadsFromContactsForHubspot(leads.data.results as any[]);
             leads = leads?.map((l: any) => unifyLead({ ...l, ...l?.properties }));
             return {
+                next: nextCursor,
                 results: leads,
             };
         } else if (thirdPartyId === 'zohocrm') {
