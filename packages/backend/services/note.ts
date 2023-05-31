@@ -64,38 +64,53 @@ class NoteService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const fields = req.query.fields;
+        const pageSize = parseInt(String(req.query.pageSize));
+        const cursor = req.query.cursor;
         console.log('Revert::GET ALL NOTE', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
+            const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let notes: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/notes?properties=${fields}`,
+                url: `https://api.hubapi.com/crm/v3/objects/notes?properties=${fields}&${pagingString}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
+            const nextCursor = notes.data?.paging?.next?.after || null;
             notes = notes.data.results as any[];
             notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }));
             return {
+                next: nextCursor,
+                previous: null, // Field not supported by Hubspot.
                 results: notes,
             };
         } else if (thirdPartyId === 'zohocrm') {
+            const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${cursor ? `&page_token=${cursor}` : ''}`;
             let notes: any = await axios({
                 method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Notes?fields=${fields}`,
+                url: `https://www.zohoapis.com/crm/v3/Notes?fields=${fields}${pagingString}`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
+            const nextCursor = notes.data?.info?.next_page_token || null;
+            const prevCursor = notes.data?.info?.previous_page_token || null;
             notes = notes.data.data;
             notes = notes?.map((l: any) => unifyNote(l));
-            return { results: notes };
+            return { next: nextCursor, previous: prevCursor, results: notes };
         } else if (thirdPartyId === 'sfdc') {
+            let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
+                cursor ? `OFFSET+${cursor}` : ''
+            }`;
+            if (!pageSize && !cursor) {
+                pagingString = 'LIMIT 200';
+            }
             const instanceUrl = connection.tp_account_url;
             // TODO: Handle "ALL" for Hubspot & Zoho
             const query =
                 !fields || fields === 'ALL'
-                    ? 'SELECT+fields(all)+from+Note+limit+200'
-                    : `SELECT+${(fields as string).split(',').join('+,+')}+from+Note`;
+                    ? `SELECT+fields(all)+from+Note+${pagingString}`
+                    : `SELECT+${(fields as string).split(',').join('+,+')}+from+Note+${pagingString}`;
             let notes: any = await axios({
                 method: 'get',
                 url: `${instanceUrl}/services/data/v56.0/query/?q=${query}`,
@@ -103,9 +118,14 @@ class NoteService {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
+            const nextCursor = pageSize ? String(notes.data?.totalSize + (parseInt(String(cursor)) || 0)) : null;
+            const prevCursor =
+                cursor && parseInt(String(cursor)) > 0
+                    ? String(parseInt(String(cursor)) - notes.data?.totalSize)
+                    : null;
             notes = notes.data?.records;
             notes = notes?.map((l: any) => unifyNote(l));
-            return { results: notes };
+            return { next: nextCursor, previous: prevCursor, results: notes };
         } else {
             return { error: 'Unrecognized CRM' };
         }

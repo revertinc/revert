@@ -62,38 +62,53 @@ class CompanyService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const fields = req.query.fields;
+        const pageSize = parseInt(String(req.query.pageSize));
+        const cursor = req.query.cursor;
         console.log('Revert::GET ALL COMPANIES', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
+            const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let companies: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/companies?properties=${fields}`,
+                url: `https://api.hubapi.com/crm/v3/objects/companies?properties=${fields}&${pagingString}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
+            const nextCursor = companies.data?.paging?.next?.after || null;
             companies = companies.data.results as any[];
             companies = companies?.map((c: any) => unifyCompany({ ...c, ...c?.properties }));
             return {
+                next: nextCursor,
+                previous: null, // Field not supported by Hubspot.
                 results: companies,
             };
         } else if (thirdPartyId === 'zohocrm') {
+            const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${cursor ? `&page_token=${cursor}` : ''}`;
             let companies: any = await axios({
                 method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Accounts?fields=${fields}`,
+                url: `https://www.zohoapis.com/crm/v3/Accounts?fields=${fields}${pagingString}`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
+            const nextCursor = companies.data?.info?.next_page_token || null;
+            const prevCursor = companies.data?.info?.previous_page_token || null;
             companies = companies.data.data;
             companies = companies?.map((l: any) => unifyCompany(l));
-            return { results: companies };
+            return { next: nextCursor, previous: prevCursor, results: companies };
         } else if (thirdPartyId === 'sfdc') {
+            let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
+                cursor ? `OFFSET+${cursor}` : ''
+            }`;
+            if (!pageSize && !cursor) {
+                pagingString = 'LIMIT 200';
+            }
             const instanceUrl = connection.tp_account_url;
             // NOTE: Handle "ALL" for Hubspot & Zoho
             const query =
                 !fields || fields === 'ALL'
-                    ? 'SELECT+fields(all)+from+Account+limit+200'
-                    : `SELECT+${(fields as string).split(',').join('+,+')}+from+Account`;
+                    ? `SELECT+fields(all)+from+Account+${pagingString}`
+                    : `SELECT+${(fields as string).split(',').join('+,+')}+from+Account+${pagingString}`;
             let companies: any = await axios({
                 method: 'get',
                 url: `${instanceUrl}/services/data/v56.0/query/?q=${query}`,
@@ -101,9 +116,14 @@ class CompanyService {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
+            const nextCursor = pageSize ? String(companies.data?.totalSize + (parseInt(String(cursor)) || 0)) : null;
+            const prevCursor =
+                cursor && parseInt(String(cursor)) > 0
+                    ? String(parseInt(String(cursor)) - companies.data?.totalSize)
+                    : null;
             companies = companies.data?.records;
             companies = companies?.map((l: any) => unifyCompany(l));
-            return { results: companies };
+            return { next: nextCursor, previous: prevCursor, results: companies };
         } else {
             return { error: 'Unrecognized CRM' };
         }
