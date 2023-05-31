@@ -64,38 +64,53 @@ class LeadService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const fields = req.query.fields;
+        const pageSize = parseInt(String(req.query.pageSize));
+        const cursor = req.query.cursor;
         console.log('Revert::GET ALL LEADS', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
+            const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let leads: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts?properties=${fields}`,
+                url: `https://api.hubapi.com/crm/v3/objects/contacts?properties=${fields}&${pagingString}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
+            const nextCursor = leads.data?.paging?.next?.after || null;
             leads = filterLeadsFromContactsForHubspot(leads.data.results as any[]);
             leads = leads?.map((l: any) => unifyLead({ ...l, ...l?.properties }));
             return {
+                next: nextCursor,
+                previous: null, // Field not supported by Hubspot.
                 results: leads,
             };
         } else if (thirdPartyId === 'zohocrm') {
+            const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${cursor ? `&page_token=${cursor}` : ''}`;
             let leads: any = await axios({
                 method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Leads?fields=${fields}`,
+                url: `https://www.zohoapis.com/crm/v3/Leads?fields=${fields}${pagingString}`,
                 headers: {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
+            const nextCursor = leads.data?.info?.next_page_token || null;
+            const prevCursor = leads.data?.info?.previous_page_token || null;
             leads = leads.data.data;
             leads = leads?.map((l: any) => unifyLead(l));
-            return { results: leads };
+            return { next: nextCursor, previous: prevCursor, results: leads };
         } else if (thirdPartyId === 'sfdc') {
+            let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
+                cursor ? `OFFSET+${cursor}` : ''
+            }`;
+            if (!pageSize && !cursor) {
+                pagingString = 'LIMIT 200';
+            }
             const instanceUrl = connection.tp_account_url;
             // TODO: Handle "ALL" for Hubspot & Zoho
             const query =
                 !fields || fields === 'ALL'
-                    ? 'SELECT+fields(all)+from+Lead+limit+200'
-                    : `SELECT+${(fields as string).split(',').join('+,+')}+from+Lead`;
+                    ? `SELECT+fields(all)+from+Lead+${pagingString}`
+                    : `SELECT+${(fields as string).split(',').join('+,+')}+from+Lead+${pagingString}`;
             let leads: any = await axios({
                 method: 'get',
                 url: `${instanceUrl}/services/data/v56.0/query/?q=${query}`,
@@ -103,9 +118,14 @@ class LeadService {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
+            const nextCursor = pageSize ? String(leads.data?.totalSize + (parseInt(String(cursor)) || 0)) : null;
+            const prevCursor =
+                cursor && parseInt(String(cursor)) > 0
+                    ? String(parseInt(String(cursor)) - leads.data?.totalSize)
+                    : null;
             leads = leads.data?.records;
             leads = leads?.map((l: any) => unifyLead(l));
-            return { results: leads };
+            return { next: nextCursor, previous: prevCursor, results: leads };
         } else {
             return { error: 'Unrecognized CRM' };
         }
