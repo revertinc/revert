@@ -81,6 +81,7 @@ class LeadService {
             leads = leads?.map((l: any) => unifyLead({ ...l, ...l?.properties }));
             return {
                 next: nextCursor,
+                previous: null, // Field not supported by Hubspot.
                 results: leads,
             };
         } else if (thirdPartyId === 'zohocrm') {
