@@ -25,6 +25,7 @@ class ProxyService {
                 url: `https://api.hubapi.com/${path}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
+                    'Content-Type': 'application/json',
                 },
                 data: JSON.stringify(body),
                 params: queryParams,
@@ -38,6 +39,7 @@ class ProxyService {
                 method: method,
                 url: `https://www.zohoapis.com/${path}`,
                 headers: {
+                    'Content-Type': 'application/json',
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
                 data: JSON.stringify(body),
@@ -50,6 +52,7 @@ class ProxyService {
                 method: method,
                 url: `${instanceUrl}/${path}`,
                 headers: {
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
                 data: JSON.stringify(body),
