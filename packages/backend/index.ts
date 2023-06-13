@@ -7,6 +7,7 @@ import cron from 'node-cron';
 import AuthService from './services/auth';
 import { register } from './generated/typescript';
 import { metadataService } from './services/metadata';
+import { connectionRouter } from './routes/connection';
 
 const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
@@ -26,6 +27,7 @@ app.use(cors());
 app.use(limiter);
 app.use('/', indexRouter);
 app.use('/v1/crm', cors(), revertAuthMiddleware(), crmRouter);
+app.use('/v1/connection', cors(), revertAuthMiddleware(), connectionRouter);
 register(app, { metadata: metadataService });
 
 app.listen(config.PORT, () => {
