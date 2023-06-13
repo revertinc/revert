@@ -1,6 +1,6 @@
 {
     "name": "@revertdotdev/revert-react",
-    "version": "0.0.12",
+    "version": "0.0.13",
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
@@ -38,8 +38,8 @@
     },
     "license": "UNLICENSED",
     "peerDependencies": {
-        "react": "16.8.0 || 17.x",
-        "react-dom": "16.8.0 || 17.x",
+        "react": ">=16.x",
+        "react-dom": ">=16.x",
         "styled-components": "5.0.0"
     },
     "files": [

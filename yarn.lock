@@ -5314,8 +5314,8 @@ __metadata:
     vite: 2.8.6
     vite-plugin-dts: 1.0.3
   peerDependencies:
-    react: 16.8.0 || 17.x
-    react-dom: 16.8.0 || 17.x
+    react: ">=16.x"
+    react-dom: ">=16.x"
     styled-components: 5.0.0
   languageName: unknown
   linkType: soft
