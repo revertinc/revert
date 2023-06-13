@@ -200,7 +200,7 @@ class NoteService {
         const note = disunifyNote(req.body, thirdPartyId);
         console.log('Revert::CREATE NOTE', tenantId, note);
         if (thirdPartyId === 'hubspot') {
-            await axios({
+            const res = await axios({
                 method: 'post',
                 url: `https://api.hubapi.com/crm/v3/objects/notes/`,
                 headers: {
@@ -212,7 +212,7 @@ class NoteService {
             return {
                 status: 'ok',
                 message: 'Hubspot note created',
-                result: note,
+                result: { id: res.data?.id, ...note },
             };
         } else if (thirdPartyId === 'zohocrm') {
             await axios({
