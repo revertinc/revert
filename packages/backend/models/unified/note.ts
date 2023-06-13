@@ -31,7 +31,7 @@ export function unifyNote(note: any): UnifiedNote {
 }
 
 export function toSalesforceNote(unified: UnifiedNote): any {
-    const salesforceEvent: any = {
+    const salesforceNote: any = {
         Id: unified.remoteId,
         Body: unified.content,
     };
@@ -39,10 +39,10 @@ export function toSalesforceNote(unified: UnifiedNote): any {
     // Map custom fields
     if (unified.additional) {
         Object.keys(unified.additional).forEach((key) => {
-            salesforceEvent[key] = unified.additional?.[key];
+            salesforceNote[key] = unified.additional?.[key];
         });
     }
-    return salesforceEvent;
+    return salesforceNote;
 }
 
 export function toZohoNote(unified: UnifiedNote): any {
@@ -68,7 +68,7 @@ export function toZohoNote(unified: UnifiedNote): any {
 }
 
 export function toHubspotNote(unified: UnifiedNote): any {
-    const hubspotEvent: any = {
+    const hubspotNote: any = {
         properties: {
             id: unified.remoteId,
             hs_note_body: unified.content,
@@ -79,11 +79,16 @@ export function toHubspotNote(unified: UnifiedNote): any {
     // Map custom fields
     if (unified.additional) {
         Object.keys(unified.additional).forEach((key) => {
-            hubspotEvent['properties'][key] = unified.additional?.[key];
+            if (key !== 'associations') {
+                hubspotNote['properties'][key] = unified.additional?.[key];
+            }
         });
     }
+    if (unified.additional?.associations) {
+        hubspotNote['associations'] = unified.additional.associations;
+    }
 
-    return hubspotEvent;
+    return hubspotNote;
 }
 
 export function disunifyNote(note: UnifiedNote, integrationId: string): any {
