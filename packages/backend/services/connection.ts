@@ -45,6 +45,28 @@ class ConnectionService {
             };
         }
     }
+    async deleteConnection(
+        _req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
+        res: Response<any, Record<string, any>, number>
+    ) {
+        const connection = res.locals.connection;
+        const deleted: any = await prisma.connections.delete({
+            where: {
+                uniqueCustomerPerTenantPerThirdParty: {
+                    tp_customer_id: connection.tp_customer_id,
+                    t_id: connection.t_id,
+                    tp_id: connection.tp_id,
+                },
+            },
+        });
+        if (deleted) {
+            return { status: 'ok', deleted };
+        } else {
+            return {
+                error: 'Connections not found!',
+            };
+        }
+    }
 }
 
 export default new ConnectionService();
