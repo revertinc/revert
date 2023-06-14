@@ -151,7 +151,15 @@ class DealService {
                 },
                 data: JSON.stringify({
                     ...searchCriteria,
-                    properties: ['hs_deal_status', 'firstname', 'email', 'lastname', 'hs_object_id', ...fields],
+                    properties: [
+                        'hs_deal_status',
+                        'firstname',
+                        'email',
+                        'lastname',
+                        'hs_object_id',
+                        'dealname',
+                        ...fields,
+                    ],
                 }),
             });
             deals = deals.data.results as any[];
