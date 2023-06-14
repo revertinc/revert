@@ -13,6 +13,9 @@ function App() {
                 config={{
                     revertToken: 'pk_test_Y2xlcmsuc3Ryb25nLmRlZXItNTYubGNsLmRldiQ',
                     tenantId: 'testTenantId',
+                    onClose: () => {
+                        console.log('On close working!');
+                    },
                 }}
             />
         </div>
