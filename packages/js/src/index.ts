@@ -280,6 +280,7 @@ const createIntegrationBlock = function (self, integration, padding) {
         #SFDC_CLIENT_ID: string;
         #REDIRECT_URL_BASE: string;
         #integrationsLoaded: boolean;
+        #onClose: () => void;
 
         get SFDC_CLIENT_ID() {
             return this.#SFDC_CLIENT_ID;
@@ -341,6 +342,7 @@ const createIntegrationBlock = function (self, integration, padding) {
         init = function (config) {
             this.API_REVERT_PUBLIC_TOKEN = config.revertToken;
             this.tenantId = config.tenantId;
+            this.#onClose = config.onClose;
             addStyle(`
         @font-face {
             font-family: 'DM Sans';
@@ -501,6 +503,7 @@ const createIntegrationBlock = function (self, integration, padding) {
                 rootElement.firstChild.remove();
             }
             this.state = 'close';
+            this.#onClose();
         };
     }
     revert = new Revert();
