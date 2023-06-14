@@ -17,13 +17,18 @@ class ConnectionService {
         }
     }
     async getAllConnections(
-        _req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
+        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
+        _res: Response<any, Record<string, any>, number>
     ) {
-        const connection = res.locals.connection;
-        const tenantId = connection.t_id;
+        const { 'x-revert-api-token': token } = req.headers;
         const connections: any = await prisma.connections.findMany({
-            where: { t_id: tenantId },
+            where: {
+                account: {
+                    is: {
+                        private_token: String(token),
+                    },
+                },
+            },
             select: {
                 tp_id: true,
                 tp_access_token: true,
