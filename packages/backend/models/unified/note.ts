@@ -84,6 +84,7 @@ export function toHubspotNote(unified: UnifiedNote): any {
             }
         });
     }
+    // TODO: Handle associations creation elsewhere as well.
     if (unified.additional?.associations) {
         hubspotNote['associations'] = unified.additional.associations;
     }
