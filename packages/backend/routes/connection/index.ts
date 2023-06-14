@@ -18,7 +18,7 @@ connectionRouter.get('/', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error) {
-        console.error('Could not fetch leads', error);
+        console.error('Could not fetch connection', error);
         res.status(500).send({ error: 'Internal server error' });
     }
 });
@@ -32,7 +32,21 @@ connectionRouter.get('/all', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error) {
-        console.error('Could not fetch leads', error);
+        console.error('Could not fetch connections', error);
+        res.status(500).send({ error: 'Internal server error' });
+    }
+});
+
+connectionRouter.delete('/', tenantMiddleware(), async (req, res) => {
+    try {
+        const result = await ConnectionService.deleteConnection(req, res);
+        if (result.error) {
+            res.status(400).send(result);
+        } else {
+            res.send(result);
+        }
+    } catch (error) {
+        console.error('Could not delete connection', error);
         res.status(500).send({ error: 'Internal server error' });
     }
 });
