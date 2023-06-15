@@ -7,9 +7,8 @@ import revertAuthMiddleware from './helpers/authMiddleware';
 import cors from 'cors';
 import cron from 'node-cron';
 import AuthService from './services/auth';
-import { register } from './generated/typescript';
-import { metadataService } from './services/metadata';
 import { connectionRouter } from './routes/connection';
+import metadataRouter from './routes/metadata';
 
 const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
@@ -54,7 +53,7 @@ app.use(limiter);
 app.use('/', indexRouter);
 app.use('/v1/crm', cors(), revertAuthMiddleware(), crmRouter);
 app.use('/v1/connection', cors(), revertAuthMiddleware(), connectionRouter);
-register(app, { metadata: metadataService });
+app.use('/v1/metadata', cors(), metadataRouter);
 
 // The error handler must be before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());

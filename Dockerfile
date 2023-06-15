@@ -1,6 +1,6 @@
 FROM node:alpine AS BUILD_IMAGE
 WORKDIR /app/
-COPY ./fern/ /app/fern/
+
 COPY ./packages/backend /app/packages/backend
 COPY ./yarn.lock /app/yarn.lock
 COPY ./package.json /app/package.json
@@ -15,7 +15,6 @@ ARG PGSQL_URL
 ARG SFDC_CLIENT_ID
 ARG SFDC_CLIENT_SECRET
 ARG OAUTH_REDIRECT_BASE
-ARG FERN_TOKEN
 ARG PORT
 
 RUN echo $PGSQL_URL
@@ -30,7 +29,6 @@ ENV SFDC_CLIENT_ID $SFDC_CLIENT_ID
 ENV SFDC_CLIENT_SECRET $SFDC_CLIENT_SECRET
 ENV OAUTH_REDIRECT_BASE $OAUTH_REDIRECT_BASE
 ENV PORT $PORT
-ENV FERN_TOKEN $FERN_TOKEN
 
 # create .env from the vars passed.
 RUN echo "SERVER_PORT=$SERVER_PORT" > .env \
@@ -43,12 +41,9 @@ RUN echo "SERVER_PORT=$SERVER_PORT" > .env \
     && echo "SFDC_CLIENT_ID=$SFDC_CLIENT_ID" >> .env \
     && echo "SFDC_CLIENT_SECRET=$SFDC_CLIENT_SECRET" >> .env \
     && echo "OAUTH_REDIRECT_BASE=$OAUTH_REDIRECT_BASE" >> .env \
-    && echo "PORT=$PORT" >> .env \
-    && echo "FERN_TOKEN=$FERN_TOKEN" >> .env
+    && echo "PORT=$PORT" >> .env
 
 RUN yarn install --check-cache 
-RUN npm install -g fern-api@0.6.12 && fern -v && fern generate --log-level debug
-RUN mkdir -p /app/packages/backend/dist/generated && cp -r /app/packages/backend/generated/typescript /app/packages/backend/dist/generated
 RUN yarn workspace @revertdotdev/backend build
 
 # remove development dependencies
