@@ -16,6 +16,7 @@ const config = {
     OAUTH_REDIRECT_BASE: process.env.OAUTH_REDIRECT_BASE,
     SLACK_URL: process.env.SLACK_HOOK_URL,
     SENTRY_DSN: process.env.SENTRY_DSN,
+    SVIX_AUTH_TOKEN: process.env.SVIX_AUTH_TOKEN,
 };
 
 export default config;
