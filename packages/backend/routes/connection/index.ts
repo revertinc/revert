@@ -51,5 +51,33 @@ connectionRouter.delete('/', tenantMiddleware(), async (req, res) => {
     }
 });
 
+connectionRouter.post('/webhook', tenantMiddleware(), async (req, res) => {
+    try {
+        const result = await ConnectionService.createWebhook(req, res);
+        if (result.error) {
+            res.status(400).send(result);
+        } else {
+            res.send(result);
+        }
+    } catch (error) {
+        console.error('Could not create webhook', error);
+        res.status(500).send({ error: 'Internal server error' });
+    }
+});
+
+connectionRouter.delete('/webhook', tenantMiddleware(), async (req, res) => {
+    try {
+        const result = await ConnectionService.deleteWebhook(req, res);
+        if (result.error) {
+            res.status(400).send(result);
+        } else {
+            res.send(result);
+        }
+    } catch (error) {
+        console.error('Could not delete webhook', error);
+        res.status(500).send({ error: 'Internal server error' });
+    }
+});
+
 export default connectionRouter;
 export { connectionRouter };
