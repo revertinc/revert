@@ -15,6 +15,7 @@ const config = {
     PGSQL_URL: process.env.PGSQL_URL,
     OAUTH_REDIRECT_BASE: process.env.OAUTH_REDIRECT_BASE,
     SLACK_URL: process.env.SLACK_HOOK_URL,
+    SENTRY_DSN: process.env.SENTRY_DSN,
 };
 
 export default config;

@@ -18,6 +18,10 @@ router.get('/', (_, response) => {
     });
 });
 
+router.get('/debug-sentry', () => {
+    throw new Error('My first Sentry error!');
+});
+
 router.post('/slack-alert', async (req, res) => {
     try {
         const email = req.body.email;
