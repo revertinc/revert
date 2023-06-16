@@ -77,7 +77,6 @@ class ConnectionService {
                 eventType: 'connection.deleted',
                 payload: {
                     connection,
-                    attempt: 2,
                 },
                 channels: [connection.t_id],
             });
