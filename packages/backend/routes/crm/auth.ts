@@ -73,11 +73,13 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 ConnectionService.svix.message.create(svixAppId, {
                     eventType: 'connection.added',
                     payload: {
-                        t_id: req.query.t_id as string,
-                        tp_id: 'hubspot',
-                        tp_access_token: result.data.access_token,
-                        tp_refresh_token: result.data.refresh_token,
-                        tp_customer_id: info.data.user,
+                        eventType: 'connection.added',
+                        connection: {
+                            t_id: req.query.t_id as string,
+                            tp_id: 'hubspot',
+                            tp_access_token: result.data.access_token,
+                            tp_customer_id: info.data.user,
+                        },
                     },
                     channels: [req.query.t_id as string],
                 });
@@ -154,12 +156,14 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     ConnectionService.svix.message.create(svixAppId, {
                         eventType: 'connection.added',
                         payload: {
-                            t_id: req.query.t_id as string,
-                            tp_id: 'zohocrm',
-                            tp_access_token: result.data.access_token,
-                            tp_refresh_token: result.data.refresh_token,
-                            tp_customer_id: info.data.Email,
-                            tp_account_url: req.query.accountURL as string,
+                            eventType: 'connection.added',
+                            connection: {
+                                t_id: req.query.t_id as string,
+                                tp_id: 'zohocrm',
+                                tp_access_token: result.data.access_token,
+                                tp_customer_id: info.data.Email,
+                                tp_account_url: req.query.accountURL as string,
+                            },
                         },
                         channels: [req.query.t_id as string],
                     });
@@ -232,12 +236,14 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 ConnectionService.svix.message.create(svixAppId, {
                     eventType: 'connection.added',
                     payload: {
-                        t_id: req.query.t_id as string,
-                        tp_id: 'sfdc',
-                        tp_access_token: result.data.access_token,
-                        tp_refresh_token: result.data.refresh_token,
-                        tp_customer_id: info.data.email,
-                        tp_account_url: info.data.urls['custom_domain'],
+                        eventType: 'connection.added',
+                        connection: {
+                            t_id: req.query.t_id as string,
+                            tp_id: 'sfdc',
+                            tp_access_token: result.data.access_token,
+                            tp_customer_id: info.data.email,
+                            tp_account_url: info.data.urls['custom_domain'],
+                        },
                     },
                     channels: [req.query.t_id as string],
                 });

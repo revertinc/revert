@@ -76,6 +76,7 @@ class ConnectionService {
             this.svix.message.create(svixAppId, {
                 eventType: 'connection.deleted',
                 payload: {
+                    eventType: 'connection.deleted',
                     connection,
                 },
                 channels: [connection.t_id],
