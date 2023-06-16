@@ -78,7 +78,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.user,
-                        attempt: 2,
                     },
                     channels: [req.query.t_id as string],
                 });
@@ -161,7 +160,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                             tp_refresh_token: result.data.refresh_token,
                             tp_customer_id: info.data.Email,
                             tp_account_url: req.query.accountURL as string,
-                            attempt: 2,
                         },
                         channels: [req.query.t_id as string],
                     });
@@ -240,7 +238,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.email,
                         tp_account_url: info.data.urls['custom_domain'],
-                        attempt: 2,
                     },
                     channels: [req.query.t_id as string],
                 });
