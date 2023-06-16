@@ -79,6 +79,7 @@ class ConnectionService {
                     connection,
                     attempt: 2,
                 },
+                channels: [connection.t_id],
             });
             return { status: 'ok', deleted };
         } else {
