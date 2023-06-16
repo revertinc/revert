@@ -72,7 +72,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 });
                 ConnectionService.svix.message.create(svixAppId, {
                     eventType: 'connection.added',
-                    eventId: `evt_connection.added_${req.query.t_id}`,
                     payload: {
                         t_id: req.query.t_id as string,
                         tp_id: 'hubspot',
@@ -155,7 +154,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     });
                     ConnectionService.svix.message.create(svixAppId, {
                         eventType: 'connection.added',
-                        eventId: `evt_connection.added_${req.query.t_id}`,
                         payload: {
                             t_id: req.query.t_id as string,
                             tp_id: 'zohocrm',
@@ -235,7 +233,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 });
                 ConnectionService.svix.message.create(svixAppId, {
                     eventType: 'connection.added',
-                    eventId: `evt_connection.added_${req.query.t_id}`,
                     payload: {
                         t_id: req.query.t_id as string,
                         tp_id: 'sfdc',

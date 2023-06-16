@@ -75,7 +75,6 @@ class ConnectionService {
         if (deleted) {
             this.svix.message.create(svixAppId, {
                 eventType: 'connection.deleted',
-                eventId: `evt_connection.deleted_${connection.t_id}`,
                 payload: {
                     connection,
                     attempt: 2,
