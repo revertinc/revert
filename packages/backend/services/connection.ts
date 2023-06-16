@@ -90,11 +90,10 @@ class ConnectionService {
 
     async createWebhook(
         req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
+        _res: Response<any, Record<string, any>, number>
     ) {
         try {
-            const { 'x-revert-api-token': token } = req.headers;
-            const connection = res.locals.connection;
+            const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
             const webhookUrl = req.body.webhookUrl;
             const account = await prisma.accounts.findFirst({
                 where: {
@@ -102,13 +101,12 @@ class ConnectionService {
                 },
             });
             const svixAppId = account!.id;
-            const tenantId = connection.t_id;
             const webhook = await this.svix.endpoint.create(svixAppId, {
                 url: webhookUrl,
                 version: 1,
                 description: `Connection Webhook for tenant ${tenantId}`,
-                uid: tenantId,
-                channels: [tenantId],
+                uid: String(tenantId),
+                channels: [String(tenantId)],
             });
             return { status: 'ok', webhookUrl: webhook.url, createdAt: webhook.createdAt };
         } catch (error) {
@@ -121,12 +119,11 @@ class ConnectionService {
 
     async deleteWebhook(
         req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
+        _res: Response<any, Record<string, any>, number>
     ) {
         try {
-            const { 'x-revert-api-token': token } = req.headers;
-            const connection = res.locals.connection;
-            const webhookId = connection.t_id;
+            const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
+            const webhookId = String(tenantId);
             const account = await prisma.accounts.findFirst({
                 where: {
                     private_token: String(token),

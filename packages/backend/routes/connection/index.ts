@@ -51,7 +51,7 @@ connectionRouter.delete('/', tenantMiddleware(), async (req, res) => {
     }
 });
 
-connectionRouter.post('/webhook', tenantMiddleware(), async (req, res) => {
+connectionRouter.post('/webhook', async (req, res) => {
     try {
         const result = await ConnectionService.createWebhook(req, res);
         if (result.error) {
@@ -65,7 +65,7 @@ connectionRouter.post('/webhook', tenantMiddleware(), async (req, res) => {
     }
 });
 
-connectionRouter.delete('/webhook', tenantMiddleware(), async (req, res) => {
+connectionRouter.delete('/webhook', async (req, res) => {
     try {
         const result = await ConnectionService.deleteWebhook(req, res);
         if (result.error) {
