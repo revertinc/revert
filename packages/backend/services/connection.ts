@@ -5,7 +5,7 @@ import config from '../config';
 import { Svix } from 'svix';
 
 class ConnectionService {
-    private svix;
+    public svix;
     constructor() {
         this.svix = new Svix(config.SVIX_AUTH_TOKEN!);
     }
@@ -52,10 +52,17 @@ class ConnectionService {
         }
     }
     async deleteConnection(
-        _req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
+        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
         res: Response<any, Record<string, any>, number>
     ) {
         const connection = res.locals.connection;
+        const { 'x-revert-api-token': token } = req.headers;
+        const account = await prisma.accounts.findFirst({
+            where: {
+                private_token: String(token),
+            },
+        });
+        const svixAppId = account!.id;
         const deleted: any = await prisma.connections.delete({
             where: {
                 uniqueCustomerPerTenantPerThirdParty: {
@@ -66,6 +73,14 @@ class ConnectionService {
             },
         });
         if (deleted) {
+            this.svix.message.create(svixAppId, {
+                eventType: 'connection.deleted',
+                eventId: `evt_connection.deleted_${connection.t_id}`,
+                payload: {
+                    connection,
+                    attempt: 2,
+                },
+            });
             return { status: 'ok', deleted };
         } else {
             return {
@@ -94,6 +109,7 @@ class ConnectionService {
                 version: 1,
                 description: `Connection Webhook for tenant ${tenantId}`,
                 uid: tenantId,
+                channels: [tenantId],
             });
             return { status: 'ok', webhookUrl: webhook.url, createdAt: webhook.createdAt };
         } catch (error) {

@@ -4,6 +4,7 @@ import config from '../../config';
 import qs from 'qs';
 import AuthService from '../../services/auth';
 import prisma, { Prisma } from '../../prisma/client';
+import ConnectionService from '../../services/connection';
 
 const authRouter = express.Router({ mergeParams: true });
 
@@ -15,6 +16,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
     const integrationId = req.query.integrationId;
     const revertPublicKey = req.query.x_revert_public_token as string;
     try {
+        const account = await prisma.accounts.findFirst({
+            where: {
+                public_token: String(revertPublicKey),
+            },
+        });
+        const svixAppId = account!.id;
         if (integrationId === 'hubspot' && req.query.code && req.query.t_id && revertPublicKey) {
             // Handle the received code
             const url = 'https://api.hubapi.com/oauth/v1/token';
@@ -62,6 +69,19 @@ authRouter.get('/oauth-callback', async (req, res) => {
                             connect: { public_token: revertPublicKey },
                         },
                     },
+                });
+                ConnectionService.svix.message.create(svixAppId, {
+                    eventType: 'connection.added',
+                    eventId: `evt_connection.added_${req.query.t_id}`,
+                    payload: {
+                        t_id: req.query.t_id as string,
+                        tp_id: 'hubspot',
+                        tp_access_token: result.data.access_token,
+                        tp_refresh_token: result.data.refresh_token,
+                        tp_customer_id: info.data.user,
+                        attempt: 2,
+                    },
+                    channels: [req.query.t_id as string],
                 });
                 res.send({ status: 'ok', tp_customer_id: info.data.user });
             } catch (error) {
@@ -133,6 +153,20 @@ authRouter.get('/oauth-callback', async (req, res) => {
                             tp_refresh_token: result.data.refresh_token,
                         },
                     });
+                    ConnectionService.svix.message.create(svixAppId, {
+                        eventType: 'connection.added',
+                        eventId: `evt_connection.added_${req.query.t_id}`,
+                        payload: {
+                            t_id: req.query.t_id as string,
+                            tp_id: 'zohocrm',
+                            tp_access_token: result.data.access_token,
+                            tp_refresh_token: result.data.refresh_token,
+                            tp_customer_id: info.data.Email,
+                            tp_account_url: req.query.accountURL as string,
+                            attempt: 2,
+                        },
+                        channels: [req.query.t_id as string],
+                    });
                     res.send({ status: 'ok' });
                 } catch (error: any) {
                     if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -198,6 +232,20 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
                     },
+                });
+                ConnectionService.svix.message.create(svixAppId, {
+                    eventType: 'connection.added',
+                    eventId: `evt_connection.added_${req.query.t_id}`,
+                    payload: {
+                        t_id: req.query.t_id as string,
+                        tp_id: 'sfdc',
+                        tp_access_token: result.data.access_token,
+                        tp_refresh_token: result.data.refresh_token,
+                        tp_customer_id: info.data.email,
+                        tp_account_url: info.data.urls['custom_domain'],
+                        attempt: 2,
+                    },
+                    channels: [req.query.t_id as string],
                 });
                 res.send({ status: 'ok', tp_customer_id: 'testSfdcUser' });
             } catch (error) {
