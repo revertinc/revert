@@ -1,4 +1,4 @@
-import express, { Express } from 'express';
+import express, { Express, Request, Response } from 'express';
 // Note: Sentry should be initialized as early in your app as possible.
 import * as Sentry from '@sentry/node';
 import config from './config';
@@ -6,7 +6,7 @@ import indexRouter from './routes/index';
 import cors from 'cors';
 import cron from 'node-cron';
 import AuthService from './services/auth';
-import versionMiddleware from './helpers/versionMiddleware';
+import versionMiddleware, { manageRouterVersioning } from './helpers/versionMiddleware';
 
 const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
@@ -50,7 +50,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(limiter);
 app.use(versionMiddleware());
-app.use('/', indexRouter);
+
+// TODO: Just to test versions. Remove later
+const testv2Router = (_req: Request, res: Response) => {
+    res.send({ data: 'v2 hit' });
+};
+
+app.use(
+    '/',
+    manageRouterVersioning({
+        v1: indexRouter,
+        v2: testv2Router,
+    })
+);
 
 // The error handler must be before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());
