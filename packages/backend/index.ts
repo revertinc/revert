@@ -2,13 +2,11 @@ import express, { Express } from 'express';
 // Note: Sentry should be initialized as early in your app as possible.
 import * as Sentry from '@sentry/node';
 import config from './config';
-import indexRouter, { crmRouter } from './routes/index';
-import revertAuthMiddleware from './helpers/authMiddleware';
+import indexRouter from './routes/index';
 import cors from 'cors';
 import cron from 'node-cron';
 import AuthService from './services/auth';
-import { connectionRouter } from './routes/connection';
-import metadataRouter from './routes/metadata';
+import versionMiddleware from './helpers/versionMiddleware';
 
 const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
@@ -38,6 +36,7 @@ Sentry.init({
     // of transactions for performance monitoring.
     // We recommend adjusting this value in production
     tracesSampleRate: 0.1,
+    enabled: process.env.NODE_ENV !== 'development',
 });
 
 // RequestHandler creates a separate execution context, so that all
@@ -50,10 +49,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(limiter);
+app.use(versionMiddleware());
 app.use('/', indexRouter);
-app.use('/v1/crm', cors(), revertAuthMiddleware(), crmRouter);
-app.use('/v1/connection', cors(), revertAuthMiddleware(), connectionRouter);
-app.use('/v1/metadata', cors(), metadataRouter);
 
 // The error handler must be before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());

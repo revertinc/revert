@@ -1,18 +1,18 @@
 import express from 'express';
 
-import tenantMiddleware from '../../helpers/tenantIdMiddleware';
-import LeadService from '../../services/lead';
+import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
+import TaskService from '../../../services/task';
 
-const leadRouter = express.Router({ mergeParams: true });
+const taskRouter = express.Router({ mergeParams: true });
 
 /**
- * Leads API
+ * Tasks API
  */
 
-// Get all leads (paginated)
-leadRouter.get('/', tenantMiddleware(), async (req, res) => {
+// Get all tasks (paginated)
+taskRouter.get('/', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await LeadService.getUnifiedLeads(req, res);
+        const result = await TaskService.getUnifiedTasks(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -24,10 +24,10 @@ leadRouter.get('/', tenantMiddleware(), async (req, res) => {
     }
 });
 
-// Get a lead object identified by {id}
-leadRouter.get('/:id', tenantMiddleware(), async (req, res) => {
+// Get a task object identified by {id}
+taskRouter.get('/:id', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await LeadService.getUnifiedLead(req, res);
+        const result = await TaskService.getUnifiedTask(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -41,10 +41,10 @@ leadRouter.get('/:id', tenantMiddleware(), async (req, res) => {
     }
 });
 
-// Create a lead
-leadRouter.post('/', tenantMiddleware(), async (req, res) => {
+// Create a task
+taskRouter.post('/', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await LeadService.createLead(req, res);
+        const result = await TaskService.createTask(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -59,10 +59,10 @@ leadRouter.post('/', tenantMiddleware(), async (req, res) => {
     }
 });
 
-// Update a lead identified by {id}
-leadRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
+// Update a task identified by {id}
+taskRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await LeadService.updateLead(req, res);
+        const result = await TaskService.updateTask(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -77,10 +77,10 @@ leadRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
     }
 });
 
-// Search a lead with query.
-leadRouter.post('/search', tenantMiddleware(), async (req, res) => {
+// Search a task with query.
+taskRouter.post('/search', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await LeadService.searchUnifiedLeads(req, res);
+        const result = await TaskService.searchUnifiedTasks(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -94,4 +94,4 @@ leadRouter.post('/search', tenantMiddleware(), async (req, res) => {
     }
 });
 
-export default leadRouter;
+export default taskRouter;

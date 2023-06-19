@@ -1,7 +1,7 @@
 import express from 'express';
 
-import tenantMiddleware from '../../helpers/tenantIdMiddleware';
-import UserService from '../../services/user';
+import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
+import UserService from '../../../services/user';
 
 const userRouter = express.Router({ mergeParams: true });
 

@@ -1,74 +1,56 @@
 import express from 'express';
+import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
+import EventService from '../../../services/event';
 
-import tenantMiddleware from '../../helpers/tenantIdMiddleware';
-import ContactService from '../../services/contact';
-
-const contactRouter = express.Router({ mergeParams: true });
+const eventRouter = express.Router({ mergeParams: true });
 
 /**
- * Contacts API
+ * Notes API
  */
-// Get all contacts (paginated)
-contactRouter.get('/', tenantMiddleware(), async (req, res) => {
+
+// Get all notes (paginated)
+eventRouter.get('/', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await ContactService.getUnifiedContacts(req, res);
+        const result = await EventService.getUnifiedEvents(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
             res.send(result);
         }
     } catch (error) {
-        console.error('Could not fetch contacts', error);
+        console.error('Could not fetch leads', error);
         res.status(500).send({ error: 'Internal server error' });
     }
 });
 
-// Get a contact object identified by {id}
-contactRouter.get('/:id', tenantMiddleware(), async (req, res) => {
+// Get a note object identified by {id}
+eventRouter.get('/:id', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await ContactService.getUnifiedContact(req, res);
+        const result = await EventService.getUnifiedEvent(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
             res.send(result);
         }
     } catch (error: any) {
-        console.error('Could not fetch contact', error);
+        console.error('Could not fetch lead', error);
         res.status(500).send({
             error: 'Internal server error',
         });
     }
 });
 
-// Create a contact
-contactRouter.post('/', tenantMiddleware(), async (req, res) => {
+// Create a note
+eventRouter.post('/', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await ContactService.createContact(req, res);
+        const result = await EventService.createEvent(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
             res.send(result);
         }
     } catch (error: any) {
-        console.error('Could not create contact', error.response);
-        res.status(500).send({
-            error: 'Internal server error',
-            errorResponse: error.response?.data,
-        });
-    }
-});
-
-// Update a contact identified by {id}
-contactRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await ContactService.updateContact(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        console.error('Could not update contact', error.response);
+        console.error('Could not create lead', error.response);
         res.status(500).send({
             error: 'Internal server error',
             errorResponse: error.response?.data,
@@ -76,10 +58,28 @@ contactRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
     }
 });
 
-// Search a contact with query.
-contactRouter.post('/search', tenantMiddleware(), async (req, res) => {
+// Update a note identified by {id}
+eventRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await ContactService.searchUnifiedContacts(req, res);
+        const result = await EventService.updateEvent(req, res);
+        if (result.error) {
+            res.status(400).send(result);
+        } else {
+            res.send(result);
+        }
+    } catch (error: any) {
+        console.error('Could not update lead', error.response);
+        res.status(500).send({
+            error: 'Internal server error',
+            errorResponse: error.response?.data,
+        });
+    }
+});
+
+// Search a note with query.
+eventRouter.post('/search', tenantMiddleware(), async (req, res) => {
+    try {
+        const result = await EventService.searchUnifiedEvents(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -93,4 +93,4 @@ contactRouter.post('/search', tenantMiddleware(), async (req, res) => {
     }
 });
 
-export default contactRouter;
+export default eventRouter;

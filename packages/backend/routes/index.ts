@@ -1,8 +1,14 @@
 import prisma from '../prisma/client';
 import axios from 'axios';
-import express from 'express';
-import crmRouter from './crm';
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+
+import crmRouter from './v1/crm';
 import config from '../config';
+import revertAuthMiddleware from '../helpers/authMiddleware';
+import { manageRouterVersioning } from '../helpers/versionMiddleware';
+import connectionRouter from './v1/connection';
+import metadataRouter from './v1/metadata';
 
 const router = express.Router();
 
@@ -52,5 +58,27 @@ router.post('/slack-alert', async (req, res) => {
     }
 });
 
+// TODO: Just to test versions. Remove later
+const testv2Router = (_req: Request, res: Response) => {
+    res.send({ data: 'v2 hit' });
+};
+
+router.use(
+    '/crm',
+    cors(),
+    revertAuthMiddleware(),
+    manageRouterVersioning({
+        'v1': crmRouter,
+        'v2': testv2Router,
+    })
+);
+router.use('/connection', cors(), revertAuthMiddleware(), manageRouterVersioning({
+    'v1': connectionRouter,
+    'v2': testv2Router,
+}));
+router.use('/metadata', cors(), manageRouterVersioning({
+    'v1': metadataRouter,
+    'v2': testv2Router,
+}));
+
 export default router;
-export { crmRouter };

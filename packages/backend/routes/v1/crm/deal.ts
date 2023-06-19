@@ -1,17 +1,18 @@
 import express from 'express';
-import tenantMiddleware from '../../helpers/tenantIdMiddleware';
-import EventService from '../../services/event';
 
-const eventRouter = express.Router({ mergeParams: true });
+import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
+import DealService from '../../../services/deal';
+
+const dealRouter = express.Router({ mergeParams: true });
 
 /**
- * Notes API
+ * Deals API
  */
 
-// Get all notes (paginated)
-eventRouter.get('/', tenantMiddleware(), async (req, res) => {
+// Get all deals (paginated)
+dealRouter.get('/', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await EventService.getUnifiedEvents(req, res);
+        const result = await DealService.getUnifiedDeals(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -23,10 +24,10 @@ eventRouter.get('/', tenantMiddleware(), async (req, res) => {
     }
 });
 
-// Get a note object identified by {id}
-eventRouter.get('/:id', tenantMiddleware(), async (req, res) => {
+// Get a deal object identified by {id}
+dealRouter.get('/:id', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await EventService.getUnifiedEvent(req, res);
+        const result = await DealService.getUnifiedDeal(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -40,10 +41,10 @@ eventRouter.get('/:id', tenantMiddleware(), async (req, res) => {
     }
 });
 
-// Create a note
-eventRouter.post('/', tenantMiddleware(), async (req, res) => {
+// Create a deal
+dealRouter.post('/', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await EventService.createEvent(req, res);
+        const result = await DealService.createDeal(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -58,10 +59,10 @@ eventRouter.post('/', tenantMiddleware(), async (req, res) => {
     }
 });
 
-// Update a note identified by {id}
-eventRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
+// Update a deal identified by {id}
+dealRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await EventService.updateEvent(req, res);
+        const result = await DealService.updateDeal(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -76,10 +77,10 @@ eventRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
     }
 });
 
-// Search a note with query.
-eventRouter.post('/search', tenantMiddleware(), async (req, res) => {
+// Search a deal with query.
+dealRouter.post('/search', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await EventService.searchUnifiedEvents(req, res);
+        const result = await DealService.searchUnifiedDeals(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -93,4 +94,4 @@ eventRouter.post('/search', tenantMiddleware(), async (req, res) => {
     }
 });
 
-export default eventRouter;
+export default dealRouter;

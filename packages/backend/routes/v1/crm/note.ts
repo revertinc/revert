@@ -1,7 +1,7 @@
 import express from 'express';
 
-import tenantMiddleware from '../../helpers/tenantIdMiddleware';
-import NoteService from '../../services/note';
+import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
+import NoteService from '../../../services/note';
 
 const noteRouter = express.Router({ mergeParams: true });
 

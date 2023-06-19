@@ -1,7 +1,7 @@
 import express from 'express';
 
-import tenantMiddleware from '../../helpers/tenantIdMiddleware';
-import CompanyService from '../../services/company';
+import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
+import CompanyService from '../../../services/company';
 
 const companyRouter = express.Router({ mergeParams: true });
 
