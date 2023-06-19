@@ -13,9 +13,17 @@ class TaskService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const taskId = req.params.id;
-        const fields = req.query.fields;
+        let fields = req.query.fields;
         console.log('Revert::GET TASK', tenantId, thirdPartyId, thirdPartyToken, taskId);
         if (thirdPartyId === 'hubspot') {
+            fields = [
+                ...String(req.query.fields || '').split(','),
+                'hs_task_body',
+                'hs_task_subject',
+                'hs_task_priority',
+                'hs_task_status',
+                'hs_timestamp',
+            ];
             let task: any = await axios({
                 method: 'get',
                 url: `https://api.hubapi.com/crm/v3/objects/tasks/${taskId}?properties=${fields}`,
@@ -63,11 +71,19 @@ class TaskService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const fields = req.query.fields;
+        let fields = req.query.fields;
         const pageSize = parseInt(String(req.query.pageSize));
         const cursor = req.query.cursor;
         console.log('Revert::GET ALL TASK', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
+            fields = [
+                ...String(req.query.fields || '').split(','),
+                'hs_task_body',
+                'hs_task_subject',
+                'hs_task_priority',
+                'hs_task_status',
+                'hs_timestamp',
+            ];
             const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let tasks: any = await axios({
                 method: 'get',
@@ -151,7 +167,14 @@ class TaskService {
                 },
                 data: JSON.stringify({
                     ...searchCriteria,
-                    properties: ['hs_task_status', 'firstname', 'email', 'lastname', 'hs_object_id', ...fields],
+                    properties: [
+                        'hs_task_body',
+                        'hs_task_subject',
+                        'hs_task_priority',
+                        'hs_task_status',
+                        'hs_timestamp',
+                        ...fields,
+                    ],
                 }),
             });
             tasks = tasks.data.results as any[];

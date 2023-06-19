@@ -24,7 +24,7 @@ export interface UnifiedCompany {
 export function unifyCompany(company: any): UnifiedCompany {
     if (!company) return company;
     const unifiedCompany: UnifiedCompany = {
-        annualRevenue: company.Annual_Revenue || company.AnnualRevenue,
+        annualRevenue: company.Annual_Revenue || company.AnnualRevenue || company.annualrevenue,
         remoteId: company.id || company.Company_Id || company.company_id || company.Id,
         description: company.Description || company.description,
         id: company.id || company.Company_Id || company.company_id || company.Id,
@@ -50,7 +50,13 @@ export function unifyCompany(company: any): UnifiedCompany {
             postalCode: company.postalCode || company.BillingAddress?.postalCode || company.Billing_Code,
         },
         industry: company.industry || company.Industry || company.industry,
-        size: company.size || company.Size || company.size || company.NumberOfEmployees || company.Employees,
+        size:
+            company.size ||
+            company.Size ||
+            company.size ||
+            company.NumberOfEmployees ||
+            company.Employees ||
+            company.numberofemployees,
         createdTimestamp:
             company.createdDate ||
             company.Created_Time ||

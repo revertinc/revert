@@ -13,9 +13,10 @@ class NoteService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const noteId = req.params.id;
-        const fields = req.query.fields;
+        let fields = req.query.fields;
         console.log('Revert::GET NOTE', tenantId, thirdPartyId, thirdPartyToken, noteId);
         if (thirdPartyId === 'hubspot') {
+            fields = [...String(req.query.fields || '').split(','), 'hs_note_body'];
             let note: any = await axios({
                 method: 'get',
                 url: `https://api.hubapi.com/crm/v3/objects/notes/${noteId}?properties=${fields}`,
@@ -63,11 +64,12 @@ class NoteService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const fields = req.query.fields;
+        let fields = req.query.fields;
         const pageSize = parseInt(String(req.query.pageSize));
         const cursor = req.query.cursor;
         console.log('Revert::GET ALL NOTE', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
+            fields = [...String(req.query.fields || '').split(','), 'hs_note_body'];
             const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let notes: any = await axios({
                 method: 'get',
@@ -151,7 +153,7 @@ class NoteService {
                 },
                 data: JSON.stringify({
                     ...searchCriteria,
-                    properties: ['hs_note_status', 'firstname', 'email', 'lastname', 'hs_object_id', ...fields],
+                    properties: ['hs_note_body', 'hs_object_id', ...fields],
                 }),
             });
             notes = notes.data.results as any[];

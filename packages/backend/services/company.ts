@@ -13,9 +13,22 @@ class CompanyService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const companyId = req.params.id;
-        const fields = req.query.fields;
+        let fields = req.query.fields;
         console.log('Revert::GET COMPANY', tenantId, thirdPartyId, thirdPartyToken, companyId);
         if (thirdPartyId === 'hubspot') {
+            fields = [
+                ...String(req.query.fields || '').split(','),
+                'name',
+                'hs_object_id',
+                'city',
+                'state',
+                'zip',
+                'industry',
+                'description',
+                'numberofemployees',
+                'phone',
+                'annualrevenue',
+            ];
             const company = await axios({
                 method: 'get',
                 url: `https://api.hubapi.com/crm/v3/objects/companies/${companyId}?properties=${fields}`,
@@ -61,11 +74,24 @@ class CompanyService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const fields = req.query.fields;
+        let fields = req.query.fields;
         const pageSize = parseInt(String(req.query.pageSize));
         const cursor = req.query.cursor;
         console.log('Revert::GET ALL COMPANIES', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
+            fields = [
+                ...String(req.query.fields || '').split(','),
+                'name',
+                'hs_object_id',
+                'city',
+                'state',
+                'zip',
+                'industry',
+                'description',
+                'numberofemployees',
+                'phone',
+                'annualrevenue',
+            ];
             const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let companies: any = await axios({
                 method: 'get',
@@ -149,7 +175,19 @@ class CompanyService {
                 },
                 data: JSON.stringify({
                     ...searchCriteria,
-                    properties: ['name', 'hs_object_id', ...fields],
+                    properties: [
+                        'name',
+                        'hs_object_id',
+                        'city',
+                        'state',
+                        'zip',
+                        'industry',
+                        'description',
+                        'numberofemployees',
+                        'phone',
+                        'annualrevenue',
+                        ...fields,
+                    ],
                 }),
             });
             companies = companies.data.results as any[];
