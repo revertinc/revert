@@ -13,9 +13,19 @@ class EventService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const eventId = req.params.id;
-        const fields = req.query.fields;
+        let fields = req.query.fields;
         console.log('Revert::GET EVENT', tenantId, thirdPartyId, thirdPartyToken, eventId);
         if (thirdPartyId === 'hubspot') {
+            fields = [
+                ...String(req.query.fields || '').split(','),
+                'hs_meeting_title',
+                'hs_meeting_body',
+                'hs_meeting_start_time',
+                'hs_meeting_end_time',
+                'hs_meeting_location',
+                'hs_activity_type',
+                'hs_object_id',
+            ];
             let event: any = await axios({
                 method: 'get',
                 url: `https://api.hubapi.com/crm/v3/objects/meetings/${eventId}?properties=${fields}`,
@@ -63,11 +73,21 @@ class EventService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const fields = req.query.fields;
+        let fields = req.query.fields;
         const pageSize = parseInt(String(req.query.pageSize));
         const cursor = req.query.cursor;
         console.log('Revert::GET ALL EVENT', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
+            fields = [
+                ...String(req.query.fields || '').split(','),
+                'hs_meeting_title',
+                'hs_meeting_body',
+                'hs_meeting_start_time',
+                'hs_meeting_end_time',
+                'hs_meeting_location',
+                'hs_activity_type',
+                'hs_object_id',
+            ];
             const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let events: any = await axios({
                 method: 'get',
@@ -151,7 +171,16 @@ class EventService {
                 },
                 data: JSON.stringify({
                     ...searchCriteria,
-                    properties: ['hs_event_status', 'firstname', 'email', 'lastname', 'hs_object_id', ...fields],
+                    properties: [
+                        'hs_meeting_title',
+                        'hs_meeting_body',
+                        'hs_meeting_start_time',
+                        'hs_meeting_end_time',
+                        'hs_meeting_location',
+                        'hs_activity_type',
+                        'hs_object_id',
+                        ...fields,
+                    ],
                 }),
             });
             events = events.data.results as any[];
