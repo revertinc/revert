@@ -13,9 +13,19 @@ class DealService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const dealId = req.params.id;
-        const fields = req.query.fields;
+        let fields = req.query.fields;
         console.log('Revert::GET DEAL', tenantId, thirdPartyId, thirdPartyToken, dealId);
         if (thirdPartyId === 'hubspot') {
+            fields = [
+                ...String(req.query.fields || '').split(','),
+                'dealname',
+                'amount',
+                'dealstage',
+                'hs_priority',
+                'hs_deal_stage_probability',
+                'closedate',
+                'hs_is_closed_won',
+            ];
             let deal: any = await axios({
                 method: 'get',
                 url: `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?properties=${fields}`,
@@ -63,11 +73,21 @@ class DealService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const fields = req.query.fields;
+        let fields = req.query.fields;
         const pageSize = parseInt(String(req.query.pageSize));
         const cursor = req.query.cursor;
         console.log('Revert::GET ALL DEAL', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
+            fields = [
+                ...String(req.query.fields || '').split(','),
+                'dealname',
+                'amount',
+                'dealstage',
+                'hs_priority',
+                'hs_deal_stage_probability',
+                'closedate',
+                'hs_is_closed_won',
+            ];
             const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let deals: any = await axios({
                 method: 'get',
@@ -158,6 +178,12 @@ class DealService {
                         'lastname',
                         'hs_object_id',
                         'dealname',
+                        'amount',
+                        'dealstage',
+                        'hs_priority',
+                        'hs_deal_stage_probability',
+                        'closedate',
+                        'hs_is_closed_won',
                         ...fields,
                     ],
                 }),

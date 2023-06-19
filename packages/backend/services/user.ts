@@ -13,9 +13,17 @@ class UserService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const userId = req.params.id;
-        const fields = req.query.fields;
+        let fields = req.query.fields;
         console.log('Revert::GET USER', tenantId, thirdPartyId, thirdPartyToken, userId);
         if (thirdPartyId === 'hubspot') {
+            fields = [
+                ...String(req.query.fields || '').split(','),
+                'firstname',
+                'email',
+                'lastname',
+                'hs_object_id',
+                'phone',
+            ];
             let user: any = await axios({
                 method: 'get',
                 url: `https://api.hubapi.com/settings/v3/users/${userId}?properties=${fields}`,
@@ -63,11 +71,19 @@ class UserService {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const fields = req.query.fields;
+        let fields = req.query.fields;
         const pageSize = parseInt(String(req.query.pageSize));
         const cursor = req.query.cursor;
         console.log('Revert::GET ALL USER', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
+            fields = [
+                ...String(req.query.fields || '').split(','),
+                'firstname',
+                'email',
+                'lastname',
+                'hs_object_id',
+                'phone',
+            ];
             const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let users: any = await axios({
                 method: 'get',
