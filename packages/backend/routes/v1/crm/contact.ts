@@ -1,75 +1,56 @@
 import express from 'express';
 
-import tenantMiddleware from '../../helpers/tenantIdMiddleware';
-import DealService from '../../services/deal';
+import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
+import ContactService from '../../../services/contact';
 
-const dealRouter = express.Router({ mergeParams: true });
+const contactRouter = express.Router({ mergeParams: true });
 
 /**
- * Deals API
+ * Contacts API
  */
-
-// Get all deals (paginated)
-dealRouter.get('/', tenantMiddleware(), async (req, res) => {
+// Get all contacts (paginated)
+contactRouter.get('/', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await DealService.getUnifiedDeals(req, res);
+        const result = await ContactService.getUnifiedContacts(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
             res.send(result);
         }
     } catch (error) {
-        console.error('Could not fetch leads', error);
+        console.error('Could not fetch contacts', error);
         res.status(500).send({ error: 'Internal server error' });
     }
 });
 
-// Get a deal object identified by {id}
-dealRouter.get('/:id', tenantMiddleware(), async (req, res) => {
+// Get a contact object identified by {id}
+contactRouter.get('/:id', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await DealService.getUnifiedDeal(req, res);
+        const result = await ContactService.getUnifiedContact(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
             res.send(result);
         }
     } catch (error: any) {
-        console.error('Could not fetch lead', error);
+        console.error('Could not fetch contact', error);
         res.status(500).send({
             error: 'Internal server error',
         });
     }
 });
 
-// Create a deal
-dealRouter.post('/', tenantMiddleware(), async (req, res) => {
+// Create a contact
+contactRouter.post('/', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await DealService.createDeal(req, res);
+        const result = await ContactService.createContact(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
             res.send(result);
         }
     } catch (error: any) {
-        console.error('Could not create lead', error.response);
-        res.status(500).send({
-            error: 'Internal server error',
-            errorResponse: error.response?.data,
-        });
-    }
-});
-
-// Update a deal identified by {id}
-dealRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await DealService.updateDeal(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        console.error('Could not update lead', error.response);
+        console.error('Could not create contact', error.response);
         res.status(500).send({
             error: 'Internal server error',
             errorResponse: error.response?.data,
@@ -77,10 +58,28 @@ dealRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
     }
 });
 
-// Search a deal with query.
-dealRouter.post('/search', tenantMiddleware(), async (req, res) => {
+// Update a contact identified by {id}
+contactRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
     try {
-        const result = await DealService.searchUnifiedDeals(req, res);
+        const result = await ContactService.updateContact(req, res);
+        if (result.error) {
+            res.status(400).send(result);
+        } else {
+            res.send(result);
+        }
+    } catch (error: any) {
+        console.error('Could not update contact', error.response);
+        res.status(500).send({
+            error: 'Internal server error',
+            errorResponse: error.response?.data,
+        });
+    }
+});
+
+// Search a contact with query.
+contactRouter.post('/search', tenantMiddleware(), async (req, res) => {
+    try {
+        const result = await ContactService.searchUnifiedContacts(req, res);
         if (result.error) {
             res.status(400).send(result);
         } else {
@@ -94,4 +93,4 @@ dealRouter.post('/search', tenantMiddleware(), async (req, res) => {
     }
 });
 
-export default dealRouter;
+export default contactRouter;

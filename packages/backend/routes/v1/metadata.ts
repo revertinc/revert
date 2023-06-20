@@ -1,5 +1,5 @@
 import express from 'express';
-import prisma from '../prisma/client';
+import prisma from '../../prisma/client';
 
 const metadataRouter = express.Router();
 

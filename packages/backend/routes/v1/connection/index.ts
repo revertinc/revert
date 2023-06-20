@@ -1,7 +1,7 @@
 import express from 'express';
 
-import tenantMiddleware from '../../helpers/tenantIdMiddleware';
-import ConnectionService from '../../services/connection';
+import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
+import ConnectionService from '../../../services/connection';
 
 const connectionRouter = express.Router({ mergeParams: true });
 

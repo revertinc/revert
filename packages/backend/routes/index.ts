@@ -1,8 +1,13 @@
 import prisma from '../prisma/client';
 import axios from 'axios';
 import express from 'express';
-import crmRouter from './crm';
+import cors from 'cors';
+
+import crmRouter from './v1/crm';
 import config from '../config';
+import revertAuthMiddleware from '../helpers/authMiddleware';
+import connectionRouter from './v1/connection';
+import metadataRouter from './v1/metadata';
 
 const router = express.Router();
 
@@ -52,5 +57,8 @@ router.post('/slack-alert', async (req, res) => {
     }
 });
 
+router.use('/crm', cors(), revertAuthMiddleware(), crmRouter);
+router.use('/connection', cors(), revertAuthMiddleware(), connectionRouter);
+router.use('/metadata', cors(), metadataRouter);
+
 export default router;
-export { crmRouter };

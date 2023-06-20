@@ -1,14 +1,12 @@
-import express, { Express } from 'express';
+import express, { Express, Request, Response } from 'express';
 // Note: Sentry should be initialized as early in your app as possible.
 import * as Sentry from '@sentry/node';
 import config from './config';
-import indexRouter, { crmRouter } from './routes/index';
-import revertAuthMiddleware from './helpers/authMiddleware';
+import indexRouter from './routes/index';
 import cors from 'cors';
 import cron from 'node-cron';
 import AuthService from './services/auth';
-import { connectionRouter } from './routes/connection';
-import metadataRouter from './routes/metadata';
+import versionMiddleware, { manageRouterVersioning } from './helpers/versionMiddleware';
 
 const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
@@ -38,6 +36,7 @@ Sentry.init({
     // of transactions for performance monitoring.
     // We recommend adjusting this value in production
     tracesSampleRate: 0.1,
+    enabled: process.env.NODE_ENV !== 'development',
 });
 
 // RequestHandler creates a separate execution context, so that all
@@ -50,10 +49,27 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(limiter);
-app.use('/', indexRouter);
-app.use('/v1/crm', cors(), revertAuthMiddleware(), crmRouter);
-app.use('/v1/connection', cors(), revertAuthMiddleware(), connectionRouter);
-app.use('/v1/metadata', cors(), metadataRouter);
+app.use(versionMiddleware());
+
+// TODO: Just to test versions. Remove later
+const testv2Router = (_req: Request, res: Response) => {
+    res.send({ data: 'v2 hit' });
+};
+
+app.use(
+    '/',
+    manageRouterVersioning({
+        v1: indexRouter,
+        v2: testv2Router,
+    })
+);
+app.use(
+    '/v1',
+    manageRouterVersioning({
+        v1: indexRouter,
+        v2: testv2Router,
+    })
+);
 
 // The error handler must be before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());
@@ -63,6 +79,8 @@ app.listen(config.PORT, () => {
     // Refresh tokens on a schedule.
     // TODO: do this optimistically.
     cron.schedule(`*/2 * * * *`, async () => {
-        await AuthService.refreshOAuthTokensForThirdParty();
+        if (process.env.NODE_ENV !== 'development') {
+            await AuthService.refreshOAuthTokensForThirdParty();
+        }
     });
 }).setTimeout(600000);

@@ -1,10 +1,10 @@
 import axios from 'axios';
 import express from 'express';
-import config from '../../config';
+import config from '../../../config';
 import qs from 'qs';
-import AuthService from '../../services/auth';
-import prisma, { Prisma } from '../../prisma/client';
-import ConnectionService from '../../services/connection';
+import AuthService from '../../../services/auth';
+import prisma, { Prisma } from '../../../prisma/client';
+import ConnectionService from '../../../services/connection';
 
 const authRouter = express.Router({ mergeParams: true });
 

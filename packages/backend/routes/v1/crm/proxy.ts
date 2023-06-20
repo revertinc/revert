@@ -1,6 +1,6 @@
 import express from 'express';
-import tenantMiddleware from '../../helpers/tenantIdMiddleware';
-import ProxyService from '../../services/proxy';
+import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
+import ProxyService from '../../../services/proxy';
 
 const proxyRouter = express.Router({ mergeParams: true });
 
