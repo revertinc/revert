@@ -63,6 +63,13 @@ app.use(
         v2: testv2Router,
     })
 );
+app.use(
+    '/v1',
+    manageRouterVersioning({
+        v1: indexRouter,
+        v2: testv2Router,
+    })
+);
 
 // The error handler must be before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());
