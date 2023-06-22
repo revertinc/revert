@@ -79,8 +79,6 @@ app.listen(config.PORT, () => {
     // Refresh tokens on a schedule.
     // TODO: do this optimistically.
     cron.schedule(`*/2 * * * *`, async () => {
-        if (process.env.NODE_ENV !== 'development') {
-            await AuthService.refreshOAuthTokensForThirdParty();
-        }
+        await AuthService.refreshOAuthTokensForThirdParty();
     });
 }).setTimeout(600000);
