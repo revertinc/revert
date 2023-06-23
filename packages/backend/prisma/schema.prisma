@@ -10,27 +10,50 @@ datasource db {
   url      = env("PGSQL_URL")
 }
 
+enum TP_ID {
+  hubspot
+  zohocrm
+  sfdc
+}
+
+enum TP_TYPE {
+  CUSTOMER
+  REVERT
+}
+
 model accounts {
-  id            String        @id
-  private_token String        @unique
-  public_token  String        @unique
+  id            String      @id
+  private_token String      @unique
+  public_token  String      @unique
   tenant_count  Int?
+  clients       tp_client[]
+}
+
+model tp_client {
+  id            String        @id @default(uuid())
+  tp_id         TP_ID
+  client_id     String
+  client_secret String
+  account_id    String
+  account       accounts      @relation(fields: [account_id], references: [id])
   connections   connections[]
+  type          TP_TYPE
+
+  @@unique([tp_id, account_id], name: "uniqueThirdPartyPerAccount")
 }
 
 model connections {
-  tp_id                      String
-  tp_access_token            String
-  tp_refresh_token           String?
-  tp_customer_id             String
-  t_id                       String
-  tp_account_url             String?
-  account                    accounts? @relation(fields: [owner_account_public_token], references: [public_token])
-  owner_account_public_token String
+  tp_access_token  String
+  tp_refresh_token String?
+  tp_customer_id   String
+  t_id             String
+  tp_account_url   String?
+  tp_unique_id     String
+  tp_client        tp_client @relation(fields: [tp_unique_id], references: [id])
 
   @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")
-  @@unique([tp_id, t_id], name: "uniqueThirdPartyPerTenant")
-  @@unique([tp_customer_id, t_id, tp_id], name: "uniqueCustomerPerTenantPerThirdParty")
+  @@unique([tp_unique_id, t_id], name: "uniqueThirdPartyPerTenant")
+  @@unique([tp_customer_id, t_id, tp_unique_id], name: "uniqueCustomerPerTenantPerThirdParty")
 }
 
 model waitlist {
