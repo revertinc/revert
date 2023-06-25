@@ -39,9 +39,9 @@ ALTER TABLE "tp_client" ADD CONSTRAINT "tp_client_account_id_fkey" FOREIGN KEY (
 
 
 -- Insert Dummy data to tp_client
-INSERT INTO "tp_client" ("id", "tp_id", "client_id", "client_secret", "account_id", "type") VALUES(uuid_generate_v4()) UNION SELECT 'hubspot', 'hubspot_client_id', 'hubspot_client_secret', "id", 'REVERT' FROM "accounts";
-INSERT INTO "tp_client" ("id", "tp_id", "client_id", "client_secret", "account_id", "type") VALUES(uuid_generate_v4()) UNION SELECT 'zohocrm', 'zohocrm_client_id', 'zohocrm_client_secret', "id", 'REVERT' FROM "accounts";
-INSERT INTO "tp_client" ("id", "tp_id", "client_id", "client_secret", "account_id", "type") VALUES(uuid_generate_v4()) UNION SELECT 'sfdc', 'sfdc_client_id', 'sfdc_client_secret', "id", 'REVERT' FROM "accounts";
+INSERT INTO "tp_client" ("id", "tp_id", "client_id", "client_secret", "account_id", "type") SELECT uuid_generate_v4(), 'hubspot', 'hubspot_client_id', 'hubspot_client_secret', "id", 'REVERT' FROM "accounts";
+INSERT INTO "tp_client" ("id", "tp_id", "client_id", "client_secret", "account_id", "type") SELECT uuid_generate_v4(), 'zohocrm', 'zohocrm_client_id', 'zohocrm_client_secret', "id", 'REVERT' FROM "accounts";
+INSERT INTO "tp_client" ("id", "tp_id", "client_id", "client_secret", "account_id", "type") SELECT uuid_generate_v4(), 'sfdc', 'sfdc_client_id', 'sfdc_client_secret', "id", 'REVERT' FROM "accounts";
 
 
 -- AlterTable
@@ -58,7 +58,7 @@ ALTER TABLE "connections" ADD CONSTRAINT "connections_tp_unique_id_fkey" FOREIGN
 
 
 -- AlterTable
-INSERT INTO "connections" ("tp_unique_id") SELECT "tp_client"."id" FROM "tp_client", "accounts", "connections" WHERE "connections"."owner_account_public_token" = "accounts"."public_token" AND "tp_client"."account_id" = "accounts"."id" AND "connections"."tp_id"::"TP_ID" = "tp_client"."tp_id";
+UPDATE "connections" SET "tp_unique_id"="tp_client"."id" FROM "tp_client", "accounts" WHERE "connections"."owner_account_public_token" = "accounts"."public_token" AND "tp_client"."account_id" = "accounts"."id" AND "connections"."tp_id"::"TP_ID" = "tp_client"."tp_id";
 
 ALTER TABLE "connections" ALTER COLUMN "tp_unique_id" SET NOT NULL;
 
