@@ -1,19 +1,57 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import React from 'react';
-
+import { SignedIn, SignedOut, SignUp, ClerkProvider, SignIn } from '@clerk/clerk-react';
 import { OAuthCallback } from '../common/oauth';
+import Home from '../home/index';
 
 export function RouterComponent() {
+    const navigate = useNavigate();
+    const publicKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY!;
     return (
-        <Routes>
-            <Route
-                path="/oauth-callback/:integrationId"
-                element={
-                    <div className="mt-10">
-                        <OAuthCallback />
-                    </div>
-                }
-            />
-        </Routes>
+        <ClerkProvider publishableKey={publicKey} navigate={(to) => navigate(to)}>
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <>
+                            <SignedOut>
+                                <div className="flex items-center justify-center h-[100%]">
+                                    <SignIn
+                                        afterSignUpUrl={'/'}
+                                        appearance={{
+                                            variables: {
+                                                colorPrimary: '#343232',
+                                            },
+                                            elements: {
+                                                formButtonPrimary: 'bg-[#343232]',
+                                            },
+                                        }}
+                                    />
+                                </div>
+                            </SignedOut>
+                            <SignedIn>
+                                <Home />
+                            </SignedIn>
+                        </>
+                    }
+                />
+                <Route
+                    path="/sign-up"
+                    element={
+                        <div className="mt-10">
+                            <SignUp afterSignUpUrl={'/'} />
+                        </div>
+                    }
+                />
+                <Route
+                    path="/oauth-callback/:integrationId"
+                    element={
+                        <div className="mt-10">
+                            <OAuthCallback />
+                        </div>
+                    }
+                />
+            </Routes>{' '}
+        </ClerkProvider>
     );
 }
