@@ -160,6 +160,17 @@ class AuthService {
         }
         return response;
     }
+    async getAccountForUser(userId: string) {
+        return await prisma.users.findFirst({
+            where: {
+                id: userId,
+                account: {
+                    skipWaitlist: true,
+                },
+            },
+            select: { account: true },
+        });
+    }
 }
 
 export default new AuthService();

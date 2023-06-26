@@ -66,6 +66,11 @@ router.post('/clerk/webhook', async (req, res) => {
     }
 });
 
+router.post('/internal/account', async (req, res) => {
+    const userId = req.body.userId;
+    res.send(await AuthService.getAccountForUser(userId));
+});
+
 router.use('/crm', cors(), revertAuthMiddleware(), crmRouter);
 router.use('/connection', cors(), revertAuthMiddleware(), connectionRouter);
 router.use('/metadata', cors(), metadataRouter);
