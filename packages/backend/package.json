@@ -13,6 +13,7 @@
         "dev": "ts-node-dev --respawn index.ts",
         "db-deploy": "prisma migrate deploy",
         "db-seed": "prisma db seed",
+        "db-pull": "prisma db pull",
         "studio": "prisma studio",
         "migration:generate": "pnpify prisma migrate dev --name %1"
     },

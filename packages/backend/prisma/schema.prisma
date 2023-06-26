@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,21 +9,21 @@ datasource db {
 
 model accounts {
   id            String        @id
+  tenant_count  Int?          @default(0)
   private_token String        @unique
   public_token  String        @unique
-  tenant_count  Int?          @default(0)
-  connections   connections[]
   domain        String        @unique @default("")
   skipWaitlist  Boolean       @default(false)
+  connections   connections[]
   users         users[]
 }
 
 model users {
-  id        String    @id
+  id        String   @id
   domain    String
   email     String
-  account   accounts? @relation(fields: [accountId], references: [id])
   accountId String
+  account   accounts @relation(fields: [accountId], references: [id])
 }
 
 model connections {
@@ -36,8 +33,8 @@ model connections {
   tp_customer_id             String
   t_id                       String
   tp_account_url             String?
-  account                    accounts? @relation(fields: [owner_account_public_token], references: [public_token])
   owner_account_public_token String
+  account                    accounts @relation(fields: [owner_account_public_token], references: [public_token])
 
   @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")
   @@unique([tp_id, t_id], name: "uniqueThirdPartyPerTenant")
