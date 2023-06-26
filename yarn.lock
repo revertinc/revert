@@ -5231,6 +5231,7 @@ __metadata:
     "@types/jest": ^26.0.24
     "@types/node": "*"
     "@types/node-cron": ^3.0.7
+    "@types/uuid": ^9.0.2
     "@yarnpkg/pnpify": ^4.0.0-rc.42
     axios: ^0.27.2
     babel-jest: ^29.2.2
@@ -8585,6 +8586,13 @@ __metadata:
   version: 2.0.6
   resolution: "@types/unist@npm:2.0.6"
   checksum: 25cb860ff10dde48b54622d58b23e66214211a61c84c0f15f88d38b61aa1b53d4d46e42b557924a93178c501c166aa37e28d7f6d994aba13d24685326272d5db
+  languageName: node
+  linkType: hard
+
+"@types/uuid@npm:^9.0.2":
+  version: 9.0.2
+  resolution: "@types/uuid@npm:9.0.2"
+  checksum: 1754bcf3444e1e3aeadd6e774fc328eb53bc956665e2e8fb6ec127aa8e1f43d9a224c3d22a9a6233dca8dd81a12dc7fed4d84b8876dd5ec82d40f574f7ff8b68
   languageName: node
   linkType: hard
 

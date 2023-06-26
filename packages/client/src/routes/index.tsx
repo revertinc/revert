@@ -26,6 +26,7 @@ export function RouterComponent() {
                                                 formButtonPrimary: 'bg-[#343232]',
                                             },
                                         }}
+                                        signUpUrl="/sign-up"
                                     />
                                 </div>
                             </SignedOut>
@@ -38,8 +39,18 @@ export function RouterComponent() {
                 <Route
                     path="/sign-up"
                     element={
-                        <div className="mt-10">
-                            <SignUp afterSignUpUrl={'/'} />
+                        <div className="flex items-center justify-center h-[100%]">
+                            <SignUp
+                                afterSignUpUrl={'/'}
+                                appearance={{
+                                    variables: {
+                                        colorPrimary: '#343232',
+                                    },
+                                    elements: {
+                                        formButtonPrimary: 'bg-[#343232]',
+                                    },
+                                }}
+                            />
                         </div>
                     }
                 />

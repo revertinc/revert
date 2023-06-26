@@ -2,6 +2,8 @@ import axios from 'axios';
 import config from '../config';
 import qs from 'qs';
 import prisma from '../prisma/client';
+import { v4 as uuidv4 } from 'uuid';
+import isWorkEmail from '../helpers/isWorkEmail';
 class AuthService {
     async refreshOAuthTokensForThirdParty() {
         try {
@@ -115,6 +117,48 @@ class AuthService {
             console.error('Could not update db', error);
         }
         return { status: 'ok', message: 'Tokens refreshed' };
+    }
+    async createAccountOnClerkUserCreation(webhookData: any, webhookEventType: string) {
+        let response;
+        console.log('webhookData', webhookData, webhookEventType);
+        if (webhookData && ['user.created'].includes(webhookEventType)) {
+            try {
+                const userEmail = webhookData.email_addresses[0].email_address;
+                let userDomain = userEmail.split('@').pop();
+                if (!isWorkEmail(userEmail)) {
+                    // make the personal email the unique domain.
+                    userDomain = userEmail;
+                }
+                // Create account only if an account does not exist for this user's domain.
+                const account = await prisma.accounts.upsert({
+                    where: {
+                        domain: userDomain,
+                    },
+                    update: {},
+                    create: {
+                        id: 'acc_' + uuidv4(),
+                        private_token: 'sk_live_' + uuidv4(),
+                        public_token: 'pk_live_' + uuidv4(),
+                        tenant_count: 0,
+                        domain: userDomain,
+                        skipWaitlist: false,
+                    },
+                });
+                await prisma.users.create({
+                    data: {
+                        id: webhookData.id,
+                        email: userEmail,
+                        domain: userDomain,
+                        accountId: account.id,
+                    },
+                });
+                response = { status: 'ok' };
+            } catch (e) {
+                console.error(e);
+                response = { error: e };
+            }
+        }
+        return response;
     }
 }
 
