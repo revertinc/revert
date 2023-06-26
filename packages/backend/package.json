@@ -13,6 +13,7 @@
         "dev": "ts-node-dev --respawn index.ts",
         "db-deploy": "prisma migrate deploy",
         "db-seed": "prisma db seed",
+        "db-pull": "prisma db pull",
         "studio": "prisma studio",
         "migration:generate": "pnpify prisma migrate dev --name %1"
     },
@@ -34,6 +35,7 @@
         "@types/jest": "^26.0.24",
         "@types/node": "*",
         "@types/node-cron": "^3.0.7",
+        "@types/uuid": "^9.0.2",
         "babel-jest": "^29.2.2",
         "concurrently": "^7.3.0",
         "eslint-plugin-deprecation": "^1.3.2",

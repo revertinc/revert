@@ -8,6 +8,7 @@ import config from '../config';
 import revertAuthMiddleware from '../helpers/authMiddleware';
 import connectionRouter from './v1/connection';
 import metadataRouter from './v1/metadata';
+import AuthService from '../services/auth';
 
 const router = express.Router();
 
@@ -55,6 +56,19 @@ router.post('/slack-alert', async (req, res) => {
             error: error,
         });
     }
+});
+
+router.post('/clerk/webhook', async (req, res) => {
+    if (req.body) {
+        let webhookData = req.body.data;
+        let webhookEventType = req.body.type;
+        res.status(200).send(await AuthService.createAccountOnClerkUserCreation(webhookData, webhookEventType));
+    }
+});
+
+router.post('/internal/account', async (req, res) => {
+    const userId = req.body.userId;
+    res.send(await AuthService.getAccountForUser(userId));
 });
 
 router.use('/crm', cors(), revertAuthMiddleware(), crmRouter);

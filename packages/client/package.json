@@ -9,6 +9,7 @@
     "@codemirror/lang-sql": "^6.3.0",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
+    "@material-ui/icons": "^4.11.3",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.3",
     "@testing-library/jest-dom": "^5.16.5",
