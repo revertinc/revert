@@ -35,6 +35,7 @@ model connections {
   tp_account_url             String?
   owner_account_public_token String
   account                    accounts @relation(fields: [owner_account_public_token], references: [public_token])
+  scope                      String[]
 
   @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")
   @@unique([tp_id, t_id], name: "uniqueThirdPartyPerTenant")

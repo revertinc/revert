@@ -55,4 +55,36 @@ metadataRouter.get('/crms', async (req, res) => {
     }
 });
 
+metadataRouter.get('/crm/scope', async (req, res) => {
+    const { 'x-revert-public-token': token } = req.headers;
+    if (!token) {
+        res.status(401).send({
+            error: 'Api token unauthorized',
+        });
+        return;
+    }
+    try {
+        const account = await prisma.accounts.findFirst({
+            where: {
+                public_token: token as string,
+            },
+            include: { connections: true },
+        });
+        if (!account) {
+            res.status(401).send({
+                error: 'Api token unauthorized',
+            });
+            return;
+        }
+        res.send({
+            status: 'ok',
+            scopes: account.connections.map((connection) => {
+                return { [connection.tp_id]: connection.scope };
+            }),
+        });
+    } catch (error) {
+        console.error('Could not update db', error);
+    }
+});
+
 export default metadataRouter;
