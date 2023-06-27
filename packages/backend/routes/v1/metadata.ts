@@ -80,7 +80,7 @@ metadataRouter.get('/crm/scope', async (req, res) => {
             status: 'ok',
             scopes: account.connections.map((connection) => {
                 return { [connection.tp_id]: connection.scope };
-            }),
+            })[0],
         });
     } catch (error) {
         console.error('Could not update db', error);

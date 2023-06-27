@@ -104,16 +104,20 @@ const createConnectButton = function (self, integration) {
     });
     if (!isInActive) {
         if (integration.integrationId === 'hubspot') {
+            const scope = self.SCOPES[integration.integrationId];
             button.addEventListener('click', () => {
                 window.open(
-                    `https://app.hubspot.com/oauth/authorize?client_id=${self.HUBSPOT_CLIENT_ID}&redirect_uri=${self.REDIRECT_URL_BASE}/hubspot&scope=crm.objects.contacts.read%20settings.users.read%20settings.users.write%20settings.users.teams.read%20settings.users.teams.write%20crm.objects.contacts.write%20crm.objects.marketing_events.read%20crm.objects.marketing_events.write%20crm.schemas.custom.read%20crm.objects.custom.read%20crm.objects.custom.write%20crm.objects.companies.write%20crm.schemas.contacts.read%20crm.objects.companies.read%20crm.objects.deals.read%20crm.objects.deals.write%20crm.schemas.companies.read%20crm.schemas.companies.write%20crm.schemas.contacts.write%20crm.schemas.deals.read%20crm.schemas.deals.write%20crm.objects.owners.read%20crm.objects.quotes.write%20crm.objects.quotes.read%20crm.schemas.quotes.read%20crm.objects.line_items.read%20crm.objects.line_items.write%20crm.schemas.line_items.read&state=${state}`
+                    `https://app.hubspot.com/oauth/authorize?client_id=${self.HUBSPOT_CLIENT_ID}&redirect_uri=${
+                        self.REDIRECT_URL_BASE
+                    }/hubspot&scope=${scope.join('%20')}&state=${state}`
                 );
                 self.close();
             });
         } else if (integration.integrationId === 'zohocrm') {
+            const scope = self.SCOPES[integration.integrationId];
             button.addEventListener('click', () => {
                 window.open(
-                    `https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.users.ALL,AaaServer.profile.READ&client_id=${
+                    `https://accounts.zoho.com/oauth/v2/auth?scope=${scope.join(',')}&client_id=${
                         self.ZOHOCRM_CLIENT_ID
                     }&response_type=code&access_type=offline&redirect_uri=${
                         self.REDIRECT_URL_BASE
@@ -122,6 +126,7 @@ const createConnectButton = function (self, integration) {
                 self.close();
             });
         } else if (integration.integrationId === 'sfdc') {
+            const scope = self.SCOPES[integration.integrationId];
             const queryParams = {
                 response_type: 'code',
                 client_id: self.SFDC_CLIENT_ID,
@@ -131,7 +136,9 @@ const createConnectButton = function (self, integration) {
             const urlSearchParams = new URLSearchParams(queryParams);
             const queryString = urlSearchParams.toString();
             button.addEventListener('click', () => {
-                window.open(`https://login.salesforce.com/services/oauth2/authorize?${queryString}`);
+                window.open(
+                    `https://login.salesforce.com/services/oauth2/authorize?${queryString}&scope=${scope.join('%20')}`
+                );
                 self.close();
             });
         }
@@ -271,7 +278,7 @@ const createIntegrationBlock = function (self, integration, padding) {
 
 (function () {
     class Revert {
-        #CORE_API_BASE_URL: string;
+        CORE_API_BASE_URL: string;
         #API_CRM_METADATA_SUFFIX: string;
         #integrations: any[];
         #state: string;
@@ -280,6 +287,7 @@ const createIntegrationBlock = function (self, integration, padding) {
         #SFDC_CLIENT_ID: string;
         #REDIRECT_URL_BASE: string;
         #integrationsLoaded: boolean;
+        SCOPES: string;
         #onClose: () => void;
 
         get SFDC_CLIENT_ID() {
@@ -301,7 +309,7 @@ const createIntegrationBlock = function (self, integration, padding) {
         }
 
         constructor() {
-            this.#CORE_API_BASE_URL = envConfig.CORE_API_BASE_URL;
+            this.CORE_API_BASE_URL = envConfig.CORE_API_BASE_URL;
             this.#API_CRM_METADATA_SUFFIX = 'v1/metadata/crms';
             this.#integrations = [];
             this.#state = 'close';
@@ -311,6 +319,22 @@ const createIntegrationBlock = function (self, integration, padding) {
             this.#REDIRECT_URL_BASE = envConfig.REDIRECT_URL_BASE;
             this.#integrationsLoaded = false;
         }
+
+        fetchScopes = function (self) {
+            var requestOptions = {
+                mode: 'cors' as RequestMode,
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-revert-public-token': self.API_REVERT_PUBLIC_TOKEN,
+                },
+            };
+            fetch(`${self.CORE_API_BASE_URL}metadata/crm/scope`, requestOptions)
+                .then((response) => response.json())
+                .then((data) => {
+                    self.SCOPES = data.scopes;
+                });
+        };
 
         loadIntegrations = function (config) {
             var requestOptions = {
@@ -322,7 +346,7 @@ const createIntegrationBlock = function (self, integration, padding) {
                 },
             };
 
-            let fetchURL = this.#CORE_API_BASE_URL + this.#API_CRM_METADATA_SUFFIX;
+            let fetchURL = this.CORE_API_BASE_URL + this.#API_CRM_METADATA_SUFFIX;
 
             fetch(fetchURL, requestOptions)
                 .then((response) => response.json())
@@ -341,6 +365,7 @@ const createIntegrationBlock = function (self, integration, padding) {
 
         init = function (config) {
             this.API_REVERT_PUBLIC_TOKEN = config.revertToken;
+            this.fetchScopes(this);
             this.tenantId = config.tenantId;
             this.#onClose = config.onClose;
             addStyle(`
