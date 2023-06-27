@@ -104,20 +104,18 @@ const createConnectButton = function (self, integration) {
     });
     if (!isInActive) {
         if (integration.integrationId === 'hubspot') {
-            const scope = self.SCOPES[integration.integrationId];
             button.addEventListener('click', () => {
                 window.open(
                     `https://app.hubspot.com/oauth/authorize?client_id=${self.HUBSPOT_CLIENT_ID}&redirect_uri=${
                         self.REDIRECT_URL_BASE
-                    }/hubspot&scope=${scope.join('%20')}&state=${state}`
+                    }/hubspot&scope=${integration.scopes.join('%20')}&state=${state}`
                 );
                 self.close();
             });
         } else if (integration.integrationId === 'zohocrm') {
-            const scope = self.SCOPES[integration.integrationId];
             button.addEventListener('click', () => {
                 window.open(
-                    `https://accounts.zoho.com/oauth/v2/auth?scope=${scope.join(',')}&client_id=${
+                    `https://accounts.zoho.com/oauth/v2/auth?scope=${integration.scopes.join(',')}&client_id=${
                         self.ZOHOCRM_CLIENT_ID
                     }&response_type=code&access_type=offline&redirect_uri=${
                         self.REDIRECT_URL_BASE
@@ -126,7 +124,6 @@ const createConnectButton = function (self, integration) {
                 self.close();
             });
         } else if (integration.integrationId === 'sfdc') {
-            const scope = self.SCOPES[integration.integrationId];
             const queryParams = {
                 response_type: 'code',
                 client_id: self.SFDC_CLIENT_ID,
@@ -137,7 +134,9 @@ const createConnectButton = function (self, integration) {
             const queryString = urlSearchParams.toString();
             button.addEventListener('click', () => {
                 window.open(
-                    `https://login.salesforce.com/services/oauth2/authorize?${queryString}&scope=${scope.join('%20')}`
+                    `https://login.salesforce.com/services/oauth2/authorize?${queryString}${
+                        integration.scopes.length ? `&scope=${integration.scopes.join('%20')}` : ''
+                    }`
                 );
                 self.close();
             });
@@ -287,7 +286,6 @@ const createIntegrationBlock = function (self, integration, padding) {
         #SFDC_CLIENT_ID: string;
         #REDIRECT_URL_BASE: string;
         #integrationsLoaded: boolean;
-        SCOPES: string;
         #onClose: () => void;
 
         get SFDC_CLIENT_ID() {
@@ -320,22 +318,6 @@ const createIntegrationBlock = function (self, integration, padding) {
             this.#integrationsLoaded = false;
         }
 
-        fetchScopes = function (self) {
-            var requestOptions = {
-                mode: 'cors' as RequestMode,
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-revert-public-token': self.API_REVERT_PUBLIC_TOKEN,
-                },
-            };
-            fetch(`${self.CORE_API_BASE_URL}metadata/crm/scope`, requestOptions)
-                .then((response) => response.json())
-                .then((data) => {
-                    self.SCOPES = data.scopes;
-                });
-        };
-
         loadIntegrations = function (config) {
             var requestOptions = {
                 mode: 'cors' as RequestMode,
@@ -365,7 +347,6 @@ const createIntegrationBlock = function (self, integration, padding) {
 
         init = function (config) {
             this.API_REVERT_PUBLIC_TOKEN = config.revertToken;
-            this.fetchScopes(this);
             this.tenantId = config.tenantId;
             this.#onClose = config.onClose;
             addStyle(`
@@ -484,7 +465,7 @@ const createIntegrationBlock = function (self, integration, padding) {
                     (integration) => integration.integrationId === integrationId
                 );
                 if (selectedIntegration) {
-                    const scope = this.SCOPES[selectedIntegration.integrationId];
+                    const scopes = selectedIntegration.scopes;
                     const state = JSON.stringify({
                         tenantId: this.tenantId,
                         revertPublicToken: this.API_REVERT_PUBLIC_TOKEN,
@@ -493,13 +474,13 @@ const createIntegrationBlock = function (self, integration, padding) {
                         window.open(
                             `https://app.hubspot.com/oauth/authorize?client_id=${
                                 this.#HUBSPOT_CLIENT_ID
-                            }&redirect_uri=${
-                                this.#REDIRECT_URL_BASE
-                            }/hubspot&scope=${scope.join("%20")}&state=${state}`
+                            }&redirect_uri=${this.#REDIRECT_URL_BASE}/hubspot&scope=${scopes.join(
+                                '%20'
+                            )}&state=${state}`
                         );
                     } else if (selectedIntegration.integrationId === 'zohocrm') {
                         window.open(
-                            `https://accounts.zoho.com/oauth/v2/auth?scope=${scope.join(",")}&client_id=${
+                            `https://accounts.zoho.com/oauth/v2/auth?scope=${scopes.join(',')}&client_id=${
                                 this.#ZOHOCRM_CLIENT_ID
                             }&response_type=code&access_type=offline&redirect_uri=${
                                 this.#REDIRECT_URL_BASE
@@ -514,7 +495,11 @@ const createIntegrationBlock = function (self, integration, padding) {
                         };
                         const urlSearchParams = new URLSearchParams(queryParams);
                         const queryString = urlSearchParams.toString();
-                        window.open(`https://login.salesforce.com/services/oauth2/authorize?${queryString}&scope=${scope.join('%20')}`);
+                        window.open(
+                            `https://login.salesforce.com/services/oauth2/authorize?${queryString}${
+                                scopes.length ? `&scope=${scopes.join('%20')}` : ''
+                            }`
+                        );
                     }
                 } else {
                     console.warn('Invalid integration ID provided.');
