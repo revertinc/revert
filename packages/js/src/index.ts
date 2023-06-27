@@ -484,6 +484,7 @@ const createIntegrationBlock = function (self, integration, padding) {
                     (integration) => integration.integrationId === integrationId
                 );
                 if (selectedIntegration) {
+                    const scope = this.SCOPES[selectedIntegration.integrationId];
                     const state = JSON.stringify({
                         tenantId: this.tenantId,
                         revertPublicToken: this.API_REVERT_PUBLIC_TOKEN,
@@ -494,11 +495,11 @@ const createIntegrationBlock = function (self, integration, padding) {
                                 this.#HUBSPOT_CLIENT_ID
                             }&redirect_uri=${
                                 this.#REDIRECT_URL_BASE
-                            }/hubspot&scope=crm.objects.contacts.read%20settings.users.read%20settings.users.write%20settings.users.teams.read%20settings.users.teams.write%20crm.objects.contacts.write%20crm.objects.marketing_events.read%20crm.objects.marketing_events.write%20crm.schemas.custom.read%20crm.objects.custom.read%20crm.objects.custom.write%20crm.objects.companies.write%20crm.schemas.contacts.read%20crm.objects.companies.read%20crm.objects.deals.read%20crm.objects.deals.write%20crm.schemas.companies.read%20crm.schemas.companies.write%20crm.schemas.contacts.write%20crm.schemas.deals.read%20crm.schemas.deals.write%20crm.objects.owners.read%20crm.objects.quotes.write%20crm.objects.quotes.read%20crm.schemas.quotes.read%20crm.objects.line_items.read%20crm.objects.line_items.write%20crm.schemas.line_items.read&state=${state}`
+                            }/hubspot&scope=${scope.join("%20")}&state=${state}`
                         );
                     } else if (selectedIntegration.integrationId === 'zohocrm') {
                         window.open(
-                            `https://accounts.zoho.com/oauth/v2/auth?scope=ZohoCRM.modules.ALL,ZohoCRM.settings.ALL,ZohoCRM.users.ALL,AaaServer.profile.READ&client_id=${
+                            `https://accounts.zoho.com/oauth/v2/auth?scope=${scope.join(",")}&client_id=${
                                 this.#ZOHOCRM_CLIENT_ID
                             }&response_type=code&access_type=offline&redirect_uri=${
                                 this.#REDIRECT_URL_BASE
@@ -513,7 +514,7 @@ const createIntegrationBlock = function (self, integration, padding) {
                         };
                         const urlSearchParams = new URLSearchParams(queryParams);
                         const queryString = urlSearchParams.toString();
-                        window.open(`https://login.salesforce.com/services/oauth2/authorize?${queryString}`);
+                        window.open(`https://login.salesforce.com/services/oauth2/authorize?${queryString}&scope=${scope.join('%20')}`);
                     }
                 } else {
                     console.warn('Invalid integration ID provided.');
