@@ -17,6 +17,7 @@ const config = {
     SLACK_URL: process.env.SLACK_HOOK_URL,
     SENTRY_DSN: process.env.SENTRY_DSN,
     SVIX_AUTH_TOKEN: process.env.SVIX_AUTH_TOKEN,
+    SHORTLOOP_AUTH_KEY: process.env.SHORTLOOP_AUTH_KEY!,
 };
 
 export default config;

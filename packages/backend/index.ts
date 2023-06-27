@@ -7,6 +7,7 @@ import cors from 'cors';
 import cron from 'node-cron';
 import AuthService from './services/auth';
 import versionMiddleware, { manageRouterVersioning } from './helpers/versionMiddleware';
+import { ShortloopSDK } from '@shortloop/node';
 
 const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
@@ -50,6 +51,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(limiter);
 app.use(versionMiddleware());
+
+ShortloopSDK.init({
+    url: 'https://revert.shortloop.dev', // ShortLoop URL. (Provided by ShortLoop team.)
+    applicationName: 'revert-api', // your application name here
+    authKey: config.SHORTLOOP_AUTH_KEY, // ShortLoop Auth Key. (Provided by ShortLoop team.)
+    environment: 'staging', // for e.g stage or prod
+});
+app.use(ShortloopSDK.capture());
 
 // TODO: Just to test versions. Remove later
 const testv2Router = (_req: Request, res: Response) => {
