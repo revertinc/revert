@@ -33,45 +33,12 @@ Visit: https://revert.dev to sign up for an account or read our docs [here](http
 ## Roadmap
 
 -   [x] **Salesforce**
-
-    -   Events ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Tasks ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Notes ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Deals ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Contacts API ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Proxy ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Company ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Search API ![Progress](https://progress-bar.dev/100?title=completed)
-
 -   [x] **Hubspot**
 
-    -   Events ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Tasks ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Notes ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Deals ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Contacts API ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Proxy ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Company ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Search API ![Progress](https://progress-bar.dev/100?title=completed)
-
 -   [x] **Zoho CRM**
-    -   Events ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Tasks ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Notes ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Deals ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Contacts API ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Proxy ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Company ![Progress](https://progress-bar.dev/100?title=completed)
-    -   Search API ![Progress](https://progress-bar.dev/100?title=completed)
+
 -   [ ] **Pipedrive**
-    -   Events ![Progress](https://progress-bar.dev/0?title=todo)
-    -   Tasks ![Progress](https://progress-bar.dev/0?title=todo)
-    -   Notes ![Progress](https://progress-bar.dev/0?title=todo)
-    -   Deals ![Progress](https://progress-bar.dev/0?title=todo)
-    -   Contacts API ![Progress](https://progress-bar.dev/0?title=todo)
-    -   Proxy ![Progress](https://progress-bar.dev/0?title=todo)
-    -   Company ![Progress](https://progress-bar.dev/0?title=todo)
-    -   Search API ![Progress](https://progress-bar.dev/0?title=todo)
+
 -   [ ] Other CRMs such as Close.io, Zendesk Sell, MS 365
 -   [ ] Ability to self-host Revert inside your own cloud
 -   [ ] Security Compliances such as SOC 2
@@ -83,6 +50,7 @@ This repo contains a set of packages under `@reverdotdev/` namespace such as:
 -   [`@revertdotdev/backend`](./packages/backend): The core Revert API that powers the frontend SDKs.
 -   [`@revertdotdev/revert-react`](./packages/react): Official SDK for React.
 -   [`@revertdotdev/revert-vue`](./packages/vue): Official SDK for Vue.
+-   [`@revertdotdev/js`](./packages/js): Official SDK for Javascript.
 -   ...
 
 ## Examples
