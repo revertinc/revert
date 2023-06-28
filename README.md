@@ -1,10 +1,10 @@
 <p align="center">
 <img width="150" style="border-radius:75px;" src="./public/logo.png"/>
-<h1 align="center"><b>Revert</b></h1>
+<h1 align="center"><b>Revert.dev</b></h1>
 <p align="center">
- <h2 align="center">The fastest way to build user-facing Integrations</h2>
+ <h2 align="center">The fastest way to build user-facing Integrations
  
- [Website](https://revert.dev) | [Issues](https://github.com/revertinc/revert/issues) | [Docs](https://docs.revert.dev/)
+ [Docs](https://docs.revert.dev/) | [Get Started](https://revert.dev) | [Issues](https://github.com/revertinc/revert/issues) </h2>
 <br />
 
 </p>
