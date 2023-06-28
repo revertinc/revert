@@ -2,13 +2,14 @@
 <img width="150" style="border-radius:75px;" src="./public/logo.png"/>
 <h1 align="center"><b>Revert</b></h1>
 <p align="center">
-Universal API for CRMs
+ <h2 align="center">The fastest way to build user-facing Integrations</h2>
+ 
+ [Website](https://revert.dev) | [Issues](https://github.com/revertinc/revert/issues) | [Docs](https://docs.revert.dev/)
 <br />
+
 </p>
 
-# Official Revert SDKs
-
-## Overview
+# About Revert
 
 Revert is the fastest way to integrate with your customer's CRMs with a single set of APIs & SDKs.
 
