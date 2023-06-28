@@ -1,17 +1,11 @@
 var revert;
 
 declare var __CORE_API_BASE_URL__: string;
-declare var __HUBSPOT_CLIENT_ID__: string;
 declare var __REDIRECT_URL_BASE__: string;
-declare var __ZOHOCRM_CLIENT_ID__: string;
-declare var __SFDC_CLIENT_ID__: string;
 
 var envConfig = {
     CORE_API_BASE_URL: `${__CORE_API_BASE_URL__}`,
-    HUBSPOT_CLIENT_ID: `${__HUBSPOT_CLIENT_ID__}`,
     REDIRECT_URL_BASE: `${__REDIRECT_URL_BASE__}`,
-    ZOHOCRM_CLIENT_ID: `${__ZOHOCRM_CLIENT_ID__}`,
-    SFDC_CLIENT_ID: `${__SFDC_CLIENT_ID__}`,
 };
 
 const transformStyle = function (style) {
@@ -106,7 +100,7 @@ const createConnectButton = function (self, integration) {
         if (integration.integrationId === 'hubspot') {
             button.addEventListener('click', () => {
                 window.open(
-                    `https://app.hubspot.com/oauth/authorize?client_id=${self.HUBSPOT_CLIENT_ID}&redirect_uri=${
+                    `https://app.hubspot.com/oauth/authorize?client_id=${integration.clientId}&redirect_uri=${
                         self.REDIRECT_URL_BASE
                     }/hubspot&scope=${integration.scopes.join('%20')}&state=${state}`
                 );
@@ -116,7 +110,7 @@ const createConnectButton = function (self, integration) {
             button.addEventListener('click', () => {
                 window.open(
                     `https://accounts.zoho.com/oauth/v2/auth?scope=${integration.scopes.join(',')}&client_id=${
-                        self.ZOHOCRM_CLIENT_ID
+                        integration.clientId
                     }&response_type=code&access_type=offline&redirect_uri=${
                         self.REDIRECT_URL_BASE
                     }/zohocrm&state=${encodeURIComponent(state)}`
@@ -126,7 +120,7 @@ const createConnectButton = function (self, integration) {
         } else if (integration.integrationId === 'sfdc') {
             const queryParams = {
                 response_type: 'code',
-                client_id: self.SFDC_CLIENT_ID,
+                client_id: integration.clientId,
                 redirect_uri: `${self.REDIRECT_URL_BASE}/sfdc`,
                 state,
             };
@@ -281,23 +275,10 @@ const createIntegrationBlock = function (self, integration, padding) {
         #API_CRM_METADATA_SUFFIX: string;
         #integrations: any[];
         #state: string;
-        #HUBSPOT_CLIENT_ID: string;
-        #ZOHOCRM_CLIENT_ID: string;
-        #SFDC_CLIENT_ID: string;
         #REDIRECT_URL_BASE: string;
         #integrationsLoaded: boolean;
         #onClose: () => void;
 
-        get SFDC_CLIENT_ID() {
-            return this.#SFDC_CLIENT_ID;
-        }
-        get ZOHOCRM_CLIENT_ID() {
-            return this.#ZOHOCRM_CLIENT_ID;
-        }
-
-        get HUBSPOT_CLIENT_ID() {
-            return this.#HUBSPOT_CLIENT_ID;
-        }
         get REDIRECT_URL_BASE() {
             return this.#REDIRECT_URL_BASE;
         }
@@ -311,9 +292,6 @@ const createIntegrationBlock = function (self, integration, padding) {
             this.#API_CRM_METADATA_SUFFIX = 'v1/metadata/crms';
             this.#integrations = [];
             this.#state = 'close';
-            this.#HUBSPOT_CLIENT_ID = envConfig.HUBSPOT_CLIENT_ID;
-            this.#ZOHOCRM_CLIENT_ID = envConfig.ZOHOCRM_CLIENT_ID;
-            this.#SFDC_CLIENT_ID = envConfig.SFDC_CLIENT_ID;
             this.#REDIRECT_URL_BASE = envConfig.REDIRECT_URL_BASE;
             this.#integrationsLoaded = false;
         }
@@ -329,7 +307,7 @@ const createIntegrationBlock = function (self, integration, padding) {
             };
 
             let fetchURL = this.CORE_API_BASE_URL + this.#API_CRM_METADATA_SUFFIX;
-
+            
             fetch(fetchURL, requestOptions)
                 .then((response) => response.json())
                 .then((result) => {
@@ -473,7 +451,7 @@ const createIntegrationBlock = function (self, integration, padding) {
                     if (selectedIntegration.integrationId === 'hubspot') {
                         window.open(
                             `https://app.hubspot.com/oauth/authorize?client_id=${
-                                this.#HUBSPOT_CLIENT_ID
+                                selectedIntegration.clientId
                             }&redirect_uri=${this.#REDIRECT_URL_BASE}/hubspot&scope=${scopes.join(
                                 '%20'
                             )}&state=${state}`
@@ -481,7 +459,7 @@ const createIntegrationBlock = function (self, integration, padding) {
                     } else if (selectedIntegration.integrationId === 'zohocrm') {
                         window.open(
                             `https://accounts.zoho.com/oauth/v2/auth?scope=${scopes.join(',')}&client_id=${
-                                this.#ZOHOCRM_CLIENT_ID
+                                selectedIntegration.clientId
                             }&response_type=code&access_type=offline&redirect_uri=${
                                 this.#REDIRECT_URL_BASE
                             }/zohocrm&state=${encodeURIComponent(state)}`
@@ -489,7 +467,7 @@ const createIntegrationBlock = function (self, integration, padding) {
                     } else if (selectedIntegration.integrationId === 'sfdc') {
                         const queryParams = {
                             response_type: 'code',
-                            client_id: this.#SFDC_CLIENT_ID,
+                            client_id: selectedIntegration.clientId,
                             redirect_uri: `${this.#REDIRECT_URL_BASE}/sfdc`,
                             state,
                         };

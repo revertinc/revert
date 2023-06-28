@@ -20,15 +20,18 @@ authRouter.get('/oauth-callback', async (req, res) => {
             where: {
                 public_token: String(revertPublicKey),
             },
+            include: { connections: true },
         });
+        const clientId = account?.connections.find(connection => connection.tp_id === integrationId)?.app_client_id;
+        const clientSecret = account?.connections.find(connection => connection.tp_id === integrationId)?.app_client_secret;
         const svixAppId = account!.id;
         if (integrationId === 'hubspot' && req.query.code && req.query.t_id && revertPublicKey) {
             // Handle the received code
             const url = 'https://api.hubapi.com/oauth/v1/token';
             const formData = {
                 grant_type: 'authorization_code',
-                client_id: config.HUBSPOT_CLIENT_ID,
-                client_secret: config.HUBSPOT_CLIENT_SECRET,
+                client_id:  clientId || config.HUBSPOT_CLIENT_ID,
+                client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET,
                 redirect_uri: `${config.OAUTH_REDIRECT_BASE}/hubspot`,
                 code: req.query.code,
             };
@@ -101,8 +104,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
             const url = `${req.query.accountURL}/oauth/v2/token`;
             const formData = {
                 grant_type: 'authorization_code',
-                client_id: config.ZOHOCRM_CLIENT_ID,
-                client_secret: config.ZOHOCRM_CLIENT_SECRET,
+                client_id: clientId || config.ZOHOCRM_CLIENT_ID,
+                client_secret: clientSecret || config.ZOHOCRM_CLIENT_SECRET,
                 redirect_uri: `${config.OAUTH_REDIRECT_BASE}/zohocrm`,
                 code: req.query.code,
             };
@@ -186,8 +189,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
             const url = 'https://login.salesforce.com/services/oauth2/token';
             const formData = {
                 grant_type: 'authorization_code',
-                client_id: config.SFDC_CLIENT_ID,
-                client_secret: config.SFDC_CLIENT_SECRET,
+                client_id: clientId || config.SFDC_CLIENT_ID,
+                client_secret: clientSecret || config.SFDC_CLIENT_SECRET,
                 redirect_uri: `${config.OAUTH_REDIRECT_BASE}/sfdc`,
                 code: req.query.code,
             };
