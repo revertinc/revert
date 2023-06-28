@@ -1,7 +1,7 @@
 import express from 'express';
 import prisma from '../../prisma/client';
 import { DEFAULT_SCOPE, INTEGRATIONS } from '../../constants';
-import { connections } from '@prisma/client';
+import { apps } from '@prisma/client';
 import config from '../../config';
 
 const metadataRouter = express.Router();
@@ -20,7 +20,7 @@ metadataRouter.get('/crms', async (req, res) => {
             where: {
                 public_token: token as string,
             },
-            include: { connections: true },
+            include: { connections: true, apps: true },
         });
         if (!account) {
             res.status(401).send({
@@ -29,15 +29,11 @@ metadataRouter.get('/crms', async (req, res) => {
 
             return;
         }
-        const getScope = (connections: connections[], integration: INTEGRATIONS) => {
-            return (
-                connections.find((connection) => connection.tp_id === integration)?.scope || DEFAULT_SCOPE[integration]
-            );
+        const getScope = (apps: apps[], integration: INTEGRATIONS) => {
+            return apps.find((app) => app.tp_id === integration)?.scope || DEFAULT_SCOPE[integration];
         };
-        const getClientId = (connections: connections[], integration: INTEGRATIONS) => {
-            return (
-                connections.find((connection) => connection.tp_id === integration)?.app_client_id
-            );
+        const getClientId = (apps: apps[], integration: INTEGRATIONS) => {
+            return apps.find((app) => app.tp_id === integration)?.app_client_id;
         };
         res.send({
             status: 'ok',
@@ -47,8 +43,8 @@ metadataRouter.get('/crms', async (req, res) => {
                     name: 'Hubspot',
                     imageSrc: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1673863171/Revert/Hubspot%20logo.png',
                     status: 'active',
-                    scopes: getScope(account.connections, INTEGRATIONS.HUBSPOT),
-                    clientId: getClientId(account.connections, INTEGRATIONS.HUBSPOT) || config.HUBSPOT_CLIENT_ID
+                    scopes: getScope(account.apps, INTEGRATIONS.HUBSPOT),
+                    clientId: getClientId(account.apps, INTEGRATIONS.HUBSPOT) || config.HUBSPOT_CLIENT_ID,
                 },
                 {
                     integrationId: INTEGRATIONS.ZOHO,
@@ -56,7 +52,8 @@ metadataRouter.get('/crms', async (req, res) => {
                     imageSrc:
                         'https://res.cloudinary.com/dfcnic8wq/image/upload/v1674053823/Revert/zoho-crm-logo_u9889x.jpg',
                     status: 'active',
-                    scopes: getScope(account.connections, INTEGRATIONS.ZOHO),clientId: getClientId(account.connections, INTEGRATIONS.ZOHO) || config.ZOHOCRM_CLIENT_ID
+                    scopes: getScope(account.apps, INTEGRATIONS.ZOHO),
+                    clientId: getClientId(account.apps, INTEGRATIONS.ZOHO) || config.ZOHOCRM_CLIENT_ID,
                 },
                 {
                     integrationId: INTEGRATIONS.SALESFORCE,
@@ -64,8 +61,8 @@ metadataRouter.get('/crms', async (req, res) => {
                     imageSrc:
                         'https://res.cloudinary.com/dfcnic8wq/image/upload/c_fit,h_20,w_70/v1673887647/Revert/SFDC%20logo.png',
                     status: 'active',
-                    scopes: getScope(account.connections, INTEGRATIONS.SALESFORCE),
-                    clientId: getClientId(account.connections, INTEGRATIONS.SALESFORCE) || config.SFDC_CLIENT_ID
+                    scopes: getScope(account.apps, INTEGRATIONS.SALESFORCE),
+                    clientId: getClientId(account.apps, INTEGRATIONS.SALESFORCE) || config.SFDC_CLIENT_ID,
                 },
             ],
         });

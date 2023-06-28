@@ -20,17 +20,17 @@ authRouter.get('/oauth-callback', async (req, res) => {
             where: {
                 public_token: String(revertPublicKey),
             },
-            include: { connections: true },
+            include: { connections: true, apps: true },
         });
-        const clientId = account?.connections.find(connection => connection.tp_id === integrationId)?.app_client_id;
-        const clientSecret = account?.connections.find(connection => connection.tp_id === integrationId)?.app_client_secret;
+        const clientId = account?.apps.find((app) => app.tp_id === integrationId)?.app_client_id;
+        const clientSecret = account?.apps.find((app) => app.tp_id === integrationId)?.app_client_secret;
         const svixAppId = account!.id;
         if (integrationId === 'hubspot' && req.query.code && req.query.t_id && revertPublicKey) {
             // Handle the received code
             const url = 'https://api.hubapi.com/oauth/v1/token';
             const formData = {
                 grant_type: 'authorization_code',
-                client_id:  clientId || config.HUBSPOT_CLIENT_ID,
+                client_id: clientId || config.HUBSPOT_CLIENT_ID,
                 client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET,
                 redirect_uri: `${config.OAUTH_REDIRECT_BASE}/hubspot`,
                 code: req.query.code,

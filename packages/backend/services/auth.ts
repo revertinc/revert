@@ -4,10 +4,13 @@ import qs from 'qs';
 import prisma from '../prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import isWorkEmail from '../helpers/isWorkEmail';
+import { INTEGRATIONS } from '../constants';
 class AuthService {
     async refreshOAuthTokensForThirdParty() {
         try {
-            const connections = await prisma.connections.findMany({});
+            const connections = await prisma.connections.findMany({
+                include: { account: { include: { apps: true } } },
+            });
             for (let i = 0; i < connections.length; i++) {
                 const connection = connections[i];
                 if (connection.tp_refresh_token) {
@@ -16,8 +19,12 @@ class AuthService {
                         const url = 'https://api.hubapi.com/oauth/v1/token';
                         const formData = {
                             grant_type: 'refresh_token',
-                            client_id: connection.app_client_id || config.HUBSPOT_CLIENT_ID,
-                            client_secret: connection.app_client_secret || config.HUBSPOT_CLIENT_SECRET,
+                            client_id:
+                                connection.account.apps?.find((app) => app.tp_id === INTEGRATIONS.HUBSPOT)
+                                    ?.app_client_id || config.HUBSPOT_CLIENT_ID,
+                            client_secret:
+                                connection.account.apps?.find((app) => app.tp_id === INTEGRATIONS.HUBSPOT)
+                                    ?.app_client_secret || config.HUBSPOT_CLIENT_SECRET,
                             redirect_uri: `${config.OAUTH_REDIRECT_BASE}/hubspot`,
                             refresh_token: connection.tp_refresh_token,
                         };
@@ -47,8 +54,12 @@ class AuthService {
                         const url = `${connection.tp_account_url}/oauth/v2/token`;
                         const formData = {
                             grant_type: 'refresh_token',
-                            client_id: connection.app_client_id || config.ZOHOCRM_CLIENT_ID,
-                            client_secret: connection.app_client_secret || config.ZOHOCRM_CLIENT_SECRET,
+                            client_id:
+                                connection.account.apps?.find((app) => app.tp_id === INTEGRATIONS.ZOHO)
+                                    ?.app_client_id || config.ZOHOCRM_CLIENT_ID,
+                            client_secret:
+                                connection.account.apps?.find((app) => app.tp_id === INTEGRATIONS.ZOHO)
+                                    ?.app_client_secret || config.ZOHOCRM_CLIENT_SECRET,
                             redirect_uri: `${config.OAUTH_REDIRECT_BASE}/zohocrm`,
                             refresh_token: connection.tp_refresh_token,
                         };
@@ -81,8 +92,12 @@ class AuthService {
                         const url = `https://login.salesforce.com/services/oauth2/token`;
                         const formData = {
                             grant_type: 'refresh_token',
-                            client_id: connection.app_client_id || config.SFDC_CLIENT_ID,
-                            client_secret: connection.app_client_secret || config.SFDC_CLIENT_SECRET,
+                            client_id:
+                                connection.account.apps?.find((app) => app.tp_id === INTEGRATIONS.SALESFORCE)
+                                    ?.app_client_id || config.SFDC_CLIENT_ID,
+                            client_secret:
+                                connection.account.apps?.find((app) => app.tp_id === INTEGRATIONS.SALESFORCE)
+                                    ?.app_client_secret || config.SFDC_CLIENT_SECRET,
                             redirect_uri: `${config.OAUTH_REDIRECT_BASE}/sfdc`,
                             refresh_token: connection.tp_refresh_token,
                         };
