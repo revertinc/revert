@@ -6,7 +6,7 @@
  
  [Docs](https://docs.revert.dev/) | [Get Started](https://revert.dev) | [Issues](https://github.com/revertinc/revert/issues) </h2>
 <br />
-
+<img width="100%" style="border-radius:75px;" src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1687937777/Revert/CTA-navigation-1_mrxxep.png"/>
 </p>
 
 # About Revert
