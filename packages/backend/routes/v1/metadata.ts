@@ -30,7 +30,8 @@ metadataRouter.get('/crms', async (req, res) => {
             return;
         }
         const getScope = (apps: Partial<apps>[], integration: INTEGRATIONS) => {
-            return apps.find((app) => app.tp_id === integration)?.scope || DEFAULT_SCOPE[integration];
+            const scopes = apps.find((app) => app.tp_id === integration)?.scope;
+            return scopes?.length ? scopes : DEFAULT_SCOPE[integration];
         };
         const getClientId = (apps: Partial<apps>[], integration: INTEGRATIONS) => {
             return apps.find((app) => app.tp_id === integration)?.app_client_id;
