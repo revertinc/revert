@@ -23,7 +23,7 @@ connectionRouter.get('/', tenantMiddleware(), async (req, res) => {
     }
 });
 
-connectionRouter.get('/all', tenantMiddleware(), async (req, res) => {
+connectionRouter.get('/all', async (req, res) => {
     try {
         const result = await ConnectionService.getAllConnections(req, res);
         if (result.error) {
