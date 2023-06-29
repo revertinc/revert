@@ -2,6 +2,7 @@ import axios from 'axios';
 import express from 'express';
 import config from '../../../config';
 import qs from 'qs';
+import { TP_ID } from '@prisma/client';
 import AuthService from '../../../services/auth';
 import prisma, { Prisma } from '../../../prisma/client';
 import ConnectionService from '../../../services/connection';
@@ -13,22 +14,27 @@ const authRouter = express.Router({ mergeParams: true });
  */
 authRouter.get('/oauth-callback', async (req, res) => {
     console.log('OAuth callback', req.query);
-    const integrationId = req.query.integrationId;
+    const integrationId = req.query.integrationId as TP_ID;
     const revertPublicKey = req.query.x_revert_public_token as string;
     try {
         const account = await prisma.accounts.findFirst({
             where: {
                 public_token: String(revertPublicKey),
             },
+            include: {
+                apps: { select: { app_client_id: true, app_client_secret: true }, where: { tp_id: integrationId } },
+            },
         });
+        const clientId = account?.apps[0]?.app_client_id;
+        const clientSecret = account?.apps[0]?.app_client_secret;
         const svixAppId = account!.id;
         if (integrationId === 'hubspot' && req.query.code && req.query.t_id && revertPublicKey) {
             // Handle the received code
             const url = 'https://api.hubapi.com/oauth/v1/token';
             const formData = {
                 grant_type: 'authorization_code',
-                client_id: config.HUBSPOT_CLIENT_ID,
-                client_secret: config.HUBSPOT_CLIENT_SECRET,
+                client_id: clientId || config.HUBSPOT_CLIENT_ID,
+                client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET,
                 redirect_uri: `${config.OAUTH_REDIRECT_BASE}/hubspot`,
                 code: req.query.code,
             };
@@ -65,9 +71,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.user,
-                        account: {
-                            connect: { public_token: revertPublicKey },
-                        },
+                        owner_account_public_token: revertPublicKey,
                     },
                 });
                 ConnectionService.svix.message.create(svixAppId, {
@@ -101,8 +105,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
             const url = `${req.query.accountURL}/oauth/v2/token`;
             const formData = {
                 grant_type: 'authorization_code',
-                client_id: config.ZOHOCRM_CLIENT_ID,
-                client_secret: config.ZOHOCRM_CLIENT_SECRET,
+                client_id: clientId || config.ZOHOCRM_CLIENT_ID,
+                client_secret: clientSecret || config.ZOHOCRM_CLIENT_SECRET,
                 redirect_uri: `${config.OAUTH_REDIRECT_BASE}/zohocrm`,
                 code: req.query.code,
             };
@@ -144,9 +148,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                             tp_refresh_token: result.data.refresh_token,
                             tp_customer_id: info.data.Email,
                             tp_account_url: req.query.accountURL as string,
-                            account: {
-                                connect: { public_token: revertPublicKey },
-                            },
+                            owner_account_public_token: revertPublicKey,
                         },
                         update: {
                             tp_access_token: result.data.access_token,
@@ -186,8 +188,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
             const url = 'https://login.salesforce.com/services/oauth2/token';
             const formData = {
                 grant_type: 'authorization_code',
-                client_id: config.SFDC_CLIENT_ID,
-                client_secret: config.SFDC_CLIENT_SECRET,
+                client_id: clientId || config.SFDC_CLIENT_ID,
+                client_secret: clientSecret || config.SFDC_CLIENT_SECRET,
                 redirect_uri: `${config.OAUTH_REDIRECT_BASE}/sfdc`,
                 code: req.query.code,
             };
@@ -224,9 +226,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.email,
                         tp_account_url: info.data.urls['custom_domain'],
-                        account: {
-                            connect: { public_token: revertPublicKey },
-                        },
+                        owner_account_public_token: revertPublicKey,
                     },
                     update: {
                         tp_access_token: result.data.access_token,
