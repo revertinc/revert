@@ -4,12 +4,13 @@ import qs from 'qs';
 import prisma from '../prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import isWorkEmail from '../helpers/isWorkEmail';
-import { INTEGRATIONS } from '../constants';
+import { TP_ID } from '@prisma/client';
+
 class AuthService {
     async refreshOAuthTokensForThirdParty() {
         try {
             const connections = await prisma.connections.findMany({
-                include: { account: { include: { apps: true } } },
+                include: { app: true },
             });
             for (let i = 0; i < connections.length; i++) {
                 const connection = connections[i];
@@ -20,11 +21,9 @@ class AuthService {
                         const formData = {
                             grant_type: 'refresh_token',
                             client_id:
-                                connection.account.apps?.find((app) => app.tp_id === INTEGRATIONS.HUBSPOT)
-                                    ?.app_client_id || config.HUBSPOT_CLIENT_ID,
+                                connection.app.app_client_id || config.HUBSPOT_CLIENT_ID,
                             client_secret:
-                                connection.account.apps?.find((app) => app.tp_id === INTEGRATIONS.HUBSPOT)
-                                    ?.app_client_secret || config.HUBSPOT_CLIENT_SECRET,
+                                connection.app.app_client_secret || config.HUBSPOT_CLIENT_SECRET,
                             redirect_uri: `${config.OAUTH_REDIRECT_BASE}/hubspot`,
                             refresh_token: connection.tp_refresh_token,
                         };
@@ -55,11 +54,9 @@ class AuthService {
                         const formData = {
                             grant_type: 'refresh_token',
                             client_id:
-                                connection.account.apps?.find((app) => app.tp_id === INTEGRATIONS.ZOHO)
-                                    ?.app_client_id || config.ZOHOCRM_CLIENT_ID,
+                                connection.app.app_client_id || config.ZOHOCRM_CLIENT_ID,
                             client_secret:
-                                connection.account.apps?.find((app) => app.tp_id === INTEGRATIONS.ZOHO)
-                                    ?.app_client_secret || config.ZOHOCRM_CLIENT_SECRET,
+                                connection.app.app_client_secret || config.ZOHOCRM_CLIENT_SECRET,
                             redirect_uri: `${config.OAUTH_REDIRECT_BASE}/zohocrm`,
                             refresh_token: connection.tp_refresh_token,
                         };
@@ -93,11 +90,9 @@ class AuthService {
                         const formData = {
                             grant_type: 'refresh_token',
                             client_id:
-                                connection.account.apps?.find((app) => app.tp_id === INTEGRATIONS.SALESFORCE)
-                                    ?.app_client_id || config.SFDC_CLIENT_ID,
+                                connection.app.app_client_id || config.SFDC_CLIENT_ID,
                             client_secret:
-                                connection.account.apps?.find((app) => app.tp_id === INTEGRATIONS.SALESFORCE)
-                                    ?.app_client_secret || config.SFDC_CLIENT_SECRET,
+                                connection.app.app_client_secret || config.SFDC_CLIENT_SECRET,
                             redirect_uri: `${config.OAUTH_REDIRECT_BASE}/sfdc`,
                             refresh_token: connection.tp_refresh_token,
                         };
@@ -159,6 +154,19 @@ class AuthService {
                         skipWaitlist: false,
                     },
                 });
+                await Promise.all(
+                    Object.keys(TP_ID).map(async (tp) => {
+                        await prisma.apps.create({
+                            data: {
+                                id: `${tp}_${account.id}`,
+                                tp_id: tp as TP_ID,
+                                scope: [],
+                                owner_account_public_token: account.public_token,
+                                is_revert_app: true,
+                            },
+                        });
+                    })
+                );
                 await prisma.users.create({
                     data: {
                         id: webhookData.id,

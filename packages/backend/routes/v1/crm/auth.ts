@@ -2,6 +2,7 @@ import axios from 'axios';
 import express from 'express';
 import config from '../../../config';
 import qs from 'qs';
+import { TP_ID } from '@prisma/client';
 import AuthService from '../../../services/auth';
 import prisma, { Prisma } from '../../../prisma/client';
 import ConnectionService from '../../../services/connection';
@@ -13,17 +14,19 @@ const authRouter = express.Router({ mergeParams: true });
  */
 authRouter.get('/oauth-callback', async (req, res) => {
     console.log('OAuth callback', req.query);
-    const integrationId = req.query.integrationId;
+    const integrationId = req.query.integrationId as TP_ID;
     const revertPublicKey = req.query.x_revert_public_token as string;
     try {
         const account = await prisma.accounts.findFirst({
             where: {
                 public_token: String(revertPublicKey),
             },
-            include: { connections: true, apps: true },
+            include: {
+                apps: { select: { app_client_id: true, app_client_secret: true }, where: { tp_id: integrationId } },
+            },
         });
-        const clientId = account?.apps.find((app) => app.tp_id === integrationId)?.app_client_id;
-        const clientSecret = account?.apps.find((app) => app.tp_id === integrationId)?.app_client_secret;
+        const clientId = account?.apps[0]?.app_client_id;
+        const clientSecret = account?.apps[0]?.app_client_secret;
         const svixAppId = account!.id;
         if (integrationId === 'hubspot' && req.query.code && req.query.t_id && revertPublicKey) {
             // Handle the received code
@@ -68,9 +71,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.user,
-                        account: {
-                            connect: { public_token: revertPublicKey },
-                        },
+                        owner_account_public_token: revertPublicKey,
                     },
                 });
                 ConnectionService.svix.message.create(svixAppId, {
@@ -147,9 +148,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                             tp_refresh_token: result.data.refresh_token,
                             tp_customer_id: info.data.Email,
                             tp_account_url: req.query.accountURL as string,
-                            account: {
-                                connect: { public_token: revertPublicKey },
-                            },
+                            owner_account_public_token: revertPublicKey,
                         },
                         update: {
                             tp_access_token: result.data.access_token,
@@ -227,9 +226,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.email,
                         tp_account_url: info.data.urls['custom_domain'],
-                        account: {
-                            connect: { public_token: revertPublicKey },
-                        },
+                        owner_account_public_token: revertPublicKey,
                     },
                     update: {
                         tp_access_token: result.data.access_token,
