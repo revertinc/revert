@@ -28,7 +28,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
         const clientId = account?.apps[0]?.app_client_id; // FIXME: This is a bug.
         const clientSecret = account?.apps[0]?.app_client_secret;
         const svixAppId = account!.id;
-        if (integrationId === 'hubspot' && req.query.code && req.query.t_id && revertPublicKey) {
+        if (integrationId === TP_ID.hubspot && req.query.code && req.query.t_id && revertPublicKey) {
             // Handle the received code
             const url = 'https://api.hubapi.com/oauth/v1/token';
             const formData = {
@@ -69,7 +69,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     create: {
                         t_id: req.query.t_id as string,
-                        tp_id: 'hubspot',
+                        tp_id: TP_ID.hubspot,
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
                         app_client_id: clientId || config.HUBSPOT_CLIENT_ID,
@@ -84,7 +84,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         eventType: 'connection.added',
                         connection: {
                             t_id: req.query.t_id as string,
-                            tp_id: 'hubspot',
+                            tp_id: TP_ID.hubspot,
                             tp_access_token: result.data.access_token,
                             tp_customer_id: info.data.user,
                         },
@@ -104,7 +104,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 console.error('Could not update db', error);
                 res.send({ status: 'error', error: error });
             }
-        } else if (integrationId === 'zohocrm' && req.query.code && req.query.accountURL) {
+        } else if (integrationId === TP_ID.zohocrm && req.query.code && req.query.accountURL) {
             // Handle the received code
             const url = `${req.query.accountURL}/oauth/v2/token`;
             const formData = {
@@ -147,7 +147,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         },
                         create: {
                             t_id: req.query.t_id as string,
-                            tp_id: 'zohocrm',
+                            tp_id: TP_ID.zohocrm,
                             tp_access_token: result.data.access_token,
                             tp_refresh_token: result.data.refresh_token,
                             tp_customer_id: info.data.Email,
@@ -167,7 +167,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                             eventType: 'connection.added',
                             connection: {
                                 t_id: req.query.t_id as string,
-                                tp_id: 'zohocrm',
+                                tp_id: TP_ID.zohocrm,
                                 tp_access_token: result.data.access_token,
                                 tp_customer_id: info.data.Email,
                                 tp_account_url: req.query.accountURL as string,
@@ -189,7 +189,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     res.send({ status: 'error', error: error });
                 }
             }
-        } else if (integrationId === 'sfdc' && req.query.code && req.query.t_id) {
+        } else if (integrationId === TP_ID.sfdc && req.query.code && req.query.t_id) {
             // Handle the received code
             const url = 'https://login.salesforce.com/services/oauth2/token';
             const formData = {
@@ -227,7 +227,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     create: {
                         t_id: req.query.t_id as string,
-                        tp_id: 'sfdc',
+                        tp_id: TP_ID.sfdc,
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.email,
@@ -249,7 +249,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         eventType: 'connection.added',
                         connection: {
                             t_id: req.query.t_id as string,
-                            tp_id: 'sfdc',
+                            tp_id: TP_ID.sfdc,
                             tp_access_token: result.data.access_token,
                             tp_customer_id: info.data.email,
                             tp_account_url: info.data.urls['custom_domain'],
