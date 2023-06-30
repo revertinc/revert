@@ -67,8 +67,18 @@ router.post('/clerk/webhook', async (req, res) => {
 });
 
 router.post('/internal/account', async (req, res) => {
-    const userId = req.body.userId;
-    res.send(await AuthService.getAccountForUser(userId));
+    try {
+        const userId = req.body.userId;
+        const result = await AuthService.getAccountForUser(userId);
+        if (result?.error) {
+            res.status(400).send(result);
+        } else {
+            res.send(result);
+        }
+    } catch (error) {
+        console.error('Could not get account for user', error);
+        res.status(500).send({ error: 'Internal server error' });
+    }
 });
 
 router.use('/crm', cors(), revertAuthMiddleware(), crmRouter);
