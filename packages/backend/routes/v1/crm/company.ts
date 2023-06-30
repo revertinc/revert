@@ -2,6 +2,7 @@ import express from 'express';
 
 import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
 import CompanyService from '../../../services/company';
+import logError from '../../../helpers/logError';
 
 const companyRouter = express.Router({ mergeParams: true });
 
@@ -18,7 +19,8 @@ companyRouter.get('/', tenantMiddleware(), async (req, res) => {
         } else {
             res.send(result);
         }
-    } catch (error) {
+    } catch (error: any) {
+        logError(error);
         console.error('Could not fetch companies', error);
         res.status(500).send({ error: 'Unexpected error. Could not fetch companies' });
     }
@@ -34,6 +36,7 @@ companyRouter.get('/:id', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error: any) {
+        logError(error);
         console.error('Could not fetch company', error);
         res.status(500).send({
             error: 'Internal server error',
@@ -51,6 +54,7 @@ companyRouter.post('/', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error: any) {
+        logError(error);
         console.error('Could not create company', error.response);
         res.status(500).send({
             error: 'Internal server error',
@@ -69,6 +73,7 @@ companyRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error: any) {
+        logError(error);
         console.error('Could not update company', error.response);
         res.status(500).send({
             error: 'Internal server error',
@@ -86,7 +91,8 @@ companyRouter.post('/search', tenantMiddleware(), async (req, res) => {
         } else {
             res.send(result);
         }
-    } catch (error) {
+    } catch (error: any) {
+        logError(error);
         console.error('Could not search CRM', error);
         res.status(500).send({
             error: 'Internal server error',

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../prisma/client';
+import logError from './logError';
 
 const revertAuthMiddleware = () => async (req: Request, res: Response, next: () => any) => {
     const nonSecurePaths = ['/oauth-callback', '/oauth/refresh'];
@@ -24,8 +25,8 @@ const revertAuthMiddleware = () => async (req: Request, res: Response, next: () 
             });
         }
         return next();
-    } catch (error) {
-        console.log('error', error);
+    } catch (error: any) {
+        logError(error);
         return res.status(400).send({
             error: 'Bad request',
         });

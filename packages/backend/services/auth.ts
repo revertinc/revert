@@ -5,6 +5,7 @@ import prisma from '../prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import isWorkEmail from '../helpers/isWorkEmail';
 import { TP_ID } from '@prisma/client';
+import logError from '../helpers/logError';
 
 class AuthService {
     async refreshOAuthTokensForThirdParty() {
@@ -117,7 +118,8 @@ class AuthService {
                     }
                 }
             }
-        } catch (error) {
+        } catch (error: any) {
+            logError(error);
             console.error('Could not update db', error);
         }
         return { status: 'ok', message: 'Tokens refreshed' };
@@ -170,7 +172,8 @@ class AuthService {
                     },
                 });
                 response = { status: 'ok' };
-            } catch (e) {
+            } catch (e: any) {
+                logError(e);
                 console.error(e);
                 response = { error: e };
             }

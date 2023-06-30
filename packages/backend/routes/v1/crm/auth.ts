@@ -6,6 +6,7 @@ import { TP_ID } from '@prisma/client';
 import AuthService from '../../../services/auth';
 import prisma, { Prisma } from '../../../prisma/client';
 import ConnectionService from '../../../services/connection';
+import logError from '../../../helpers/logError';
 
 const authRouter = express.Router({ mergeParams: true });
 
@@ -88,7 +89,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     channels: [req.query.t_id as string],
                 });
                 res.send({ status: 'ok', tp_customer_id: info.data.user });
-            } catch (error) {
+            } catch (error: any) {
+                logError(error);
                 if (error instanceof Prisma.PrismaClientKnownRequestError) {
                     // The .code property can be accessed in a type-safe manner
                     if (error?.code === 'P2002') {
@@ -171,6 +173,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     });
                     res.send({ status: 'ok' });
                 } catch (error: any) {
+                    logError(error);
                     if (error instanceof Prisma.PrismaClientKnownRequestError) {
                         // The .code property can be accessed in a type-safe manner
                         if (error?.code === 'P2002') {
@@ -248,7 +251,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     channels: [req.query.t_id as string],
                 });
                 res.send({ status: 'ok', tp_customer_id: 'testSfdcUser' });
-            } catch (error) {
+            } catch (error: any) {
+                logError(error);
                 if (error instanceof Prisma.PrismaClientKnownRequestError) {
                     // The .code property can be accessed in a type-safe manner
                     if (error?.code === 'P2002') {
@@ -265,7 +269,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 status: 'noop',
             });
         }
-    } catch (error) {
+    } catch (error: any) {
+        logError(error);
         console.log('Error while getting oauth creds', error);
     }
 });
