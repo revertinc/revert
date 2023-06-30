@@ -2,6 +2,7 @@ import express from 'express';
 
 import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
 import UserService from '../../../services/user';
+import logError from '../../../helpers/logError';
 
 const userRouter = express.Router({ mergeParams: true });
 
@@ -18,7 +19,8 @@ userRouter.get('/', tenantMiddleware(), async (req, res) => {
         } else {
             res.send(result);
         }
-    } catch (error) {
+    } catch (error: any) {
+        logError(error);
         console.error('Could not fetch leads', error);
         res.status(500).send({ error: 'Internal server error' });
     }
@@ -34,6 +36,7 @@ userRouter.get('/:id', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error: any) {
+        logError(error);
         console.error('Could not fetch lead', error);
         res.status(500).send({
             error: 'Internal server error',
@@ -51,6 +54,7 @@ userRouter.post('/', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error: any) {
+        logError(error);
         console.error('Could not create lead', error.response);
         res.status(500).send({
             error: 'Internal server error',

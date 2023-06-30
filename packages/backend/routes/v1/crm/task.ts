@@ -2,6 +2,7 @@ import express from 'express';
 
 import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
 import TaskService from '../../../services/task';
+import logError from '../../../helpers/logError';
 
 const taskRouter = express.Router({ mergeParams: true });
 
@@ -18,7 +19,8 @@ taskRouter.get('/', tenantMiddleware(), async (req, res) => {
         } else {
             res.send(result);
         }
-    } catch (error) {
+    } catch (error: any) {
+        logError(error);
         console.error('Could not fetch leads', error);
         res.status(500).send({ error: 'Internal server error' });
     }
@@ -34,6 +36,7 @@ taskRouter.get('/:id', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error: any) {
+        logError(error);
         console.error('Could not fetch lead', error);
         res.status(500).send({
             error: 'Internal server error',
@@ -51,6 +54,7 @@ taskRouter.post('/', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error: any) {
+        logError(error);
         console.error('Could not create lead', error.response);
         res.status(500).send({
             error: 'Internal server error',
@@ -69,6 +73,7 @@ taskRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error: any) {
+        logError(error);
         console.error('Could not update lead', error.response);
         res.status(500).send({
             error: 'Internal server error',
@@ -86,7 +91,8 @@ taskRouter.post('/search', tenantMiddleware(), async (req, res) => {
         } else {
             res.send(result);
         }
-    } catch (error) {
+    } catch (error: any) {
+        logError(error);
         console.error('Could not search CRM', error);
         res.status(500).send({
             error: 'Internal server error',

@@ -2,6 +2,7 @@ import express from 'express';
 
 import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
 import ContactService from '../../../services/contact';
+import logError from '../../../helpers/logError';
 
 const contactRouter = express.Router({ mergeParams: true });
 
@@ -17,7 +18,8 @@ contactRouter.get('/', tenantMiddleware(), async (req, res) => {
         } else {
             res.send(result);
         }
-    } catch (error) {
+    } catch (error: any) {
+        logError(error);
         console.error('Could not fetch contacts', error);
         res.status(500).send({ error: 'Internal server error' });
     }
@@ -33,6 +35,7 @@ contactRouter.get('/:id', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error: any) {
+        logError(error);
         console.error('Could not fetch contact', error);
         res.status(500).send({
             error: 'Internal server error',
@@ -50,6 +53,7 @@ contactRouter.post('/', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error: any) {
+        logError(error);
         console.error('Could not create contact', error.response);
         res.status(500).send({
             error: 'Internal server error',
@@ -68,6 +72,7 @@ contactRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error: any) {
+        logError(error);
         console.error('Could not update contact', error.response);
         res.status(500).send({
             error: 'Internal server error',
@@ -85,7 +90,8 @@ contactRouter.post('/search', tenantMiddleware(), async (req, res) => {
         } else {
             res.send(result);
         }
-    } catch (error) {
+    } catch (error: any) {
+        logError(error);
         console.error('Could not search CRM', error);
         res.status(500).send({
             error: 'Internal server error',

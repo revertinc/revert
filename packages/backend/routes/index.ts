@@ -9,6 +9,7 @@ import revertAuthMiddleware from '../helpers/authMiddleware';
 import connectionRouter from './v1/connection';
 import metadataRouter from './v1/metadata';
 import AuthService from '../services/auth';
+import logError from '../helpers/logError';
 
 const router = express.Router();
 
@@ -50,7 +51,8 @@ router.post('/slack-alert', async (req, res) => {
         res.send({
             status: 'ok',
         });
-    } catch (error) {
+    } catch (error: any) {
+        logError(error);
         res.send({
             status: 'error',
             error: error,
@@ -75,7 +77,8 @@ router.post('/internal/account', async (req, res) => {
         } else {
             res.send(result);
         }
-    } catch (error) {
+    } catch (error: any) {
+        logError(error);
         console.error('Could not get account for user', error);
         res.status(500).send({ error: 'Internal server error' });
     }
