@@ -65,6 +65,16 @@ metadataRouter.get('/crms', async (req, res) => {
                     scopes: getScope(apps, TP_ID.sfdc),
                     clientId: getClientId(apps, TP_ID.sfdc) || config.SFDC_CLIENT_ID,
                 },
+                {
+                    integrationId: TP_ID.pipedrive,
+                    name: 'Pipedrive',
+                    // TODO: change image
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/c_fit,h_20,w_70/v1673887647/Revert/SFDC%20logo.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.pipedrive),
+                    clientId: getClientId(apps, TP_ID.pipedrive) || config.PIPEDRIVE_CLIENT_ID,
+                },
             ],
         });
     } catch (error) {

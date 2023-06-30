@@ -69,7 +69,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     create: {
                         t_id: req.query.t_id as string,
-                        tp_id: TP_ID.hubspot,
+                        tp_id: integrationId,
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
                         app_client_id: clientId || config.HUBSPOT_CLIENT_ID,
@@ -147,7 +147,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         },
                         create: {
                             t_id: req.query.t_id as string,
-                            tp_id: TP_ID.zohocrm,
+                            tp_id: integrationId,
                             tp_access_token: result.data.access_token,
                             tp_refresh_token: result.data.refresh_token,
                             tp_customer_id: info.data.Email,
@@ -227,7 +227,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     create: {
                         t_id: req.query.t_id as string,
-                        tp_id: TP_ID.sfdc,
+                        tp_id: integrationId,
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.email,
@@ -261,6 +261,84 @@ authRouter.get('/oauth-callback', async (req, res) => {
             } catch (error) {
                 if (error instanceof Prisma.PrismaClientKnownRequestError) {
                     // The .code property can be accessed in a type-safe manner
+                    if (error?.code === 'P2002') {
+                        console.error(
+                            'There is a unique constraint violation, a new user cannot be created with this email'
+                        );
+                    }
+                }
+                console.error('Could not update db', error);
+                res.send({ status: 'error', error: error });
+            }
+        } else if (integrationId === TP_ID.pipedrive && req.query.code && req.query.t_id && revertPublicKey) {
+            // Handle the received code
+            const url = 'https://oauth.pipedrive.com/oauth/token';
+            const formData = {
+                grant_type: 'authorization_code',
+                // redirect_uri: `${config.OAUTH_REDIRECT_BASE}/pipedrive`,
+                redirect_uri: `https://app.revert.dev/oauth-callback/pipedrive`, // TODO: remove. This is for testing
+                code: req.query.code,
+            };
+            // TODO: Add proper types
+            const result = await axios({
+                method: 'post',
+                url: url,
+                data: qs.stringify(formData),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                    Authorization: `Basic ${Buffer.from(
+                        `${clientId || config.PIPEDRIVE_CLIENT_ID}:${clientSecret || config.PIPEDRIVE_CLIENT_SECRET}`
+                    ).toString('base64')}`,
+                },
+            });
+            console.log('OAuth creds for pipedrive', result.data);
+            const info = await axios({
+                method: 'get',
+                url: `${result.data.api_domain}/users/me`,
+                headers: {
+                    Authorization: `Bearer ${result.data.access_token}`,
+                },
+            });
+            console.log('Oauth token info', info.data);
+            try {
+                await prisma.connections.upsert({
+                    where: {
+                        uniqueCustomerPerTenantPerThirdParty: {
+                            tp_customer_id: info.data.data.email,
+                            t_id: String(req.query.t_id),
+                            tp_id: integrationId,
+                        },
+                    },
+                    update: {
+                        tp_access_token: result.data.access_token,
+                        tp_refresh_token: result.data.refresh_token,
+                    },
+                    create: {
+                        t_id: req.query.t_id as string,
+                        tp_id: integrationId,
+                        tp_access_token: result.data.access_token,
+                        tp_refresh_token: result.data.refresh_token,
+                        tp_customer_id: info.data.data.email,
+                        owner_account_public_token: revertPublicKey,
+                        tp_account_url: result.data.api_domain,
+                    },
+                });
+                ConnectionService.svix.message.create(svixAppId, {
+                    eventType: 'connection.added',
+                    payload: {
+                        eventType: 'connection.added',
+                        connection: {
+                            t_id: req.query.t_id as string,
+                            tp_id: integrationId,
+                            tp_access_token: result.data.access_token,
+                            tp_customer_id: info.data.data.email,
+                        },
+                    },
+                    channels: [req.query.t_id as string],
+                });
+                res.send({ status: 'ok', tp_customer_id: info.data.data.email });
+            } catch (error) {
+                if (error instanceof Prisma.PrismaClientKnownRequestError) {
                     if (error?.code === 'P2002') {
                         console.error(
                             'There is a unique constraint violation, a new user cannot be created with this email'
