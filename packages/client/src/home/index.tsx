@@ -11,13 +11,16 @@ const Home = () => {
     const [isLoading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+
         const data = JSON.stringify({
             userId: user.user?.id,
         });
-
         const requestOptions = {
             method: 'POST',
             body: data,
+            headers: headers,
         };
         setLoading(true);
         fetch(`${REVERT_BASE_API_URL}/internal/account`, requestOptions)
