@@ -57,6 +57,7 @@ ShortloopSDK.init({
     applicationName: 'revert-api', // your application name here
     authKey: config.SHORTLOOP_AUTH_KEY, // ShortLoop Auth Key. (Provided by ShortLoop team.)
     environment: process.env.NODE_ENV || 'staging', // for e.g stage or prod
+    maskHeaders: ['x-revert-t-id', 'x-revert-api-token'],
 });
 app.use(ShortloopSDK.capture());
 
