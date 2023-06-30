@@ -56,7 +56,7 @@ ShortloopSDK.init({
     url: 'https://revert.shortloop.dev', // ShortLoop URL. (Provided by ShortLoop team.)
     applicationName: 'revert-api', // your application name here
     authKey: config.SHORTLOOP_AUTH_KEY, // ShortLoop Auth Key. (Provided by ShortLoop team.)
-    environment: 'staging', // for e.g stage or prod
+    environment: process.env.NODE_ENV || 'staging', // for e.g stage or prod
 });
 app.use(ShortloopSDK.capture());
 
