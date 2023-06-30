@@ -3,6 +3,7 @@ import { ParsedQs } from 'qs';
 import prisma from '../prisma/client';
 import config from '../config';
 import { Svix } from 'svix';
+import logError from '../helpers/logError';
 
 class ConnectionService {
     public svix;
@@ -112,7 +113,8 @@ class ConnectionService {
                 channels: [String(tenantId)],
             });
             return { status: 'ok', webhookUrl: webhook.url, createdAt: webhook.createdAt };
-        } catch (error) {
+        } catch (error: any) {
+            logError(error);
             console.error(error);
             return {
                 error: 'Error creating webhook!',
@@ -135,7 +137,8 @@ class ConnectionService {
             const svixAppId = account!.id;
             await this.svix.endpoint.delete(svixAppId, webhookId);
             return { status: 'ok' };
-        } catch (error) {
+        } catch (error: any) {
+            logError(error);
             console.error(error);
             return {
                 error: 'Error deleting webhook!',

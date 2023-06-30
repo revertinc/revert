@@ -1,6 +1,7 @@
 import express from 'express';
 import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
 import EventService from '../../../services/event';
+import logError from '../../../helpers/logError';
 
 const eventRouter = express.Router({ mergeParams: true });
 
@@ -17,7 +18,8 @@ eventRouter.get('/', tenantMiddleware(), async (req, res) => {
         } else {
             res.send(result);
         }
-    } catch (error) {
+    } catch (error: any) {
+        logError(error);
         console.error('Could not fetch leads', error);
         res.status(500).send({ error: 'Internal server error' });
     }
@@ -33,6 +35,7 @@ eventRouter.get('/:id', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error: any) {
+        logError(error);
         console.error('Could not fetch lead', error);
         res.status(500).send({
             error: 'Internal server error',
@@ -50,6 +53,7 @@ eventRouter.post('/', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error: any) {
+        logError(error);
         console.error('Could not create lead', error.response);
         res.status(500).send({
             error: 'Internal server error',
@@ -68,6 +72,7 @@ eventRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
             res.send(result);
         }
     } catch (error: any) {
+        logError(error);
         console.error('Could not update lead', error.response);
         res.status(500).send({
             error: 'Internal server error',
@@ -85,7 +90,8 @@ eventRouter.post('/search', tenantMiddleware(), async (req, res) => {
         } else {
             res.send(result);
         }
-    } catch (error) {
+    } catch (error: any) {
+        logError(error);
         console.error('Could not search CRM', error);
         res.status(500).send({
             error: 'Internal server error',
