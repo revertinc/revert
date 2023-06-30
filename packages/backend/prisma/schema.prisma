@@ -7,15 +7,35 @@ datasource db {
   url      = env("PGSQL_URL")
 }
 
+enum TP_ID {
+  hubspot
+  zohocrm
+  sfdc
+}
+
 model accounts {
-  id            String        @id
-  tenant_count  Int?          @default(0)
-  private_token String        @unique
-  public_token  String        @unique
-  domain        String        @unique @default("")
-  skipWaitlist  Boolean       @default(false)
-  connections   connections[]
+  id            String  @id
+  tenant_count  Int?    @default(0)
+  private_token String  @unique
+  public_token  String  @unique
+  domain        String  @unique @default("")
+  skipWaitlist  Boolean @default(false)
   users         users[]
+  apps          apps[]
+}
+
+model apps {
+  id                         String        @id
+  tp_id                      TP_ID
+  scope                      String[]
+  app_client_id              String?
+  app_client_secret          String?
+  owner_account_public_token String
+  account                    accounts      @relation(fields: [owner_account_public_token], references: [public_token])
+  connections                connections[]
+  is_revert_app              Boolean       @default(false)
+
+  @@unique([owner_account_public_token, tp_id])
 }
 
 model users {
@@ -27,14 +47,14 @@ model users {
 }
 
 model connections {
-  tp_id                      String
+  tp_id                      TP_ID
   tp_access_token            String
   tp_refresh_token           String?
   tp_customer_id             String
   t_id                       String
   tp_account_url             String?
   owner_account_public_token String
-  account                    accounts @relation(fields: [owner_account_public_token], references: [public_token])
+  app                        apps    @relation(fields: [owner_account_public_token, tp_id], references: [owner_account_public_token, tp_id])
 
   @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")
   @@unique([tp_id, t_id], name: "uniqueThirdPartyPerTenant")

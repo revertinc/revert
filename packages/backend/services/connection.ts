@@ -29,9 +29,11 @@ class ConnectionService {
         const { 'x-revert-api-token': token } = req.headers;
         const connections: any = await prisma.connections.findMany({
             where: {
-                account: {
-                    is: {
-                        private_token: String(token),
+                app: {
+                    account: {
+                        is: {
+                            private_token: String(token),
+                        },
                     },
                 },
             },

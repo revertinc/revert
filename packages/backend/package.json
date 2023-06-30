@@ -14,6 +14,8 @@
         "db-deploy": "prisma migrate deploy",
         "db-seed": "prisma db seed",
         "db-pull": "prisma db pull",
+        "migration:resolve": "prisma migrate resolve --applied $MIGRATION_ID",
+        "migration:rollback": "prisma migrate resolve --rolled-back $MIGRATION_ID",
         "studio": "prisma studio",
         "migration:generate": "pnpify prisma migrate dev --name %1"
     },
