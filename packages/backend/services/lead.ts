@@ -1,9 +1,10 @@
 import axios from 'axios';
-import { disunifyLead, unifyLead } from '../models/unified/lead';
+import { PipedriveLead, disunifyLead, unifyLead } from '../models/unified/lead';
 import { filterLeadsFromContactsForHubspot } from '../helpers/filterLeadsFromContacts';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { TP_ID } from '@prisma/client';
+import { PipedrivePagination } from '../constants/pipedrive';
 
 class LeadService {
     async getUnifiedLead(
@@ -147,16 +148,18 @@ class LeadService {
             return { next: nextCursor, previous: prevCursor, results: leads };
         } else if (thirdPartyId === TP_ID.pipedrive) {
             const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&start=${cursor}` : ''}`;
-            let leads: any = await axios({
-                method: 'get',
-                url: `${connection.tp_account_url}/v1/leads?${pagingString}`,
-                headers: {
-                    Authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-            const nextCursor = leads.data?.additional_data?.next_start || null;
+            const result = await axios.get<{ data: Partial<PipedriveLead>[] } & PipedrivePagination>(
+                `${connection.tp_account_url}/v1/leads?${pagingString}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                }
+            );
+            console.log("blah result", result.data.additional_data.pagination);
+            const nextCursor = result.data?.additional_data?.pagination.next_start || null;
             const prevCursor = null;
-            leads = leads.data.data;
+            const leads = result.data.data;
             const populatedLeads = await Promise.all(
                 leads.map(async (lead: any) => {
                     const personId = lead.person_id;
@@ -176,8 +179,8 @@ class LeadService {
                     };
                 })
             );
-            leads = populatedLeads?.map((l: any) => unifyLead(l));
-            return { next: nextCursor, previous: prevCursor, results: leads };
+            const unifiedLeads = populatedLeads?.map((l: any) => unifyLead(l));
+            return { next: nextCursor, previous: prevCursor, results: unifiedLeads };
         } else {
             return { error: 'Unrecognized CRM' };
         }
