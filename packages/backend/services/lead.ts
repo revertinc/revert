@@ -3,6 +3,7 @@ import { disunifyLead, unifyLead } from '../models/unified/lead';
 import { filterLeadsFromContactsForHubspot } from '../helpers/filterLeadsFromContacts';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
+import { TP_ID } from '@prisma/client';
 
 class LeadService {
     async getUnifiedLead(
@@ -76,7 +77,7 @@ class LeadService {
         const pageSize = parseInt(String(req.query.pageSize));
         const cursor = req.query.cursor;
         console.log('Revert::GET ALL LEADS', tenantId, thirdPartyId, thirdPartyToken);
-        if (thirdPartyId === 'hubspot') {
+        if (thirdPartyId === TP_ID.hubspot) {
             fields = [
                 ...String(req.query.fields || '').split(','),
                 'hs_lead_status',
@@ -102,7 +103,7 @@ class LeadService {
                 previous: null, // Field not supported by Hubspot.
                 results: leads,
             };
-        } else if (thirdPartyId === 'zohocrm') {
+        } else if (thirdPartyId === TP_ID.zohocrm) {
             const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${cursor ? `&page_token=${cursor}` : ''}`;
             let leads: any = await axios({
                 method: 'get',
@@ -116,7 +117,7 @@ class LeadService {
             leads = leads.data.data;
             leads = leads?.map((l: any) => unifyLead(l));
             return { next: nextCursor, previous: prevCursor, results: leads };
-        } else if (thirdPartyId === 'sfdc') {
+        } else if (thirdPartyId === TP_ID.sfdc) {
             let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
                 cursor ? `OFFSET+${cursor}` : ''
             }`;
@@ -143,6 +144,36 @@ class LeadService {
                     : null;
             leads = leads.data?.records;
             leads = leads?.map((l: any) => unifyLead(l));
+            return { next: nextCursor, previous: prevCursor, results: leads };
+        } else if (thirdPartyId === TP_ID.pipedrive) {
+            const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&start=${cursor}` : ''}`;
+            let leads: any = await axios({
+                method: 'get',
+                url: `${connection.tp_account_url}/v1/leads?${pagingString}`,
+                headers: {
+                    Authorization: `Bearer ${thirdPartyToken}`,
+                },
+            });
+            const nextCursor = leads.data?.additional_data?.next_start || null;
+            const prevCursor = null;
+            leads = leads.data.data;
+            const populatedLeads = await Promise.all(leads.map(async (lead: any) => {
+                const personId = lead.person_id;
+                const person = await axios({
+                    method: 'get',
+                    url: `${connection.tp_account_url}/v1/persons/${personId}`,
+                    headers: {
+                        Authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                });
+                return {
+                    ...lead,
+                    person: person.data.data
+                }
+            }))
+            console.log("blah raw leads", leads);
+            console.log("blah populated leads", populatedLeads);
+            leads = populatedLeads?.map((l: any) => unifyLead(l));
             return { next: nextCursor, previous: prevCursor, results: leads };
         } else {
             return { error: 'Unrecognized CRM' };

@@ -1,3 +1,5 @@
+import { TP_ID } from '@prisma/client';
+
 export interface UnifiedLead {
     firstName: string;
     lastName: string;
@@ -15,13 +17,13 @@ export function unifyLead(lead: any): UnifiedLead {
     const unifiedlead: UnifiedLead = {
         id: lead.id || lead.Id || lead.vid,
         remoteId: lead.id || lead.Id || lead.vid,
-        firstName: lead.firstName || lead.First_Name || lead.FirstName || lead.firstname,
-        lastName: lead.lastName || lead.Last_Name || lead.LastName || lead.lastname,
-        email: lead.email || lead.Email,
-        phone: lead.phone || lead.Phone || lead.PhoneNumber,
+        firstName: lead.firstName || lead.First_Name || lead.FirstName || lead.firstname || lead.person?.first_name,
+        lastName: lead.lastName || lead.Last_Name || lead.LastName || lead.lastname || lead.person?.last_name,
+        email: lead.email || lead.Email || lead.person?.primary_email || (lead.person?.email|| []).find((e: any) => e?.primary)?.value || lead.person?.email?.[0]?.value,
+        phone: lead.phone || lead.Phone || lead.PhoneNumber || (lead.person?.phone|| []).find((p: any) => p?.primary)?.value || lead.person?.phone?.[0]?.value,
         createdTimestamp:
-            lead.createdDate || lead.CreatedDate || lead.Created_Time || lead.hs_timestamp || lead.createdate,
-        updatedTimestamp: lead.lastModifiedDate || lead.LastModifiedDate || lead.Modified_Time || lead.lastmodifieddate,
+            lead.createdDate || lead.CreatedDate || lead.Created_Time || lead.hs_timestamp || lead.createdate || lead.add_time,
+        updatedTimestamp: lead.lastModifiedDate || lead.LastModifiedDate || lead.Modified_Time || lead.lastmodifieddate || lead.update_time,
         additional: {},
     };
 
@@ -388,6 +390,104 @@ export interface SalesforceLead {
     IndividualId: string;
 }
 
+// TODO: add pipedrive org too
+export interface PipedrivePerson {
+    id: number;
+    company_id: number;
+    owner_id: {
+        id: number;
+        name: string;
+        email: string;
+        has_pic: number;
+        pic_hash: string;
+        active_flag: boolean;
+        value: number;
+    };
+    org_id: {
+        name: string;
+        people_count: number;
+        owner_id: number;
+        address: string;
+        active_flag: boolean;
+        cc_email: string;
+        value: number;
+    };
+    name: string;
+    first_name: string;
+    last_name: string;
+    open_deals_count: number;
+    related_open_deals_count: number;
+    closed_deals_count: number;
+    related_closed_deals_count: number;
+    participant_open_deals_count: number;
+    participant_closed_deals_count: number;
+    email_messages_count: number;
+    activities_count: number;
+    done_activities_count: number;
+    undone_activities_count: number;
+    files_count: number;
+    notes_count: number;
+    followers_count: number;
+    won_deals_count: number;
+    related_won_deals_count: number;
+    lost_deals_count: number;
+    related_lost_deals_count: number;
+    active_flag: boolean;
+    phone: { value: string; primary: boolean; label: string }[];
+    email: { value: string; primary: boolean; label: string }[];
+    primary_email: string;
+    first_char: string;
+    update_time: string;
+    add_time: string;
+    visible_to: string;
+    marketing_status: string;
+    picture_id: {
+        item_type: string;
+        item_id: number;
+        active_flag: boolean;
+        add_time: string;
+        update_time: string;
+        added_by_user_id: number;
+        pictures: {
+            '128': string;
+            '512': string;
+        };
+        value: number;
+    };
+    next_activity_date: string;
+    next_activity_time: string;
+    next_activity_id: number;
+    last_activity_id: number;
+    last_activity_date: string;
+    last_incoming_mail_time: string;
+    last_outgoing_mail_time: string;
+    label: number;
+    org_name: string;
+    owner_name: string;
+    cc_email: string;
+}
+
+export interface PipedriveLead {
+    id: string;
+    title: string;
+    owner_id: number;
+    creator_id: number;
+    label_ids: string[];
+    person_id: number;
+    organization_id: number;
+    source_name: string; // 'API'
+    is_archived: boolean;
+    was_seen: boolean;
+    value: { amount: number; currency: string };
+    expected_close_date: null;
+    next_activity_id: number;
+    add_time: Date;
+    update_time: Date;
+    visible_to: string;
+    cc_email: string;
+    person: Partial<PipedrivePerson>;
+}
+
 export function toSalesforceLead(unifiedLead: UnifiedLead): SalesforceLead {
     const salesforceLead: any = {};
 
@@ -461,15 +561,41 @@ export function toHubspotLead(lead: UnifiedLead): Partial<HubspotLead> {
     return hubspotLead;
 }
 
+export function toPipedriveLead(lead: UnifiedLead): Partial<PipedriveLead> {
+    const pipedriveLead: Partial<PipedriveLead> = {
+        id: lead.id,
+        title: `${lead.firstName} ${lead.lastName}`,
+        add_time: lead.createdTimestamp,
+        update_time: lead.updatedTimestamp,
+        person: {
+            first_name: lead.firstName,
+            last_name: lead.lastName,
+            phone: [{ value: lead.phone, primary: true, label: 'personal' }],
+            email: [{ value: lead.email, primary: true, label: 'personal' }],
+            primary_email: lead.email,
+        },
+    };
+
+    // Map custom fields
+    // if (lead.additional) {
+    //     Object.keys(lead.additional).forEach((key) => {
+    //         pipedriveLead[key] = lead.additional?.[key];
+    //     });
+    // }
+    return pipedriveLead;
+}
+
 export function disunifyLead(
     lead: UnifiedLead,
     integrationId: string
 ): Partial<SalesforceLead> | Partial<HubspotLead> | Partial<ZohoLead> | {} {
-    if (integrationId === 'sfdc') {
+    if (integrationId === TP_ID.sfdc) {
         return toSalesforceLead(lead);
-    } else if (integrationId === 'hubspot') {
+    } else if (integrationId === TP_ID.hubspot) {
         return toHubspotLead(lead);
-    } else if (integrationId === 'zohocrm') {
+    } else if (integrationId === TP_ID.zohocrm) {
         return toZohoLead(lead);
+    } else if (integrationId === TP_ID.pipedrive) {
+        return toPipedriveLead(lead);
     } else return {};
 }

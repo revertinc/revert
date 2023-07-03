@@ -14,11 +14,11 @@ export const OAuthCallback = (props) => {
         const urlSearchParams = new URLSearchParams(window.location.search);
         const params = Object.fromEntries(urlSearchParams.entries());
         if (Object.keys(params).length && integrationId) {
-            if (integrationId === 'hubspot') {
+            if (integrationId === 'hubspot' || integrationId === 'pipedrive') {
                 console.log('Post crm installation', integrationId, params);
                 const { tenantId, revertPublicToken } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=hubspot&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}`,
+                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=${integrationId}&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}`,
                     {
                         method: 'GET',
                         headers: {
