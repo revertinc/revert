@@ -11,20 +11,49 @@ export interface UnifiedLead {
     updatedTimestamp: Date;
     associations?: any; // TODO: Support associations
     additional: any;
+    leadType?: 'PERSON' | 'ORGANIZATION'; // for pipedrive
 }
 
 export function unifyLead(lead: any): UnifiedLead {
     const unifiedlead: UnifiedLead = {
         id: lead.id || lead.Id || lead.vid,
         remoteId: lead.id || lead.Id || lead.vid,
-        firstName: lead.firstName || lead.First_Name || lead.FirstName || lead.firstname || lead.person?.first_name,
+        firstName:
+            lead.firstName ||
+            lead.First_Name ||
+            lead.FirstName ||
+            lead.firstname ||
+            lead.person?.first_name ||
+            lead.organization?.name,
         lastName: lead.lastName || lead.Last_Name || lead.LastName || lead.lastname || lead.person?.last_name,
-        email: lead.email || lead.Email || lead.person?.primary_email || (lead.person?.email|| []).find((e: any) => e?.primary)?.value || lead.person?.email?.[0]?.value,
-        phone: lead.phone || lead.Phone || lead.PhoneNumber || (lead.person?.phone|| []).find((p: any) => p?.primary)?.value || lead.person?.phone?.[0]?.value,
+        email:
+            lead.email ||
+            lead.Email ||
+            lead.person?.primary_email ||
+            (lead.person?.email || []).find((e: any) => e?.primary)?.value ||
+            lead.person?.email?.[0]?.value ||
+            lead.organization?.cc_email,
+        phone:
+            lead.phone ||
+            lead.Phone ||
+            lead.PhoneNumber ||
+            (lead.person?.phone || []).find((p: any) => p?.primary)?.value ||
+            lead.person?.phone?.[0]?.value,
         createdTimestamp:
-            lead.createdDate || lead.CreatedDate || lead.Created_Time || lead.hs_timestamp || lead.createdate || lead.add_time,
-        updatedTimestamp: lead.lastModifiedDate || lead.LastModifiedDate || lead.Modified_Time || lead.lastmodifieddate || lead.update_time,
+            lead.createdDate ||
+            lead.CreatedDate ||
+            lead.Created_Time ||
+            lead.hs_timestamp ||
+            lead.createdate ||
+            lead.add_time,
+        updatedTimestamp:
+            lead.lastModifiedDate ||
+            lead.LastModifiedDate ||
+            lead.Modified_Time ||
+            lead.lastmodifieddate ||
+            lead.update_time,
         additional: {},
+        leadType: !!lead.person_id ? 'PERSON' : !!lead.organization_id ? 'ORGANIZATION' : undefined, // for pipedrive
     };
 
     // Map additional fields
@@ -390,7 +419,6 @@ export interface SalesforceLead {
     IndividualId: string;
 }
 
-// TODO: add pipedrive org too
 export interface PipedrivePerson {
     id: number;
     company_id: number;
@@ -467,6 +495,75 @@ export interface PipedrivePerson {
     cc_email: string;
 }
 
+export interface PipedriveOrganization {
+    id: number;
+    company_id: number;
+    owner_id: {
+        id: number;
+        name: string;
+        email: string;
+        has_pic: number;
+        pic_hash: string;
+        active_flag: boolean;
+        value: number;
+    };
+    name: string;
+    open_deals_count: number;
+    related_open_deals_count: number;
+    closed_deals_count: number;
+    related_closed_deals_count: number;
+    email_messages_count: number;
+    people_count: number;
+    activities_count: number;
+    done_activities_count: number;
+    undone_activities_count: number;
+    files_count: number;
+    notes_count: number;
+    followers_count: number;
+    won_deals_count: number;
+    related_won_deals_count: number;
+    lost_deals_count: number;
+    related_lost_deals_count: number;
+    active_flag: boolean;
+    picture_id: {
+        item_type: string;
+        item_id: number;
+        active_flag: boolean;
+        add_time: string;
+        update_time: string;
+        added_by_user_id: number;
+        pictures: {
+            '128': string;
+            '512': string;
+        };
+        value: number;
+    };
+    country_code: string;
+    first_char: string;
+    update_time: Date;
+    add_time: Date;
+    visible_to: string;
+    next_activity_date: string;
+    next_activity_time: string;
+    next_activity_id: number;
+    last_activity_id: number;
+    last_activity_date: string;
+    label: number;
+    address: string;
+    address_subpremise: string;
+    address_street_number: string;
+    address_route: string;
+    address_sublocality: string;
+    address_locality: string;
+    address_admin_area_level_1: string;
+    address_admin_area_level_2: string;
+    address_country: string;
+    address_postal_code: string;
+    address_formatted_address: string;
+    owner_name: string;
+    cc_email: string;
+}
+
 export interface PipedriveLead {
     id: string;
     title: string;
@@ -486,6 +583,7 @@ export interface PipedriveLead {
     visible_to: string;
     cc_email: string;
     person: Partial<PipedrivePerson>;
+    organization: Partial<PipedriveOrganization>;
 }
 
 export function toSalesforceLead(unifiedLead: UnifiedLead): SalesforceLead {
@@ -567,13 +665,21 @@ export function toPipedriveLead(lead: UnifiedLead): Partial<PipedriveLead> {
         title: `${lead.firstName} ${lead.lastName}`,
         add_time: lead.createdTimestamp,
         update_time: lead.updatedTimestamp,
-        person: {
-            first_name: lead.firstName,
-            last_name: lead.lastName,
-            phone: [{ value: lead.phone, primary: true, label: 'personal' }],
-            email: [{ value: lead.email, primary: true, label: 'personal' }],
-            primary_email: lead.email,
-        },
+        ...(lead.leadType === 'PERSON' && {
+            person: {
+                first_name: lead.firstName,
+                last_name: lead.lastName,
+                phone: [{ value: lead.phone, primary: true, label: 'personal' }],
+                email: [{ value: lead.email, primary: true, label: 'personal' }],
+                primary_email: lead.email,
+            },
+        }),
+        ...(lead.leadType === 'ORGANIZATION' && {
+            organization: {
+                name: lead.firstName,
+                cc_email: lead.email,
+            },
+        }),
     };
 
     // Map custom fields

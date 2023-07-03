@@ -157,22 +157,25 @@ class LeadService {
             const nextCursor = leads.data?.additional_data?.next_start || null;
             const prevCursor = null;
             leads = leads.data.data;
-            const populatedLeads = await Promise.all(leads.map(async (lead: any) => {
-                const personId = lead.person_id;
-                const person = await axios({
-                    method: 'get',
-                    url: `${connection.tp_account_url}/v1/persons/${personId}`,
-                    headers: {
-                        Authorization: `Bearer ${thirdPartyToken}`,
-                    },
-                });
-                return {
-                    ...lead,
-                    person: person.data.data
-                }
-            }))
-            console.log("blah raw leads", leads);
-            console.log("blah populated leads", populatedLeads);
+            const populatedLeads = await Promise.all(
+                leads.map(async (lead: any) => {
+                    const personId = lead.person_id;
+                    const url = !!personId
+                        ? `${connection.tp_account_url}/v1/persons/${personId}`
+                        : `${connection.tp_account_url}/v1/organizations/${lead.organization_id}`;
+                    const result = await axios({
+                        method: 'get',
+                        url,
+                        headers: {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                        },
+                    });
+                    return {
+                        ...lead,
+                        ...(!!personId ? { person: result.data.data } : { organization: result.data.data }),
+                    };
+                })
+            );
             leads = populatedLeads?.map((l: any) => unifyLead(l));
             return { next: nextCursor, previous: prevCursor, results: leads };
         } else {
