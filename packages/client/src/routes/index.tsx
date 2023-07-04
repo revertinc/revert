@@ -1,4 +1,5 @@
 import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import React from 'react';
 import { SignedIn, SignedOut, SignUp, ClerkProvider, SignIn } from '@clerk/clerk-react';
 import { OAuthCallback } from '../common/oauth';
@@ -9,6 +10,7 @@ export function RouterComponent() {
     const publicKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY!;
     return (
         <ClerkProvider publishableKey={publicKey} navigate={(to) => navigate(to)}>
+            <Toaster position="bottom-right" reverseOrder={false} />
             <Routes>
                 <Route
                     path="/"

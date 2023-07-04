@@ -4,11 +4,15 @@ import Box from '@mui/material/Box';
 import { useUser } from '@clerk/clerk-react';
 import { REVERT_BASE_API_URL } from '../constants';
 import { TailSpin } from 'react-loader-spinner';
+import { toast } from 'react-hot-toast';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const Home = () => {
     const user = useUser();
     const [account, setAccount] = useState<any>();
     const [isLoading, setLoading] = useState<boolean>(false);
+    const [viewSecret, setViewSecret] = useState<boolean>(false);
 
     useEffect(() => {
         const headers = new Headers();
@@ -35,6 +39,13 @@ const Home = () => {
             });
     }, [user.user?.id]);
 
+    let secretOverlay = {};
+    if (!viewSecret) {
+        secretOverlay = {
+            textShadow: 'white 0px 0px 6px',
+            color: '#00000000',
+        };
+    }
     return (
         <>
             <Navbar />
@@ -72,7 +83,7 @@ const Home = () => {
                                         padding: 30,
                                         border: '2px #00000029 solid',
                                         borderRadius: 10,
-                                        maxWidth: '60%',
+                                        maxWidth: '50%',
                                     }}
                                 >
                                     <p className="font-bold">Publishable key</p>
@@ -81,21 +92,29 @@ const Home = () => {
                                         not need to be kept secret.
                                     </span>
                                 </div>
-                                <div>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-end',
+                                    }}
+                                >
                                     <p
                                         style={{
                                             background: '#1a1a1a',
                                             textAlign: 'left',
-                                            padding: '20px',
+                                            padding: '24px',
                                             color: '#fff',
                                             margin: '20px',
                                             fontSize: 'inherit',
                                             borderRadius: 10,
+                                            marginBottom: 0,
                                         }}
                                     >
                                         <div
                                             onClick={() => {
                                                 navigator.clipboard.writeText(account?.public_token);
+                                                toast.success('Copied to clipboard!');
                                             }}
                                         >
                                             <pre>
@@ -112,6 +131,7 @@ const Home = () => {
                                             </pre>
                                         </div>
                                     </p>
+                                    <span style={{ fontSize: 12, marginRight: 20 }}>Click above to copy</span>
                                 </div>
                             </Box>
                             <Box
@@ -127,7 +147,7 @@ const Home = () => {
                                         padding: 30,
                                         border: '2px #00000029 solid',
                                         borderRadius: 10,
-                                        maxWidth: '60%',
+                                        maxWidth: '50%',
                                     }}
                                 >
                                     <p className="font-bold">Secret key</p>
@@ -136,37 +156,65 @@ const Home = () => {
                                         and should be deleted if leaked.
                                     </span>
                                 </div>
-                                <div>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-end',
+                                    }}
+                                >
                                     <p
                                         style={{
                                             background: '#1a1a1a',
                                             textAlign: 'left',
-                                            padding: '20px',
+                                            padding: '24px',
                                             color: '#fff',
                                             margin: '20px',
                                             fontSize: 'inherit',
                                             borderRadius: 10,
+                                            marginBottom: 0,
                                         }}
                                     >
                                         <div
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(account?.private_token);
+                                            style={{
+                                                position: 'relative',
                                             }}
                                         >
-                                            <pre>
+                                            <pre
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(account?.private_token);
+                                                    toast.success('Copied to clipboard!');
+                                                }}
+                                            >
                                                 <code
                                                     title="Click to Copy"
                                                     style={{
                                                         display: 'block',
                                                         whiteSpace: 'pre-wrap',
                                                         cursor: 'pointer',
+                                                        ...secretOverlay,
                                                     }}
                                                 >
                                                     {account?.private_token}
                                                 </code>
                                             </pre>
+                                            <div
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: -24,
+                                                    right: -20,
+                                                    cursor: 'pointer',
+                                                }}
+                                            >
+                                                {viewSecret ? (
+                                                    <VisibilityIcon onClick={() => setViewSecret(false)} />
+                                                ) : (
+                                                    <VisibilityOffIcon onClick={() => setViewSecret(true)} />
+                                                )}
+                                            </div>
                                         </div>
                                     </p>
+                                    <span style={{ fontSize: 12, marginRight: 20 }}>Click above to copy</span>
                                 </div>
                             </Box>
                         </>
