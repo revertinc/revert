@@ -3,6 +3,8 @@
     "version": "1.0.0",
     "description": "Client side javascript sdk",
     "scripts": {
+        "dev": "concurrently --kill-others \"yarn run watch:ts\" \"yarn workspace @revertdotdev/revert-react dev\"",
+        "watch:ts": "nodemon -w src/index.ts --exec \"yarn run build && cp dist/revert.js ../react/src/lib/build/revert-dev.js\"",
         "test": "npm test",
         "build": "npm run prebuild && vite build",
         "prebuild": "tsc && babel src -d lib && browserify lib/index.js -o lib/bundle.js",
@@ -18,8 +20,10 @@
         "@babel/plugin-proposal-class-properties": "^7.12.1",
         "@babel/preset-env": "^7.12.11",
         "browserify": "^17.0.0",
+        "concurrently": "^8.2.0",
         "dotenv": "^16.0.3",
         "javascript-obfuscator": "^2.10.3",
+        "nodemon": "^2.0.22",
         "typescript": "4.6.3",
         "vite": "^4.2.1"
     },
