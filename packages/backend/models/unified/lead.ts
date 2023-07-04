@@ -709,23 +709,23 @@ export function toPipedriveLead(lead: UnifiedLead): Partial<PipedriveLead> {
         update_time: lead.updatedTimestamp,
         ...(lead.leadType === 'PERSON' && {
             person_id: lead.leadTypeId,
-            person: {
-                id: lead.leadTypeId,
-                first_name: lead.firstName,
-                last_name: lead.lastName,
-                name: `${lead.firstName} ${lead.lastName}`,
-                phone: [{ value: lead.phone, primary: true, label: 'personal' }],
-                email: [{ value: lead.email, primary: true, label: 'personal' }],
-                primary_email: lead.email,
-            },
+            // person: {
+            //     id: lead.leadTypeId,
+            //     first_name: lead.firstName,
+            //     last_name: lead.lastName,
+            //     name: `${lead.firstName} ${lead.lastName}`,
+            //     phone: [{ value: lead.phone, primary: true, label: 'personal' }],
+            //     email: [{ value: lead.email, primary: true, label: 'personal' }],
+            //     primary_email: lead.email,
+            // },
         }),
         ...(lead.leadType === 'ORGANIZATION' && {
             organization_id: lead.leadTypeId,
-            organization: {
-                id: lead.leadTypeId,
-                name: lead.firstName,
-                cc_email: lead.email,
-            },
+            // organization: {
+            //     id: lead.leadTypeId,
+            //     name: lead.firstName,
+            //     cc_email: lead.email,
+            // },
         }),
     };
 
