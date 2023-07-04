@@ -18,52 +18,75 @@ class LeadService {
         const leadId = req.params.id;
         let fields = req.query.fields;
         console.log('Revert::GET LEAD', tenantId, thirdPartyId, thirdPartyToken, leadId);
-        if (thirdPartyId === 'hubspot') {
-            fields = [
-                ...String(req.query.fields || '').split(','),
-                'hs_lead_status',
-                'firstname',
-                'email',
-                'lastname',
-                'hs_object_id',
-                'phone',
-            ];
-            let lead: any = await axios({
-                method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts/${leadId}?properties=${fields}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-            lead = filterLeadsFromContactsForHubspot([lead.data] as any[])?.[0];
-            return {
-                result: unifyLead({ ...lead, ...lead?.properties }),
-            };
-        } else if (thirdPartyId === 'zohocrm') {
-            const leads = await axios({
-                method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Leads/${leadId}?fields=${fields}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-            });
-            let lead = leads.data.data?.[0];
-            return { result: unifyLead(lead) };
-        } else if (thirdPartyId === 'sfdc') {
-            const instanceUrl = connection.tp_account_url;
-            const leads = await axios({
-                method: 'get',
-                url: `${instanceUrl}/services/data/v56.0/sobjects/Lead/${leadId}`,
-                headers: {
-                    Authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-            let lead = leads.data;
-            return { result: unifyLead(lead) };
-        } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+
+        switch (thirdPartyId) {
+            case TP_ID.hubspot: {
+                fields = [
+                    ...String(req.query.fields || '').split(','),
+                    'hs_lead_status',
+                    'firstname',
+                    'email',
+                    'lastname',
+                    'hs_object_id',
+                    'phone',
+                ];
+                let lead: any = await axios({
+                    method: 'get',
+                    url: `https://api.hubapi.com/crm/v3/objects/contacts/${leadId}?properties=${fields}`,
+                    headers: {
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                });
+                lead = filterLeadsFromContactsForHubspot([lead.data] as any[])?.[0];
+                return {
+                    result: unifyLead({ ...lead, ...lead?.properties }),
+                };
+            }
+            case TP_ID.zohocrm: {
+                const leads = await axios({
+                    method: 'get',
+                    url: `https://www.zohoapis.com/crm/v3/Leads/${leadId}?fields=${fields}`,
+                    headers: {
+                        authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                    },
+                });
+                let lead = leads.data.data?.[0];
+                return { result: unifyLead(lead) };
+            }
+            case TP_ID.sfdc: {
+                const instanceUrl = connection.tp_account_url;
+                const leads = await axios({
+                    method: 'get',
+                    url: `${instanceUrl}/services/data/v56.0/sobjects/Lead/${leadId}`,
+                    headers: {
+                        Authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                });
+                let lead = leads.data;
+                return { result: unifyLead(lead) };
+            }
+            case TP_ID.pipedrive: {
+                const result = await axios.get<{ data: Partial<PipedriveLead> } & PipedrivePagination>(
+                    `${connection.tp_account_url}/v1/leads/${leadId}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                        },
+                    }
+                );
+                const lead = result.data;
+                const populatedLead = await this.populatePersonOrOrganizationForPipedriveLead({
+                    lead: lead.data,
+                    account_url: connection.tp_account_url,
+                    thirdPartyToken,
+                });
+                return { result: unifyLead(populatedLead) };
+            }
+            default: {
+                return {
+                    error: 'Unrecognised CRM',
+                };
+            }
         }
     }
     async getUnifiedLeads(
@@ -168,21 +191,11 @@ class LeadService {
                 const leads = result.data.data;
                 const populatedLeads = await Promise.all(
                     leads.map(async (lead) => {
-                        const personId = lead.person_id;
-                        const url = !!personId
-                            ? `${connection.tp_account_url}/v1/persons/${personId}`
-                            : `${connection.tp_account_url}/v1/organizations/${lead.organization_id}`;
-                        const result = await axios.get<
-                            { data: Partial<PipedrivePerson | PipedriveOrganization> } & PipedrivePagination
-                        >(url, {
-                            headers: {
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
+                        return await this.populatePersonOrOrganizationForPipedriveLead({
+                            lead,
+                            account_url: connection.tp_account_url,
+                            thirdPartyToken,
                         });
-                        return {
-                            ...lead,
-                            ...(!!personId ? { person: result.data.data } : { organization: result.data.data }),
-                        };
                     })
                 );
                 const unifiedLeads = populatedLeads?.map((l) => unifyLead(l));
@@ -370,6 +383,32 @@ class LeadService {
                 error: 'Unrecognised CRM',
             };
         }
+    }
+
+    async populatePersonOrOrganizationForPipedriveLead({
+        lead,
+        account_url,
+        thirdPartyToken,
+    }: {
+        lead: Partial<PipedriveLead>;
+        account_url: string;
+        thirdPartyToken: string;
+    }) {
+        const isPerson = !!lead.person_id;
+        const url = isPerson
+            ? `${account_url}/v1/persons/${lead.person_id}`
+            : `${account_url}/v1/organizations/${lead.organization_id}`;
+        const result = await axios.get<
+            { data: Partial<PipedrivePerson | PipedriveOrganization> } & PipedrivePagination
+        >(url, {
+            headers: {
+                Authorization: `Bearer ${thirdPartyToken}`,
+            },
+        });
+        return {
+            ...lead,
+            ...(isPerson ? { person: result.data.data } : { organization: result.data.data }),
+        };
     }
 }
 
