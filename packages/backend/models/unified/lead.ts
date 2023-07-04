@@ -12,9 +12,50 @@ export interface UnifiedLead {
     associations?: any; // TODO: Support associations
     additional: any;
     leadType?: 'PERSON' | 'ORGANIZATION'; // for pipedrive
+    leadTypeId?: string; // for pipedrive
 }
 
+// type Leads = HubspotLead & ZohoLead & SalesforceLead & PipedriveLead
+// FIXME: type support can be better
 export function unifyLead(lead: any): UnifiedLead {
+    // const unifiedlead: UnifiedLead = {
+    //     id: lead.id || lead.Id,
+    //     //  || lead.vid,
+    //     remoteId: lead.id || lead.Id,
+    //     //  || lead.vid,
+    //     firstName:
+    //         // lead.firstName ||
+    //         lead.First_Name || lead.FirstName || lead.person?.first_name || lead.organization?.name || lead.firstname,
+    //     lastName:
+    //         //  lead.lastName ||
+    //         lead.Last_Name || lead.LastName || lead.person?.last_name || lead.lastname,
+    //     email:
+    //         lead.email ||
+    //         lead.person?.primary_email ||
+    //         (lead.person?.email || []).find((e: any) => e?.primary)?.value ||
+    //         lead.person?.email?.[0]?.value ||
+    //         lead.organization?.cc_email ||
+    //         lead.Email,
+    //     phone:
+    //         lead.phone ||
+    //         // lead.PhoneNumber ||
+    //         (lead.person?.phone || []).find((p: any) => p?.primary)?.value ||
+    //         lead.person?.phone?.[0]?.value ||
+    //         lead.Phone,
+    //     createdTimestamp:
+    //         // lead.createdDate ||
+    //         lead.CreatedDate ||
+    //         lead.Created_Time ||
+    //         // lead.hs_timestamp ||
+    //         lead.createdate ||
+    //         lead.add_time,
+    //     updatedTimestamp:
+    //         // lead.lastModifiedDate ||
+    //         lead.LastModifiedDate || lead.Modified_Time || lead.lastmodifieddate || lead.update_time,
+    //     additional: {},
+    //     leadType: !!lead.person_id ? 'PERSON' : !!lead.organization_id ? 'ORGANIZATION' : undefined, // for pipedrive
+    //     leadTypeId: lead.person_id || lead.person.id || lead.organization_id || lead.organization.id
+    // };
     const unifiedlead: UnifiedLead = {
         id: lead.id || lead.Id || lead.vid,
         remoteId: lead.id || lead.Id || lead.vid,
@@ -54,6 +95,7 @@ export function unifyLead(lead: any): UnifiedLead {
             lead.update_time,
         additional: {},
         leadType: !!lead.person_id ? 'PERSON' : !!lead.organization_id ? 'ORGANIZATION' : undefined, // for pipedrive
+        leadTypeId: lead.person_id || lead.person.id || lead.organization_id || lead.organization.id
     };
 
     // Map additional fields
@@ -420,7 +462,7 @@ export interface SalesforceLead {
 }
 
 export interface PipedrivePerson {
-    id: number;
+    id: string;
     company_id: number;
     owner_id: {
         id: number;
@@ -496,7 +538,7 @@ export interface PipedrivePerson {
 }
 
 export interface PipedriveOrganization {
-    id: number;
+    id: string;
     company_id: number;
     owner_id: {
         id: number;
@@ -570,8 +612,8 @@ export interface PipedriveLead {
     owner_id: number;
     creator_id: number;
     label_ids: string[];
-    person_id: number;
-    organization_id: number;
+    person_id: string;
+    organization_id: string;
     source_name: string; // 'API'
     is_archived: boolean;
     was_seen: boolean;
@@ -666,16 +708,21 @@ export function toPipedriveLead(lead: UnifiedLead): Partial<PipedriveLead> {
         add_time: lead.createdTimestamp,
         update_time: lead.updatedTimestamp,
         ...(lead.leadType === 'PERSON' && {
+            person_id: lead.leadTypeId,
             person: {
+                id: lead.leadTypeId,
                 first_name: lead.firstName,
                 last_name: lead.lastName,
+                name: `${lead.firstName} ${lead.lastName}`,
                 phone: [{ value: lead.phone, primary: true, label: 'personal' }],
                 email: [{ value: lead.email, primary: true, label: 'personal' }],
                 primary_email: lead.email,
             },
         }),
         ...(lead.leadType === 'ORGANIZATION' && {
+            organization_id: lead.leadTypeId,
             organization: {
+                id: lead.leadTypeId,
                 name: lead.firstName,
                 cc_email: lead.email,
             },
@@ -694,7 +741,7 @@ export function toPipedriveLead(lead: UnifiedLead): Partial<PipedriveLead> {
 export function disunifyLead(
     lead: UnifiedLead,
     integrationId: string
-): Partial<SalesforceLead> | Partial<HubspotLead> | Partial<ZohoLead> | {} {
+): Partial<SalesforceLead> | Partial<HubspotLead> | Partial<ZohoLead> | Partial<PipedriveLead> | {} {
     if (integrationId === TP_ID.sfdc) {
         return toSalesforceLead(lead);
     } else if (integrationId === TP_ID.hubspot) {

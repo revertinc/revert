@@ -215,7 +215,9 @@ class LeadService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const searchCriteria = req.body.searchCriteria;
-        const fields = String(req.query.fields || '').split(',').filter(Boolean);
+        const fields = String(req.query.fields || '')
+            .split(',')
+            .filter(Boolean);
         console.log('Revert::SEARCH LEAD', tenantId, searchCriteria, fields);
 
         switch (thirdPartyId) {
@@ -286,7 +288,6 @@ class LeadService {
                         },
                     }
                 );
-                console.log("blah result", result.data.data.items[0].item);
                 // this api has person and organization auto populated
                 const leads = result.data.data.items.map((item) => item.item);
                 const unifiedLeads = leads?.map((l: any) => unifyLead(l));
@@ -309,51 +310,87 @@ class LeadService {
         const tenantId = connection.t_id;
         const lead = disunifyLead(req.body, thirdPartyId);
         console.log('Revert::CREATE LEAD', tenantId, lead);
-        if (thirdPartyId === 'hubspot') {
-            await axios({
-                method: 'post',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts/`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(lead),
-            });
-            return {
-                status: 'ok',
-                message: 'Hubspot lead created',
-                result: lead,
-            };
-        } else if (thirdPartyId === 'zohocrm') {
-            await axios({
-                method: 'post',
-                url: `https://www.zohoapis.com/crm/v3/Leads`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(lead),
-            });
-            return { status: 'ok', message: 'Zoho lead created', result: lead };
-        } else if (thirdPartyId === 'sfdc') {
-            const instanceUrl = connection.tp_account_url;
-            const leadCreated = await axios({
-                method: 'post',
-                url: `${instanceUrl}/services/data/v56.0/sobjects/Lead/`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(lead),
-            });
-            return {
-                status: 'ok',
-                message: 'SFDC lead created',
-                result: leadCreated.data,
-            };
-        } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+
+        switch (thirdPartyId) {
+            case TP_ID.hubspot: {
+                await axios({
+                    method: 'post',
+                    url: `https://api.hubapi.com/crm/v3/objects/contacts/`,
+                    headers: {
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify(lead),
+                });
+                return {
+                    status: 'ok',
+                    message: 'Hubspot lead created',
+                    result: lead,
+                };
+            }
+            case TP_ID.zohocrm: {
+                await axios({
+                    method: 'post',
+                    url: `https://www.zohoapis.com/crm/v3/Leads`,
+                    headers: {
+                        authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify(lead),
+                });
+                return { status: 'ok', message: 'Zoho lead created', result: lead };
+            }
+            case TP_ID.sfdc: {
+                const instanceUrl = connection.tp_account_url;
+                const leadCreated = await axios({
+                    method: 'post',
+                    url: `${instanceUrl}/services/data/v56.0/sobjects/Lead/`,
+                    headers: {
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify(lead),
+                });
+                return {
+                    status: 'ok',
+                    message: 'SFDC lead created',
+                    result: leadCreated.data,
+                };
+            }
+            case TP_ID.pipedrive: {
+                const instanceUrl = connection.tp_account_url;
+                const pipedriveLead = lead as Partial<PipedriveLead>;
+                const isPerson = req.body.leadType === 'PERSON';
+                const url = isPerson ? `${instanceUrl}/v1/persons` : `${instanceUrl}/v1/organizations`;
+                const entityCreated = await axios.post(
+                    url,
+                    isPerson ? pipedriveLead.person : pipedriveLead.organization,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            'Content-Type': 'application/json',
+                            Accept: 'application/json',
+                        },
+                    }
+                );
+                const leadCreated = await axios.post(`${instanceUrl}/v1/leads`, pipedriveLead, {
+                    headers: {
+                        Authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                });
+                return {
+                    status: 'ok',
+                    message: 'Pipedrive lead created',
+                    result: {
+                        ...leadCreated.data,
+                        ...(isPerson ? { person: entityCreated.data.data } : { organization: entityCreated.data.data }),
+                    },
+                };
+            }
+            default: {
+                return {
+                    error: 'Unrecognised CRM',
+                };
+            }
         }
     }
     async updateLead(
@@ -367,47 +404,67 @@ class LeadService {
         const lead = disunifyLead(req.body, thirdPartyId);
         const leadId = req.params.id;
         console.log('Revert::UPDATE LEAD', tenantId, lead, leadId);
-        if (thirdPartyId === 'hubspot') {
-            await axios({
-                method: 'patch',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts/${leadId}`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(lead),
-            });
-            return {
-                status: 'ok',
-                message: 'Hubspot lead updated',
-                result: lead,
-            };
-        } else if (thirdPartyId === 'zohocrm') {
-            await axios({
-                method: 'put',
-                url: `https://www.zohoapis.com/crm/v3/Leads/${leadId}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(lead),
-            });
-            return { status: 'ok', message: 'Zoho lead updated', result: lead };
-        } else if (thirdPartyId === 'sfdc') {
-            const instanceUrl = connection.tp_account_url;
-            await axios({
-                method: 'patch',
-                url: `${instanceUrl}/services/data/v56.0/sobjects/Lead/${leadId}`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(lead),
-            });
-            return { status: 'ok', message: 'SFDC lead updated', result: lead };
-        } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+
+        switch (thirdPartyId) {
+            case TP_ID.hubspot: {
+                await axios({
+                    method: 'patch',
+                    url: `https://api.hubapi.com/crm/v3/objects/contacts/${leadId}`,
+                    headers: {
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify(lead),
+                });
+                return {
+                    status: 'ok',
+                    message: 'Hubspot lead updated',
+                    result: lead,
+                };
+            }
+            case TP_ID.zohocrm: {
+                await axios({
+                    method: 'put',
+                    url: `https://www.zohoapis.com/crm/v3/Leads/${leadId}`,
+                    headers: {
+                        authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify(lead),
+                });
+                return { status: 'ok', message: 'Zoho lead updated', result: lead };
+            }
+            case TP_ID.sfdc: {
+                const instanceUrl = connection.tp_account_url;
+                await axios({
+                    method: 'patch',
+                    url: `${instanceUrl}/services/data/v56.0/sobjects/Lead/${leadId}`,
+                    headers: {
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify(lead),
+                });
+                return { status: 'ok', message: 'SFDC lead updated', result: lead };
+            }
+            case TP_ID.pipedrive: {
+                const leadUpdated = await axios.patch(`${connection.tp_account_url}/v1/leads/${leadId}`, lead, {
+                    headers: {
+                        Authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                });
+                return {
+                    status: 'ok',
+                    message: 'Pipedrive lead updated',
+                    result: {
+                        ...leadUpdated.data,
+                    },
+                };
+            }
+            default: {
+                return {
+                    error: 'Unrecognised CRM',
+                };
+            }
         }
     }
 
