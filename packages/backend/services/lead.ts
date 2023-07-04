@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { PipedriveLead, disunifyLead, unifyLead } from '../models/unified/lead';
+import { PipedriveLead, PipedriveOrganization, PipedrivePerson, disunifyLead, unifyLead } from '../models/unified/lead';
 import { filterLeadsFromContactsForHubspot } from '../helpers/filterLeadsFromContacts';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
@@ -172,9 +172,9 @@ class LeadService {
                         const url = !!personId
                             ? `${connection.tp_account_url}/v1/persons/${personId}`
                             : `${connection.tp_account_url}/v1/organizations/${lead.organization_id}`;
-                        const result = await axios({
-                            method: 'get',
-                            url,
+                        const result = await axios.get<
+                            { data: Partial<PipedrivePerson | PipedriveOrganization> } & PipedrivePagination
+                        >(url, {
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
