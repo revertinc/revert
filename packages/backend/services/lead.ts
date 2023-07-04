@@ -372,16 +372,20 @@ class LeadService {
                 //         },
                 //     }
                 // );
-                const leadCreated = await axios.post(`${instanceUrl}/v1/leads`, pipedriveLead, {
-                    headers: {
-                        Authorization: `Bearer ${thirdPartyToken}`,
-                    },
-                });
+                const leadCreated = await axios.post<{ data: Partial<PipedriveLead> }>(
+                    `${instanceUrl}/v1/leads`,
+                    pipedriveLead,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                        },
+                    }
+                );
                 return {
                     status: 'ok',
                     message: 'Pipedrive lead created',
                     result: {
-                        ...leadCreated.data,
+                        ...leadCreated.data.data,
                         // ...(isPerson ? { person: entityCreated.data.data } : { organization: entityCreated.data.data }),
                     },
                 };
@@ -447,16 +451,20 @@ class LeadService {
                 return { status: 'ok', message: 'SFDC lead updated', result: lead };
             }
             case TP_ID.pipedrive: {
-                const leadUpdated = await axios.patch(`${connection.tp_account_url}/v1/leads/${leadId}`, lead, {
-                    headers: {
-                        Authorization: `Bearer ${thirdPartyToken}`,
-                    },
-                });
+                const leadUpdated = await axios.patch<{ data: Partial<PipedriveLead> }>(
+                    `${connection.tp_account_url}/v1/leads/${leadId}`,
+                    lead,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                        },
+                    }
+                );
                 return {
                     status: 'ok',
                     message: 'Pipedrive lead updated',
                     result: {
-                        ...leadUpdated.data,
+                        ...leadUpdated.data.data,
                     },
                 };
             }
