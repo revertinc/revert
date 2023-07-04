@@ -215,62 +215,88 @@ class LeadService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const searchCriteria = req.body.searchCriteria;
-        const fields = String(req.query.fields || '').split(',');
+        const fields = String(req.query.fields || '').split(',').filter(Boolean);
         console.log('Revert::SEARCH LEAD', tenantId, searchCriteria, fields);
-        if (thirdPartyId === 'hubspot') {
-            let leads: any = await axios({
-                method: 'post',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts/search`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify({
-                    ...searchCriteria,
-                    properties: [
-                        'hs_lead_status',
-                        'firstname',
-                        'email',
-                        'lastname',
-                        'hs_object_id',
-                        'phone',
-                        ...fields,
-                    ],
-                }),
-            });
-            leads = filterLeadsFromContactsForHubspot(leads.data.results as any[]);
-            leads = leads?.map((l: any) => unifyLead({ ...l, ...l?.properties }));
-            return {
-                status: 'ok',
-                results: leads,
-            };
-        } else if (thirdPartyId === 'zohocrm') {
-            let leads: any = await axios({
-                method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Leads/search?criteria=${searchCriteria}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-            });
-            leads = leads.data.data;
-            leads = leads?.map((l: any) => unifyLead(l));
-            return { status: 'ok', results: leads };
-        } else if (thirdPartyId === 'sfdc') {
-            const instanceUrl = connection.tp_account_url;
-            let leads: any = await axios({
-                method: 'get',
-                url: `${instanceUrl}/services/data/v56.0/search?q=${searchCriteria}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-            leads = leads?.data?.searchRecords;
-            leads = leads?.map((l: any) => unifyLead(l));
-            return { status: 'ok', results: leads };
-        } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+
+        switch (thirdPartyId) {
+            case TP_ID.hubspot: {
+                let leads: any = await axios({
+                    method: 'post',
+                    url: `https://api.hubapi.com/crm/v3/objects/contacts/search`,
+                    headers: {
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify({
+                        ...searchCriteria,
+                        properties: [
+                            'hs_lead_status',
+                            'firstname',
+                            'email',
+                            'lastname',
+                            'hs_object_id',
+                            'phone',
+                            ...fields,
+                        ],
+                    }),
+                });
+                leads = filterLeadsFromContactsForHubspot(leads.data.results as any[]);
+                leads = leads?.map((l: any) => unifyLead({ ...l, ...l?.properties }));
+                return {
+                    status: 'ok',
+                    results: leads,
+                };
+            }
+            case TP_ID.zohocrm: {
+                let leads: any = await axios({
+                    method: 'get',
+                    url: `https://www.zohoapis.com/crm/v3/Leads/search?criteria=${searchCriteria}`,
+                    headers: {
+                        authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                    },
+                });
+                leads = leads.data.data;
+                leads = leads?.map((l: any) => unifyLead(l));
+                return { status: 'ok', results: leads };
+            }
+            case TP_ID.sfdc: {
+                const instanceUrl = connection.tp_account_url;
+                let leads: any = await axios({
+                    method: 'get',
+                    url: `${instanceUrl}/services/data/v56.0/search?q=${searchCriteria}`,
+                    headers: {
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                });
+                leads = leads?.data?.searchRecords;
+                leads = leads?.map((l: any) => unifyLead(l));
+                return { status: 'ok', results: leads };
+            }
+            case TP_ID.pipedrive: {
+                const instanceUrl = connection.tp_account_url;
+                const result = await axios.get<
+                    { data: { items: { item: Partial<PipedriveLead> }[]; result_score: number } } & PipedrivePagination
+                >(
+                    `${instanceUrl}/v1/leads/search?term=${searchCriteria}${
+                        fields.length ? `&fields=${fields.join(',')}` : ''
+                    }`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                        },
+                    }
+                );
+                console.log("blah result", result.data.data.items[0].item);
+                // this api has person and organization auto populated
+                const leads = result.data.data.items.map((item) => item.item);
+                const unifiedLeads = leads?.map((l: any) => unifyLead(l));
+                return { status: 'ok', results: unifiedLeads };
+            }
+            default: {
+                return {
+                    error: 'Unrecognised CRM',
+                };
+            }
         }
     }
     async createLead(
