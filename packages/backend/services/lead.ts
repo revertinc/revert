@@ -359,19 +359,6 @@ class LeadService {
             case TP_ID.pipedrive: {
                 const instanceUrl = connection.tp_account_url;
                 const pipedriveLead = lead as Partial<PipedriveLead>;
-                // const isPerson = req.body.leadType === 'PERSON';
-                // const url = isPerson ? `${instanceUrl}/v1/persons` : `${instanceUrl}/v1/organizations`;
-                // const entityCreated = await axios.post(
-                //     url,
-                //     isPerson ? pipedriveLead.person : pipedriveLead.organization,
-                //     {
-                //         headers: {
-                //             Authorization: `Bearer ${thirdPartyToken}`,
-                //             'Content-Type': 'application/json',
-                //             Accept: 'application/json',
-                //         },
-                //     }
-                // );
                 const leadCreated = await axios.post<{ data: Partial<PipedriveLead> }>(
                     `${instanceUrl}/v1/leads`,
                     pipedriveLead,
@@ -386,7 +373,6 @@ class LeadService {
                     message: 'Pipedrive lead created',
                     result: {
                         ...leadCreated.data.data,
-                        // ...(isPerson ? { person: entityCreated.data.data } : { organization: entityCreated.data.data }),
                     },
                 };
             }
@@ -476,6 +462,7 @@ class LeadService {
         }
     }
 
+    // QUESTION: a lead can have both. do we want both?
     async populatePersonOrOrganizationForPipedriveLead({
         lead,
         account_url,
