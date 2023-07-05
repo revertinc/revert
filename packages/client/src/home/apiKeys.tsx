@@ -82,55 +82,58 @@ const ApiKeys = () => {
                                         padding: 30,
                                         border: '2px #00000029 solid',
                                         borderRadius: 10,
-                                        maxWidth: '50%',
-                                    }}
-                                >
-                                    <p className="font-bold">Publishable key</p>
-                                    <span>
-                                        This key should be used in your frontend code, can be safely shared, and does
-                                        not need to be kept secret.
-                                    </span>
-                                </div>
-                                <div
-                                    style={{
                                         display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'flex-end',
                                     }}
                                 >
-                                    <p
+                                    <div className="flex flex-col flex-1">
+                                        <p className="font-bold">Publishable key</p>
+                                        <span>
+                                            This key should be used in your frontend code, can be safely shared, and
+                                            does not need to be kept secret.
+                                        </span>
+                                    </div>
+                                    <div
                                         style={{
-                                            background: '#1a1a1a',
-                                            textAlign: 'left',
-                                            padding: '24px',
-                                            color: '#fff',
-                                            margin: '20px',
-                                            fontSize: 'inherit',
-                                            borderRadius: 10,
-                                            marginBottom: 0,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'flex-end',
+                                            flex: 2,
                                         }}
                                     >
-                                        <div
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(account?.public_token);
-                                                toast.success('Copied to clipboard!');
+                                        <p
+                                            style={{
+                                                background: '#1a1a1a',
+                                                textAlign: 'left',
+                                                padding: '24px',
+                                                color: '#fff',
+                                                margin: '20px',
+                                                fontSize: 'inherit',
+                                                borderRadius: 10,
+                                                marginBottom: 0,
                                             }}
                                         >
-                                            <pre>
-                                                <code
-                                                    title="Click to Copy"
-                                                    style={{
-                                                        display: 'block',
-                                                        whiteSpace: 'pre-wrap',
-                                                        cursor: 'pointer',
-                                                    }}
-                                                >
-                                                    {account?.public_token}
-                                                </code>
-                                            </pre>
-                                        </div>
-                                    </p>
-                                    <span style={{ fontSize: 12, marginRight: 20 }}>Click above to copy</span>
+                                            <div
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(account?.public_token);
+                                                    toast.success('Copied to clipboard!');
+                                                }}
+                                            >
+                                                <pre>
+                                                    <code
+                                                        title="Click to Copy"
+                                                        style={{
+                                                            display: 'block',
+                                                            whiteSpace: 'pre-wrap',
+                                                            cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        {account?.public_token}
+                                                    </code>
+                                                </pre>
+                                            </div>
+                                        </p>
+                                        <span style={{ fontSize: 12, marginRight: 20 }}>Click above to copy</span>
+                                    </div>
                                 </div>
                             </Box>
                             <Box
@@ -146,74 +149,77 @@ const ApiKeys = () => {
                                         padding: 30,
                                         border: '2px #00000029 solid',
                                         borderRadius: 10,
-                                        maxWidth: '50%',
-                                    }}
-                                >
-                                    <p className="font-bold">Secret key</p>
-                                    <span>
-                                        These are the secret keys to be used from your backend code. They are sensitive
-                                        and should be deleted if leaked.
-                                    </span>
-                                </div>
-                                <div
-                                    style={{
                                         display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'flex-end',
                                     }}
                                 >
-                                    <p
+                                    <div className="flex flex-col flex-1">
+                                        <p className="font-bold">Secret key</p>
+                                        <span>
+                                            These are the secret keys to be used from your backend code. They are
+                                            sensitive and should be deleted if leaked.
+                                        </span>
+                                    </div>
+                                    <div
                                         style={{
-                                            background: '#1a1a1a',
-                                            textAlign: 'left',
-                                            padding: '24px',
-                                            color: '#fff',
-                                            margin: '20px',
-                                            fontSize: 'inherit',
-                                            borderRadius: 10,
-                                            marginBottom: 0,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'flex-end',
+                                            flex: 2,
                                         }}
                                     >
-                                        <div
+                                        <p
                                             style={{
-                                                position: 'relative',
+                                                background: '#1a1a1a',
+                                                textAlign: 'left',
+                                                padding: '24px',
+                                                color: '#fff',
+                                                margin: '20px',
+                                                fontSize: 'inherit',
+                                                borderRadius: 10,
+                                                marginBottom: 0,
                                             }}
                                         >
-                                            <pre
-                                                onClick={() => {
-                                                    navigator.clipboard.writeText(account?.private_token);
-                                                    toast.success('Copied to clipboard!');
-                                                }}
-                                            >
-                                                <code
-                                                    title="Click to Copy"
-                                                    style={{
-                                                        display: 'block',
-                                                        whiteSpace: 'pre-wrap',
-                                                        cursor: 'pointer',
-                                                        ...secretOverlay,
-                                                    }}
-                                                >
-                                                    {account?.private_token}
-                                                </code>
-                                            </pre>
                                             <div
                                                 style={{
-                                                    position: 'absolute',
-                                                    top: -24,
-                                                    right: -20,
-                                                    cursor: 'pointer',
+                                                    position: 'relative',
                                                 }}
                                             >
-                                                {viewSecret ? (
-                                                    <VisibilityIcon onClick={() => setViewSecret(false)} />
-                                                ) : (
-                                                    <VisibilityOffIcon onClick={() => setViewSecret(true)} />
-                                                )}
+                                                <pre
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(account?.private_token);
+                                                        toast.success('Copied to clipboard!');
+                                                    }}
+                                                >
+                                                    <code
+                                                        title="Click to Copy"
+                                                        style={{
+                                                            display: 'block',
+                                                            whiteSpace: 'pre-wrap',
+                                                            cursor: 'pointer',
+                                                            ...secretOverlay,
+                                                        }}
+                                                    >
+                                                        {account?.private_token}
+                                                    </code>
+                                                </pre>
+                                                <div
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: -24,
+                                                        right: -20,
+                                                        cursor: 'pointer',
+                                                    }}
+                                                >
+                                                    {viewSecret ? (
+                                                        <VisibilityIcon onClick={() => setViewSecret(false)} />
+                                                    ) : (
+                                                        <VisibilityOffIcon onClick={() => setViewSecret(true)} />
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </p>
-                                    <span style={{ fontSize: 12, marginRight: 20 }}>Click above to copy</span>
+                                        </p>
+                                        <span style={{ fontSize: 12, marginRight: 20 }}>Click above to copy</span>
+                                    </div>
                                 </div>
                             </Box>
                         </>

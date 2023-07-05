@@ -2,16 +2,42 @@ import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { useUser } from '@clerk/clerk-react';
 import { TailSpin } from 'react-loader-spinner';
-import { toast } from 'react-hot-toast';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { REVERT_BASE_API_URL } from '../constants';
+import { IconButton } from '@mui/material';
+import SettingsIcon from '@mui/icons-material/Settings';
+import Modal from '@mui/material/Modal';
+import Button from '@mui/material/Button';
+
+const style = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: '#fff',
+    display: 'flex',
+    flexDirection: 'column',
+    boxShadow: 24,
+    pt: 2,
+    px: 4,
+    pb: 3,
+};
 
 const Integrations = () => {
     const user = useUser();
     const [account, setAccount] = useState<any>();
     const [isLoading, setLoading] = useState<boolean>(false);
     const [viewSecret, setViewSecret] = useState<boolean>(false);
+    const [open, setOpen] = React.useState(false);
+    const [appId, setAppId] = useState<string>('sfdc');
+
+    const handleOpen = (appId: string) => {
+        setAppId(appId);
+        setOpen(true);
+    };
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     useEffect(() => {
         const headers = new Headers();
@@ -68,13 +94,16 @@ const Integrations = () => {
             ) : (
                 <>
                     {account ? (
-                        <>
+                        <div
+                            className="flex justify-between flex-wrap items-start"
+                            style={{ padding: '0rem 5rem', width: '80%' }}
+                        >
                             <Box
                                 sx={{
                                     display: 'flex',
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
-                                    padding: '5rem 5rem',
+                                    padding: '2rem 0rem',
                                 }}
                             >
                                 <div
@@ -82,55 +111,33 @@ const Integrations = () => {
                                         padding: 30,
                                         border: '2px #00000029 solid',
                                         borderRadius: 10,
-                                        maxWidth: '50%',
-                                    }}
-                                >
-                                    <p className="font-bold">Publishable key</p>
-                                    <span>
-                                        This key should be used in your frontend code, can be safely shared, and does
-                                        not need to be kept secret.
-                                    </span>
-                                </div>
-                                <div
-                                    style={{
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        alignItems: 'flex-end',
+                                        alignItems: 'flex-start',
+                                        minHeight: 200,
+                                        justifyContent: 'flex-end',
+                                        position: 'relative',
                                     }}
                                 >
-                                    <p
+                                    <img
+                                        width={100}
+                                        alt="SFDC logo"
+                                        src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1688550774/Revert/image_8_2_peddol.png"
+                                    />
+                                    <p className="font-bold mt-4">Salesforce</p>
+                                    <span>Configure your Salesforce App from here.</span>
+                                    <IconButton
+                                        onClick={() => handleOpen('sfdc')}
                                         style={{
-                                            background: '#1a1a1a',
-                                            textAlign: 'left',
-                                            padding: '24px',
-                                            color: '#fff',
-                                            margin: '20px',
-                                            fontSize: 'inherit',
-                                            borderRadius: 10,
-                                            marginBottom: 0,
+                                            color: '#6e6e6e',
+                                            fontSize: 12,
+                                            position: 'absolute',
+                                            top: 10,
+                                            right: 10,
                                         }}
                                     >
-                                        <div
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(account?.public_token);
-                                                toast.success('Copied to clipboard!');
-                                            }}
-                                        >
-                                            <pre>
-                                                <code
-                                                    title="Click to Copy"
-                                                    style={{
-                                                        display: 'block',
-                                                        whiteSpace: 'pre-wrap',
-                                                        cursor: 'pointer',
-                                                    }}
-                                                >
-                                                    {account?.public_token}
-                                                </code>
-                                            </pre>
-                                        </div>
-                                    </p>
-                                    <span style={{ fontSize: 12, marginRight: 20 }}>Click above to copy</span>
+                                        <SettingsIcon />
+                                    </IconButton>
                                 </div>
                             </Box>
                             <Box
@@ -138,7 +145,7 @@ const Integrations = () => {
                                     display: 'flex',
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
-                                    padding: '0 5rem',
+                                    padding: '2rem 0rem',
                                 }}
                             >
                                 <div
@@ -146,77 +153,78 @@ const Integrations = () => {
                                         padding: 30,
                                         border: '2px #00000029 solid',
                                         borderRadius: 10,
-                                        maxWidth: '50%',
-                                    }}
-                                >
-                                    <p className="font-bold">Secret key</p>
-                                    <span>
-                                        These are the secret keys to be used from your backend code. They are sensitive
-                                        and should be deleted if leaked.
-                                    </span>
-                                </div>
-                                <div
-                                    style={{
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        alignItems: 'flex-end',
+                                        alignItems: 'flex-start',
+                                        minHeight: 200,
+                                        justifyContent: 'flex-end',
+                                        position: 'relative',
                                     }}
                                 >
-                                    <p
+                                    <img
+                                        width={100}
+                                        alt="Hubspot logo"
+                                        src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1688550714/Revert/image_9_1_vilmhw.png"
+                                    />
+                                    <p className="font-bold mt-4">Hubspot</p>
+                                    <span>Configure your Hubspot App from here.</span>
+                                    <IconButton
+                                        onClick={() => handleOpen('hubspot')}
                                         style={{
-                                            background: '#1a1a1a',
-                                            textAlign: 'left',
-                                            padding: '24px',
-                                            color: '#fff',
-                                            margin: '20px',
-                                            fontSize: 'inherit',
-                                            borderRadius: 10,
-                                            marginBottom: 0,
+                                            color: '#6e6e6e',
+                                            fontSize: 12,
+                                            position: 'absolute',
+                                            top: 10,
+                                            right: 10,
                                         }}
                                     >
-                                        <div
-                                            style={{
-                                                position: 'relative',
-                                            }}
-                                        >
-                                            <pre
-                                                onClick={() => {
-                                                    navigator.clipboard.writeText(account?.private_token);
-                                                    toast.success('Copied to clipboard!');
-                                                }}
-                                            >
-                                                <code
-                                                    title="Click to Copy"
-                                                    style={{
-                                                        display: 'block',
-                                                        whiteSpace: 'pre-wrap',
-                                                        cursor: 'pointer',
-                                                        ...secretOverlay,
-                                                    }}
-                                                >
-                                                    {account?.private_token}
-                                                </code>
-                                            </pre>
-                                            <div
-                                                style={{
-                                                    position: 'absolute',
-                                                    top: -24,
-                                                    right: -20,
-                                                    cursor: 'pointer',
-                                                }}
-                                            >
-                                                {viewSecret ? (
-                                                    <VisibilityIcon onClick={() => setViewSecret(false)} />
-                                                ) : (
-                                                    <VisibilityOffIcon onClick={() => setViewSecret(true)} />
-                                                )}
-                                            </div>
-                                        </div>
-                                    </p>
-                                    <span style={{ fontSize: 12, marginRight: 20 }}>Click above to copy</span>
+                                        <SettingsIcon />
+                                    </IconButton>
                                 </div>
                             </Box>
-                        </>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '2rem 0rem',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        padding: 30,
+                                        border: '2px #00000029 solid',
+                                        borderRadius: 10,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        minHeight: 200,
+                                        justifyContent: 'flex-end',
+                                        position: 'relative',
+                                    }}
+                                >
+                                    <img
+                                        width={100}
+                                        alt="Hubspot logo"
+                                        src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1688550788/Revert/image_10_xvb9h7.png"
+                                    />
+                                    <p className="font-bold mt-4">ZohoCRM</p>
+                                    <span>Configure your Zoho CRM App from here.</span>
+                                    <IconButton
+                                        onClick={() => handleOpen('zohocrm')}
+                                        style={{
+                                            color: '#6e6e6e',
+                                            fontSize: 12,
+                                            position: 'absolute',
+                                            top: 10,
+                                            right: 10,
+                                        }}
+                                    >
+                                        <SettingsIcon />
+                                    </IconButton>
+                                </div>
+                            </Box>
+                        </div>
                     ) : (
                         <>
                             <Box
@@ -235,6 +243,20 @@ const Integrations = () => {
                     )}
                 </>
             )}
+
+            <Modal open={open} onClose={handleClose}>
+                <Box sx={{ ...style, width: 500 }}>
+                    <h2 className="font-bold mt-4">Client ID: </h2>
+                    <p>{account?.apps?.find((x) => x.tp_id === appId).app_client_id}</p>
+                    <h2 className="font-bold mt-4">Client Secret: </h2>
+                    <p>{account?.apps?.find((x) => x.tp_id === appId).app_client_secret}</p>
+                    <h2 className="font-bold mt-4">Scopes: </h2>
+                    <p className="break-words">{account?.apps?.find((x) => x.tp_id === appId).scope}</p>
+                    <Button style={{ alignSelf: 'flex-end' }} onClick={handleClose}>
+                        Close
+                    </Button>
+                </Box>
+            </Modal>
         </div>
     );
 };
