@@ -188,7 +188,13 @@ class AuthService {
                     skipWaitlist: true,
                 },
             },
-            select: { account: true },
+            select: {
+                account: {
+                    include: {
+                        apps: true,
+                    },
+                },
+            },
         });
         if (!account) {
             return { error: 'Account does not exist' };
