@@ -3,6 +3,7 @@ import prisma from '../../prisma/client';
 import { DEFAULT_SCOPE } from '../../constants';
 import { TP_ID, apps } from '@prisma/client';
 import config from '../../config';
+import logError from '../../helpers/logError';
 
 const metadataRouter = express.Router();
 
@@ -76,7 +77,8 @@ metadataRouter.get('/crms', async (req, res) => {
                 },
             ],
         });
-    } catch (error) {
+    } catch (error: any) {
+        logError(error);
         console.error('Could not update db', error);
     }
 });
