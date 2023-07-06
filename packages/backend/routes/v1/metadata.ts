@@ -68,10 +68,8 @@ metadataRouter.get('/crms', async (req, res) => {
                 {
                     integrationId: TP_ID.pipedrive,
                     name: 'Pipedrive',
-                    // TODO: change image
-                    imageSrc:
-                        'https://res.cloudinary.com/dfcnic8wq/image/upload/c_fit,h_20,w_70/v1673887647/Revert/SFDC%20logo.png',
-                    status: 'active',
+                    imageSrc: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1688633518/Revert/PipedriveLogo.png',
+                    status: 'inactive',
                     scopes: getScope(apps, TP_ID.pipedrive),
                     clientId: getClientId(apps, TP_ID.pipedrive) || config.PIPEDRIVE_CLIENT_ID,
                 },
