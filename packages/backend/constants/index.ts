@@ -1,11 +1,7 @@
-export enum INTEGRATIONS {
-    HUBSPOT = "hubspot",
-    ZOHO = "zohocrm",
-    SALESFORCE = "sfdc"
-}
+import { TP_ID } from "@prisma/client";
 
 export const DEFAULT_SCOPE = {
-    [INTEGRATIONS.HUBSPOT]: [
+    [TP_ID.hubspot]: [
         'crm.objects.contacts.read',
         'settings.users.read',
         'settings.users.write',
@@ -35,6 +31,7 @@ export const DEFAULT_SCOPE = {
         'crm.objects.line_items.write',
         'crm.schemas.line_items.read',
     ],
-    [INTEGRATIONS.ZOHO]: ['ZohoCRM.modules.ALL', 'ZohoCRM.settings.ALL', 'ZohoCRM.users.ALL', 'AaaServer.profile.READ'],
-    [INTEGRATIONS.SALESFORCE]: [], // https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_tokens_scopes.htm&type=5
+    [TP_ID.zohocrm]: ['ZohoCRM.modules.ALL', 'ZohoCRM.settings.ALL', 'ZohoCRM.users.ALL', 'AaaServer.profile.READ'],
+    [TP_ID.sfdc]: [], // https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_tokens_scopes.htm&type=5
+    [TP_ID.pipedrive]: [],
 };

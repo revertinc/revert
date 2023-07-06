@@ -134,6 +134,13 @@ const createConnectButton = function (self, integration) {
                 );
                 self.close();
             });
+        } else if (integration.integrationId === 'pipedrive') {
+            button.addEventListener('click', () => {
+                window.open(
+                    `https://oauth.pipedrive.com/oauth/authorize?client_id=${integration.clientId}&redirect_uri=${self.REDIRECT_URL_BASE}/pipedrive&state=${state}`
+                );
+                self.close();
+            });
         }
     }
     return button;
@@ -307,7 +314,7 @@ const createIntegrationBlock = function (self, integration, padding) {
             };
 
             let fetchURL = this.CORE_API_BASE_URL + this.#API_CRM_METADATA_SUFFIX;
-            
+
             fetch(fetchURL, requestOptions)
                 .then((response) => response.json())
                 .then((result) => {
@@ -477,6 +484,12 @@ const createIntegrationBlock = function (self, integration, padding) {
                             `https://login.salesforce.com/services/oauth2/authorize?${queryString}${
                                 scopes.length ? `&scope=${scopes.join('%20')}` : ''
                             }`
+                        );
+                    } else if (selectedIntegration.integrationId === 'pipedrive') {
+                        window.open(
+                            `https://oauth.pipedrive.com/oauth/authorize?client_id=${
+                                selectedIntegration.clientId
+                            }&redirect_uri=${this.#REDIRECT_URL_BASE}/pipedrive&state=${state}`
                         );
                     }
                 } else {

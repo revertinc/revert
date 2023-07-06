@@ -11,6 +11,7 @@ enum TP_ID {
   hubspot
   zohocrm
   sfdc
+  pipedrive
 }
 
 model accounts {

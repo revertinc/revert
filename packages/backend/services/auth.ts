@@ -16,7 +16,7 @@ class AuthService {
                 const connection = connections[i];
                 if (connection.tp_refresh_token) {
                     try {
-                        if (connection.tp_id === 'hubspot') {
+                        if (connection.tp_id === TP_ID.hubspot) {
                             // Refresh the hubspot token.
                             const url = 'https://api.hubapi.com/oauth/v1/token';
                             const formData = {
@@ -47,7 +47,7 @@ class AuthService {
                                 },
                             });
                             console.log('OAuth creds refreshed for hubspot');
-                        } else if (connection.tp_id === 'zohocrm') {
+                        } else if (connection.tp_id === TP_ID.zohocrm) {
                             // Refresh the zoho-crm token.
                             const url = `${connection.tp_account_url}/oauth/v2/token`;
                             const formData = {
@@ -81,7 +81,7 @@ class AuthService {
                             } else {
                                 console.log('Zoho connection could not be refreshed', result);
                             }
-                        } else if (connection.tp_id === 'sfdc') {
+                        } else if (connection.tp_id === TP_ID.sfdc) {
                             // Refresh the sfdc token.
                             const url = `https://login.salesforce.com/services/oauth2/token`;
                             const formData = {
@@ -115,6 +115,40 @@ class AuthService {
                             } else {
                                 console.log('SFDC connection could not be refreshed', result);
                             }
+                        } else if (connection.tp_id === TP_ID.pipedrive) {
+                            // Refresh the pipedrive token.
+                            const url = 'https://oauth.pipedrive.com/oauth/token';
+                            const formData = {
+                                grant_type: 'refresh_token',
+                                redirect_uri: `${config.OAUTH_REDIRECT_BASE}/pipedrive`,
+                                refresh_token: connection.tp_refresh_token,
+                            };
+                            const result = await axios({
+                                method: 'post',
+                                url: url,
+                                data: qs.stringify(formData),
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                                    Authorization: `Basic ${Buffer.from(
+                                        `${connection.app.app_client_id || config.PIPEDRIVE_CLIENT_ID}:${
+                                            connection.app.app_client_secret || config.PIPEDRIVE_CLIENT_SECRET
+                                        }`
+                                    ).toString('base64')}`,
+                                },
+                            });
+                            await prisma.connections.update({
+                                where: {
+                                    uniqueCustomerPerTenant: {
+                                        tp_customer_id: connection.tp_customer_id,
+                                        t_id: connection.t_id,
+                                    },
+                                },
+                                data: {
+                                    tp_access_token: result.data.access_token,
+                                    tp_refresh_token: result.data.refresh_token,
+                                },
+                            });
+                            console.log('OAuth creds refreshed for pipedrive');
                         }
                     } catch (error: any) {
                         console.error('Could not refresh token', connection.t_id, error.response?.data);
