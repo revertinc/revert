@@ -6,22 +6,7 @@ import { REVERT_BASE_API_URL } from '../constants';
 import { IconButton } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Modal from '@mui/material/Modal';
-import Button from '@mui/material/Button';
-
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: '#fff',
-    display: 'flex',
-    flexDirection: 'column',
-    boxShadow: 24,
-    pt: 2,
-    px: 4,
-    pb: 3,
-};
+import EditCredentials from './editCredentials';
 
 const Integrations = () => {
     const user = useUser();
@@ -56,6 +41,7 @@ const Integrations = () => {
             .then((response) => response.json())
             .then((result) => {
                 setAccount(result?.account);
+                sessionStorage.setItem("privateToken", result?.account.private_token);
                 setLoading(false);
             })
             .catch((error) => {
@@ -245,17 +231,7 @@ const Integrations = () => {
             )}
 
             <Modal open={open} onClose={handleClose}>
-                <Box sx={{ ...style, width: 500 }}>
-                    <h2 className="font-bold mt-4">Client ID: </h2>
-                    <p>{account?.apps?.find((x) => x.tp_id === appId).app_client_id}</p>
-                    <h2 className="font-bold mt-4">Client Secret: </h2>
-                    <p>{account?.apps?.find((x) => x.tp_id === appId).app_client_secret}</p>
-                    <h2 className="font-bold mt-4">Scopes: </h2>
-                    <p className="break-words">{account?.apps?.find((x) => x.tp_id === appId).scope}</p>
-                    <Button style={{ alignSelf: 'flex-end' }} onClick={handleClose}>
-                        Close
-                    </Button>
-                </Box>
+                <EditCredentials app={account?.apps?.find((app) => app.tp_id === appId)} handleClose={handleClose} />
             </Modal>
         </div>
     );

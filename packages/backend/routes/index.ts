@@ -84,6 +84,42 @@ router.post('/internal/account', async (req, res) => {
     }
 });
 
+router.post('/internal/account/credentials', async (req, res) => {
+    try {
+        const { clientId, clientSecret, scopes, tpId } = req.body;
+        const { 'x-revert-api-token': token } = req.headers;
+        const account = await prisma.accounts.findFirst({
+            where: {
+                private_token: token as string,
+            },
+            select: {
+                public_token: true,
+            },
+        });
+        if (!account) {
+            return res.status(401).send({
+                error: 'Api token unauthorized',
+            });
+        }
+        const result = await AuthService.setAppCredentialsForUser({
+            publicToken: account.public_token,
+            clientId,
+            clientSecret,
+            scopes,
+            tpId,
+        });
+        if (result?.error) {
+            return res.status(400).send(result);
+        } else {
+            return res.send(result);
+        }
+    } catch (error: any) {
+        logError(error);
+        console.error('Could not get account for user', error);
+        return res.status(500).send({ error: 'Internal server error' });
+    }
+});
+
 router.use('/crm', cors(), revertAuthMiddleware(), crmRouter);
 router.use('/connection', cors(), revertAuthMiddleware(), connectionRouter);
 router.use('/metadata', cors(), metadataRouter);

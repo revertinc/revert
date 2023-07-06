@@ -243,6 +243,39 @@ class AuthService {
 
         return account;
     }
+    async setAppCredentialsForUser({
+        publicToken,
+        clientId,
+        clientSecret,
+        scopes,
+        tpId,
+    }: {
+        publicToken: string;
+        clientId: string;
+        clientSecret: string;
+        scopes: string[];
+        tpId: TP_ID;
+    }): Promise<any> {
+        if (!publicToken || !clientId || !clientSecret || !tpId) {
+            return { error: 'Bad request' };
+        }
+        const account = await prisma.apps.update({
+            where: {
+                owner_account_public_token_tp_id: { owner_account_public_token: publicToken, tp_id: tpId },
+            },
+            data: {
+                app_client_id: clientId,
+                app_client_secret: clientSecret,
+                is_revert_app: false,
+                ...(scopes.filter(Boolean).length && { scope: scopes }),
+            },
+        });
+        if (!account) {
+            return { error: 'Account does not exist' };
+        }
+
+        return account;
+    }
 }
 
 export default new AuthService();
