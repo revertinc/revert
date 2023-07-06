@@ -56,7 +56,7 @@ export function unifyLead(lead: any): UnifiedLead {
             lead.update_time,
         additional: {},
         leadType: !!lead.person_id ? 'PERSON' : !!lead.organization_id ? 'ORGANIZATION' : undefined, // for pipedrive
-        leadTypeId: lead.person_id || lead.person.id || lead.organization_id || lead.organization.id,
+        leadTypeId: lead.person_id || lead.person?.id || lead.organization_id || lead.organization?.id,
     };
 
     // Map additional fields
