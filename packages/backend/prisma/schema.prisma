@@ -54,6 +54,8 @@ model connections {
   t_id                       String
   tp_account_url             String?
   owner_account_public_token String
+  app_client_id              String?
+  app_client_secret          String?
   app                        apps    @relation(fields: [owner_account_public_token, tp_id], references: [owner_account_public_token, tp_id])
 
   @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")

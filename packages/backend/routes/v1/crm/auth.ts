@@ -25,7 +25,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 apps: { select: { app_client_id: true, app_client_secret: true }, where: { tp_id: integrationId } },
             },
         });
-        const clientId = account?.apps[0]?.app_client_id;
+        const clientId = account?.apps[0]?.app_client_id; // FIXME: This is a bug.
         const clientSecret = account?.apps[0]?.app_client_secret;
         const svixAppId = account!.id;
         if (integrationId === 'hubspot' && req.query.code && req.query.t_id && revertPublicKey) {
@@ -64,12 +64,16 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     update: {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
+                        app_client_id: clientId || config.HUBSPOT_CLIENT_ID,
+                        app_client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET,
                     },
                     create: {
                         t_id: req.query.t_id as string,
                         tp_id: 'hubspot',
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
+                        app_client_id: clientId || config.HUBSPOT_CLIENT_ID,
+                        app_client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET, // TODO: Fix in other platforms.
                         tp_customer_id: info.data.user,
                         owner_account_public_token: revertPublicKey,
                     },
@@ -148,6 +152,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
                             tp_refresh_token: result.data.refresh_token,
                             tp_customer_id: info.data.Email,
                             tp_account_url: req.query.accountURL as string,
+                            app_client_id: clientId || config.ZOHOCRM_CLIENT_ID,
+                            app_client_secret: clientSecret || config.ZOHOCRM_CLIENT_SECRET,
                             owner_account_public_token: revertPublicKey,
                         },
                         update: {
@@ -226,11 +232,15 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.email,
                         tp_account_url: info.data.urls['custom_domain'],
+                        app_client_id: clientId || config.SFDC_CLIENT_ID,
+                        app_client_secret: clientSecret || config.SFDC_CLIENT_SECRET,
                         owner_account_public_token: revertPublicKey,
                     },
                     update: {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
+                        app_client_id: clientId || config.SFDC_CLIENT_ID,
+                        app_client_secret: clientSecret || config.SFDC_CLIENT_SECRET,
                     },
                 });
                 ConnectionService.svix.message.create(svixAppId, {
