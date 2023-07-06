@@ -275,8 +275,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             const url = 'https://oauth.pipedrive.com/oauth/token';
             const formData = {
                 grant_type: 'authorization_code',
-                // redirect_uri: `${config.OAUTH_REDIRECT_BASE}/pipedrive`,
-                redirect_uri: `https://app.revert.dev/oauth-callback/pipedrive`, // TODO: remove. This is for testing
+                redirect_uri: `${config.OAUTH_REDIRECT_BASE}/pipedrive`,
                 code: req.query.code,
             };
             // TODO: Add proper types
