@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Box as MuiBox, Button, Chip as MuiChip } from '@mui/material';
-import {LoadingButton} from '@mui/lab';
+import { LoadingButton as MuiLoadingButton } from '@mui/lab';
 
 import { useApi } from '../data/hooks';
 
@@ -21,10 +21,10 @@ const Row = styled.div`
     padding: 10px;
 `;
 
-const Input = styled.input`
+const Input = styled.input<{ error?: boolean }>`
     color: #444;
     width: 60%;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid ${(props) => (!!props.error ? 'red' : '#444')};
     outline: none;
 `;
 
@@ -55,6 +55,13 @@ const Stack = styled.div`
     justify-content: flex-end;
     gap: 5px;
     flex-wrap: wrap;
+`;
+
+const LoadingButton = styled(MuiLoadingButton)`
+    background-color: #000;
+    &.Mui-disabled {
+        background-color: #000;
+    }
 `;
 
 const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount: any }> = ({
@@ -91,7 +98,7 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount:
             setAccount((account) => {
                 return {
                     ...account,
-                    apps: [...account.apps.filter((a) => a.tp_id !== app.tp_id), data ],
+                    apps: [...account.apps.filter((a) => a.tp_id !== app.tp_id), data],
                 };
             });
         }
@@ -101,11 +108,19 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount:
         <Box>
             <Row>
                 <span className="font-bold">Client ID: </span>
-                <Input value={clientId} onChange={(ev) => setClientId((ev.target.value || '').trim())} />
+                <Input
+                    value={clientId}
+                    onChange={(ev) => setClientId((ev.target.value || '').trim())}
+                    error={!clientId}
+                />
             </Row>
             <Row>
                 <span className="font-bold">Client Secret: </span>
-                <Input value={clientSecret} onChange={(ev) => setClientSecret((ev.target.value || '').trim())} />
+                <Input
+                    value={clientSecret}
+                    onChange={(ev) => setClientSecret((ev.target.value || '').trim())}
+                    error={!clientSecret}
+                />
             </Row>
             <Row>
                 <span className="font-bold">Scopes: </span>
@@ -118,6 +133,7 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount:
                                 key={i}
                                 variant="outlined"
                                 color="primary"
+                                style={{ color: '#fff', background: '#000' }}
                                 onDelete={(ev) => setScopes((ss) => [...ss.filter((s) => s !== scope)])}
                             />
                         ))}
@@ -130,8 +146,15 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount:
                 </ScopesContainer>
             </Row>
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', gap: '15px' }}>
-                <Button onClick={handleClose}>Close</Button>
-                <LoadingButton variant="contained" onClick={handleSubmit} loading={loading}>
+                <Button onClick={handleClose} style={{ color: '#000' }}>
+                    Close
+                </Button>
+                <LoadingButton
+                    variant="contained"
+                    onClick={handleSubmit}
+                    loading={loading}
+                    disabled={!clientId || !clientSecret}
+                >
                     Submit
                 </LoadingButton>
             </div>
