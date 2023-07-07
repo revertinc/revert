@@ -7,6 +7,7 @@ import { IconButton } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Modal from '@mui/material/Modal';
 import EditCredentials from './editCredentials';
+import { LOCALSTORAGE_KEYS } from '../data/localstorage';
 
 const Integrations = () => {
     const user = useUser();
@@ -41,7 +42,7 @@ const Integrations = () => {
             .then((response) => response.json())
             .then((result) => {
                 setAccount(result?.account);
-                sessionStorage.setItem("privateToken", result?.account.private_token);
+                localStorage.setItem(LOCALSTORAGE_KEYS.privateToken, result?.account.private_token);
                 setLoading(false);
             })
             .catch((error) => {

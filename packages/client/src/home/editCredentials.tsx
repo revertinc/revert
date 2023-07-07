@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Box as MuiBox, Button, Chip as MuiChip } from '@mui/material';
-import { REVERT_BASE_API_URL } from '../constants';
+
+import { useApi } from '../data/hooks';
 
 const Chip = styled(MuiChip)`
     cursor: pointer;
@@ -38,7 +39,7 @@ const Box = styled(MuiBox)`
     left: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 24px;
-    padding: 10px;
+    padding: 15px;
 `;
 
 const ScopesContainer = styled.div`
@@ -58,16 +59,10 @@ const Stack = styled.div`
 const EditCredentials: React.FC<{ app: any; handleClose: () => void }> = ({ app, handleClose }) => {
     const [clientId, setClientId] = React.useState<string>(app.app_client_id);
     const [clientSecret, setClientSecret] = React.useState<string>(app.app_client_secret);
-    const [scopes, setScopes] = React.useState<string[]>([
-        'ajhgjhg',
-        'bjhj',
-        'ckhkjhk',
-        'djgjhgj',
-        'kjhjhgjhgj',
-        'yfghjk',
-        'jhgjhgjhgjhgjh',
-    ]);
+    const [scopes, setScopes] = React.useState<string[]>(app.scope);
     const [newScope, setNewScope] = React.useState<string>('');
+
+    const { data, loading, status, fetch } = useApi();
 
     const handleAddNewScope = (e) => {
         if (e.key === 'Enter') {
@@ -77,19 +72,19 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void }> = ({ app,
     };
 
     const handleSubmit = async () => {
-        // TODO: create a hook for this?
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        headers.append('x-revert-api-token', sessionStorage.getItem('privateToken') || "");
-
-        const data = JSON.stringify({ clientId, clientSecret, scopes, tpId: app.tp_id });
-        const requestOptions = {
+        await fetch({
+            url: '/internal/account/credentials',
             method: 'POST',
-            body: data,
-            headers: headers,
-        };
-        await fetch(`${REVERT_BASE_API_URL}/internal/account/credentials`, requestOptions);
+            payload: { clientId, clientSecret, scopes, tpId: app.tp_id },
+        });
     };
+
+    React.useEffect(() => {
+        if (status === 200) {
+            handleClose();
+            // refetch apps or optimistic update?
+        }
+    }, [status, handleClose]);
 
     return (
         <Box>
@@ -125,7 +120,7 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void }> = ({ app,
             </Row>
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', gap: '15px' }}>
                 <Button onClick={handleClose}>Close</Button>
-                <Button variant="contained" onClick={handleSubmit}>
+                <Button variant="contained" onClick={handleSubmit} disabled={loading}>
                     Submit
                 </Button>
             </div>
