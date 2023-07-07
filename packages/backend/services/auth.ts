@@ -190,15 +190,19 @@ class AuthService {
                 });
                 await Promise.all(
                     Object.keys(TP_ID).map(async (tp) => {
-                        await prisma.apps.create({
-                            data: {
-                                id: `${tp}_${account.id}`,
-                                tp_id: tp as TP_ID,
-                                scope: [],
-                                owner_account_public_token: account.public_token,
-                                is_revert_app: true,
-                            },
-                        });
+                        try {
+                            await prisma.apps.create({
+                                data: {
+                                    id: `${tp}_${account.id}`,
+                                    tp_id: tp as TP_ID,
+                                    scope: [],
+                                    owner_account_public_token: account.public_token,
+                                    is_revert_app: true,
+                                },
+                            });
+                        } catch (error: any) {
+                            logError(error);
+                        }
                     })
                 );
                 await prisma.users.create({
