@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Box as MuiBox, Button, Chip as MuiChip } from '@mui/material';
+import {LoadingButton} from '@mui/lab';
 
 import { useApi } from '../data/hooks';
 
@@ -56,7 +57,11 @@ const Stack = styled.div`
     flex-wrap: wrap;
 `;
 
-const EditCredentials: React.FC<{ app: any; handleClose: () => void }> = ({ app, handleClose }) => {
+const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount: any }> = ({
+    app,
+    handleClose,
+    setAccount,
+}) => {
     const [clientId, setClientId] = React.useState<string>(app.app_client_id);
     const [clientSecret, setClientSecret] = React.useState<string>(app.app_client_secret);
     const [scopes, setScopes] = React.useState<string[]>(app.scope);
@@ -82,9 +87,15 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void }> = ({ app,
     React.useEffect(() => {
         if (status === 200) {
             handleClose();
-            // refetch apps or optimistic update?
+            // Update account locally to avoid additional api call
+            setAccount((account) => {
+                return {
+                    ...account,
+                    apps: [...account.apps.filter((a) => a.tp_id !== app.tp_id), data ],
+                };
+            });
         }
-    }, [status, handleClose]);
+    }, [status, handleClose, setAccount, data, app]);
 
     return (
         <Box>
@@ -120,9 +131,9 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void }> = ({ app,
             </Row>
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', gap: '15px' }}>
                 <Button onClick={handleClose}>Close</Button>
-                <Button variant="contained" onClick={handleSubmit} disabled={loading}>
+                <LoadingButton variant="contained" onClick={handleSubmit} loading={loading}>
                     Submit
-                </Button>
+                </LoadingButton>
             </div>
         </Box>
     );

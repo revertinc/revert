@@ -232,7 +232,7 @@ const Integrations = () => {
             )}
 
             <Modal open={open} onClose={handleClose}>
-                <EditCredentials app={account?.apps?.find((app) => app.tp_id === appId)} handleClose={handleClose} />
+                <EditCredentials app={account?.apps?.find((app) => app.tp_id === appId)} handleClose={handleClose} setAccount={setAccount} />
             </Modal>
         </div>
     );
