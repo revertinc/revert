@@ -4,9 +4,12 @@
 <p align="center">
  <h2 align="center">The fastest way to build user-facing Integrations
  
- [Get started](https://revert.dev) | [Docs](https://docs.revert.dev/) | [Issues](https://github.com/revertinc/revert/issues) | [Discord](https://discord.gg/tTb9k6YX) </h2>
+![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=revert-client-git-main-revertdev)  [![](https://dcbadge.vercel.app/api/server/q5K5cRhymW?style=flat)](https://discord.gg/q5K5cRhymW)
+
+[Get started](https://revert.dev) | [Docs](https://docs.revert.dev/) | [Issues](https://github.com/revertinc/revert/issues) | [Discord](https://discord.gg/q5K5cRhymW) </h2>
 <br />
 <img width="100%" style="border-radius:75px;" src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1687937777/Revert/CTA-navigation-1_mrxxep.png"/>
+
 </p>
 
 # About Revert
