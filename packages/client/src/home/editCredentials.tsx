@@ -48,13 +48,15 @@ const ScopesContainer = styled.div`
     flex-direction: column;
     align-items: flex-end;
     width: 70%;
-`;
+    `;
 
 const Stack = styled.div`
     display: flex;
     justify-content: flex-end;
     gap: 5px;
     flex-wrap: wrap;
+    max-height: 200px;
+    overflow-y: auto;
 `;
 
 const LoadingButton = styled(MuiLoadingButton)`
@@ -113,7 +115,7 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount:
                     <span className="font-bold">Use default revert app</span>
                     <span>(uncheck to use your own app credentials)</span>
                 </span>
-                <Switch value={isRevertApp} onChange={(ev) => setIsRevertApp(ev.target.checked)} />
+                <Switch checked={isRevertApp} value={isRevertApp} onChange={(ev) => setIsRevertApp(ev.target.checked)} />
             </Row>
             {!isRevertApp && (
                 <>
@@ -166,7 +168,7 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount:
                     variant="contained"
                     onClick={handleSubmit}
                     loading={loading}
-                    disabled={!clientId || !clientSecret}
+                    disabled={isRevertApp ? false : !clientId || !clientSecret}
                 >
                     Submit
                 </LoadingButton>

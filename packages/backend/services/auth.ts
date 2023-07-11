@@ -277,7 +277,7 @@ class AuthService {
         publicToken,
         clientId,
         clientSecret,
-        scopes,
+        scopes = [],
         tpId,
         isRevertApp,
     }: {

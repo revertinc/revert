@@ -23,11 +23,14 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 public_token: String(revertPublicKey),
             },
             include: {
-                apps: { select: { app_client_id: true, app_client_secret: true }, where: { tp_id: integrationId } },
+                apps: {
+                    select: { app_client_id: true, app_client_secret: true, is_revert_app: true },
+                    where: { tp_id: integrationId },
+                },
             },
         });
-        const clientId = account?.apps[0]?.app_client_id; // FIXME: This is a bug.
-        const clientSecret = account?.apps[0]?.app_client_secret;
+        const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id; // FIXME: This is a bug.
+        const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
         const svixAppId = account!.id;
         if (integrationId === TP_ID.hubspot && req.query.code && req.query.t_id && revertPublicKey) {
             // Handle the received code
