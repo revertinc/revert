@@ -48,7 +48,7 @@ const ScopesContainer = styled.div`
     flex-direction: column;
     align-items: flex-end;
     width: 70%;
-    `;
+`;
 
 const Stack = styled.div`
     display: flex;
@@ -113,9 +113,13 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount:
             <Row>
                 <span style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="font-bold">Use default revert app</span>
-                    <span>(uncheck to use your own app credentials)</span>
+                    <span style={{ fontSize: '14px' }}>(uncheck to use your own app credentials)</span>
                 </span>
-                <Switch checked={isRevertApp} value={isRevertApp} onChange={(ev) => setIsRevertApp(ev.target.checked)} />
+                <Switch
+                    checked={isRevertApp}
+                    value={isRevertApp}
+                    onChange={(ev) => setIsRevertApp(ev.target.checked)}
+                />
             </Row>
             {!isRevertApp && (
                 <>
