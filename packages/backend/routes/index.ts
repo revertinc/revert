@@ -86,7 +86,7 @@ router.post('/internal/account', async (req, res) => {
 
 router.post('/internal/account/credentials', async (req, res) => {
     try {
-        const { clientId, clientSecret, scopes, tpId } = req.body;
+        const { clientId, clientSecret, scopes, tpId, isRevertApp } = req.body;
         const { 'x-revert-api-token': token } = req.headers;
         const account = await prisma.accounts.findFirst({
             where: {
@@ -106,6 +106,7 @@ router.post('/internal/account/credentials', async (req, res) => {
             clientId,
             clientSecret,
             scopes,
+            isRevertApp,
             tpId,
         });
         if (result?.error) {

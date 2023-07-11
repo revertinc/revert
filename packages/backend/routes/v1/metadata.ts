@@ -31,11 +31,13 @@ metadataRouter.get('/crms', async (req, res) => {
             return;
         }
         const getScope = (apps: Partial<apps>[], integration: TP_ID) => {
-            const scopes = apps.find((app) => app.tp_id === integration)?.scope;
+            const app = apps.find((app) => app.tp_id === integration);
+            const scopes = app?.is_revert_app ? [] : app?.scope;
             return scopes?.length ? scopes : DEFAULT_SCOPE[integration];
         };
         const getClientId = (apps: Partial<apps>[], integration: TP_ID) => {
-            return apps.find((app) => app.tp_id === integration)?.app_client_id;
+            const app = apps.find((app) => app.tp_id === integration);
+            return app?.is_revert_app ? undefined : app?.app_client_id;
         };
         res.send({
             status: 'ok',
