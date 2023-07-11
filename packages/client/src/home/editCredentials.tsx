@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Box as MuiBox, Button, Chip as MuiChip } from '@mui/material';
+import { Box as MuiBox, Button, Chip as MuiChip, Switch } from '@mui/material';
 import { LoadingButton as MuiLoadingButton } from '@mui/lab';
 
 import { useApi } from '../data/hooks';
@@ -73,6 +73,7 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount:
     const [clientSecret, setClientSecret] = React.useState<string>(app.app_client_secret);
     const [scopes, setScopes] = React.useState<string[]>(app.scope);
     const [newScope, setNewScope] = React.useState<string>('');
+    const [isRevertApp, setIsRevertApp] = React.useState(app.is_revert_app);
 
     const { data, loading, status, fetch } = useApi();
 
@@ -84,10 +85,11 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount:
     };
 
     const handleSubmit = async () => {
+        const payload = { tpId: app.tp_id, isRevertApp, ...(!isRevertApp && { clientId, clientSecret, scopes }) };
         await fetch({
             url: '/internal/account/credentials',
             method: 'POST',
-            payload: { clientId, clientSecret, scopes, tpId: app.tp_id },
+            payload,
         });
     };
 
@@ -107,44 +109,55 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount:
     return (
         <Box>
             <Row>
-                <span className="font-bold">Client ID: </span>
-                <Input
-                    value={clientId}
-                    onChange={(ev) => setClientId((ev.target.value || '').trim())}
-                    error={!clientId}
-                />
+                <span style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span className="font-bold">Use default revert app</span>
+                    <span>(uncheck to use your own app credentials)</span>
+                </span>
+                <Switch value={isRevertApp} onChange={(ev) => setIsRevertApp(ev.target.checked)} />
             </Row>
-            <Row>
-                <span className="font-bold">Client Secret: </span>
-                <Input
-                    value={clientSecret}
-                    onChange={(ev) => setClientSecret((ev.target.value || '').trim())}
-                    error={!clientSecret}
-                />
-            </Row>
-            <Row>
-                <span className="font-bold">Scopes: </span>
-                {/* <p className="break-words">{scopes}</p> */}
-                <ScopesContainer>
-                    <Stack>
-                        {scopes.map((scope, i) => (
-                            <Chip
-                                label={scope}
-                                key={i}
-                                variant="outlined"
-                                color="primary"
-                                style={{ color: '#fff', background: '#000' }}
-                                onDelete={(ev) => setScopes((ss) => [...ss.filter((s) => s !== scope)])}
+            {!isRevertApp && (
+                <>
+                    <Row>
+                        <span className="font-bold">Client ID: </span>
+                        <Input
+                            value={clientId}
+                            onChange={(ev) => setClientId((ev.target.value || '').trim())}
+                            error={!clientId}
+                        />
+                    </Row>
+                    <Row>
+                        <span className="font-bold">Client Secret: </span>
+                        <Input
+                            value={clientSecret}
+                            onChange={(ev) => setClientSecret((ev.target.value || '').trim())}
+                            error={!clientSecret}
+                        />
+                    </Row>
+                    <Row>
+                        <span className="font-bold">Scopes: </span>
+                        {/* <p className="break-words">{scopes}</p> */}
+                        <ScopesContainer>
+                            <Stack>
+                                {scopes.map((scope, i) => (
+                                    <Chip
+                                        label={scope}
+                                        key={i}
+                                        variant="outlined"
+                                        color="primary"
+                                        style={{ color: '#fff', background: '#000' }}
+                                        onDelete={(ev) => setScopes((ss) => [...ss.filter((s) => s !== scope)])}
+                                    />
+                                ))}
+                            </Stack>
+                            <Input
+                                value={newScope}
+                                onChange={(ev) => setNewScope((ev.target.value || '').trim())}
+                                onKeyDown={handleAddNewScope}
                             />
-                        ))}
-                    </Stack>
-                    <Input
-                        value={newScope}
-                        onChange={(ev) => setNewScope((ev.target.value || '').trim())}
-                        onKeyDown={handleAddNewScope}
-                    />
-                </ScopesContainer>
-            </Row>
+                        </ScopesContainer>
+                    </Row>
+                </>
+            )}
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', gap: '15px' }}>
                 <Button onClick={handleClose} style={{ color: '#000' }}>
                     Close

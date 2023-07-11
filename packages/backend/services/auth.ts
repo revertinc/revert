@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import isWorkEmail from '../helpers/isWorkEmail';
 import { TP_ID } from '@prisma/client';
 import logError from '../helpers/logError';
+import { DEFAULT_SCOPE } from '../constants';
 
 class AuthService {
     async refreshOAuthTokensForThirdParty() {
@@ -22,8 +23,12 @@ class AuthService {
                             const url = 'https://api.hubapi.com/oauth/v1/token';
                             const formData = {
                                 grant_type: 'refresh_token',
-                                client_id: connection.app_client_id || config.HUBSPOT_CLIENT_ID,
-                                client_secret: connection.app_client_secret || config.HUBSPOT_CLIENT_SECRET,
+                                client_id: connection.app.is_revert_app
+                                    ? config.HUBSPOT_CLIENT_ID
+                                    : connection.app_client_id || config.HUBSPOT_CLIENT_ID,
+                                client_secret: connection.app.is_revert_app
+                                    ? config.HUBSPOT_CLIENT_SECRET
+                                    : connection.app_client_secret || config.HUBSPOT_CLIENT_SECRET,
                                 redirect_uri: `${config.OAUTH_REDIRECT_BASE}/hubspot`,
                                 refresh_token: connection.tp_refresh_token,
                             };
@@ -53,8 +58,12 @@ class AuthService {
                             const url = `${connection.tp_account_url}/oauth/v2/token`;
                             const formData = {
                                 grant_type: 'refresh_token',
-                                client_id: connection.app_client_id || config.ZOHOCRM_CLIENT_ID,
-                                client_secret: connection.app_client_secret || config.ZOHOCRM_CLIENT_SECRET,
+                                client_id: connection.app.is_revert_app
+                                    ? config.ZOHOCRM_CLIENT_ID
+                                    : connection.app_client_id || config.ZOHOCRM_CLIENT_ID,
+                                client_secret: connection.app.is_revert_app
+                                    ? config.ZOHOCRM_CLIENT_SECRET
+                                    : connection.app_client_secret || config.ZOHOCRM_CLIENT_SECRET,
                                 redirect_uri: `${config.OAUTH_REDIRECT_BASE}/zohocrm`,
                                 refresh_token: connection.tp_refresh_token,
                             };
@@ -87,8 +96,12 @@ class AuthService {
                             const url = `https://login.salesforce.com/services/oauth2/token`;
                             const formData = {
                                 grant_type: 'refresh_token',
-                                client_id: connection.app_client_id || config.SFDC_CLIENT_ID,
-                                client_secret: connection.app_client_secret || config.SFDC_CLIENT_SECRET,
+                                client_id: connection.app.is_revert_app
+                                    ? config.SFDC_CLIENT_ID
+                                    : connection.app_client_id || config.SFDC_CLIENT_ID,
+                                client_secret: connection.app.is_revert_app
+                                    ? config.SFDC_CLIENT_SECRET
+                                    : connection.app_client_secret || config.SFDC_CLIENT_SECRET,
                                 redirect_uri: `${config.OAUTH_REDIRECT_BASE}/sfdc`,
                                 refresh_token: connection.tp_refresh_token,
                             };
@@ -131,8 +144,14 @@ class AuthService {
                                 headers: {
                                     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
                                     Authorization: `Basic ${Buffer.from(
-                                        `${connection.app.app_client_id || config.PIPEDRIVE_CLIENT_ID}:${
-                                            connection.app.app_client_secret || config.PIPEDRIVE_CLIENT_SECRET
+                                        `${
+                                            connection.app.is_revert_app
+                                                ? config.PIPEDRIVE_CLIENT_ID
+                                                : connection.app.app_client_id || config.PIPEDRIVE_CLIENT_ID
+                                        }:${
+                                            connection.app.is_revert_app
+                                                ? config.PIPEDRIVE_CLIENT_SECRET
+                                                : connection.app.app_client_secret || config.PIPEDRIVE_CLIENT_SECRET
                                         }`
                                     ).toString('base64')}`,
                                 },
@@ -245,7 +264,14 @@ class AuthService {
             return { error: 'Account does not exist' };
         }
 
-        return account;
+        const appsWithScope = account.account.apps.map((app) => {
+            return {
+                ...app,
+                scope: app.scope.length ? app.scope : DEFAULT_SCOPE[app.tp_id],
+            };
+        });
+
+        return { ...account, account: { ...account.account, apps: appsWithScope } };
     }
     async setAppCredentialsForUser({
         publicToken,
@@ -253,14 +279,16 @@ class AuthService {
         clientSecret,
         scopes,
         tpId,
+        isRevertApp,
     }: {
         publicToken: string;
         clientId: string;
         clientSecret: string;
         scopes: string[];
         tpId: TP_ID;
+        isRevertApp: boolean;
     }): Promise<any> {
-        if (!publicToken || !clientId || !clientSecret || !tpId) {
+        if (!publicToken || !tpId) {
             return { error: 'Bad request' };
         }
         const account = await prisma.apps.update({
@@ -268,9 +296,9 @@ class AuthService {
                 owner_account_public_token_tp_id: { owner_account_public_token: publicToken, tp_id: tpId },
             },
             data: {
-                app_client_id: clientId,
-                app_client_secret: clientSecret,
-                is_revert_app: false,
+                ...(clientId && { app_client_id: clientId }),
+                ...(clientSecret && { app_client_secret: clientSecret }),
+                is_revert_app: isRevertApp,
                 ...(scopes.filter(Boolean).length && { scope: scopes }),
             },
         });
