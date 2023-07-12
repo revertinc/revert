@@ -37,8 +37,8 @@ export function unifyDeal(deal: any): UnifiedDeal {
         isWon: deal.hs_is_closed_won || deal.isWon || deal.Stage === 'Closed (Won)' || deal.status === 'won',
         probability: deal.hs_deal_stage_probability || deal.Probability || deal.probability,
         additional: {},
-        dealType: !!deal.person_id?.value ? 'PERSON' : !!deal.organization_id?.value ? 'ORGANIZATION' : undefined, // for pipedrive
-        dealTypeId: deal.person_id?.value || deal.organization_id?.value,
+        dealType: !!deal.person_id?.value ? 'PERSON' : !!deal.org_id?.value ? 'ORGANIZATION' : undefined, // for pipedrive
+        dealTypeId: deal.person_id?.value || deal.org_id?.value,
     };
 
     // Map additional fields

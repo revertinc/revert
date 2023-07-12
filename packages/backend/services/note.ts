@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { disunifyNote, unifyNote } from '../models/unified';
 import { ParsedQs } from 'qs';
+import { TP_ID } from '@prisma/client';
 
 class NoteService {
     async getUnifiedNote(
@@ -201,53 +202,75 @@ class NoteService {
         const tenantId = connection.t_id;
         const note = disunifyNote(req.body, thirdPartyId);
         console.log('Revert::CREATE NOTE', tenantId, note);
-        if (thirdPartyId === 'hubspot') {
-            const res = await axios({
-                method: 'post',
-                url: `https://api.hubapi.com/crm/v3/objects/notes/`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(note),
-            });
-            return {
-                status: 'ok',
-                message: 'Hubspot note created',
-                result: { id: res.data?.id, ...note },
-            };
-        } else if (thirdPartyId === 'zohocrm') {
-            await axios({
-                method: 'post',
-                url: `https://www.zohoapis.com/crm/v3/Notes`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(note),
-            });
-            return { status: 'ok', message: 'Zoho note created', result: note };
-        } else if (thirdPartyId === 'sfdc') {
-            const instanceUrl = connection.tp_account_url;
-            const noteCreated = await axios({
-                method: 'post',
-                url: `${instanceUrl}/services/data/v56.0/sobjects/Note/`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(note),
-            });
-            return {
-                status: 'ok',
-                message: 'SFDC note created',
-                result: noteCreated.data,
-            };
-        } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+
+        switch (thirdPartyId) {
+            case TP_ID.hubspot: {
+                const res = await axios({
+                    method: 'post',
+                    url: `https://api.hubapi.com/crm/v3/objects/notes/`,
+                    headers: {
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify(note),
+                });
+                return {
+                    status: 'ok',
+                    message: 'Hubspot note created',
+                    result: { id: res.data?.id, ...note },
+                };
+            }
+            case TP_ID.zohocrm: {
+                await axios({
+                    method: 'post',
+                    url: `https://www.zohoapis.com/crm/v3/Notes`,
+                    headers: {
+                        authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify(note),
+                });
+                return { status: 'ok', message: 'Zoho note created', result: note };
+            }
+            case TP_ID.sfdc: {
+                const instanceUrl = connection.tp_account_url;
+                const noteCreated = await axios({
+                    method: 'post',
+                    url: `${instanceUrl}/services/data/v56.0/sobjects/Note/`,
+                    headers: {
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify(note),
+                });
+                return {
+                    status: 'ok',
+                    message: 'SFDC note created',
+                    result: noteCreated.data,
+                };
+            }
+            case TP_ID.pipedrive: {
+                const instanceUrl = connection.tp_account_url;
+                const noteCreated = await axios.post<{ data: any }>(`${instanceUrl}/v1/notes`, note, {
+                    headers: {
+                        Authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                });
+                return {
+                    status: 'ok',
+                    message: 'Pipedrive note created',
+                    result: {
+                        ...noteCreated.data.data,
+                    },
+                };
+            }
+            default: {
+                return {
+                    error: 'Unrecognised CRM',
+                };
+            }
         }
     }
+
     async updateNote(
         req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
         res: Response<any, Record<string, any>, number>
