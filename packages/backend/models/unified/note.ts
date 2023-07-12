@@ -1,3 +1,5 @@
+import { TP_ID } from '@prisma/client';
+
 export interface UnifiedNote {
     content: string;
     id: string;
@@ -6,6 +8,8 @@ export interface UnifiedNote {
     updatedTimestamp: Date;
     associations?: any; // TODO: Support associations
     additional: any;
+    noteType?: 'PERSON' | 'ORGANIZATION' | 'LEAD' | 'DEAL'; // for pipedrive
+    noteTypeId?: string; // for pipedrive
 }
 
 export function unifyNote(note: any): UnifiedNote {
@@ -13,11 +17,30 @@ export function unifyNote(note: any): UnifiedNote {
         remoteId: note.id || note.Id,
         id: note.id || note.noteID || note.note_id || note.Id,
         createdTimestamp:
-            note.createdDate || note.CreatedDate || note.Created_Time || note.hs_timestamp || note.hs_createdate,
+            note.createdDate ||
+            note.CreatedDate ||
+            note.Created_Time ||
+            note.hs_timestamp ||
+            note.hs_createdate ||
+            note.add_time,
         updatedTimestamp:
-            note.lastModifiedDate || note.LastModifiedDate || note.Modified_Time || note.hs_lastmodifieddate,
+            note.lastModifiedDate ||
+            note.LastModifiedDate ||
+            note.Modified_Time ||
+            note.hs_lastmodifieddate ||
+            note.update_time,
         content: note.content || note.hs_note_body || note.Body || note.Note_Content,
         additional: {},
+        noteType: !!note.person_id
+            ? 'PERSON'
+            : !!note.org_id
+            ? 'ORGANIZATION'
+            : !!note.lead_id
+            ? 'LEAD'
+            : !!note.deal_id
+            ? 'DEAL'
+            : undefined,
+        noteTypeId: note.person_id || note.org_id || note.lead_id || note.deal_id,
     };
 
     // Map additional fields
@@ -92,12 +115,50 @@ export function toHubspotNote(unified: UnifiedNote): any {
     return hubspotNote;
 }
 
+export function toPipedriveNote(unified: UnifiedNote): any {
+    const pipedriveNote: any = {
+        id: unified.remoteId,
+        content: unified.content,
+        add_time: unified.createdTimestamp,
+        update_time: unified.updatedTimestamp,
+        ...(unified.noteType === 'PERSON' && {
+            person_id: unified.noteTypeId,
+        }),
+        ...(unified.noteType === 'ORGANIZATION' && {
+            org_id: unified.noteTypeId,
+        }),
+        ...(unified.noteType === 'LEAD' && {
+            lead_id: unified.noteTypeId,
+        }),
+        ...(unified.noteType === 'DEAL' && {
+            deal_id: unified.noteTypeId,
+        }),
+    };
+
+    // Map custom fields
+    if (unified.additional) {
+        Object.keys(unified.additional).forEach((key) => {
+            if (key !== 'associations') {
+                pipedriveNote[key] = unified.additional?.[key];
+            }
+        });
+    }
+    // TODO: Handle associations creation elsewhere as well.
+    if (unified.additional?.associations) {
+        pipedriveNote['associations'] = unified.additional.associations;
+    }
+
+    return pipedriveNote;
+}
+
 export function disunifyNote(note: UnifiedNote, integrationId: string): any {
-    if (integrationId === 'sfdc') {
+    if (integrationId === TP_ID.sfdc) {
         return toSalesforceNote(note);
-    } else if (integrationId === 'hubspot') {
+    } else if (integrationId === TP_ID.hubspot) {
         return toHubspotNote(note);
-    } else if (integrationId === 'zohocrm') {
+    } else if (integrationId === TP_ID.zohocrm) {
         return toZohoNote(note);
+    } else if (integrationId === TP_ID.pipedrive) {
+        return toPipedriveNote(note);
     }
 }
