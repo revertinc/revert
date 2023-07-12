@@ -1,3 +1,5 @@
+import { TP_ID } from '@prisma/client';
+
 export interface UnifiedDeal {
     amount: Number;
     priority: string;
@@ -12,22 +14,24 @@ export interface UnifiedDeal {
     updatedTimestamp: Date;
     associations?: any; // TODO: Support associations
     additional: any;
+    dealType?: 'PERSON' | 'ORGANIZATION'; // for pipedrive
+    dealTypeId?: string; // for pipedrive
 }
 
 export function unifyDeal(deal: any): UnifiedDeal {
     const unifiedDeal: UnifiedDeal = {
         remoteId: deal.id || deal.dealID || deal.deal_id || deal.Id,
         id: deal.id || deal.dealID || deal.deal_id || deal.Id,
-        name: deal.dealname || deal.Name || deal.Deal_Name,
-        createdTimestamp: deal.createdDate || deal.CreatedDate || deal.Created_Time || deal.createdate,
+        name: deal.dealname || deal.Name || deal.Deal_Name || deal.title,
+        createdTimestamp: deal.createdDate || deal.CreatedDate || deal.Created_Time || deal.createdate || deal.add_time,
         updatedTimestamp:
-            deal.lastModifiedDate || deal.LastModifiedDate || deal.Modified_Time || deal.hs_lastmodifieddate,
-        amount: deal.amount || deal.Amount,
+            deal.lastModifiedDate || deal.LastModifiedDate || deal.Modified_Time || deal.hs_lastmodifieddate || deal.update_time,
+        amount: deal.amount || deal.Amount || deal.value,
         priority: deal.priority || deal.Priority || deal.hs_priority || deal.Priority__c, // Note: `Priority__c` may not be present in every SFDC instance
-        stage: deal.stage || deal.Stage || deal.dealstage || deal.StageName,
-        expectedCloseDate: deal.closedate || deal.CloseDate || deal.Close_Date || deal.Closing_Date,
-        isWon: deal.hs_is_closed_won || deal.isWon || deal.Stage === 'Closed (Won)',
-        probability: deal.hs_deal_stage_probability || deal.Probability,
+        stage: deal.stage || deal.Stage || deal.dealstage || deal.StageName || deal.stage_id,
+        expectedCloseDate: deal.closedate || deal.CloseDate || deal.Close_Date || deal.Closing_Date || deal.close_time,
+        isWon: deal.hs_is_closed_won || deal.isWon || deal.Stage === 'Closed (Won)' || deal.status === "won",
+        probability: deal.hs_deal_stage_probability || deal.Probability || deal.probability,
         additional: {},
     };
 
@@ -111,12 +115,37 @@ export function toHubspotDeal(unifiedDeal: UnifiedDeal): any {
     return hubspotDeal;
 }
 
+export function toPipedriveDeal(unifiedDeal: UnifiedDeal): any {
+    const pipedriveDeal: any = {
+        id: unifiedDeal.remoteId,
+        value: unifiedDeal.amount,
+        stage_id: unifiedDeal.stage,
+        close_time: unifiedDeal.expectedCloseDate,
+        probability: unifiedDeal.probability,
+        title: unifiedDeal.name,
+        status: unifiedDeal.isWon ? "won" : "open",
+        add_time: unifiedDeal.createdTimestamp,
+        update_time: unifiedDeal.updatedTimestamp
+    };
+
+    // Map custom fields
+    if (unifiedDeal.additional) {
+        Object.keys(unifiedDeal.additional).forEach((key) => {
+            pipedriveDeal[key] = unifiedDeal.additional?.[key];
+        });
+    }
+
+    return pipedriveDeal;
+}
+
 export function disunifyDeal(deal: UnifiedDeal, integrationId: string): any {
-    if (integrationId === 'sfdc') {
+    if (integrationId === TP_ID.sfdc) {
         return toSalesforceDeal(deal);
-    } else if (integrationId === 'hubspot') {
+    } else if (integrationId === TP_ID.hubspot) {
         return toHubspotDeal(deal);
-    } else if (integrationId === 'zohocrm') {
+    } else if (integrationId === TP_ID.zohocrm) {
         return toZohoDeal(deal);
+    } else if (integrationId === TP_ID.pipedrive) {
+        return toPipedriveDeal(deal);
     }
 }

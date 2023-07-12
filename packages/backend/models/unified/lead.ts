@@ -13,6 +13,7 @@ export interface UnifiedLead {
     additional: any;
     leadType?: 'PERSON' | 'ORGANIZATION'; // for pipedrive
     leadTypeId?: string; // for pipedrive
+    // QUESTION: Add value of lead and expected close date here?
 }
 
 // FIXME: type support can be better
