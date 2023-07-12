@@ -1,4 +1,6 @@
 import { TP_ID } from '@prisma/client';
+import { ValueOf } from '../../constants';
+import { PipedriveDealStatus, PipedriveLeadType } from '../../constants/pipedrive';
 
 export interface UnifiedDeal {
     amount: Number;
@@ -14,7 +16,7 @@ export interface UnifiedDeal {
     updatedTimestamp: Date;
     associations?: any; // TODO: Support associations
     additional: any;
-    dealType?: 'PERSON' | 'ORGANIZATION'; // for pipedrive
+    dealType?: ValueOf<typeof PipedriveLeadType>; // for pipedrive
     dealTypeId?: string; // for pipedrive
 }
 
@@ -34,10 +36,18 @@ export function unifyDeal(deal: any): UnifiedDeal {
         priority: deal.priority || deal.Priority || deal.hs_priority || deal.Priority__c, // Note: `Priority__c` may not be present in every SFDC instance
         stage: deal.stage || deal.Stage || deal.dealstage || deal.StageName || deal.stage_id,
         expectedCloseDate: deal.closedate || deal.CloseDate || deal.Close_Date || deal.Closing_Date || deal.close_time,
-        isWon: deal.hs_is_closed_won || deal.isWon || deal.Stage === 'Closed (Won)' || deal.status === 'won',
+        isWon:
+            deal.hs_is_closed_won ||
+            deal.isWon ||
+            deal.Stage === 'Closed (Won)' ||
+            deal.status === PipedriveDealStatus.won,
         probability: deal.hs_deal_stage_probability || deal.Probability || deal.probability,
         additional: {},
-        dealType: !!deal.person_id?.value ? 'PERSON' : !!deal.org_id?.value ? 'ORGANIZATION' : undefined, // for pipedrive
+        dealType: !!deal.person_id?.value
+            ? PipedriveLeadType.PERSON
+            : !!deal.org_id?.value
+            ? PipedriveLeadType.ORGANIZATION
+            : undefined, // for pipedrive
         dealTypeId: deal.person_id?.value || deal.org_id?.value,
     };
 
@@ -129,13 +139,13 @@ export function toPipedriveDeal(unifiedDeal: UnifiedDeal): any {
         close_time: unifiedDeal.expectedCloseDate,
         probability: unifiedDeal.probability,
         title: unifiedDeal.name,
-        status: unifiedDeal.isWon ? 'won' : 'open',
+        status: unifiedDeal.isWon ? PipedriveDealStatus.won : PipedriveDealStatus.open,
         add_time: unifiedDeal.createdTimestamp,
         update_time: unifiedDeal.updatedTimestamp,
-        ...(unifiedDeal.dealType === 'PERSON' && {
+        ...(unifiedDeal.dealType === PipedriveLeadType.PERSON && {
             person_id: unifiedDeal.dealTypeId,
         }),
-        ...(unifiedDeal.dealType === 'ORGANIZATION' && {
+        ...(unifiedDeal.dealType === PipedriveLeadType.ORGANIZATION && {
             org_id: unifiedDeal.dealTypeId,
         }),
     };

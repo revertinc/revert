@@ -1,4 +1,6 @@
 import { TP_ID } from '@prisma/client';
+import { PipedriveNoteType } from '../../constants/pipedrive';
+import { ValueOf } from '../../constants';
 
 export interface UnifiedNote {
     content: string;
@@ -8,7 +10,7 @@ export interface UnifiedNote {
     updatedTimestamp: Date;
     associations?: any; // TODO: Support associations
     additional: any;
-    noteType?: 'PERSON' | 'ORGANIZATION' | 'LEAD' | 'DEAL'; // for pipedrive
+    noteType?: ValueOf<typeof PipedriveNoteType>; // for pipedrive
     noteTypeId?: string; // for pipedrive
 }
 
@@ -32,13 +34,13 @@ export function unifyNote(note: any): UnifiedNote {
         content: note.content || note.hs_note_body || note.Body || note.Note_Content,
         additional: {},
         noteType: !!note.person_id
-            ? 'PERSON'
+            ? PipedriveNoteType.PERSON
             : !!note.org_id
-            ? 'ORGANIZATION'
+            ? PipedriveNoteType.ORGANIZATION
             : !!note.lead_id
-            ? 'LEAD'
+            ? PipedriveNoteType.LEAD
             : !!note.deal_id
-            ? 'DEAL'
+            ? PipedriveNoteType.DEAL
             : undefined,
         noteTypeId: note.person_id || note.org_id || note.lead_id || note.deal_id,
     };
@@ -121,16 +123,16 @@ export function toPipedriveNote(unified: UnifiedNote): any {
         content: unified.content,
         add_time: unified.createdTimestamp,
         update_time: unified.updatedTimestamp,
-        ...(unified.noteType === 'PERSON' && {
+        ...(unified.noteType === PipedriveNoteType.PERSON && {
             person_id: unified.noteTypeId,
         }),
-        ...(unified.noteType === 'ORGANIZATION' && {
+        ...(unified.noteType === PipedriveNoteType.ORGANIZATION && {
             org_id: unified.noteTypeId,
         }),
-        ...(unified.noteType === 'LEAD' && {
+        ...(unified.noteType === PipedriveNoteType.LEAD && {
             lead_id: unified.noteTypeId,
         }),
-        ...(unified.noteType === 'DEAL' && {
+        ...(unified.noteType === PipedriveNoteType.DEAL && {
             deal_id: unified.noteTypeId,
         }),
     };

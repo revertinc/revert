@@ -9,3 +9,21 @@ export interface PipedrivePagination {
         };
     };
 }
+
+export const PipedriveLeadType = {
+    PERSON: 'PERSON',
+    ORGANIZATION: 'ORGANIZATION',
+} as const;
+
+export const PipedriveNoteType = {
+    ...PipedriveLeadType,
+    LEAD: 'LEAD',
+    DEAL: 'DEAL',
+} as const;
+
+export enum PipedriveDealStatus {
+    won = 'won',
+    open = 'open',
+    lost = 'lost',
+    deleted = 'deleted',
+}
