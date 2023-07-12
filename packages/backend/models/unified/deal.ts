@@ -25,14 +25,20 @@ export function unifyDeal(deal: any): UnifiedDeal {
         name: deal.dealname || deal.Name || deal.Deal_Name || deal.title,
         createdTimestamp: deal.createdDate || deal.CreatedDate || deal.Created_Time || deal.createdate || deal.add_time,
         updatedTimestamp:
-            deal.lastModifiedDate || deal.LastModifiedDate || deal.Modified_Time || deal.hs_lastmodifieddate || deal.update_time,
+            deal.lastModifiedDate ||
+            deal.LastModifiedDate ||
+            deal.Modified_Time ||
+            deal.hs_lastmodifieddate ||
+            deal.update_time,
         amount: deal.amount || deal.Amount || deal.value,
         priority: deal.priority || deal.Priority || deal.hs_priority || deal.Priority__c, // Note: `Priority__c` may not be present in every SFDC instance
         stage: deal.stage || deal.Stage || deal.dealstage || deal.StageName || deal.stage_id,
         expectedCloseDate: deal.closedate || deal.CloseDate || deal.Close_Date || deal.Closing_Date || deal.close_time,
-        isWon: deal.hs_is_closed_won || deal.isWon || deal.Stage === 'Closed (Won)' || deal.status === "won",
+        isWon: deal.hs_is_closed_won || deal.isWon || deal.Stage === 'Closed (Won)' || deal.status === 'won',
         probability: deal.hs_deal_stage_probability || deal.Probability || deal.probability,
         additional: {},
+        dealType: !!deal.person_id?.value ? 'PERSON' : !!deal.organization_id?.value ? 'ORGANIZATION' : undefined, // for pipedrive
+        dealTypeId: deal.person_id?.value || deal.organization_id?.value,
     };
 
     // Map additional fields
@@ -123,9 +129,15 @@ export function toPipedriveDeal(unifiedDeal: UnifiedDeal): any {
         close_time: unifiedDeal.expectedCloseDate,
         probability: unifiedDeal.probability,
         title: unifiedDeal.name,
-        status: unifiedDeal.isWon ? "won" : "open",
+        status: unifiedDeal.isWon ? 'won' : 'open',
         add_time: unifiedDeal.createdTimestamp,
-        update_time: unifiedDeal.updatedTimestamp
+        update_time: unifiedDeal.updatedTimestamp,
+        ...(unifiedDeal.dealType === 'PERSON' && {
+            person_id: unifiedDeal.dealTypeId,
+        }),
+        ...(unifiedDeal.dealType === 'ORGANIZATION' && {
+            org_id: unifiedDeal.dealTypeId,
+        }),
     };
 
     // Map custom fields
