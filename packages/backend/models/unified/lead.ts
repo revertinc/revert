@@ -1,4 +1,6 @@
 import { TP_ID } from '@prisma/client';
+import { ValueOf } from '../../constants';
+import { PipedriveLeadType } from '../../constants/pipedrive';
 
 export interface UnifiedLead {
     firstName: string;
@@ -11,7 +13,7 @@ export interface UnifiedLead {
     updatedTimestamp: Date;
     associations?: any; // TODO: Support associations
     additional: any;
-    leadType?: 'PERSON' | 'ORGANIZATION'; // for pipedrive
+    leadType?: ValueOf<typeof PipedriveLeadType>; // for pipedrive
     leadTypeId?: string; // for pipedrive
     // QUESTION: Add value of lead and expected close date here?
 }
@@ -56,7 +58,11 @@ export function unifyLead(lead: any): UnifiedLead {
             lead.lastmodifieddate ||
             lead.update_time,
         additional: {},
-        leadType: !!lead.person_id ? 'PERSON' : !!lead.organization_id ? 'ORGANIZATION' : undefined, // for pipedrive
+        leadType: !!lead.person_id
+            ? PipedriveLeadType.PERSON
+            : !!lead.organization_id
+            ? PipedriveLeadType.ORGANIZATION
+            : undefined, // for pipedrive
         leadTypeId: lead.person_id || lead.person?.id || lead.organization_id || lead.organization?.id,
     };
 
@@ -669,10 +675,10 @@ export function toPipedriveLead(lead: UnifiedLead): Partial<PipedriveLead> {
         title: `${lead.firstName} ${lead.lastName}`,
         add_time: lead.createdTimestamp,
         update_time: lead.updatedTimestamp,
-        ...(lead.leadType === 'PERSON' && {
+        ...(lead.leadType === PipedriveLeadType.PERSON && {
             person_id: lead.leadTypeId,
         }),
-        ...(lead.leadType === 'ORGANIZATION' && {
+        ...(lead.leadType === PipedriveLeadType.ORGANIZATION && {
             organization_id: lead.leadTypeId,
         }),
     };
