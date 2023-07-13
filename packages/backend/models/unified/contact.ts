@@ -1,3 +1,5 @@
+import { TP_ID } from '@prisma/client';
+
 export interface UnifiedContact {
     firstName: string;
     lastName: string;
@@ -15,18 +17,34 @@ export function unifyContact(contact: any): UnifiedContact {
     const unifiedContact: UnifiedContact = {
         remoteId: contact.id || contact.ContactID || contact.contact_id || contact.Id,
         id: contact.id || contact.ContactID || contact.contact_id || contact.Id,
-        firstName: contact.firstName || contact.firstname || contact.FirstName || contact.First_Name,
-        lastName: contact.lastName || contact.lastname || contact.LastName || contact.Last_Name,
-        phone: contact.phone || contact.phone_number || contact.Phone,
-        email: contact.email || contact.Email,
+        firstName:
+            contact.firstName || contact.firstname || contact.FirstName || contact.First_Name || contact.first_name,
+        lastName: contact.lastName || contact.lastname || contact.LastName || contact.Last_Name || contact.last_name,
+        phone:
+            contact.phone ||
+            contact.phone_number ||
+            contact.Phone ||
+            (contact?.phone || []).find((p: any) => p?.primary)?.value ||
+            contact?.phone?.[0]?.value,
+        email:
+            contact.email ||
+            contact.Email ||
+            contact?.primary_email ||
+            (contact?.email || []).find((e: any) => e?.primary)?.value ||
+            contact?.email?.[0]?.value,
         createdTimestamp:
             contact.createdDate ||
             contact.CreatedDate ||
             contact.Created_Time ||
             contact.hs_timestamp ||
-            contact.createdate,
+            contact.createdate ||
+            contact.add_time,
         updatedTimestamp:
-            contact.lastModifiedDate || contact.LastModifiedDate || contact.Modified_Time || contact.lastmodifieddate,
+            contact.lastModifiedDate ||
+            contact.LastModifiedDate ||
+            contact.Modified_Time ||
+            contact.lastmodifieddate ||
+            contact.update_time,
         additional: {},
     };
 
@@ -400,6 +418,82 @@ export interface SalesforceContact {
     IndividualId: string;
 }
 
+export interface PipedriveContact {
+    id: string;
+    company_id: number;
+    owner_id: {
+        id: number;
+        name: string;
+        email: string;
+        has_pic: number;
+        pic_hash: string;
+        active_flag: boolean;
+        value: number;
+    };
+    org_id: {
+        name: string;
+        people_count: number;
+        owner_id: number;
+        address: string;
+        active_flag: boolean;
+        cc_email: string;
+        value: number;
+    };
+    name: string;
+    first_name: string;
+    last_name: string;
+    open_deals_count: number;
+    related_open_deals_count: number;
+    closed_deals_count: number;
+    related_closed_deals_count: number;
+    participant_open_deals_count: number;
+    participant_closed_deals_count: number;
+    email_messages_count: number;
+    activities_count: number;
+    done_activities_count: number;
+    undone_activities_count: number;
+    files_count: number;
+    notes_count: number;
+    followers_count: number;
+    won_deals_count: number;
+    related_won_deals_count: number;
+    lost_deals_count: number;
+    related_lost_deals_count: number;
+    active_flag: boolean;
+    phone: { value: string; primary: boolean; label: string }[];
+    email: { value: string; primary: boolean; label: string }[];
+    primary_email: string;
+    first_char: string;
+    update_time: Date;
+    add_time: Date;
+    visible_to: string;
+    marketing_status: string;
+    picture_id: {
+        item_type: string;
+        item_id: number;
+        active_flag: boolean;
+        add_time: string;
+        update_time: string;
+        added_by_user_id: number;
+        pictures: {
+            '128': string;
+            '512': string;
+        };
+        value: number;
+    };
+    next_activity_date: string;
+    next_activity_time: string;
+    next_activity_id: number;
+    last_activity_id: number;
+    last_activity_date: string;
+    last_incoming_mail_time: string;
+    last_outgoing_mail_time: string;
+    label: number;
+    org_name: string;
+    owner_name: string;
+    cc_email: string;
+}
+
 export function toSalesforceContact(unifiedContact: UnifiedContact): Partial<SalesforceContact> {
     const salesforceContact: any = {
         Id: unifiedContact.remoteId,
@@ -466,16 +560,41 @@ export function toHubspotContact(unifiedContact: UnifiedContact): Partial<Hubspo
     return hubspotContact;
 }
 
+export function toPipedriveContact(unifiedContact: UnifiedContact): Partial<PipedriveContact> {
+    const pipedriveContact: any = {
+        id: unifiedContact.remoteId,
+        first_name: unifiedContact.firstName,
+        last_name: unifiedContact.lastName,
+        name: `${unifiedContact.firstName} ${unifiedContact.lastName}`,
+        phone: [{ value: unifiedContact.phone, primary: true, label: 'personal' }],
+        email: [{ value: unifiedContact.email, primary: true, label: 'personal' }],
+        primary_email: unifiedContact.email,
+        add_time: unifiedContact.createdTimestamp,
+        // update_time: unifiedContact.updatedTimestamp
+    };
+
+    // Map custom fields
+    if (unifiedContact.additional) {
+        Object.keys(unifiedContact.additional).forEach((key) => {
+            pipedriveContact[key] = unifiedContact.additional?.[key];
+        });
+    }
+
+    return pipedriveContact;
+}
+
 // To determine if a field is a user defined custom field using the properties API:
 // Hubspot: `hubspotDefined` is false and calculated is false
 // ZohoCRM: `custom_field` is true
 // SFDC: `custom` is true.
 export function disunifyContact(contact: UnifiedContact, integrationId: string): any {
-    if (integrationId === 'sfdc') {
+    if (integrationId === TP_ID.sfdc) {
         return toSalesforceContact(contact);
-    } else if (integrationId === 'hubspot') {
+    } else if (integrationId === TP_ID.hubspot) {
         return toHubspotContact(contact);
-    } else if (integrationId === 'zohocrm') {
+    } else if (integrationId === TP_ID.zohocrm) {
         return toZohoContact(contact);
+    } else if (integrationId === TP_ID.pipedrive) {
+        return toPipedriveContact(contact);
     }
 }

@@ -1,10 +1,11 @@
 import axios from 'axios';
-import { PipedriveLead, PipedriveOrganization, PipedrivePerson, disunifyLead, unifyLead } from '../models/unified/lead';
+import { PipedriveLead, PipedriveOrganization, disunifyLead, unifyLead } from '../models/unified/lead';
 import { filterLeadsFromContactsForHubspot } from '../helpers/filterLeadsFromContacts';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { TP_ID } from '@prisma/client';
 import { PipedrivePagination } from '../constants/pipedrive';
+import { PipedriveContact } from '../models/unified';
 
 class LeadService {
     async getUnifiedLead(
@@ -477,7 +478,7 @@ class LeadService {
             ? `${account_url}/v1/persons/${lead.person_id}`
             : `${account_url}/v1/organizations/${lead.organization_id}`;
         const result = await axios.get<
-            { data: Partial<PipedrivePerson | PipedriveOrganization> } & PipedrivePagination
+            { data: Partial<PipedriveContact | PipedriveOrganization> } & PipedrivePagination
         >(url, {
             headers: {
                 Authorization: `Bearer ${thirdPartyToken}`,
