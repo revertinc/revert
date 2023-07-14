@@ -26,7 +26,7 @@ class NoteService {
                 },
             });
             note = ([note.data] as any[])?.[0];
-            note = unifyNote({ ...note, ...note?.properties });
+            note = unifyNote({ ...note, ...note?.properties }, thirdPartyId);
             return {
                 result: { ...note, ...note?.properties },
             };
@@ -38,7 +38,7 @@ class NoteService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            let note = unifyNote(notes.data.data?.[0]);
+            let note = unifyNote(notes.data.data?.[0], thirdPartyId);
             return { result: note };
         } else if (thirdPartyId === 'sfdc') {
             const instanceUrl = connection.tp_account_url;
@@ -49,7 +49,7 @@ class NoteService {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            let note = unifyNote(notes.data);
+            let note = unifyNote(notes.data, thirdPartyId);
             return { result: note };
         } else {
             return {
@@ -81,7 +81,7 @@ class NoteService {
             });
             const nextCursor = notes.data?.paging?.next?.after || null;
             notes = notes.data.results as any[];
-            notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }));
+            notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }, thirdPartyId));
             return {
                 next: nextCursor,
                 previous: null, // Field not supported by Hubspot.
@@ -99,7 +99,7 @@ class NoteService {
             const nextCursor = notes.data?.info?.next_page_token || null;
             const prevCursor = notes.data?.info?.previous_page_token || null;
             notes = notes.data.data;
-            notes = notes?.map((l: any) => unifyNote(l));
+            notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
             return { next: nextCursor, previous: prevCursor, results: notes };
         } else if (thirdPartyId === 'sfdc') {
             let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
@@ -127,7 +127,7 @@ class NoteService {
                     ? String(parseInt(String(cursor)) - notes.data?.totalSize)
                     : null;
             notes = notes.data?.records;
-            notes = notes?.map((l: any) => unifyNote(l));
+            notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
             return { next: nextCursor, previous: prevCursor, results: notes };
         } else {
             return { error: 'Unrecognized CRM' };
@@ -158,7 +158,7 @@ class NoteService {
                 }),
             });
             notes = notes.data.results as any[];
-            notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }));
+            notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }, thirdPartyId));
             return {
                 status: 'ok',
                 results: notes,
@@ -172,7 +172,7 @@ class NoteService {
                 },
             });
             notes = notes.data.data;
-            notes = notes?.map((l: any) => unifyNote(l));
+            notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
             return { status: 'ok', results: notes };
         } else if (thirdPartyId === 'sfdc') {
             const instanceUrl = connection.tp_account_url;
@@ -184,7 +184,7 @@ class NoteService {
                 },
             });
             notes = notes?.data?.searchRecords;
-            notes = notes?.map((l: any) => unifyNote(l));
+            notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
             return { status: 'ok', results: notes };
         } else {
             return {
