@@ -1,6 +1,4 @@
 import { TP_ID } from '@prisma/client';
-import { PipedriveNoteType } from '../../constants/pipedrive';
-import { ValueOf } from '../../constants';
 
 export interface UnifiedNote {
     content: string;
@@ -8,13 +6,11 @@ export interface UnifiedNote {
     remoteId: string;
     createdTimestamp: Date;
     updatedTimestamp: Date;
-    associations?: any; // TODO: Support associations
+    associations?: any;
     additional: any;
-    noteType?: ValueOf<typeof PipedriveNoteType>; // for pipedrive
-    noteTypeId?: string; // for pipedrive
 }
 
-export function unifyNote(note: any): UnifiedNote {
+export function unifyNote(note: any, tpId: TP_ID): UnifiedNote {
     const unifiednote: UnifiedNote = {
         remoteId: note.id || note.Id,
         id: note.id || note.noteID || note.note_id || note.Id,
@@ -33,16 +29,14 @@ export function unifyNote(note: any): UnifiedNote {
             note.update_time,
         content: note.content || note.hs_note_body || note.Body || note.Note_Content,
         additional: {},
-        noteType: !!note.person_id
-            ? PipedriveNoteType.PERSON
-            : !!note.org_id
-            ? PipedriveNoteType.ORGANIZATION
-            : !!note.lead_id
-            ? PipedriveNoteType.LEAD
-            : !!note.deal_id
-            ? PipedriveNoteType.DEAL
-            : undefined,
-        noteTypeId: note.person_id || note.org_id || note.lead_id || note.deal_id,
+        associations: {
+            ...(tpId === TP_ID.pipedrive && {
+                person_id: note.person_id,
+                organization_id: note.org_id,
+                lead_id: note.lead_id,
+                deal_id: note.deal_id,
+            }),
+        },
     };
 
     // Map additional fields
@@ -123,17 +117,17 @@ export function toPipedriveNote(unified: UnifiedNote): any {
         content: unified.content,
         add_time: unified.createdTimestamp,
         update_time: unified.updatedTimestamp,
-        ...(unified.noteType === PipedriveNoteType.PERSON && {
-            person_id: unified.noteTypeId,
+        ...(unified.associations?.person_id && {
+            person_id: unified.associations.person_id,
         }),
-        ...(unified.noteType === PipedriveNoteType.ORGANIZATION && {
-            org_id: unified.noteTypeId,
+        ...(unified.associations?.organization_id && {
+            organization_id: unified.associations.organization_id,
         }),
-        ...(unified.noteType === PipedriveNoteType.LEAD && {
-            lead_id: unified.noteTypeId,
+        ...(unified.associations?.lead_id && {
+            lead_id: unified.associations.lead_id,
         }),
-        ...(unified.noteType === PipedriveNoteType.DEAL && {
-            deal_id: unified.noteTypeId,
+        ...(unified.associations?.deal_id && {
+            deal_id: unified.associations.deal_id,
         }),
     };
 
@@ -144,10 +138,6 @@ export function toPipedriveNote(unified: UnifiedNote): any {
                 pipedriveNote[key] = unified.additional?.[key];
             }
         });
-    }
-    // TODO: Handle associations creation elsewhere as well.
-    if (unified.additional?.associations) {
-        pipedriveNote['associations'] = unified.additional.associations;
     }
 
     return pipedriveNote;
