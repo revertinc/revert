@@ -4,7 +4,7 @@ import { PipedriveDealStatus, PipedriveLeadType } from '../../constants/pipedriv
 
 export interface UnifiedDeal {
     amount: Number;
-    priority: string;
+    priority: string; // not availale for pipedrive
     stage: string;
     name: string;
     expectedCloseDate: Date;

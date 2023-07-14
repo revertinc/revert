@@ -18,20 +18,31 @@ export function unifyContact(contact: any): UnifiedContact {
         remoteId: contact.id || contact.ContactID || contact.contact_id || contact.Id,
         id: contact.id || contact.ContactID || contact.contact_id || contact.Id,
         firstName:
-            contact.firstName || contact.firstname || contact.FirstName || contact.First_Name || contact.first_name,
-        lastName: contact.lastName || contact.lastname || contact.LastName || contact.Last_Name || contact.last_name,
+            contact.firstName ||
+            contact.firstname ||
+            contact.FirstName ||
+            contact.First_Name ||
+            contact.first_name ||
+            contact.name?.split(' ').slice(0, -1).join(' '),
+        lastName:
+            contact.lastName ||
+            contact.lastname ||
+            contact.LastName ||
+            contact.Last_Name ||
+            contact.last_name ||
+            contact.name?.split(' ').slice(-1).join(' '),
         phone:
             contact.phone ||
             contact.phone_number ||
             contact.Phone ||
-            (contact?.phone || []).find((p: any) => p?.primary)?.value ||
-            contact?.phone?.[0]?.value,
+            (contact.phone || []).find((p: any) => p?.primary)?.value ||
+            contact.phone?.[0]?.value || contact.phones?.[0],
         email:
             contact.email ||
             contact.Email ||
-            contact?.primary_email ||
-            (contact?.email || []).find((e: any) => e?.primary)?.value ||
-            contact?.email?.[0]?.value,
+            contact.primary_email ||
+            (contact.email || []).find((e: any) => e?.primary)?.value ||
+            contact.email?.[0]?.value || contact.emails?.[0],
         createdTimestamp:
             contact.createdDate ||
             contact.CreatedDate ||
