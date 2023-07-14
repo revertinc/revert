@@ -4,6 +4,7 @@ import prisma from '../prisma/client';
 import config from '../config';
 import { Svix } from 'svix';
 import logError from '../helpers/logError';
+import { v4 as uuidv4 } from 'uuid';
 
 class ConnectionService {
     public svix;
@@ -105,14 +106,16 @@ class ConnectionService {
                 },
             });
             const svixAppId = account!.id;
+            const secret = `whsec_${Buffer.from(uuidv4()).toString('base64')}`;
             const webhook = await this.svix.endpoint.create(svixAppId, {
                 url: webhookUrl,
                 version: 1,
                 description: `Connection Webhook for tenant ${tenantId}`,
                 uid: String(tenantId),
                 channels: [String(tenantId)],
+                secret: secret,
             });
-            return { status: 'ok', webhookUrl: webhook.url, createdAt: webhook.createdAt };
+            return { status: 'ok', webhookUrl: webhook.url, createdAt: webhook.createdAt, secret: secret };
         } catch (error: any) {
             logError(error);
             console.error(error);
