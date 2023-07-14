@@ -40,7 +40,7 @@ class LeadService {
                 });
                 lead = filterLeadsFromContactsForHubspot([lead.data] as any[])?.[0];
                 return {
-                    result: unifyLead({ ...lead, ...lead?.properties }),
+                    result: unifyLead({ ...lead, ...lead?.properties }, thirdPartyId),
                 };
             }
             case TP_ID.zohocrm: {
@@ -52,7 +52,7 @@ class LeadService {
                     },
                 });
                 let lead = leads.data.data?.[0];
-                return { result: unifyLead(lead) };
+                return { result: unifyLead(lead, thirdPartyId) };
             }
             case TP_ID.sfdc: {
                 const instanceUrl = connection.tp_account_url;
@@ -64,7 +64,7 @@ class LeadService {
                     },
                 });
                 let lead = leads.data;
-                return { result: unifyLead(lead) };
+                return { result: unifyLead(lead, thirdPartyId) };
             }
             case TP_ID.pipedrive: {
                 const result = await axios.get<{ data: Partial<PipedriveLead> } & PipedrivePagination>(
@@ -81,7 +81,7 @@ class LeadService {
                     account_url: connection.tp_account_url,
                     thirdPartyToken,
                 });
-                return { result: unifyLead(populatedLead) };
+                return { result: unifyLead(populatedLead, thirdPartyId) };
             }
             default: {
                 return {
@@ -124,7 +124,7 @@ class LeadService {
                 });
                 const nextCursor = leads.data?.paging?.next?.after || null;
                 leads = filterLeadsFromContactsForHubspot(leads.data.results as any[]);
-                leads = leads?.map((l: any) => unifyLead({ ...l, ...l?.properties }));
+                leads = leads?.map((l: any) => unifyLead({ ...l, ...l?.properties }, thirdPartyId));
                 return {
                     next: nextCursor,
                     previous: null, // Field not supported by Hubspot.
@@ -145,7 +145,7 @@ class LeadService {
                 const nextCursor = leads.data?.info?.next_page_token || null;
                 const prevCursor = leads.data?.info?.previous_page_token || null;
                 leads = leads.data.data;
-                leads = leads?.map((l: any) => unifyLead(l));
+                leads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
                 return { next: nextCursor, previous: prevCursor, results: leads };
             }
             case TP_ID.sfdc: {
@@ -174,7 +174,7 @@ class LeadService {
                         ? String(parseInt(String(cursor)) - leads.data?.totalSize)
                         : null;
                 leads = leads.data?.records;
-                leads = leads?.map((l: any) => unifyLead(l));
+                leads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
                 return { next: nextCursor, previous: prevCursor, results: leads };
             }
             case TP_ID.pipedrive: {
@@ -199,7 +199,7 @@ class LeadService {
                         });
                     })
                 );
-                const unifiedLeads = populatedLeads?.map((l) => unifyLead(l));
+                const unifiedLeads = populatedLeads?.map((l) => unifyLead(l, thirdPartyId));
                 return { next: nextCursor, previous: prevCursor, results: unifiedLeads };
             }
             default: {
@@ -244,7 +244,7 @@ class LeadService {
                     }),
                 });
                 leads = filterLeadsFromContactsForHubspot(leads.data.results as any[]);
-                leads = leads?.map((l: any) => unifyLead({ ...l, ...l?.properties }));
+                leads = leads?.map((l: any) => unifyLead({ ...l, ...l?.properties }, thirdPartyId));
                 return {
                     status: 'ok',
                     results: leads,
@@ -259,7 +259,7 @@ class LeadService {
                     },
                 });
                 leads = leads.data.data;
-                leads = leads?.map((l: any) => unifyLead(l));
+                leads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
                 return { status: 'ok', results: leads };
             }
             case TP_ID.sfdc: {
@@ -272,7 +272,7 @@ class LeadService {
                     },
                 });
                 leads = leads?.data?.searchRecords;
-                leads = leads?.map((l: any) => unifyLead(l));
+                leads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
                 return { status: 'ok', results: leads };
             }
             case TP_ID.pipedrive: {
@@ -291,7 +291,7 @@ class LeadService {
                 );
                 // this api has person and organization auto populated
                 const leads = result.data.data.items.map((item) => item.item);
-                const unifiedLeads = leads?.map((l: any) => unifyLead(l));
+                const unifiedLeads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
                 return { status: 'ok', results: unifiedLeads };
             }
             default: {

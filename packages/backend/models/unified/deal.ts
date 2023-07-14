@@ -139,10 +139,10 @@ export function toPipedriveDeal(unifiedDeal: UnifiedDeal): any {
         status: unifiedDeal.isWon ? PipedriveDealStatus.won : PipedriveDealStatus.open,
         add_time: unifiedDeal.createdTimestamp,
         update_time: unifiedDeal.updatedTimestamp,
-        ...(unifiedDeal.associations.person_id && {
+        ...(unifiedDeal.associations?.person_id && {
             person_id: unifiedDeal.associations.person_id,
         }),
-        ...(unifiedDeal.associations.organization_id && {
+        ...(unifiedDeal.associations?.organization_id && {
             org_id: unifiedDeal.associations.organization_id,
         }),
     };

@@ -1,6 +1,4 @@
 import { TP_ID } from '@prisma/client';
-import { ValueOf } from '../../constants';
-import { PipedriveLeadType } from '../../constants/pipedrive';
 import { PipedriveContact } from '.';
 
 export interface UnifiedLead {
@@ -12,15 +10,13 @@ export interface UnifiedLead {
     remoteId: string; // TODO: Make this unique.
     createdTimestamp: Date;
     updatedTimestamp: Date;
-    associations?: any; // TODO: Support associations
+    associations?: any;
     additional: any;
-    leadType?: ValueOf<typeof PipedriveLeadType>; // for pipedrive
-    leadTypeId?: string; // for pipedrive
     // QUESTION: Add value of lead and expected close date here?
 }
 
 // FIXME: type support can be better
-export function unifyLead(lead: any): UnifiedLead {
+export function unifyLead(lead: any, tpId: TP_ID): UnifiedLead {
     const unifiedlead: UnifiedLead = {
         id: lead.id || lead.Id || lead.vid,
         remoteId: lead.id || lead.Id || lead.vid,
@@ -29,9 +25,13 @@ export function unifyLead(lead: any): UnifiedLead {
             lead.First_Name ||
             lead.FirstName ||
             lead.firstname ||
-            lead.person?.first_name ||
-            lead.organization?.name,
-        lastName: lead.lastName || lead.Last_Name || lead.LastName || lead.lastname || lead.person?.last_name,
+            lead.title?.split(' ').slice(0, -1).join(' '),
+        lastName:
+            lead.lastName ||
+            lead.Last_Name ||
+            lead.LastName ||
+            lead.lastname ||
+            lead.title?.split(' ').slice(-1).join(' '),
         email:
             lead.email ||
             lead.Email ||
@@ -59,12 +59,12 @@ export function unifyLead(lead: any): UnifiedLead {
             lead.lastmodifieddate ||
             lead.update_time,
         additional: {},
-        leadType: !!lead.person_id
-            ? PipedriveLeadType.PERSON
-            : !!lead.organization_id
-            ? PipedriveLeadType.ORGANIZATION
-            : undefined, // for pipedrive
-        leadTypeId: lead.person_id || lead.person?.id || lead.organization_id || lead.organization?.id,
+        associations: {
+            ...(tpId === TP_ID.pipedrive && {
+                person_id: lead.person_id || lead.person?.id,
+                organization_id: lead.organization_id || lead.organization?.id,
+            }),
+        },
     };
 
     // Map additional fields
@@ -600,11 +600,11 @@ export function toPipedriveLead(lead: UnifiedLead): Partial<PipedriveLead> {
         title: `${lead.firstName} ${lead.lastName}`,
         add_time: lead.createdTimestamp,
         update_time: lead.updatedTimestamp,
-        ...(lead.leadType === PipedriveLeadType.PERSON && {
-            person_id: lead.leadTypeId,
+        ...(lead.associations?.person_id && {
+            person_id: lead.associations.person_id,
         }),
-        ...(lead.leadType === PipedriveLeadType.ORGANIZATION && {
-            organization_id: lead.leadTypeId,
+        ...(lead.associations?.organization_id && {
+            organization_id: lead.associations.organization_id,
         }),
     };
 
@@ -619,7 +619,7 @@ export function toPipedriveLead(lead: UnifiedLead): Partial<PipedriveLead> {
 
 export function unifiedLeadToPipedrivePerson(lead: UnifiedLead): Partial<PipedriveContact> {
     return {
-        id: lead.leadTypeId,
+        id: lead.associations.person_id,
         first_name: lead.firstName,
         last_name: lead.lastName,
         name: `${lead.firstName} ${lead.lastName}`,
@@ -631,7 +631,7 @@ export function unifiedLeadToPipedrivePerson(lead: UnifiedLead): Partial<Pipedri
 
 export function unifiedLeadToPipedriveOrganization(lead: UnifiedLead): Partial<PipedriveOrganization> {
     return {
-        id: lead.leadTypeId,
+        id: lead.associations.organization_id,
         name: lead.firstName,
         cc_email: lead.email,
     };
