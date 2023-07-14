@@ -1,26 +1,23 @@
 import { TP_ID } from '@prisma/client';
-import { ValueOf } from '../../constants';
-import { PipedriveDealStatus, PipedriveLeadType } from '../../constants/pipedrive';
+import { PipedriveDealStatus } from '../../constants/pipedrive';
 
 export interface UnifiedDeal {
     amount: Number;
-    priority: string; // not availale for pipedrive
+    priority: string; // not available for pipedrive
     stage: string;
     name: string;
-    expectedCloseDate: Date;
+    expectedCloseDate: Date; // not available for pipedrive search
     isWon: boolean;
     probability: Number;
     id: string;
     remoteId: string;
     createdTimestamp: Date;
     updatedTimestamp: Date;
-    associations?: any; // TODO: Support associations
+    associations?: any;
     additional: any;
-    dealType?: ValueOf<typeof PipedriveLeadType>; // for pipedrive
-    dealTypeId?: string; // for pipedrive
 }
 
-export function unifyDeal(deal: any): UnifiedDeal {
+export function unifyDeal(deal: any, tpId: TP_ID): UnifiedDeal {
     const unifiedDeal: UnifiedDeal = {
         remoteId: deal.id || deal.dealID || deal.deal_id || deal.Id,
         id: deal.id || deal.dealID || deal.deal_id || deal.Id,
@@ -34,7 +31,7 @@ export function unifyDeal(deal: any): UnifiedDeal {
             deal.update_time,
         amount: deal.amount || deal.Amount || deal.value,
         priority: deal.priority || deal.Priority || deal.hs_priority || deal.Priority__c, // Note: `Priority__c` may not be present in every SFDC instance
-        stage: deal.stage || deal.Stage || deal.dealstage || deal.StageName || deal.stage_id,
+        stage: deal.stage?.name || deal.stage || deal.Stage || deal.dealstage || deal.StageName || deal.stage_id,
         expectedCloseDate: deal.closedate || deal.CloseDate || deal.Close_Date || deal.Closing_Date || deal.close_time,
         isWon:
             deal.hs_is_closed_won ||
@@ -43,12 +40,12 @@ export function unifyDeal(deal: any): UnifiedDeal {
             deal.status === PipedriveDealStatus.won,
         probability: deal.hs_deal_stage_probability || deal.Probability || deal.probability,
         additional: {},
-        dealType: !!deal.person_id?.value
-            ? PipedriveLeadType.PERSON
-            : !!deal.org_id?.value
-            ? PipedriveLeadType.ORGANIZATION
-            : undefined, // for pipedrive
-        dealTypeId: deal.person_id?.value || deal.org_id?.value,
+        associations: {
+            ...(tpId === TP_ID.pipedrive && {
+                person_id: deal.person_id || deal.person?.id,
+                organization_id: deal.organization_id || deal.organization?.id,
+            }),
+        },
     };
 
     // Map additional fields
@@ -142,11 +139,11 @@ export function toPipedriveDeal(unifiedDeal: UnifiedDeal): any {
         status: unifiedDeal.isWon ? PipedriveDealStatus.won : PipedriveDealStatus.open,
         add_time: unifiedDeal.createdTimestamp,
         update_time: unifiedDeal.updatedTimestamp,
-        ...(unifiedDeal.dealType === PipedriveLeadType.PERSON && {
-            person_id: unifiedDeal.dealTypeId,
+        ...(unifiedDeal.associations.person_id && {
+            person_id: unifiedDeal.associations.person_id,
         }),
-        ...(unifiedDeal.dealType === PipedriveLeadType.ORGANIZATION && {
-            org_id: unifiedDeal.dealTypeId,
+        ...(unifiedDeal.associations.organization_id && {
+            org_id: unifiedDeal.associations.organization_id,
         }),
     };
 

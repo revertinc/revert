@@ -36,7 +36,7 @@ class DealService {
                 },
             });
             deal = ([deal.data] as any[])?.[0];
-            deal = unifyDeal({ ...deal, ...deal?.properties });
+            deal = unifyDeal({ ...deal, ...deal?.properties }, thirdPartyId);
             return {
                 result: deal,
             };
@@ -48,7 +48,7 @@ class DealService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            let deal = unifyDeal(deals.data.data?.[0]);
+            let deal = unifyDeal(deals.data.data?.[0], thirdPartyId);
             return { result: deal };
         } else if (thirdPartyId === 'sfdc') {
             const instanceUrl = connection.tp_account_url;
@@ -59,7 +59,7 @@ class DealService {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            let deal = unifyDeal(deals.data);
+            let deal = unifyDeal(deals.data, thirdPartyId);
             return { result: deal };
         } else {
             return {
@@ -100,7 +100,7 @@ class DealService {
             });
             const nextCursor = deals.data?.paging?.next?.after || null;
             deals = deals.data.results as any[];
-            deals = deals?.map((l: any) => unifyDeal({ ...l, ...l?.properties }));
+            deals = deals?.map((l: any) => unifyDeal({ ...l, ...l?.properties }, thirdPartyId));
             return {
                 next: nextCursor,
                 previous: null, // Field not supported by Hubspot.
@@ -118,7 +118,7 @@ class DealService {
             const nextCursor = deals.data?.info?.next_page_token || null;
             const prevCursor = deals.data?.info?.previous_page_token || null;
             deals = deals.data.data;
-            deals = deals?.map((l: any) => unifyDeal(l));
+            deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
             return { next: nextCursor, previous: prevCursor, results: deals };
         } else if (thirdPartyId === 'sfdc') {
             let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
@@ -146,7 +146,7 @@ class DealService {
                     ? String(parseInt(String(cursor)) - deals.data?.totalSize)
                     : null;
             deals = deals.data?.records;
-            deals = deals?.map((l: any) => unifyDeal(l));
+            deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
             return { next: nextCursor, previous: prevCursor, results: deals };
         } else {
             return { error: 'Unrecognized CRM' };
@@ -195,7 +195,7 @@ class DealService {
                     }),
                 });
                 deals = deals.data.results as any[];
-                deals = deals?.map((l: any) => unifyDeal({ ...l, ...l?.properties }));
+                deals = deals?.map((l: any) => unifyDeal({ ...l, ...l?.properties }, thirdPartyId));
                 return {
                     status: 'ok',
                     results: deals,
@@ -210,7 +210,7 @@ class DealService {
                     },
                 });
                 deals = deals.data.data;
-                deals = deals?.map((l: any) => unifyDeal(l));
+                deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
                 return { status: 'ok', results: deals };
             }
             case TP_ID.sfdc: {
@@ -223,7 +223,7 @@ class DealService {
                     },
                 });
                 deals = deals?.data?.searchRecords;
-                deals = deals?.map((l: any) => unifyDeal(l));
+                deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
                 return { status: 'ok', results: deals };
             }
             case TP_ID.pipedrive: {
@@ -241,7 +241,7 @@ class DealService {
                     }
                 );
                 const deals = result.data.data.items.map((item) => item.item);
-                const unifiedDeals = deals?.map((d: any) => unifyDeal(d));
+                const unifiedDeals = deals?.map((d: any) => unifyDeal(d, thirdPartyId));
                 return { status: 'ok', results: unifiedDeals };
             }
             default: {
