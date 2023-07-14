@@ -10,6 +10,7 @@ import connectionRouter from './v1/connection';
 import metadataRouter from './v1/metadata';
 import AuthService from '../services/auth';
 import logError from '../helpers/logError';
+import verifyRevertWebhook from '../helpers/verifyRevertWebhook';
 
 const router = express.Router();
 
@@ -27,6 +28,23 @@ router.get('/', (_, response) => {
 
 router.get('/debug-sentry', () => {
     throw new Error('My first Sentry error!');
+});
+
+router.post('/debug-svix', (req, res) => {
+    try {
+        const secret = config.SVIX_ENDPOINT_SECRET;
+        const verified = verifyRevertWebhook(req, secret);
+        console.log('verified', verified, req.body);
+        if (verified) {
+            res.json({ status: 'Verified!' });
+        } else {
+            res.json({ error: 'Not verified' });
+        }
+        // Do something with the message...
+    } catch (err) {
+        console.error('Unverified webhook', err);
+        res.status(400).json({ error: 'Unverified webhook' });
+    }
 });
 
 router.post('/slack-alert', async (req, res) => {
