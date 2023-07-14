@@ -118,6 +118,7 @@ class ConnectionService {
             console.error(error);
             return {
                 error: 'Error creating webhook!',
+                errorMessage: error,
             };
         }
     }
@@ -142,6 +143,7 @@ class ConnectionService {
             console.error(error);
             return {
                 error: 'Error deleting webhook!',
+                errorMessage: error,
             };
         }
     }
