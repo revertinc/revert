@@ -34,7 +34,7 @@ router.post('/debug-svix', (req, res) => {
     try {
         const secret = config.SVIX_ENDPOINT_SECRET;
         const verified = verifyRevertWebhook(req, secret);
-        console.log('verified', verified);
+        console.log('verified', verified, req.body);
         if (verified) {
             res.json({ status: 'Verified!' });
         } else {
