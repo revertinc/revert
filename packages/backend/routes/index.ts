@@ -7,7 +7,9 @@ import crmRouter from './v1/crm';
 import config from '../config';
 import revertAuthMiddleware from '../helpers/authMiddleware';
 import connectionRouter from './v1/connection';
-import metadataRouter from './v1/metadata';
+import { register } from '../generated/typescript';
+import { metadataService } from '../services/metadata';
+
 import AuthService from '../services/auth';
 import logError from '../helpers/logError';
 import verifyRevertWebhook from '../helpers/verifyRevertWebhook';
@@ -141,6 +143,7 @@ router.post('/internal/account/credentials', async (req, res) => {
 
 router.use('/crm', cors(), revertAuthMiddleware(), crmRouter);
 router.use('/connection', cors(), revertAuthMiddleware(), connectionRouter);
-router.use('/metadata', cors(), metadataRouter);
+
+register(router, { metadata: metadataService });
 
 export default router;
