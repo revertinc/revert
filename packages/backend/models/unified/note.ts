@@ -6,7 +6,7 @@ export interface UnifiedNote {
     remoteId: string;
     createdTimestamp: Date;
     updatedTimestamp: Date;
-    associations?: any;
+    associations?: Record<string, string>;
     additional: any;
 }
 
@@ -35,6 +35,9 @@ export function unifyNote(note: any, tpId: TP_ID): UnifiedNote {
                 organization_id: note.org_id,
                 lead_id: note.lead_id,
                 deal_id: note.deal_id,
+            }),
+            ...(tpId === TP_ID.hubspot && {
+                deal_id: '',
             }),
         },
     };
@@ -86,12 +89,28 @@ export function toZohoNote(unified: UnifiedNote): any {
     return zoho;
 }
 
+// TODO: Move to a hubspot util file
+export const getHubspotAssociationObj = (key: string) => {
+    switch (key) {
+        case 'deal_id': {
+            return {
+                associationCategory: 'HUBSPOT_DEFINED',
+                associationTypeId: 214,
+            };
+        }
+        default: {
+            return {};
+        }
+    }
+};
+
 export function toHubspotNote(unified: UnifiedNote): any {
     const hubspotNote: any = {
         properties: {
             id: unified.remoteId,
             hs_note_body: unified.content,
             hs_timestamp: Date.now().toString(),
+            ...(unified.associations && {}),
         },
     };
 
@@ -106,6 +125,18 @@ export function toHubspotNote(unified: UnifiedNote): any {
     // TODO: Handle associations creation elsewhere as well.
     if (unified.additional?.associations) {
         hubspotNote['associations'] = unified.additional.associations;
+    }
+    if (unified.associations) {
+        const associationObj = unified.associations;
+        const associationArr = Object.keys(associationObj).map((key) => {
+            return {
+                to: {
+                    id: associationObj[key],
+                },
+                types: [getHubspotAssociationObj(key)],
+            };
+        });
+        hubspotNote['associations'] = associationArr;
     }
 
     return hubspotNote;
