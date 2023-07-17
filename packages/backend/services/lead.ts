@@ -1,11 +1,10 @@
 import axios from 'axios';
-import { PipedriveLead, PipedriveOrganization, disunifyLead, unifyLead } from '../models/unified/lead';
+import { disunifyLead, unifyLead } from '../models/unified/lead';
 import { filterLeadsFromContactsForHubspot } from '../helpers/filterLeadsFromContacts';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { TP_ID } from '@prisma/client';
-import { PipedrivePagination } from '../constants/pipedrive';
-import { PipedriveContact } from '../models/unified';
+import { PipedrivePagination, PipedriveLead, PipedriveContact, PipedriveOrganization } from '../constants/pipedrive';
 
 class LeadService {
     async getUnifiedLead(
