@@ -1,12 +1,16 @@
 import { TP_ID } from '@prisma/client';
 
+export type NoteAssociation = 'personId' | 'organizationId' | 'leadId' | 'dealId';
+
 export interface UnifiedNote {
     content: string;
     id: string;
     remoteId: string;
     createdTimestamp: Date;
     updatedTimestamp: Date;
-    associations?: Record<string, string>;
+    associations?: {
+        [x in NoteAssociation]?: string;
+    };
     additional: any;
 }
 
@@ -31,10 +35,10 @@ export function unifyNote(note: any, tpId: TP_ID): UnifiedNote {
         additional: {},
         associations: {
             ...(tpId === TP_ID.pipedrive && {
-                person_id: note.person_id,
-                organization_id: note.org_id,
-                lead_id: note.lead_id,
-                deal_id: note.deal_id,
+                personId: note.person_id,
+                organizationId: note.org_id,
+                leadId: note.lead_id,
+                dealId: note.deal_id,
             }),
             ...(tpId === TP_ID.hubspot && {
                 deal_id: '',
@@ -90,9 +94,9 @@ export function toZohoNote(unified: UnifiedNote): any {
 }
 
 // TODO: Move to a hubspot util file
-export const getHubspotAssociationObj = (key: string) => {
+export const getHubspotAssociationObj = (key: NoteAssociation) => {
     switch (key) {
-        case 'deal_id': {
+        case 'dealId': {
             return {
                 associationCategory: 'HUBSPOT_DEFINED',
                 associationTypeId: 214,
@@ -131,9 +135,9 @@ export function toHubspotNote(unified: UnifiedNote): any {
         const associationArr = Object.keys(associationObj).map((key) => {
             return {
                 to: {
-                    id: associationObj[key],
+                    id: associationObj[key as NoteAssociation],
                 },
-                types: [getHubspotAssociationObj(key)],
+                types: [getHubspotAssociationObj(key as NoteAssociation)],
             };
         });
         hubspotNote['associations'] = associationArr;
@@ -148,17 +152,17 @@ export function toPipedriveNote(unified: UnifiedNote): any {
         content: unified.content,
         add_time: unified.createdTimestamp,
         update_time: unified.updatedTimestamp,
-        ...(unified.associations?.person_id && {
-            person_id: unified.associations.person_id,
+        ...(unified.associations?.personId && {
+            person_id: unified.associations.personId,
         }),
-        ...(unified.associations?.organization_id && {
-            organization_id: unified.associations.organization_id,
+        ...(unified.associations?.organizationId && {
+            organization_id: unified.associations.organizationId,
         }),
-        ...(unified.associations?.lead_id && {
-            lead_id: unified.associations.lead_id,
+        ...(unified.associations?.leadId && {
+            lead_id: unified.associations.leadId,
         }),
-        ...(unified.associations?.deal_id && {
-            deal_id: unified.associations.deal_id,
+        ...(unified.associations?.dealId && {
+            deal_id: unified.associations.dealId,
         }),
     };
 

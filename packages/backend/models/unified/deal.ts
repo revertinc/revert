@@ -1,6 +1,8 @@
 import { TP_ID } from '@prisma/client';
 import { PipedriveDealStatus } from '../../constants/pipedrive';
 
+export type DealAssociation = 'personId' | 'organizationId';
+
 export interface UnifiedDeal {
     amount: Number;
     priority: string; // not available for pipedrive
@@ -13,7 +15,9 @@ export interface UnifiedDeal {
     remoteId: string;
     createdTimestamp: Date;
     updatedTimestamp: Date;
-    associations?: any;
+    associations?: {
+        [x in DealAssociation]?: string;
+    };
     additional: any;
 }
 
@@ -42,8 +46,8 @@ export function unifyDeal(deal: any, tpId: TP_ID): UnifiedDeal {
         additional: {},
         associations: {
             ...(tpId === TP_ID.pipedrive && {
-                person_id: deal.person_id || deal.person?.id,
-                organization_id: deal.organization_id || deal.organization?.id,
+                personId: deal.person_id || deal.person?.id,
+                organizationId: deal.organization_id || deal.organization?.id,
             }),
         },
     };
@@ -139,11 +143,11 @@ export function toPipedriveDeal(unifiedDeal: UnifiedDeal): any {
         status: unifiedDeal.isWon ? PipedriveDealStatus.won : PipedriveDealStatus.open,
         add_time: unifiedDeal.createdTimestamp,
         update_time: unifiedDeal.updatedTimestamp,
-        ...(unifiedDeal.associations?.person_id && {
-            person_id: unifiedDeal.associations.person_id,
+        ...(unifiedDeal.associations?.personId && {
+            person_id: unifiedDeal.associations.personId,
         }),
-        ...(unifiedDeal.associations?.organization_id && {
-            org_id: unifiedDeal.associations.organization_id,
+        ...(unifiedDeal.associations?.organizationId && {
+            org_id: unifiedDeal.associations.organizationId,
         }),
     };
 
