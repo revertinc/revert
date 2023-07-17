@@ -1,4 +1,5 @@
 import { TP_ID } from '@prisma/client';
+import { getHubspotAssociationObj } from '../../helpers/hubspot';
 
 export type NoteAssociation = 'personId' | 'organizationId' | 'leadId' | 'dealId';
 
@@ -92,21 +93,6 @@ export function toZohoNote(unified: UnifiedNote): any {
     }
     return zoho;
 }
-
-// TODO: Move to a hubspot util file
-export const getHubspotAssociationObj = (key: NoteAssociation) => {
-    switch (key) {
-        case 'dealId': {
-            return {
-                associationCategory: 'HUBSPOT_DEFINED',
-                associationTypeId: 214,
-            };
-        }
-        default: {
-            return {};
-        }
-    }
-};
 
 export function toHubspotNote(unified: UnifiedNote): any {
     const hubspotNote: any = {
