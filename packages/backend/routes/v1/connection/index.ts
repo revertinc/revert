@@ -70,6 +70,21 @@ connectionRouter.post('/webhook', async (req, res) => {
     }
 });
 
+connectionRouter.get('/webhook', async (req, res) => {
+    try {
+        const result = await ConnectionService.getWebhook(req, res);
+        if (result.error) {
+            res.status(400).send(result);
+        } else {
+            res.send(result);
+        }
+    } catch (error: any) {
+        logError(error);
+        console.error('Could not fetch webhook', error);
+        res.status(500).send({ error: 'Internal server error' });
+    }
+});
+
 connectionRouter.delete('/webhook', async (req, res) => {
     try {
         const result = await ConnectionService.deleteWebhook(req, res);
