@@ -2,6 +2,8 @@ import axios from 'axios';
 import { disunifyContact, unifyContact } from '../models/unified/contact';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
+import { TP_ID } from '@prisma/client';
+import { PipedrivePagination } from 'constants/pipedrive';
 
 class ContactService {
     async getUnifiedContact(
@@ -157,64 +159,90 @@ class ContactService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const searchCriteria = req.body.searchCriteria;
-        const fields = String(req.query.fields || '').split(',');
+        const fields = String(req.query.fields || '')
+            .split(',')
+            .filter(Boolean);
         console.log('Revert::SEARCH CONTACT', tenantId, searchCriteria);
-        if (thirdPartyId === 'hubspot') {
-            let contacts: any = await axios({
-                method: 'post',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts/search`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify({
-                    ...searchCriteria,
-                    properties: [
-                        'hs_lead_status',
-                        'firstname',
-                        'phone',
-                        'email',
-                        'lastname',
-                        'hs_object_id',
-                        ...fields,
-                    ],
-                }),
-            });
-            contacts = contacts.data.results as any[];
-            contacts = contacts?.map((l: any) => unifyContact({ ...l, ...l?.properties }));
-            return {
-                status: 'ok',
-                results: contacts,
-            };
-        } else if (thirdPartyId === 'zohocrm') {
-            let contacts: any = await axios({
-                method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/Contacts/search?criteria=${searchCriteria}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-            });
-            contacts = contacts.data.data;
-            contacts = contacts?.map((l: any) => unifyContact(l));
-            return { status: 'ok', results: contacts };
-        } else if (thirdPartyId === 'sfdc') {
-            const instanceUrl = connection.tp_account_url;
-            let contacts: any = await axios({
-                method: 'get',
-                url: `${instanceUrl}/services/data/v56.0/search?q=${searchCriteria}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
 
-            contacts = contacts.data?.searchRecords;
-            contacts = contacts?.map((l: any) => unifyContact(l));
+        switch (thirdPartyId) {
+            case TP_ID.hubspot: {
+                let contacts: any = await axios({
+                    method: 'post',
+                    url: `https://api.hubapi.com/crm/v3/objects/contacts/search`,
+                    headers: {
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify({
+                        ...searchCriteria,
+                        properties: [
+                            'hs_lead_status',
+                            'firstname',
+                            'phone',
+                            'email',
+                            'lastname',
+                            'hs_object_id',
+                            ...fields,
+                        ],
+                    }),
+                });
+                contacts = contacts.data.results as any[];
+                contacts = contacts?.map((l: any) => unifyContact({ ...l, ...l?.properties }));
+                return {
+                    status: 'ok',
+                    results: contacts,
+                };
+            }
+            case TP_ID.zohocrm: {
+                let contacts: any = await axios({
+                    method: 'get',
+                    url: `https://www.zohoapis.com/crm/v3/Contacts/search?criteria=${searchCriteria}`,
+                    headers: {
+                        authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                    },
+                });
+                contacts = contacts.data.data;
+                contacts = contacts?.map((l: any) => unifyContact(l));
+                return { status: 'ok', results: contacts };
+            }
+            case TP_ID.sfdc: {
+                const instanceUrl = connection.tp_account_url;
+                let contacts: any = await axios({
+                    method: 'get',
+                    url: `${instanceUrl}/services/data/v56.0/search?q=${searchCriteria}`,
+                    headers: {
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                });
 
-            return { status: 'ok', results: contacts };
-        } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+                contacts = contacts.data?.searchRecords;
+                contacts = contacts?.map((l: any) => unifyContact(l));
+
+                return { status: 'ok', results: contacts };
+            }
+            case TP_ID.pipedrive: {
+                const instanceUrl = connection.tp_account_url;
+                const result = await axios.get<
+                    { data: { items: { item: any; result_score: number }[] } } & PipedrivePagination
+                >(
+                    `${instanceUrl}/v1/persons/search?term=${searchCriteria}${
+                        fields.length ? `&fields=${fields.join(',')}` : ''
+                    }`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                        },
+                    }
+                );
+                const contacts = result.data.data.items.map((item) => item.item);
+                const unifiedContacts = contacts?.map((c: any) => unifyContact(c));
+                return { status: 'ok', results: unifiedContacts };
+            }
+            default: {
+                return {
+                    error: 'Unrecognised CRM',
+                };
+            }
         }
     }
     async createContact(

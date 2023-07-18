@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { disunifyNote, unifyNote } from '../models/unified';
 import { ParsedQs } from 'qs';
+import { TP_ID } from '@prisma/client';
 
 class NoteService {
     async getUnifiedNote(
@@ -25,7 +26,7 @@ class NoteService {
                 },
             });
             note = ([note.data] as any[])?.[0];
-            note = unifyNote({ ...note, ...note?.properties });
+            note = unifyNote({ ...note, ...note?.properties }, thirdPartyId);
             return {
                 result: { ...note, ...note?.properties },
             };
@@ -37,7 +38,7 @@ class NoteService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            let note = unifyNote(notes.data.data?.[0]);
+            let note = unifyNote(notes.data.data?.[0], thirdPartyId);
             return { result: note };
         } else if (thirdPartyId === 'sfdc') {
             const instanceUrl = connection.tp_account_url;
@@ -48,7 +49,7 @@ class NoteService {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            let note = unifyNote(notes.data);
+            let note = unifyNote(notes.data, thirdPartyId);
             return { result: note };
         } else {
             return {
@@ -80,7 +81,7 @@ class NoteService {
             });
             const nextCursor = notes.data?.paging?.next?.after || null;
             notes = notes.data.results as any[];
-            notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }));
+            notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }, thirdPartyId));
             return {
                 next: nextCursor,
                 previous: null, // Field not supported by Hubspot.
@@ -98,7 +99,7 @@ class NoteService {
             const nextCursor = notes.data?.info?.next_page_token || null;
             const prevCursor = notes.data?.info?.previous_page_token || null;
             notes = notes.data.data;
-            notes = notes?.map((l: any) => unifyNote(l));
+            notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
             return { next: nextCursor, previous: prevCursor, results: notes };
         } else if (thirdPartyId === 'sfdc') {
             let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
@@ -126,7 +127,7 @@ class NoteService {
                     ? String(parseInt(String(cursor)) - notes.data?.totalSize)
                     : null;
             notes = notes.data?.records;
-            notes = notes?.map((l: any) => unifyNote(l));
+            notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
             return { next: nextCursor, previous: prevCursor, results: notes };
         } else {
             return { error: 'Unrecognized CRM' };
@@ -157,7 +158,7 @@ class NoteService {
                 }),
             });
             notes = notes.data.results as any[];
-            notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }));
+            notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }, thirdPartyId));
             return {
                 status: 'ok',
                 results: notes,
@@ -171,7 +172,7 @@ class NoteService {
                 },
             });
             notes = notes.data.data;
-            notes = notes?.map((l: any) => unifyNote(l));
+            notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
             return { status: 'ok', results: notes };
         } else if (thirdPartyId === 'sfdc') {
             const instanceUrl = connection.tp_account_url;
@@ -183,7 +184,7 @@ class NoteService {
                 },
             });
             notes = notes?.data?.searchRecords;
-            notes = notes?.map((l: any) => unifyNote(l));
+            notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
             return { status: 'ok', results: notes };
         } else {
             return {
@@ -201,53 +202,75 @@ class NoteService {
         const tenantId = connection.t_id;
         const note = disunifyNote(req.body, thirdPartyId);
         console.log('Revert::CREATE NOTE', tenantId, note);
-        if (thirdPartyId === 'hubspot') {
-            const res = await axios({
-                method: 'post',
-                url: `https://api.hubapi.com/crm/v3/objects/notes/`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(note),
-            });
-            return {
-                status: 'ok',
-                message: 'Hubspot note created',
-                result: { id: res.data?.id, ...note },
-            };
-        } else if (thirdPartyId === 'zohocrm') {
-            await axios({
-                method: 'post',
-                url: `https://www.zohoapis.com/crm/v3/Notes`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(note),
-            });
-            return { status: 'ok', message: 'Zoho note created', result: note };
-        } else if (thirdPartyId === 'sfdc') {
-            const instanceUrl = connection.tp_account_url;
-            const noteCreated = await axios({
-                method: 'post',
-                url: `${instanceUrl}/services/data/v56.0/sobjects/Note/`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify(note),
-            });
-            return {
-                status: 'ok',
-                message: 'SFDC note created',
-                result: noteCreated.data,
-            };
-        } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+
+        switch (thirdPartyId) {
+            case TP_ID.hubspot: {
+                const res = await axios({
+                    method: 'post',
+                    url: `https://api.hubapi.com/crm/v3/objects/notes/`,
+                    headers: {
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify(note),
+                });
+                return {
+                    status: 'ok',
+                    message: 'Hubspot note created',
+                    result: { id: res.data?.id, ...note },
+                };
+            }
+            case TP_ID.zohocrm: {
+                await axios({
+                    method: 'post',
+                    url: `https://www.zohoapis.com/crm/v3/Notes`,
+                    headers: {
+                        authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify(note),
+                });
+                return { status: 'ok', message: 'Zoho note created', result: note };
+            }
+            case TP_ID.sfdc: {
+                const instanceUrl = connection.tp_account_url;
+                const noteCreated = await axios({
+                    method: 'post',
+                    url: `${instanceUrl}/services/data/v56.0/sobjects/Note/`,
+                    headers: {
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify(note),
+                });
+                return {
+                    status: 'ok',
+                    message: 'SFDC note created',
+                    result: noteCreated.data,
+                };
+            }
+            case TP_ID.pipedrive: {
+                const instanceUrl = connection.tp_account_url;
+                const noteCreated = await axios.post<{ data: any }>(`${instanceUrl}/v1/notes`, note, {
+                    headers: {
+                        Authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                });
+                return {
+                    status: 'ok',
+                    message: 'Pipedrive note created',
+                    result: {
+                        ...noteCreated.data.data,
+                    },
+                };
+            }
+            default: {
+                return {
+                    error: 'Unrecognised CRM',
+                };
+            }
         }
     }
+
     async updateNote(
         req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
         res: Response<any, Record<string, any>, number>
