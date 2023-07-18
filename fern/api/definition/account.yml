@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+  errors: common/errors.yml
+  types: common/types.yml
+
+types:
+  GetAccountDetailsResponse:
+    properties:
+      account: types.Account
+
+service:
+    base-path: /internal/account
+    auth: true
+    endpoints:
+        getAccountDetails:
+            docs: Get details of a revert user account
+            method: POST
+            path: ""
+            request:
+                name: GetAccountDetailsRequest
+                body:
+                  properties:
+                    userId: string
+            response: GetAccountDetailsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+        updateAccountCredentials:
+            docs: Update account credentials (customer app token, secret, scope)
+            method: POST
+            path: /credentials
+            request:
+                name: UpdateAccountCredentialsRequest
+                body:
+                  properties:
+                    clientId: optional<string>
+                    clientSecret: optional<string>
+                    scopes: optional<list<string>>
+                    tpId: types.TPID
+                    isRevertApp: boolean
+            response: types.App
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

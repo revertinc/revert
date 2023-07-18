@@ -1,5 +1,9 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
 
+imports:
+  errors: common/errors.yml
+
+
 types:
     CrmMetadataResponse:
         properties:
@@ -15,9 +19,6 @@ types:
             status: CrmStatus
             clientId: optional<string>
             scopes: list<string>
-    BaseError:
-        properties:
-            error: string
     CrmStatus:
         enum:
             - active
@@ -36,13 +37,6 @@ service:
             response: CrmMetadataResponse
             auth: true
             errors:
-                - UnAuthorizedError
-                - InternalServerError
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
 
-errors:
-    UnAuthorizedError:
-        status-code: 401
-        type: BaseError
-    InternalServerError:
-        status-code: 500
-        type: BaseError

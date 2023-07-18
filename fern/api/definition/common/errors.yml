@@ -1,0 +1,15 @@
+types:
+    BaseError:
+        properties:
+            error: string
+
+errors:
+    UnAuthorizedError:
+        status-code: 401
+        type: BaseError
+    InternalServerError:
+        status-code: 500
+        type: BaseError
+    NotFoundError:
+        status-code: 400
+        type: BaseError

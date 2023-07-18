@@ -1,0 +1,51 @@
+types:
+    Account:
+        properties:
+            id: string
+            tenant_count: integer
+            private_token: string
+            public_token: string
+            domain: string
+            skipWaitlist: boolean
+            users: optional<list<User>>
+            apps: optional<list<App>>
+
+    App:
+        properties:
+            id: string
+            tp_id: TPID
+            scope: optional<list<string>>
+            app_client_id: optional<string>
+            app_client_secret: optional<string>
+            owner_account_public_token: string
+            account: optional<Account>
+            connections: optional<list<Connection>>
+            is_revert_app: boolean
+
+    User:
+        properties:
+            id: string
+            domain: string
+            email: string
+            accountId: string
+            account: optional<Account>
+
+    Connection:
+        properties:
+            tp_id: TPID
+            tp_access_token: string
+            tp_refresh_token: optional<string>
+            tp_customer_id: string
+            t_id: string
+            tp_account_url: optional<string>
+            owner_account_public_token: string
+            app_client_id: optional<string>
+            app_client_secret: optional<string>
+            app: optional<App>
+
+    TPID:
+        enum:
+            - hubspot
+            - zohocrm
+            - sfdc
+            - pipedrive

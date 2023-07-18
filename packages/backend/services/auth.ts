@@ -282,9 +282,9 @@ class AuthService {
         isRevertApp,
     }: {
         publicToken: string;
-        clientId: string;
-        clientSecret: string;
-        scopes: string[];
+        clientId?: string;
+        clientSecret?: string;
+        scopes?: string[];
         tpId: TP_ID;
         isRevertApp: boolean;
     }): Promise<any> {

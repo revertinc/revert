@@ -9,6 +9,7 @@ import revertAuthMiddleware from '../helpers/authMiddleware';
 import connectionRouter from './v1/connection';
 import { register } from '../generated/typescript';
 import { metadataService } from '../services/metadata';
+import { accountService } from '../services/Internal/account';
 
 import AuthService from '../services/auth';
 import logError from '../helpers/logError';
@@ -88,62 +89,9 @@ router.post('/clerk/webhook', async (req, res) => {
     }
 });
 
-router.post('/internal/account', async (req, res) => {
-    try {
-        const userId = req.body.userId;
-        const result = await AuthService.getAccountForUser(userId);
-        if (result?.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not get account for user', error);
-        res.status(500).send({ error: 'Internal server error' });
-    }
-});
-
-router.post('/internal/account/credentials', async (req, res) => {
-    try {
-        const { clientId, clientSecret, scopes, tpId, isRevertApp } = req.body;
-        const { 'x-revert-api-token': token } = req.headers;
-        const account = await prisma.accounts.findFirst({
-            where: {
-                private_token: token as string,
-            },
-            select: {
-                public_token: true,
-            },
-        });
-        if (!account) {
-            return res.status(401).send({
-                error: 'Api token unauthorized',
-            });
-        }
-        const result = await AuthService.setAppCredentialsForUser({
-            publicToken: account.public_token,
-            clientId,
-            clientSecret,
-            scopes,
-            isRevertApp,
-            tpId,
-        });
-        if (result?.error) {
-            return res.status(400).send(result);
-        } else {
-            return res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not get account for user', error);
-        return res.status(500).send({ error: 'Internal server error' });
-    }
-});
-
 router.use('/crm', cors(), revertAuthMiddleware(), crmRouter);
 router.use('/connection', cors(), revertAuthMiddleware(), connectionRouter);
 
-register(router, { metadata: metadataService });
+register(router, { metadata: metadataService, account: accountService });
 
 export default router;
