@@ -1,13 +1,13 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
 
 imports:
-  errors: common/errors.yml
-  types: common/types.yml
+    errors: common/errors.yml
+    types: common/types.yml
 
 types:
-  GetAccountDetailsResponse:
-    properties:
-      account: types.Account
+    GetAccountDetailsResponse:
+        properties:
+            account: types.Account
 
 service:
     base-path: /internal/account
@@ -16,12 +16,12 @@ service:
         getAccountDetails:
             docs: Get details of a revert user account
             method: POST
-            path: ""
+            path: ''
             request:
                 name: GetAccountDetailsRequest
                 body:
-                  properties:
-                    userId: string
+                    properties:
+                        userId: string
             response: GetAccountDetailsResponse
             errors:
                 - errors.UnAuthorizedError
@@ -33,13 +33,13 @@ service:
             request:
                 name: UpdateAccountCredentialsRequest
                 body:
-                  properties:
-                    clientId: optional<string>
-                    clientSecret: optional<string>
-                    scopes: optional<list<string>>
-                    tpId: types.TPID
-                    isRevertApp: boolean
-                    appId: string
+                    properties:
+                        clientId: optional<string>
+                        clientSecret: optional<string>
+                        scopes: optional<list<string>>
+                        tpId: types.TPID
+                        isRevertApp: boolean
+                        appId: string
             response: types.App
             errors:
                 - errors.UnAuthorizedError
