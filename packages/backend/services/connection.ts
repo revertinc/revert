@@ -143,7 +143,7 @@ class ConnectionService {
             logError(error);
             console.error(error);
             return {
-                error: 'Error creating webhook!',
+                error: 'Error fetching webhook!',
                 errorMessage: error,
             };
         }
