@@ -86,6 +86,8 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount:
         }
     };
 
+    // TODO: Incorportate environment variables.
+
     const handleSubmit = async () => {
         const payload = { tpId: app.tp_id, isRevertApp, ...(!isRevertApp && { clientId, clientSecret, scopes }) };
         await fetch({

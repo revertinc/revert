@@ -14,15 +14,30 @@ enum TP_ID {
   pipedrive
 }
 
+enum ENV {
+  development
+  production
+}
+
 model accounts {
-  id            String  @id
-  tenant_count  Int?    @default(0)
-  private_token String  @unique
-  public_token  String  @unique
-  domain        String  @unique @default("")
-  skipWaitlist  Boolean @default(false)
+  id            String         @id
+  tenant_count  Int?           @default(0)
+  private_token String         @unique
+  public_token  String         @unique
+  domain        String         @unique @default("")
+  skipWaitlist  Boolean        @default(false)
   users         users[]
   apps          apps[]
+  environments  environments[]
+}
+
+model environments {
+  id            String    @id
+  env           ENV
+  private_token String    @unique
+  public_token  String    @unique
+  accounts      accounts? @relation(fields: [accountId], references: [id])
+  accountId     String
 }
 
 model apps {
@@ -35,6 +50,7 @@ model apps {
   account                    accounts      @relation(fields: [owner_account_public_token], references: [public_token])
   connections                connections[]
   is_revert_app              Boolean       @default(false)
+  env                        ENV?
 
   @@unique([owner_account_public_token, tp_id])
 }

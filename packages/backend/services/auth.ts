@@ -4,9 +4,10 @@ import qs from 'qs';
 import prisma from '../prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import isWorkEmail from '../helpers/isWorkEmail';
-import { TP_ID } from '@prisma/client';
+import { ENV, TP_ID } from '@prisma/client';
 import logError from '../helpers/logError';
 import { DEFAULT_SCOPE } from '../constants';
+import ConnectionService from './connection';
 
 class AuthService {
     async refreshOAuthTokensForThirdParty() {
@@ -193,37 +194,72 @@ class AuthService {
                     userDomain = userEmail;
                 }
                 // Create account only if an account does not exist for this user's domain.
+                const accountId = 'acc_' + uuidv4();
+                const privateTokenDev = 'sk_test_' + uuidv4();
+                const publicTokenDev = 'pk_test_' + uuidv4();
+                const privateTokenProd = 'sk_live_' + uuidv4();
+                const publicTokenProd = 'pk_live_' + uuidv4();
                 const account = await prisma.accounts.upsert({
                     where: {
                         domain: userDomain,
                     },
                     update: {},
                     create: {
-                        id: 'acc_' + uuidv4(),
-                        private_token: 'sk_live_' + uuidv4(),
-                        public_token: 'pk_live_' + uuidv4(),
+                        id: accountId,
+                        private_token: privateTokenProd,
+                        public_token: publicTokenProd,
                         tenant_count: 0,
                         domain: userDomain,
                         skipWaitlist: false,
+                        environments: {
+                            createMany: {
+                                data: [
+                                    {
+                                        id: `${accountId}_${ENV.development}`,
+                                        env: ENV.development,
+                                        private_token: privateTokenDev,
+                                        public_token: publicTokenDev,
+                                    },
+                                    {
+                                        id: `${accountId}_${ENV.production}`,
+                                        env: ENV.production,
+                                        private_token: privateTokenProd,
+                                        public_token: publicTokenProd,
+                                    },
+                                ],
+                            },
+                        },
                     },
+                    include: { environments: true },
                 });
+                // Create default apps.
                 await Promise.all(
-                    Object.keys(TP_ID).map(async (tp) => {
-                        try {
-                            await prisma.apps.create({
-                                data: {
-                                    id: `${tp}_${account.id}`,
-                                    tp_id: tp as TP_ID,
-                                    scope: [],
-                                    owner_account_public_token: account.public_token,
-                                    is_revert_app: true,
-                                },
-                            });
-                        } catch (error: any) {
-                            logError(error);
-                        }
+                    Object.keys(ENV).map((env) => {
+                        Object.keys(TP_ID).map(async (tp) => {
+                            try {
+                                await prisma.apps.create({
+                                    data: {
+                                        id: `${tp}_${account.id}_${env}`,
+                                        tp_id: tp as TP_ID,
+                                        scope: [],
+                                        owner_account_public_token: account.public_token,
+                                        is_revert_app: true,
+                                        env: env as ENV,
+                                    },
+                                });
+                                // Create apps for both in development & production.
+                            } catch (error: any) {
+                                logError(error);
+                            }
+                        });
                     })
                 );
+                // Create Svix application for this account if it doesn't exist.
+                await ConnectionService.svix.application.getOrCreate({
+                    name: accountId,
+                    uid: accountId,
+                });
+                // Create user.
                 await prisma.users.create({
                     data: {
                         id: webhookData.id,

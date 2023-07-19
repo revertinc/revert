@@ -91,6 +91,7 @@ router.post('/clerk/webhook', async (req, res) => {
 router.post('/internal/account', async (req, res) => {
     try {
         const userId = req.body.userId;
+        // TODO: Incorporate environment variable.
         const result = await AuthService.getAccountForUser(userId);
         if (result?.error) {
             res.status(400).send(result);
@@ -107,6 +108,7 @@ router.post('/internal/account', async (req, res) => {
 router.post('/internal/account/credentials', async (req, res) => {
     try {
         const { clientId, clientSecret, scopes, tpId, isRevertApp } = req.body;
+        // TODO: Incorporate environment variable.
         const { 'x-revert-api-token': token } = req.headers;
         const account = await prisma.accounts.findFirst({
             where: {
