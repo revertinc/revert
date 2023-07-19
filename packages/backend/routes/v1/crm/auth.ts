@@ -18,7 +18,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
     const integrationId = req.query.integrationId as TP_ID;
     const revertPublicKey = req.query.x_revert_public_token as string;
     try {
-        const account = await prisma.accounts.findFirst({
+        const account = await prisma.environments.findFirst({
             where: {
                 public_token: String(revertPublicKey),
             },
@@ -29,7 +29,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 },
             },
         });
-        const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id; // FIXME: This is a bug.
+        const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
         const svixAppId = account!.id;
         if (integrationId === TP_ID.hubspot && req.query.code && req.query.t_id && revertPublicKey) {

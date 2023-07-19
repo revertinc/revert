@@ -24,10 +24,10 @@ class AuthService {
                             const url = 'https://api.hubapi.com/oauth/v1/token';
                             const formData = {
                                 grant_type: 'refresh_token',
-                                client_id: connection.app.is_revert_app
+                                client_id: connection.app?.is_revert_app
                                     ? config.HUBSPOT_CLIENT_ID
                                     : connection.app_client_id || config.HUBSPOT_CLIENT_ID,
-                                client_secret: connection.app.is_revert_app
+                                client_secret: connection.app?.is_revert_app
                                     ? config.HUBSPOT_CLIENT_SECRET
                                     : connection.app_client_secret || config.HUBSPOT_CLIENT_SECRET,
                                 redirect_uri: `${config.OAUTH_REDIRECT_BASE}/hubspot`,
@@ -59,10 +59,10 @@ class AuthService {
                             const url = `${connection.tp_account_url}/oauth/v2/token`;
                             const formData = {
                                 grant_type: 'refresh_token',
-                                client_id: connection.app.is_revert_app
+                                client_id: connection.app?.is_revert_app
                                     ? config.ZOHOCRM_CLIENT_ID
                                     : connection.app_client_id || config.ZOHOCRM_CLIENT_ID,
-                                client_secret: connection.app.is_revert_app
+                                client_secret: connection.app?.is_revert_app
                                     ? config.ZOHOCRM_CLIENT_SECRET
                                     : connection.app_client_secret || config.ZOHOCRM_CLIENT_SECRET,
                                 redirect_uri: `${config.OAUTH_REDIRECT_BASE}/zohocrm`,
@@ -97,10 +97,10 @@ class AuthService {
                             const url = `https://login.salesforce.com/services/oauth2/token`;
                             const formData = {
                                 grant_type: 'refresh_token',
-                                client_id: connection.app.is_revert_app
+                                client_id: connection.app?.is_revert_app
                                     ? config.SFDC_CLIENT_ID
                                     : connection.app_client_id || config.SFDC_CLIENT_ID,
-                                client_secret: connection.app.is_revert_app
+                                client_secret: connection.app?.is_revert_app
                                     ? config.SFDC_CLIENT_SECRET
                                     : connection.app_client_secret || config.SFDC_CLIENT_SECRET,
                                 redirect_uri: `${config.OAUTH_REDIRECT_BASE}/sfdc`,
@@ -146,13 +146,13 @@ class AuthService {
                                     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
                                     Authorization: `Basic ${Buffer.from(
                                         `${
-                                            connection.app.is_revert_app
+                                            connection.app?.is_revert_app
                                                 ? config.PIPEDRIVE_CLIENT_ID
-                                                : connection.app.app_client_id || config.PIPEDRIVE_CLIENT_ID
+                                                : connection.app?.app_client_id || config.PIPEDRIVE_CLIENT_ID
                                         }:${
-                                            connection.app.is_revert_app
+                                            connection.app?.is_revert_app
                                                 ? config.PIPEDRIVE_CLIENT_SECRET
-                                                : connection.app.app_client_secret || config.PIPEDRIVE_CLIENT_SECRET
+                                                : connection.app?.app_client_secret || config.PIPEDRIVE_CLIENT_SECRET
                                         }`
                                     ).toString('base64')}`,
                                 },
@@ -237,14 +237,14 @@ class AuthService {
                     Object.keys(ENV).map((env) => {
                         Object.keys(TP_ID).map(async (tp) => {
                             try {
+                                const environment = account.environments?.find((e) => e.env === env)!;
                                 await prisma.apps.create({
                                     data: {
                                         id: `${tp}_${account.id}_${env}`,
                                         tp_id: tp as TP_ID,
                                         scope: [],
-                                        owner_account_public_token: account.public_token,
                                         is_revert_app: true,
-                                        env: env as ENV,
+                                        environmentId: environment.id,
                                     },
                                 });
                                 // Create apps for both in development & production.
@@ -291,7 +291,11 @@ class AuthService {
             select: {
                 account: {
                     include: {
-                        apps: true,
+                        environments: {
+                            include: {
+                                apps: true,
+                            },
+                        },
                     },
                 },
             },
@@ -300,16 +304,19 @@ class AuthService {
             return { error: 'Account does not exist' };
         }
 
-        const appsWithScope = account.account.apps.map((app) => {
-            return {
-                ...app,
-                scope: app.scope.length ? app.scope : DEFAULT_SCOPE[app.tp_id],
-            };
-        });
+        const appsWithScope = account.account.environments.map((env) =>
+            env.apps.map((app) => {
+                return {
+                    ...app,
+                    scope: app.scope.length ? app.scope : DEFAULT_SCOPE[app.tp_id],
+                };
+            })
+        );
 
         return { ...account, account: { ...account.account, apps: appsWithScope } };
     }
     async setAppCredentialsForUser({
+        appId,
         publicToken,
         clientId,
         clientSecret,
@@ -317,6 +324,7 @@ class AuthService {
         tpId,
         isRevertApp,
     }: {
+        appId: string;
         publicToken: string;
         clientId: string;
         clientSecret: string;
@@ -329,7 +337,7 @@ class AuthService {
         }
         const account = await prisma.apps.update({
             where: {
-                owner_account_public_token_tp_id: { owner_account_public_token: publicToken, tp_id: tpId },
+                id: appId,
             },
             data: {
                 ...(clientId && { app_client_id: clientId }),

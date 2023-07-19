@@ -32,7 +32,7 @@ class ConnectionService {
         const connections: any = await prisma.connections.findMany({
             where: {
                 app: {
-                    account: {
+                    env: {
                         is: {
                             private_token: String(token),
                         },
