@@ -1,0 +1,123 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    CRMNotFound:
+        properties:
+            error: string
+    GetUnifiedLeadResponse:
+        discriminant: status
+        union:
+            ok: GetUnifiedLeadResponseSuccess
+            notFound: CRMNotFound
+    GetUnifiedLeadResponseSuccess:
+        properties:
+            result: unified.Lead
+    GetUnifiedLeadsResponse:
+        discriminant: status
+        union:
+            ok: GetUnifiedLeadsResponseSuccess
+            notFound: CRMNotFound
+    GetUnifiedLeadsResponseSuccess:
+        properties:
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.Lead>
+    CreateOrUpdateLeadResponse:
+        discriminant: status
+        union:
+            ok: CreateOrUpdateLeadResponseSuccess
+            notFound: CRMNotFound
+    CreateOrUpdateLeadResponseSuccess:
+        properties:
+            message: string
+            result: unknown
+    SearchLeadsResponse:
+        discriminant: status
+        union:
+            ok: SearchLeadsResponseSuccess
+            notFound: CRMNotFound
+    SearchLeadsResponseSuccess:
+        properties:
+            results: list<unified.Lead>
+
+service:
+    base-path: /crm/leads
+    auth: true
+    endpoints:
+        getUnifiedLead:
+            docs: Get details of a lead
+            method: GET
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: GetUnifiedLeadRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetUnifiedLeadResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getUnifiedLeads:
+            docs: Get all the leads
+            method: GET
+            path: ''
+            request:
+                name: GetUnifiedLeadsRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetUnifiedLeadsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createLead:
+            docs: Create a new lead
+            method: POST
+            path: ''
+            request:
+                name: CreateLeadRequest
+                body: unified.Lead
+            response: CreateOrUpdateLeadResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateLead:
+            docs: Update a lead
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateLeadRequest
+                body: unified.Lead
+            response: CreateOrUpdateLeadResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        searchLeads:
+            docs: Search for leads
+            method: POST
+            path: /search
+            request:
+                name: SearchLeadsRequest
+                body:
+                    properties:
+                        searchCriteria: unknown
+                query-parameters:
+                    fields: optional<string>
+            response: SearchLeadsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

@@ -1,28 +1,37 @@
 import axios from 'axios';
-import { disunifyLead, unifyLead } from '../models/unified/lead';
+import { TP_ID, connections } from '@prisma/client';
+import { UnifiedLead, disunifyLead, unifyLead } from '../models/unified/lead';
 import { filterLeadsFromContactsForHubspot } from '../helpers/filterLeadsFromContacts';
-import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
-import { TP_ID } from '@prisma/client';
 import { PipedrivePagination, PipedriveLead, PipedriveContact, PipedriveOrganization } from '../constants/pipedrive';
 
 class LeadService {
-    async getUnifiedLead(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedLead({
+        connection,
+        leadId,
+        fields,
+    }: {
+        connection: connections;
+        leadId: string;
+        fields?: string;
+    }): Promise<
+        | {
+              status: 'ok';
+              result: UnifiedLead;
+          }
+        | {
+              status: 'notFound';
+              error: string;
+          }
+    > {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const leadId = req.params.id;
-        let fields = req.query.fields;
         console.log('Revert::GET LEAD', tenantId, thirdPartyId, thirdPartyToken, leadId);
 
         switch (thirdPartyId) {
             case TP_ID.hubspot: {
-                fields = [
-                    ...String(req.query.fields || '').split(','),
+                const formattedFields = [
+                    ...String(fields || '').split(','),
                     'hs_lead_status',
                     'firstname',
                     'email',
@@ -32,15 +41,13 @@ class LeadService {
                 ];
                 let lead: any = await axios({
                     method: 'get',
-                    url: `https://api.hubapi.com/crm/v3/objects/contacts/${leadId}?properties=${fields}`,
+                    url: `https://api.hubapi.com/crm/v3/objects/contacts/${leadId}?properties=${formattedFields}`,
                     headers: {
                         authorization: `Bearer ${thirdPartyToken}`,
                     },
                 });
                 lead = filterLeadsFromContactsForHubspot([lead.data] as any[])?.[0];
-                return {
-                    result: unifyLead({ ...lead, ...lead?.properties }, thirdPartyId),
-                };
+                return { status: 'ok', result: unifyLead({ ...lead, ...lead?.properties }, thirdPartyId) };
             }
             case TP_ID.zohocrm: {
                 const leads = await axios({
@@ -51,7 +58,7 @@ class LeadService {
                     },
                 });
                 let lead = leads.data.data?.[0];
-                return { result: unifyLead(lead, thirdPartyId) };
+                return { status: 'ok', result: unifyLead(lead, thirdPartyId) };
             }
             case TP_ID.sfdc: {
                 const instanceUrl = connection.tp_account_url;
@@ -63,7 +70,7 @@ class LeadService {
                     },
                 });
                 let lead = leads.data;
-                return { result: unifyLead(lead, thirdPartyId) };
+                return { status: 'ok', result: unifyLead(lead, thirdPartyId) };
             }
             case TP_ID.pipedrive: {
                 const result = await axios.get<{ data: Partial<PipedriveLead> } & PipedrivePagination>(
@@ -77,35 +84,47 @@ class LeadService {
                 const lead = result.data;
                 const populatedLead = await this.populatePersonOrOrganizationForPipedriveLead({
                     lead: lead.data,
-                    account_url: connection.tp_account_url,
+                    account_url: connection.tp_account_url as string,
                     thirdPartyToken,
                 });
-                return { result: unifyLead(populatedLead, thirdPartyId) };
+                return { status: 'ok', result: unifyLead(populatedLead, thirdPartyId) };
             }
             default: {
-                return {
-                    error: 'Unrecognised CRM',
-                };
+                return { status: 'notFound', error: 'Unrecognised CRM' };
             }
         }
     }
-    async getUnifiedLeads(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedLeads({
+        connection,
+        fields,
+        pageSize,
+        cursor,
+    }: {
+        connection: connections;
+        fields?: string;
+        pageSize?: number;
+        cursor?: string;
+    }): Promise<
+        | {
+              status: 'ok';
+              next?: string;
+              previous?: string;
+              results: UnifiedLead[];
+          }
+        | {
+              status: 'notFound';
+              error: string;
+          }
+    > {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        let fields = req.query.fields;
-        const pageSize = parseInt(String(req.query.pageSize));
-        const cursor = req.query.cursor;
         console.log('Revert::GET ALL LEADS', tenantId, thirdPartyId, thirdPartyToken);
 
         switch (thirdPartyId) {
             case TP_ID.hubspot: {
-                fields = [
-                    ...String(req.query.fields || '').split(','),
+                const formattedFields = [
+                    ...String(fields || '').split(','),
                     'hs_lead_status',
                     'firstname',
                     'email',
@@ -116,7 +135,7 @@ class LeadService {
                 const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
                 let leads: any = await axios({
                     method: 'get',
-                    url: `https://api.hubapi.com/crm/v3/objects/contacts?properties=${fields}&${pagingString}`,
+                    url: `https://api.hubapi.com/crm/v3/objects/contacts?properties=${formattedFields}&${pagingString}`,
                     headers: {
                         authorization: `Bearer ${thirdPartyToken}`,
                     },
@@ -125,8 +144,9 @@ class LeadService {
                 leads = filterLeadsFromContactsForHubspot(leads.data.results as any[]);
                 leads = leads?.map((l: any) => unifyLead({ ...l, ...l?.properties }, thirdPartyId));
                 return {
+                    status: 'ok',
                     next: nextCursor,
-                    previous: null, // Field not supported by Hubspot.
+                    previous: undefined, // Field not supported by Hubspot.
                     results: leads,
                 };
             }
@@ -145,7 +165,7 @@ class LeadService {
                 const prevCursor = leads.data?.info?.previous_page_token || null;
                 leads = leads.data.data;
                 leads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
-                return { next: nextCursor, previous: prevCursor, results: leads };
+                return { status: 'ok', next: nextCursor, previous: prevCursor, results: leads };
             }
             case TP_ID.sfdc: {
                 let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
@@ -167,14 +187,16 @@ class LeadService {
                         authorization: `Bearer ${thirdPartyToken}`,
                     },
                 });
-                const nextCursor = pageSize ? String(leads.data?.totalSize + (parseInt(String(cursor)) || 0)) : null;
+                const nextCursor = pageSize
+                    ? String(leads.data?.totalSize + (parseInt(String(cursor)) || 0))
+                    : undefined;
                 const prevCursor =
                     cursor && parseInt(String(cursor)) > 0
                         ? String(parseInt(String(cursor)) - leads.data?.totalSize)
-                        : null;
+                        : undefined;
                 leads = leads.data?.records;
                 leads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
-                return { next: nextCursor, previous: prevCursor, results: leads };
+                return { status: 'ok', next: nextCursor, previous: prevCursor, results: leads };
             }
             case TP_ID.pipedrive: {
                 const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&start=${cursor}` : ''}`;
@@ -186,38 +208,48 @@ class LeadService {
                         },
                     }
                 );
-                const nextCursor = result.data?.additional_data?.pagination.next_start || null;
-                const prevCursor = null;
+                const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
+                const prevCursor = undefined;
                 const leads = result.data.data;
                 const populatedLeads = await Promise.all(
                     leads.map(async (lead) => {
                         return await this.populatePersonOrOrganizationForPipedriveLead({
                             lead,
-                            account_url: connection.tp_account_url,
+                            account_url: connection.tp_account_url as string,
                             thirdPartyToken,
                         });
                     })
                 );
                 const unifiedLeads = populatedLeads?.map((l) => unifyLead(l, thirdPartyId));
-                return { next: nextCursor, previous: prevCursor, results: unifiedLeads };
+                return { status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedLeads };
             }
             default: {
-                return { error: 'Unrecognized CRM' };
+                return { status: 'notFound', error: 'Unrecognized CRM' };
             }
         }
     }
-    async searchUnifiedLeads(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async searchUnifiedLeads({
+        connection,
+        searchCriteria,
+        fields,
+    }: {
+        connection: connections;
+        searchCriteria: any;
+        fields?: string;
+    }): Promise<
+        | {
+              status: 'ok';
+              results: UnifiedLead[];
+          }
+        | {
+              status: 'notFound';
+              error: string;
+          }
+    > {
+        const formattedFields = (fields || '').split('').filter(Boolean);
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const searchCriteria = req.body.searchCriteria;
-        const fields = String(req.query.fields || '')
-            .split(',')
-            .filter(Boolean);
         console.log('Revert::SEARCH LEAD', tenantId, searchCriteria, fields);
 
         switch (thirdPartyId) {
@@ -238,7 +270,7 @@ class LeadService {
                             'lastname',
                             'hs_object_id',
                             'phone',
-                            ...fields,
+                            ...formattedFields,
                         ],
                     }),
                 });
@@ -280,7 +312,7 @@ class LeadService {
                     { data: { items: { item: Partial<PipedriveLead> }[]; result_score: number } } & PipedrivePagination
                 >(
                     `${instanceUrl}/v1/leads/search?term=${searchCriteria}${
-                        fields.length ? `&fields=${fields.join(',')}` : ''
+                        formattedFields.length ? `&fields=${formattedFields.join(',')}` : ''
                     }`,
                     {
                         headers: {
@@ -295,20 +327,27 @@ class LeadService {
             }
             default: {
                 return {
+                    status: 'notFound',
                     error: 'Unrecognised CRM',
                 };
             }
         }
     }
-    async createLead(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async createLead({ connection, leadData }: { leadData: UnifiedLead; connection: connections }): Promise<
+        | {
+              status: 'ok';
+              result: any;
+              message: string;
+          }
+        | {
+              status: 'notFound';
+              error: string;
+          }
+    > {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const lead = disunifyLead(req.body, thirdPartyId);
+        const lead = disunifyLead(leadData, thirdPartyId);
         console.log('Revert::CREATE LEAD', tenantId, lead);
 
         switch (thirdPartyId) {
@@ -378,21 +417,35 @@ class LeadService {
             }
             default: {
                 return {
+                    status: 'notFound',
                     error: 'Unrecognised CRM',
                 };
             }
         }
     }
-    async updateLead(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async updateLead({
+        connection,
+        leadData,
+        leadId,
+    }: {
+        leadData: UnifiedLead;
+        connection: connections;
+        leadId: string;
+    }): Promise<
+        | {
+              status: 'ok';
+              result: any;
+              message: string;
+          }
+        | {
+              status: 'notFound';
+              error: string;
+          }
+    > {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const lead = disunifyLead(req.body, thirdPartyId);
-        const leadId = req.params.id;
+        const lead = disunifyLead(leadData, thirdPartyId);
         console.log('Revert::UPDATE LEAD', tenantId, lead, leadId);
 
         switch (thirdPartyId) {
@@ -456,13 +509,13 @@ class LeadService {
             }
             default: {
                 return {
+                    status: 'notFound',
                     error: 'Unrecognised CRM',
                 };
             }
         }
     }
 
-    // QUESTION: a lead can have both. do we want both?
     async populatePersonOrOrganizationForPipedriveLead({
         lead,
         account_url,

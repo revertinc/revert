@@ -1,103 +1,97 @@
-import express from 'express';
-
-import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
-import LeadService from '../../../services/lead';
 import logError from '../../../helpers/logError';
+import revertTenantMiddleware from '../../../helpers/tenantIdMiddleware';
+import revertAuthMiddleware from '../../../helpers/authMiddleware';
+import LeadS from '../../../services/lead';
+import { LeadService } from '../../../generated/typescript/api/resources/crm/resources/lead/service/LeadService';
+import { InternalServerError, NotFoundError } from '../../../generated/typescript/api/resources/common';
+import { UnifiedLead } from '../../../models/unified';
 
-const leadRouter = express.Router({ mergeParams: true });
-
-/**
- * Leads API
- */
-
-// Get all leads (paginated)
-leadRouter.get('/', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await LeadService.getUnifiedLeads(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
+const leadService = new LeadService({
+    async getUnifiedLead(req, res) {
+        try {
+            const result = await LeadS.getUnifiedLead({
+                connection: res.locals.connection,
+                leadId: req.params.id,
+                fields: req.query.fields,
+            });
+            if (result.status === 'notFound') {
+                throw new NotFoundError({ error: result.error });
+            }
             res.send(result);
+        } catch (error: any) {
+            logError(error);
+            console.error('Could not fetch lead', error);
+            throw new InternalServerError({ error: 'Internal server error' });
         }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not fetch leads', error);
-        res.status(500).send({ error: 'Internal server error' });
-    }
-});
-
-// Get a lead object identified by {id}
-leadRouter.get('/:id', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await LeadService.getUnifiedLead(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
+    },
+    async getUnifiedLeads(req, res) {
+        try {
+            const result = await LeadS.getUnifiedLeads({
+                connection: res.locals.connection,
+                fields: req.query.fields,
+                pageSize: parseInt(String(req.query.pageSize)),
+                cursor: req.query.cursor,
+            });
+            if (result.status === 'notFound') {
+                throw new NotFoundError({ error: result.error });
+            }
             res.send(result);
+        } catch (error: any) {
+            logError(error);
+            console.error('Could not fetch leads', error);
+            throw new InternalServerError({ error: 'Internal server error' });
         }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not fetch lead', error);
-        res.status(500).send({
-            error: 'Internal server error',
-        });
-    }
-});
-
-// Create a lead
-leadRouter.post('/', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await LeadService.createLead(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
+    },
+    async createLead(req, res) {
+        try {
+            const result = await LeadS.createLead({
+                leadData: req.body as UnifiedLead,
+                connection: res.locals.connection,
+            });
+            if (result.status === 'notFound') {
+                throw new NotFoundError({ error: result.error });
+            }
             res.send(result);
+        } catch (error: any) {
+            logError(error);
+            console.error('Could not create lead', error.response);
+            throw new InternalServerError({ error: 'Internal server error' });
         }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not create lead', error.response);
-        res.status(500).send({
-            error: 'Internal server error',
-            errorResponse: error.response?.data,
-        });
-    }
-});
-
-// Update a lead identified by {id}
-leadRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await LeadService.updateLead(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
+    },
+    async updateLead(req, res) {
+        try {
+            const result = await LeadS.updateLead({
+                connection: res.locals.connection,
+                leadData: req.body as UnifiedLead,
+                leadId: req.params.id,
+            });
+            if (result.status === 'notFound') {
+                throw new NotFoundError({ error: result.error });
+            }
             res.send(result);
+        } catch (error: any) {
+            logError(error);
+            console.error('Could not update lead', error.response);
+            throw new InternalServerError({ error: 'Internal server error' });
         }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not update lead', error.response);
-        res.status(500).send({
-            error: 'Internal server error',
-            errorResponse: error.response?.data,
-        });
-    }
-});
-
-// Search a lead with query.
-leadRouter.post('/search', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await LeadService.searchUnifiedLeads(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
+    },
+    async searchLeads(req, res) {
+        try {
+            const result = await LeadS.searchUnifiedLeads({
+                connection: res.locals.connection,
+                fields: req.query.fields,
+                searchCriteria: req.body.searchCriteria,
+            });
+            if (result.status === 'notFound') {
+                throw new NotFoundError({ error: result.error });
+            }
             res.send(result);
+        } catch (error: any) {
+            logError(error);
+            console.error('Could not search CRM', error);
+            throw new InternalServerError({ error: 'Internal server error' });
         }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not search CRM', error);
-        res.status(500).send({
-            error: 'Internal server error',
-        });
-    }
-});
+    },
+}, [revertAuthMiddleware(), revertTenantMiddleware()]);
 
-export default leadRouter;
+export { leadService };

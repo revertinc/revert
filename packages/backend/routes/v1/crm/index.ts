@@ -1,5 +1,4 @@
 import express from 'express';
-import leadRouter from './lead';
 import contactRouter from './contact';
 import companyRouter from './company';
 import proxyRouter from './proxy';
@@ -24,7 +23,6 @@ crmRouter.get('/ping', async (_, res) => {
 });
 
 crmRouter.use('/', authRouter);
-crmRouter.use('/leads', leadRouter);
 crmRouter.use('/contacts', contactRouter);
 crmRouter.use('/companies', companyRouter);
 crmRouter.use('/notes', noteRouter);

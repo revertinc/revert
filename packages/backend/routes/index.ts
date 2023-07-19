@@ -14,6 +14,7 @@ import { accountService } from '../services/Internal/account';
 import AuthService from '../services/auth';
 import logError from '../helpers/logError';
 import verifyRevertWebhook from '../helpers/verifyRevertWebhook';
+import { leadService } from './v1/crm/lead';
 
 const router = express.Router();
 
@@ -92,6 +93,10 @@ router.post('/clerk/webhook', async (req, res) => {
 router.use('/crm', cors(), revertAuthMiddleware(), crmRouter);
 router.use('/connection', cors(), revertAuthMiddleware(), connectionRouter);
 
-register(router, { metadata: metadataService, account: accountService });
+register(router, {
+    metadata: metadataService,
+    account: accountService,
+    crm: { lead: leadService },
+});
 
 export default router;
