@@ -2,6 +2,8 @@ import axios from 'axios';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { disunifyDeal, unifyDeal } from '../models/unified';
 import { ParsedQs } from 'qs';
+import { TP_ID } from '@prisma/client';
+import { PipedrivePagination } from 'constants/pipedrive';
 
 class DealService {
     async getUnifiedDeal(
@@ -34,7 +36,7 @@ class DealService {
                 },
             });
             deal = ([deal.data] as any[])?.[0];
-            deal = unifyDeal({ ...deal, ...deal?.properties });
+            deal = unifyDeal({ ...deal, ...deal?.properties }, thirdPartyId);
             return {
                 result: deal,
             };
@@ -46,7 +48,7 @@ class DealService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            let deal = unifyDeal(deals.data.data?.[0]);
+            let deal = unifyDeal(deals.data.data?.[0], thirdPartyId);
             return { result: deal };
         } else if (thirdPartyId === 'sfdc') {
             const instanceUrl = connection.tp_account_url;
@@ -57,7 +59,7 @@ class DealService {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            let deal = unifyDeal(deals.data);
+            let deal = unifyDeal(deals.data, thirdPartyId);
             return { result: deal };
         } else {
             return {
@@ -98,7 +100,7 @@ class DealService {
             });
             const nextCursor = deals.data?.paging?.next?.after || null;
             deals = deals.data.results as any[];
-            deals = deals?.map((l: any) => unifyDeal({ ...l, ...l?.properties }));
+            deals = deals?.map((l: any) => unifyDeal({ ...l, ...l?.properties }, thirdPartyId));
             return {
                 next: nextCursor,
                 previous: null, // Field not supported by Hubspot.
@@ -116,7 +118,7 @@ class DealService {
             const nextCursor = deals.data?.info?.next_page_token || null;
             const prevCursor = deals.data?.info?.previous_page_token || null;
             deals = deals.data.data;
-            deals = deals?.map((l: any) => unifyDeal(l));
+            deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
             return { next: nextCursor, previous: prevCursor, results: deals };
         } else if (thirdPartyId === 'sfdc') {
             let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
@@ -144,7 +146,7 @@ class DealService {
                     ? String(parseInt(String(cursor)) - deals.data?.totalSize)
                     : null;
             deals = deals.data?.records;
-            deals = deals?.map((l: any) => unifyDeal(l));
+            deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
             return { next: nextCursor, previous: prevCursor, results: deals };
         } else {
             return { error: 'Unrecognized CRM' };
@@ -159,68 +161,94 @@ class DealService {
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
         const searchCriteria = req.body.searchCriteria;
-        const fields = String(req.query.fields || '').split(',');
+        const fields = String(req.query.fields || '')
+            .split(',')
+            .filter(Boolean);
         console.log('Revert::SEARCH DEAL', tenantId, searchCriteria, fields);
-        if (thirdPartyId === 'hubspot') {
-            let deals: any = await axios({
-                method: 'post',
-                url: `https://api.hubapi.com/crm/v3/objects/deals/search`,
-                headers: {
-                    'content-type': 'application/json',
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-                data: JSON.stringify({
-                    ...searchCriteria,
-                    properties: [
-                        'hs_deal_status',
-                        'firstname',
-                        'email',
-                        'lastname',
-                        'hs_object_id',
-                        'dealname',
-                        'amount',
-                        'dealstage',
-                        'hs_priority',
-                        'hs_deal_stage_probability',
-                        'closedate',
-                        'hs_is_closed_won',
-                        ...fields,
-                    ],
-                }),
-            });
-            deals = deals.data.results as any[];
-            deals = deals?.map((l: any) => unifyDeal({ ...l, ...l?.properties }));
-            return {
-                status: 'ok',
-                results: deals,
-            };
-        } else if (thirdPartyId === 'zohocrm') {
-            let deals: any = await axios({
-                method: 'get',
-                url: `https://www.zohoapis.com/crm/v3/deals/search?criteria=${searchCriteria}`,
-                headers: {
-                    authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                },
-            });
-            deals = deals.data.data;
-            deals = deals?.map((l: any) => unifyDeal(l));
-            return { status: 'ok', results: deals };
-        } else if (thirdPartyId === 'sfdc') {
-            const instanceUrl = connection.tp_account_url;
-            let deals: any = await axios({
-                method: 'get',
-                url: `${instanceUrl}/services/data/v56.0/search?q=${searchCriteria}`,
-                headers: {
-                    authorization: `Bearer ${thirdPartyToken}`,
-                },
-            });
-            deals = deals?.data?.searchRecords;
-            deals = deals?.map((l: any) => unifyDeal(l));
-            return { status: 'ok', results: deals };
-        } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+
+        switch (thirdPartyId) {
+            case TP_ID.hubspot: {
+                let deals: any = await axios({
+                    method: 'post',
+                    url: `https://api.hubapi.com/crm/v3/objects/deals/search`,
+                    headers: {
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify({
+                        ...searchCriteria,
+                        properties: [
+                            'hs_deal_status',
+                            'firstname',
+                            'email',
+                            'lastname',
+                            'hs_object_id',
+                            'dealname',
+                            'amount',
+                            'dealstage',
+                            'hs_priority',
+                            'hs_deal_stage_probability',
+                            'closedate',
+                            'hs_is_closed_won',
+                            ...fields,
+                        ],
+                    }),
+                });
+                deals = deals.data.results as any[];
+                deals = deals?.map((l: any) => unifyDeal({ ...l, ...l?.properties }, thirdPartyId));
+                return {
+                    status: 'ok',
+                    results: deals,
+                };
+            }
+            case TP_ID.zohocrm: {
+                let deals: any = await axios({
+                    method: 'get',
+                    url: `https://www.zohoapis.com/crm/v3/deals/search?criteria=${searchCriteria}`,
+                    headers: {
+                        authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                    },
+                });
+                deals = deals.data.data;
+                deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
+                return { status: 'ok', results: deals };
+            }
+            case TP_ID.sfdc: {
+                const instanceUrl = connection.tp_account_url;
+                let deals: any = await axios({
+                    method: 'get',
+                    url: `${instanceUrl}/services/data/v56.0/search?q=${searchCriteria}`,
+                    headers: {
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                });
+                deals = deals?.data?.searchRecords;
+                deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
+                return { status: 'ok', results: deals };
+            }
+            case TP_ID.pipedrive: {
+                const instanceUrl = connection.tp_account_url;
+                const result = await axios.get<
+                    { data: { items: { item: any; result_score: number }[] } } & PipedrivePagination
+                >(
+                    `${instanceUrl}/v1/deals/search?term=${searchCriteria}${
+                        fields.length ? `&fields=${fields.join(',')}` : ''
+                    }`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                        },
+                    }
+                );
+                const deals = result.data.data.items.map((item) => item.item);
+                const unifiedDeals = deals?.map((d: any) => unifyDeal(d, thirdPartyId));
+                return { status: 'ok', results: unifiedDeals };
+            }
+            default: {
+                return {
+                    error: 'Unrecognised CRM',
+                };
+            }
         }
     }
     async createDeal(

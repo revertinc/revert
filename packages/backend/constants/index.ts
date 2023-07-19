@@ -35,3 +35,5 @@ export const DEFAULT_SCOPE = {
     [TP_ID.sfdc]: [], // https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_tokens_scopes.htm&type=5
     [TP_ID.pipedrive]: [],
 };
+
+export type ValueOf<T> = T[keyof T];

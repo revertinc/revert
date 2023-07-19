@@ -125,6 +125,29 @@ class ConnectionService {
             };
         }
     }
+    async getWebhook(
+        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
+        _res: Response<any, Record<string, any>, number>
+    ) {
+        try {
+            const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
+            const account = await prisma.accounts.findFirst({
+                where: {
+                    private_token: String(token),
+                },
+            });
+            const svixAppId = account!.id;
+            const webhook = await this.svix.endpoint.get(svixAppId, String(tenantId));
+            return { status: 'ok', webhook: webhook };
+        } catch (error: any) {
+            logError(error);
+            console.error(error);
+            return {
+                error: 'Error fetching webhook!',
+                errorMessage: error,
+            };
+        }
+    }
 
     async deleteWebhook(
         req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
+import { TP_ID } from '@prisma/client';
 
 class ProxyService {
     async tunnel(
@@ -19,7 +20,7 @@ class ProxyService {
         const queryParams = request.queryParams;
 
         console.log('Revert::POST PROXY', tenantId, thirdPartyId, thirdPartyToken, contactId);
-        if (thirdPartyId === 'hubspot') {
+        if (thirdPartyId === TP_ID.hubspot) {
             const result = await axios({
                 method: method,
                 url: `https://api.hubapi.com/${path}`,
@@ -34,7 +35,7 @@ class ProxyService {
             return {
                 result: result.data,
             };
-        } else if (thirdPartyId === 'zohocrm') {
+        } else if (thirdPartyId === TP_ID.zohocrm) {
             const result = await axios({
                 method: method,
                 url: `https://www.zohoapis.com/${path}`,
@@ -46,7 +47,7 @@ class ProxyService {
                 params: queryParams,
             });
             return { result: result.data.data };
-        } else if (thirdPartyId === 'sfdc') {
+        } else if (thirdPartyId === TP_ID.sfdc || thirdPartyId === TP_ID.pipedrive) {
             const instanceUrl = connection.tp_account_url;
             const result = await axios({
                 method: method,

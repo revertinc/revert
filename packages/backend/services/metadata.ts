@@ -67,7 +67,7 @@ const metadataService = new MetadataService({
                     name: 'Pipedrive',
                     imageSrc:
                         'https://res.cloudinary.com/dfcnic8wq/image/upload/w_86/v1688633518/Revert/PipedriveLogo.png',
-                    status: 'inactive',
+                    status: 'active',
                     scopes: getScope(apps, TP_ID.pipedrive),
                     clientId: getClientId(apps, TP_ID.pipedrive) || config.PIPEDRIVE_CLIENT_ID,
                 },
