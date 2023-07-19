@@ -6,43 +6,24 @@ imports:
     unified: ../common/unified.yml
 
 types:
-    CRMNotFound:
-        properties:
-            error: string
     GetUnifiedLeadResponse:
-        discriminant: status
-        union:
-            ok: GetUnifiedLeadResponseSuccess
-            notFound: CRMNotFound
-    GetUnifiedLeadResponseSuccess:
         properties:
+            status: string
             result: unified.Lead
     GetUnifiedLeadsResponse:
-        discriminant: status
-        union:
-            ok: GetUnifiedLeadsResponseSuccess
-            notFound: CRMNotFound
-    GetUnifiedLeadsResponseSuccess:
         properties:
+            status: string
             next: optional<string>
             previous: optional<string>
             results: list<unified.Lead>
     CreateOrUpdateLeadResponse:
-        discriminant: status
-        union:
-            ok: CreateOrUpdateLeadResponseSuccess
-            notFound: CRMNotFound
-    CreateOrUpdateLeadResponseSuccess:
         properties:
+            status: string
             message: string
             result: unknown
     SearchLeadsResponse:
-        discriminant: status
-        union:
-            ok: SearchLeadsResponseSuccess
-            notFound: CRMNotFound
-    SearchLeadsResponseSuccess:
         properties:
+            status: string
             results: list<unified.Lead>
 
 service:

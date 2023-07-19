@@ -1,4 +1,4 @@
-import { TP_ID } from "@prisma/client";
+import { TP_ID } from '@prisma/client';
 
 export const DEFAULT_SCOPE = {
     [TP_ID.hubspot]: [

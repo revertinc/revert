@@ -3,6 +3,7 @@ import { TP_ID, connections } from '@prisma/client';
 import { UnifiedLead, disunifyLead, unifyLead } from '../models/unified/lead';
 import { filterLeadsFromContactsForHubspot } from '../helpers/filterLeadsFromContacts';
 import { PipedrivePagination, PipedriveLead, PipedriveContact, PipedriveOrganization } from '../constants/pipedrive';
+import { NotFoundError } from '../generated/typescript/api/resources/common';
 
 class LeadService {
     async getUnifiedLead({
@@ -13,16 +14,10 @@ class LeadService {
         connection: connections;
         leadId: string;
         fields?: string;
-    }): Promise<
-        | {
-              status: 'ok';
-              result: UnifiedLead;
-          }
-        | {
-              status: 'notFound';
-              error: string;
-          }
-    > {
+    }): Promise<{
+        status: 'ok';
+        result: UnifiedLead;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
@@ -90,7 +85,7 @@ class LeadService {
                 return { status: 'ok', result: unifyLead(populatedLead, thirdPartyId) };
             }
             default: {
-                return { status: 'notFound', error: 'Unrecognised CRM' };
+                throw new NotFoundError({ error: 'Unrecognised CRM' });
             }
         }
     }
@@ -104,18 +99,12 @@ class LeadService {
         fields?: string;
         pageSize?: number;
         cursor?: string;
-    }): Promise<
-        | {
-              status: 'ok';
-              next?: string;
-              previous?: string;
-              results: UnifiedLead[];
-          }
-        | {
-              status: 'notFound';
-              error: string;
-          }
-    > {
+    }): Promise<{
+        status: 'ok';
+        next?: string;
+        previous?: string;
+        results: UnifiedLead[];
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
@@ -224,7 +213,7 @@ class LeadService {
                 return { status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedLeads };
             }
             default: {
-                return { status: 'notFound', error: 'Unrecognized CRM' };
+                throw new NotFoundError({ error: 'Unrecognised CRM' });
             }
         }
     }
@@ -236,16 +225,10 @@ class LeadService {
         connection: connections;
         searchCriteria: any;
         fields?: string;
-    }): Promise<
-        | {
-              status: 'ok';
-              results: UnifiedLead[];
-          }
-        | {
-              status: 'notFound';
-              error: string;
-          }
-    > {
+    }): Promise<{
+        status: 'ok';
+        results: UnifiedLead[];
+    }> {
         const formattedFields = (fields || '').split('').filter(Boolean);
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
@@ -326,24 +309,15 @@ class LeadService {
                 return { status: 'ok', results: unifiedLeads };
             }
             default: {
-                return {
-                    status: 'notFound',
-                    error: 'Unrecognised CRM',
-                };
+                throw new NotFoundError({ error: 'Unrecognised CRM' });
             }
         }
     }
-    async createLead({ connection, leadData }: { leadData: UnifiedLead; connection: connections }): Promise<
-        | {
-              status: 'ok';
-              result: any;
-              message: string;
-          }
-        | {
-              status: 'notFound';
-              error: string;
-          }
-    > {
+    async createLead({ connection, leadData }: { leadData: UnifiedLead; connection: connections }): Promise<{
+        status: 'ok';
+        result: any;
+        message: string;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
@@ -416,10 +390,7 @@ class LeadService {
                 };
             }
             default: {
-                return {
-                    status: 'notFound',
-                    error: 'Unrecognised CRM',
-                };
+                throw new NotFoundError({ error: 'Unrecognised CRM' });
             }
         }
     }
@@ -431,17 +402,11 @@ class LeadService {
         leadData: UnifiedLead;
         connection: connections;
         leadId: string;
-    }): Promise<
-        | {
-              status: 'ok';
-              result: any;
-              message: string;
-          }
-        | {
-              status: 'notFound';
-              error: string;
-          }
-    > {
+    }): Promise<{
+        status: 'ok';
+        result: any;
+        message: string;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
@@ -508,10 +473,7 @@ class LeadService {
                 };
             }
             default: {
-                return {
-                    status: 'notFound',
-                    error: 'Unrecognised CRM',
-                };
+                throw new NotFoundError({ error: 'Unrecognised CRM' });
             }
         }
     }
