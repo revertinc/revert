@@ -27,7 +27,6 @@ model accounts {
   domain        String         @unique @default("")
   skipWaitlist  Boolean        @default(false)
   users         users[]
-  apps          apps[]
   environments  environments[]
 }
 
@@ -38,6 +37,7 @@ model environments {
   public_token  String    @unique
   accounts      accounts? @relation(fields: [accountId], references: [id])
   accountId     String
+  apps          apps[]
 }
 
 model apps {
@@ -46,13 +46,11 @@ model apps {
   scope                      String[]
   app_client_id              String?
   app_client_secret          String?
-  owner_account_public_token String
-  account                    accounts      @relation(fields: [owner_account_public_token], references: [public_token])
+  owner_account_public_token String?
+  environmentId              String
+  env                        environments  @relation(fields: [environmentId], references: [id])
   connections                connections[]
   is_revert_app              Boolean       @default(false)
-  env                        ENV?
-
-  @@unique([owner_account_public_token, tp_id])
 }
 
 model users {
@@ -73,7 +71,8 @@ model connections {
   owner_account_public_token String
   app_client_id              String?
   app_client_secret          String?
-  app                        apps    @relation(fields: [owner_account_public_token, tp_id], references: [owner_account_public_token, tp_id])
+  app                        apps?   @relation(fields: [appId], references: [id])
+  appId                      String?
 
   @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")
   @@unique([tp_id, t_id], name: "uniqueThirdPartyPerTenant")
