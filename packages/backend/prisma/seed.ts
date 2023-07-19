@@ -1,4 +1,4 @@
-import { PrismaClient, TP_ID } from '@prisma/client';
+import { PrismaClient, TP_ID, ENV } from '@prisma/client';
 const prisma = new PrismaClient();
 async function main() {
     const localAccount = await prisma.accounts.upsert({
@@ -9,6 +9,18 @@ async function main() {
             private_token: 'localPrivateToken',
             public_token: 'localPublicToken',
             tenant_count: 0,
+            environments: {
+                createMany: {
+                    data: [
+                        {
+                            id: 'localEnv',
+                            env: ENV.development,
+                            private_token: 'localPrivateToken',
+                            public_token: 'localPublicToken',
+                        },
+                    ],
+                },
+            },
         },
     });
     await Promise.all(
@@ -20,6 +32,7 @@ async function main() {
                     scope: [],
                     owner_account_public_token: localAccount.public_token,
                     is_revert_app: true,
+                    environmentId: 'localEnv',
                 },
             });
             console.log({ localAccount, localRevertApp });
