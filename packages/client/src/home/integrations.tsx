@@ -42,7 +42,7 @@ const Integrations = () => {
             .then((response) => response.json())
             .then((result) => {
                 setAccount(result?.account);
-                localStorage.setItem(LOCALSTORAGE_KEYS.privateToken, result?.account.private_token);
+                localStorage.setItem(LOCALSTORAGE_KEYS.privateToken, result?.account.private_token); // TODO: Incorportate environment variables.
                 setLoading(false);
             })
             .catch((error) => {
@@ -232,7 +232,11 @@ const Integrations = () => {
             )}
 
             <Modal open={open} onClose={handleClose}>
-                <EditCredentials app={account?.apps?.find((app) => app.tp_id === appId)} handleClose={handleClose} setAccount={setAccount} />
+                <EditCredentials
+                    app={account?.apps?.find((app) => app.tp_id === appId)}
+                    handleClose={handleClose}
+                    setAccount={setAccount}
+                />
             </Modal>
         </div>
     );

@@ -17,7 +17,8 @@
         "migration:resolve": "prisma migrate resolve --applied $MIGRATION_ID",
         "migration:rollback": "prisma migrate resolve --rolled-back $MIGRATION_ID",
         "studio": "prisma studio",
-        "migration:generate": "pnpify prisma migrate dev --name %1"
+        "migration:dryRun": "prisma migrate dev --create-only --name %1",
+        "migration:generate": "prisma migrate dev --name %1"
     },
     "prisma": {
         "seed": "ts-node prisma/seed.ts"

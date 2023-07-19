@@ -29,7 +29,7 @@ const ApiKeys = () => {
         fetch(`${REVERT_BASE_API_URL}/internal/account`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
-                setAccount(result?.account);
+                setAccount(result?.account); // TODO: Incorportate environment variables.
                 setLoading(false);
             })
             .catch((error) => {
