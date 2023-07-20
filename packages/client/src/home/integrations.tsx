@@ -16,6 +16,7 @@ const Integrations = () => {
     const [viewSecret, setViewSecret] = useState<boolean>(false);
     const [open, setOpen] = React.useState(false);
     const [appId, setAppId] = useState<string>('sfdc');
+    const [environment, setEnvironment] = useState<string>('production');
 
     const handleOpen = (appId: string) => {
         setAppId(appId);
@@ -233,7 +234,9 @@ const Integrations = () => {
 
             <Modal open={open} onClose={handleClose}>
                 <EditCredentials
-                    app={account?.apps?.find((app) => app.tp_id === appId)}
+                    app={account?.apps
+                        ?.find((app) => app.find((a) => a.env === environment))
+                        ?.find((a) => a.tp_id === appId)}
                     handleClose={handleClose}
                     setAccount={setAccount}
                 />
