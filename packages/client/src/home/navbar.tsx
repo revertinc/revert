@@ -3,12 +3,14 @@ import Logo from '../assets/images/logo.png';
 import { SignedIn, UserButton } from '@clerk/clerk-react';
 import { Link } from 'react-router-dom';
 import QuizIcon from '@mui/icons-material/Quiz';
+import EnvironmentSelector from './environmentSelector';
 
-const Navbar = () => {
+const Navbar = ({ environment, setEnvironment }) => {
     return (
         <div id="top-navbar">
             <Link to="/" className="flex items-center">
-                <img src={Logo} alt="forest_logo" className="w-[30px] h-[30px] ml-[24px] cursor-pointer mt-4 mb-3" />
+                <img src={Logo} alt="revert_logo" className="w-[30px] h-[30px] ml-[24px] cursor-pointer mt-4 mb-3" />
+                <EnvironmentSelector environmentProp={environment} setEnvironmentProp={setEnvironment} />
             </Link>
             <div className="flex justify-center items-center">
                 <a
