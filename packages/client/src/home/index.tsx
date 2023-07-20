@@ -7,6 +7,7 @@ import Integrations from './integrations';
 
 const Home = () => {
     const [tabValue, setTabValue] = React.useState(0);
+    const [environment, setEnvironment] = React.useState<string>('production');
 
     const handleChange = (newTabValue: number) => {
         setTabValue(newTabValue);
@@ -14,15 +15,15 @@ const Home = () => {
 
     const renderTab = (tabValue: number) => {
         if (tabValue === 0) {
-            return <Integrations />;
+            return <Integrations environment={environment} />;
         } else if (tabValue === 1) {
-            return <ApiKeys />;
+            return <ApiKeys environment={environment} />;
         } else return undefined;
     };
 
     return (
         <>
-            <Navbar />
+            <Navbar environment={environment} setEnvironment={setEnvironment} />
             <div className="flex h-[100%]">
                 <div className="w-[20%] flex flex-col items-center pt-[120px] text-[#6e6e6e]">
                     <ul>

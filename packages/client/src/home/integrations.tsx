@@ -9,14 +9,13 @@ import Modal from '@mui/material/Modal';
 import EditCredentials from './editCredentials';
 import { LOCALSTORAGE_KEYS } from '../data/localstorage';
 
-const Integrations = () => {
+const Integrations = ({ environment }) => {
     const user = useUser();
     const [account, setAccount] = useState<any>();
     const [isLoading, setLoading] = useState<boolean>(false);
     const [viewSecret, setViewSecret] = useState<boolean>(false);
     const [open, setOpen] = React.useState(false);
     const [appId, setAppId] = useState<string>('sfdc');
-    const [environment, setEnvironment] = useState<string>('production');
 
     const handleOpen = (appId: string) => {
         setAppId(appId);
@@ -27,6 +26,7 @@ const Integrations = () => {
     };
 
     useEffect(() => {
+        if (open) return;
         const headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
@@ -43,14 +43,14 @@ const Integrations = () => {
             .then((response) => response.json())
             .then((result) => {
                 setAccount(result?.account);
-                localStorage.setItem(LOCALSTORAGE_KEYS.privateToken, result?.account.private_token); // TODO: Incorportate environment variables.
+                localStorage.setItem(LOCALSTORAGE_KEYS.privateToken, result?.account.private_token);
                 setLoading(false);
             })
             .catch((error) => {
                 console.log('error', error);
                 setLoading(false);
             });
-    }, [user.user?.id]);
+    }, [user.user?.id, environment, open]);
 
     let secretOverlay = {};
     if (!viewSecret) {

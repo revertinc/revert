@@ -7,7 +7,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { REVERT_BASE_API_URL } from '../constants';
 
-const ApiKeys = () => {
+const ApiKeys = ({ environment }) => {
     const user = useUser();
     const [account, setAccount] = useState<any>();
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -29,14 +29,14 @@ const ApiKeys = () => {
         fetch(`${REVERT_BASE_API_URL}/internal/account`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
-                setAccount(result?.account); // TODO: Incorportate environment variables.
+                setAccount(result?.account?.environments.find((e) => e.env === environment));
                 setLoading(false);
             })
             .catch((error) => {
                 console.log('error', error);
                 setLoading(false);
             });
-    }, [user.user?.id]);
+    }, [user.user?.id, environment]);
 
     let secretOverlay = {};
     if (!viewSecret) {
