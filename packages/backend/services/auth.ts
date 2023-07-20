@@ -309,6 +309,7 @@ class AuthService {
                 return {
                     ...app,
                     scope: app.scope.length ? app.scope : DEFAULT_SCOPE[app.tp_id],
+                    env: env.env,
                 };
             })
         );
