@@ -1,13 +1,26 @@
 types:
-    Lead:
+    CommonUnifiedFields:
         properties:
-            firstName: string
-            lastName: string
-            phone: string
-            email: string
             id: string
             remoteId: string
             createdTimestamp: unknown
             updatedTimestamp: unknown
             associations: unknown
             additional: unknown
+    Lead:
+        extends: CommonUnifiedFields
+        properties:
+            firstName: string
+            lastName: string
+            phone: string
+            email: string
+    Deal:
+        extends: CommonUnifiedFields
+        properties:
+            amount: integer
+            priority: optional<string>
+            stage: string
+            name: string
+            expectedCloseDate: unknown
+            isWon: boolean
+            probability: integer

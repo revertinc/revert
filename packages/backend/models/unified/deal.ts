@@ -4,13 +4,13 @@ import { PipedriveDealStatus } from '../../constants/pipedrive';
 export type DealAssociation = 'personId' | 'organizationId';
 
 export interface UnifiedDeal {
-    amount: Number;
+    amount: number;
     priority: string; // not available for pipedrive
     stage: string;
     name: string;
     expectedCloseDate: Date; // not available for pipedrive search
     isWon: boolean;
-    probability: Number;
+    probability: number;
     id: string;
     remoteId: string;
     createdTimestamp: Date;

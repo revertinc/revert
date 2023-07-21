@@ -1,25 +1,29 @@
 import axios from 'axios';
-import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
-import { disunifyDeal, unifyDeal } from '../models/unified';
-import { ParsedQs } from 'qs';
-import { TP_ID } from '@prisma/client';
-import { PipedrivePagination } from 'constants/pipedrive';
+import { UnifiedDeal, disunifyDeal, unifyDeal } from '../models/unified';
+import { TP_ID, connections } from '@prisma/client';
+import { PipedrivePagination } from '../constants/pipedrive';
+import { NotFoundError } from '../generated/typescript/api/resources/common';
 
 class DealService {
-    async getUnifiedDeal(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedDeal({
+        connection,
+        dealId,
+        fields,
+    }: {
+        connection: connections;
+        dealId: string;
+        fields?: string;
+    }): Promise<{
+        status: 'ok';
+        result: UnifiedDeal;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const dealId = req.params.id;
-        let fields = req.query.fields;
         console.log('Revert::GET DEAL', tenantId, thirdPartyId, thirdPartyToken, dealId);
         if (thirdPartyId === 'hubspot') {
-            fields = [
-                ...String(req.query.fields || '').split(','),
+            const formattedFields = [
+                ...String(fields || '').split(','),
                 'dealname',
                 'amount',
                 'dealstage',
@@ -30,16 +34,14 @@ class DealService {
             ];
             let deal: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?properties=${fields}`,
+                url: `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?properties=${formattedFields}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
             deal = ([deal.data] as any[])?.[0];
             deal = unifyDeal({ ...deal, ...deal?.properties }, thirdPartyId);
-            return {
-                result: deal,
-            };
+            return { status: 'ok', result: deal };
         } else if (thirdPartyId === 'zohocrm') {
             const deals = await axios({
                 method: 'get',
@@ -49,7 +51,7 @@ class DealService {
                 },
             });
             let deal = unifyDeal(deals.data.data?.[0], thirdPartyId);
-            return { result: deal };
+            return { status: 'ok', result: deal };
         } else if (thirdPartyId === 'sfdc') {
             const instanceUrl = connection.tp_account_url;
             const deals = await axios({
@@ -60,28 +62,35 @@ class DealService {
                 },
             });
             let deal = unifyDeal(deals.data, thirdPartyId);
-            return { result: deal };
+            return { status: 'ok', result: deal };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async getUnifiedDeals(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedDeals({
+        connection,
+        fields,
+        pageSize,
+        cursor,
+    }: {
+        connection: connections;
+        fields?: string;
+        pageSize?: number;
+        cursor?: string;
+    }): Promise<{
+        status: 'ok';
+        next?: string;
+        previous?: string;
+        results: UnifiedDeal[];
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        let fields = req.query.fields;
-        const pageSize = parseInt(String(req.query.pageSize));
-        const cursor = req.query.cursor;
+
         console.log('Revert::GET ALL DEAL', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
-            fields = [
-                ...String(req.query.fields || '').split(','),
+            const formattedFields = [
+                ...String(fields || '').split(','),
                 'dealname',
                 'amount',
                 'dealstage',
@@ -93,17 +102,18 @@ class DealService {
             const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let deals: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/deals?properties=${fields}&${pagingString}`,
+                url: `https://api.hubapi.com/crm/v3/objects/deals?properties=${formattedFields}&${pagingString}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = deals.data?.paging?.next?.after || null;
+            const nextCursor = deals.data?.paging?.next?.after || undefined;
             deals = deals.data.results as any[];
             deals = deals?.map((l: any) => unifyDeal({ ...l, ...l?.properties }, thirdPartyId));
             return {
+                status: 'ok',
                 next: nextCursor,
-                previous: null, // Field not supported by Hubspot.
+                previous: undefined, // Field not supported by Hubspot.
                 results: deals,
             };
         } else if (thirdPartyId === 'zohocrm') {
@@ -115,11 +125,11 @@ class DealService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = deals.data?.info?.next_page_token || null;
-            const prevCursor = deals.data?.info?.previous_page_token || null;
+            const nextCursor = deals.data?.info?.next_page_token || undefined;
+            const prevCursor = deals.data?.info?.previous_page_token || undefined;
             deals = deals.data.data;
             deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
-            return { next: nextCursor, previous: prevCursor, results: deals };
+            return { status: 'ok', next: nextCursor, previous: prevCursor, results: deals };
         } else if (thirdPartyId === 'sfdc') {
             let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
                 cursor ? `OFFSET+${cursor}` : ''
@@ -140,30 +150,34 @@ class DealService {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = pageSize ? String(deals.data?.totalSize + (parseInt(String(cursor)) || 0)) : null;
+            const nextCursor = pageSize ? String(deals.data?.totalSize + (parseInt(String(cursor)) || 0)) : undefined;
             const prevCursor =
                 cursor && parseInt(String(cursor)) > 0
                     ? String(parseInt(String(cursor)) - deals.data?.totalSize)
-                    : null;
+                    : undefined;
             deals = deals.data?.records;
             deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
-            return { next: nextCursor, previous: prevCursor, results: deals };
+            return { status: 'ok', next: nextCursor, previous: prevCursor, results: deals };
         } else {
-            return { error: 'Unrecognized CRM' };
+            throw new NotFoundError({ error: 'Unrecognised CRM' });
         }
     }
-    async searchUnifiedDeals(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async searchUnifiedDeals({
+        connection,
+        searchCriteria,
+        fields,
+    }: {
+        connection: connections;
+        searchCriteria: any;
+        fields?: string;
+    }): Promise<{
+        status: 'ok';
+        results: UnifiedDeal[];
+    }> {
+        const formattedFields = (fields || '').split('').filter(Boolean);
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const searchCriteria = req.body.searchCriteria;
-        const fields = String(req.query.fields || '')
-            .split(',')
-            .filter(Boolean);
         console.log('Revert::SEARCH DEAL', tenantId, searchCriteria, fields);
 
         switch (thirdPartyId) {
@@ -190,16 +204,13 @@ class DealService {
                             'hs_deal_stage_probability',
                             'closedate',
                             'hs_is_closed_won',
-                            ...fields,
+                            ...formattedFields,
                         ],
                     }),
                 });
                 deals = deals.data.results as any[];
                 deals = deals?.map((l: any) => unifyDeal({ ...l, ...l?.properties }, thirdPartyId));
-                return {
-                    status: 'ok',
-                    results: deals,
-                };
+                return { status: 'ok', results: deals };
             }
             case TP_ID.zohocrm: {
                 let deals: any = await axios({
@@ -232,7 +243,7 @@ class DealService {
                     { data: { items: { item: any; result_score: number }[] } } & PipedrivePagination
                 >(
                     `${instanceUrl}/v1/deals/search?term=${searchCriteria}${
-                        fields.length ? `&fields=${fields.join(',')}` : ''
+                        formattedFields.length ? `&fields=${formattedFields.join(',')}` : ''
                     }`,
                     {
                         headers: {
@@ -245,21 +256,19 @@ class DealService {
                 return { status: 'ok', results: unifiedDeals };
             }
             default: {
-                return {
-                    error: 'Unrecognised CRM',
-                };
+                throw new NotFoundError({ error: 'Unrecognised CRM' });
             }
         }
     }
-    async createDeal(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async createDeal({ connection, dealData }: { dealData: UnifiedDeal; connection: connections }): Promise<{
+        status: 'ok';
+        result: any;
+        message: string;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const deal = disunifyDeal(req.body, thirdPartyId);
+        const deal = disunifyDeal(dealData, thirdPartyId);
         console.log('Revert::CREATE DEAL', tenantId, deal);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -303,21 +312,26 @@ class DealService {
                 result: dealCreated.data,
             };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognised CRM' });
         }
     }
-    async updateDeal(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async updateDeal({
+        connection,
+        dealData,
+        dealId,
+    }: {
+        dealData: UnifiedDeal;
+        connection: connections;
+        dealId: string;
+    }): Promise<{
+        status: 'ok';
+        result: any;
+        message: string;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const deal = disunifyDeal(req.body, thirdPartyId);
-        const dealId = req.params.id;
+        const deal = disunifyDeal(dealData, thirdPartyId);
         console.log('Revert::UPDATE DEAL', tenantId, deal, dealId);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -357,9 +371,7 @@ class DealService {
             });
             return { status: 'ok', message: 'SFDC deal updated', result: deal };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognised CRM' });
         }
     }
 }

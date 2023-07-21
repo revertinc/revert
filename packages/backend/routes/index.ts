@@ -15,6 +15,7 @@ import AuthService from '../services/auth';
 import logError from '../helpers/logError';
 import verifyRevertWebhook from '../helpers/verifyRevertWebhook';
 import { leadService } from './v1/crm/lead';
+import { dealService } from './v1/crm/deal';
 
 const router = express.Router();
 
@@ -96,7 +97,7 @@ router.use('/connection', cors(), revertAuthMiddleware(), connectionRouter);
 register(router, {
     metadata: metadataService,
     account: accountService,
-    crm: { lead: leadService },
+    crm: { lead: leadService, deal: dealService },
 });
 
 export default router;
