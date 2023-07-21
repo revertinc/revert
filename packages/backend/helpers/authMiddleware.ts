@@ -16,7 +16,14 @@ const revertAuthMiddleware = () => async (req: Request, res: Response, next: () 
     try {
         const account = await prisma.accounts.findMany({
             where: {
-                private_token: token as string,
+                environments: {
+                    some: {
+                        private_token: token as string,
+                    },
+                },
+            },
+            include: {
+                environments: true,
             },
         });
         if (!account || !account.length) {

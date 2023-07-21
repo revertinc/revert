@@ -7,6 +7,11 @@ import Integrations from './integrations';
 import { useUser } from '@clerk/clerk-react';
 import { REVERT_BASE_API_URL } from '../constants';
 
+const selectedStyle = {
+    background: '#f4f4f4',
+    borderRadius: 4,
+};
+
 const Home = () => {
     const [tabValue, setTabValue] = React.useState(0);
     const [account, setAccount] = React.useState<any>();
@@ -46,18 +51,25 @@ const Home = () => {
             return <ApiKeys environment={environment} />;
         } else return undefined;
     };
-
     return (
         <>
             <Navbar environment={environment} setEnvironment={setEnvironment} environmentList={account?.environments} />
             <div className="flex h-[100%]">
                 <div className="w-[20%] flex flex-col items-center pt-[120px] text-[#6e6e6e]">
                     <ul>
-                        <li className="p-2 cursor-pointer" onClick={() => handleChange(0)}>
+                        <li
+                            className="p-2 cursor-pointer"
+                            style={tabValue === 0 ? selectedStyle : undefined}
+                            onClick={() => handleChange(0)}
+                        >
                             <AppsIcon />
                             <span className="p-2">Integrations</span>
                         </li>
-                        <li className="p-2 cursor-pointer" onClick={() => handleChange(1)}>
+                        <li
+                            className="p-2 cursor-pointer"
+                            style={tabValue === 1 ? selectedStyle : undefined}
+                            onClick={() => handleChange(1)}
+                        >
                             <KeyIcon />
                             <span className="p-2">API Keys</span>
                         </li>

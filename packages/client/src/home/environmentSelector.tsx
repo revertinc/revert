@@ -12,7 +12,7 @@ export default function EnvironmentSelector({ environmentProp, setEnvironmentPro
         setEnvironmentProp(event.target.value);
     };
     return (
-        <FormControl sx={{ m: 1, minWidth: 120, background: '#cecece', borderRadius: 1, marginLeft: 3 }} size="small">
+        <FormControl sx={{ m: 1, minWidth: 120, background: '#cecece', borderRadius: 2, marginLeft: 3 }} size="small">
             <InputLabel id="environment-selector-label" style={{ color: 'rgb(110 110 110)', fontSize: 14 }}>
                 Environment
             </InputLabel>
