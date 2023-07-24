@@ -3,11 +3,16 @@ import prisma from '../prisma/client';
 import logError from './logError';
 
 const revertTenantMiddleware = () => async (req: Request, res: Response, next: () => any) => {
-    const { 'x-revert-t-id': tenantId } = req.headers;
+    const { 'x-revert-t-id': tenantId, 'x-revert-api-token': token } = req.headers;
     try {
         const connection: any = await prisma.connections.findMany({
             where: {
                 t_id: tenantId as string,
+                app: {
+                    env: {
+                        private_token: token as string,
+                    },
+                },
             },
             select: {
                 tp_access_token: true,
@@ -17,7 +22,6 @@ const revertTenantMiddleware = () => async (req: Request, res: Response, next: (
                 tp_customer_id: true,
             },
         });
-
         if (!connection || !connection.length) {
             return res.status(400).send({
                 error: 'Tenant not found',

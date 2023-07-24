@@ -39,6 +39,7 @@ service:
                     scopes: optional<list<string>>
                     tpId: types.TPID
                     isRevertApp: boolean
+                    appId: string
             response: types.App
             errors:
                 - errors.UnAuthorizedError

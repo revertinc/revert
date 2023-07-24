@@ -10,14 +10,16 @@
         "start:prod": "yarn db-deploy && NODE_ENV=production node ./dist/index.js",
         "start:dev": "NODE_ENV=development ts-node-dev --respawn index.ts",
         "test": "jest --config=jest.config.json",
-        "dev": "ts-node-dev --respawn index.ts",
+        "dev": "NODE_ENV=development ts-node-dev --respawn index.ts",
         "db-deploy": "prisma migrate deploy",
         "db-seed": "prisma db seed",
         "db-pull": "prisma db pull",
         "migration:resolve": "prisma migrate resolve --applied $MIGRATION_ID",
         "migration:rollback": "prisma migrate resolve --rolled-back $MIGRATION_ID",
         "studio": "prisma studio",
-        "migration:generate": "pnpify prisma migrate dev --name %1"
+        "migration:dryRun": "prisma migrate dev --create-only --name %1",
+        "migration:generate": "prisma migrate dev --name %1",
+        "migration:diff": " npx prisma migrate diff --shadow-database-url $DATABASE_URL_STAGING --from-url $DATABASE_URL_PROD --to-migrations ./prisma/migrations --script > ./prisma/migrations/scripts/backward.sql"
     },
     "prisma": {
         "seed": "ts-node prisma/seed.ts"

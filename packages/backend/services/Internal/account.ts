@@ -22,7 +22,7 @@ const accountService = new AccountService({
     },
     async updateAccountCredentials(req, res) {
         try {
-            const { clientId, clientSecret, scopes, tpId, isRevertApp } = req.body;
+            const { clientId, clientSecret, scopes, tpId, isRevertApp, appId } = req.body;
             const { 'x-revert-api-token': token } = req.headers;
             const account = await prisma.accounts.findFirst({
                 where: {
@@ -38,6 +38,7 @@ const accountService = new AccountService({
                 });
             }
             const result = await AuthService.setAppCredentialsForUser({
+                appId,
                 publicToken: account.public_token,
                 clientId,
                 clientSecret,

@@ -18,7 +18,9 @@ const metadataService = new MetadataService({
             const apps = await prisma.apps.findMany({
                 select: { scope: true, app_client_id: true, tp_id: true },
                 where: {
-                    owner_account_public_token: token as string,
+                    env: {
+                        public_token: token as string,
+                    },
                 },
             });
             if (!apps || !apps.length) {
