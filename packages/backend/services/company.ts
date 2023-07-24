@@ -42,9 +42,7 @@ class CompanyService {
                 },
             });
 
-            return { status: 'ok',
-                result: unifyCompany({ ...company.data, ...company.data?.properties }),
-            };
+            return { status: 'ok', result: unifyCompany({ ...company.data, ...company.data?.properties }) };
         } else if (thirdPartyId === 'zohocrm') {
             let company: any = await axios({
                 method: 'get',
@@ -114,7 +112,8 @@ class CompanyService {
             const nextCursor = companies.data?.paging?.next?.after || undefined;
             companies = companies.data.results as any[];
             companies = companies?.map((c: any) => unifyCompany({ ...c, ...c?.properties }));
-            return { status: 'ok',
+            return {
+                status: 'ok',
                 next: nextCursor,
                 previous: undefined, // Field not supported by Hubspot.
                 results: companies,
@@ -153,7 +152,9 @@ class CompanyService {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = pageSize ? String(companies.data?.totalSize + (parseInt(String(cursor)) || 0)) : undefined;
+            const nextCursor = pageSize
+                ? String(companies.data?.totalSize + (parseInt(String(cursor)) || 0))
+                : undefined;
             const prevCursor =
                 cursor && parseInt(String(cursor)) > 0
                     ? String(parseInt(String(cursor)) - companies.data?.totalSize)
@@ -240,7 +241,13 @@ class CompanyService {
             throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async createCompany({ connection, companyData }: { companyData: UnifiedCompany; connection: connections }): Promise<{
+    async createCompany({
+        connection,
+        companyData,
+    }: {
+        companyData: UnifiedCompany;
+        connection: connections;
+    }): Promise<{
         status: 'ok';
         result: any;
         message: string;

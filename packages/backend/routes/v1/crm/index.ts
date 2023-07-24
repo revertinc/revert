@@ -1,6 +1,5 @@
 import express from 'express';
 import contactRouter from './contact';
-import companyRouter from './company';
 import proxyRouter from './proxy';
 import authRouter from './auth';
 import taskRouter from './task';
@@ -22,7 +21,6 @@ crmRouter.get('/ping', async (_, res) => {
 
 crmRouter.use('/', authRouter);
 crmRouter.use('/contacts', contactRouter);
-crmRouter.use('/companies', companyRouter);
 crmRouter.use('/tasks', taskRouter);
 crmRouter.use('/events', eventRouter);
 crmRouter.use('/users', userRouter);
