@@ -24,3 +24,7 @@ types:
             expectedCloseDate: unknown
             isWon: boolean
             probability: integer
+    Note:
+        extends: CommonUnifiedFields
+        properties:
+            content: string

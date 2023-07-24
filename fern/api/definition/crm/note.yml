@@ -1,0 +1,104 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    GetUnifiedNoteResponse:
+        properties:
+            status: string
+            result: unified.Note
+    GetUnifiedNotesResponse:
+        properties:
+            status: string
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.Note>
+    CreateOrUpdateNoteResponse:
+        properties:
+            status: string
+            message: string
+            result: unknown
+    SearchNotesResponse:
+        properties:
+            status: string
+            results: list<unified.Note>
+
+service:
+    base-path: /crm/notes
+    auth: true
+    endpoints:
+        getUnifiedNote:
+            docs: Get details of a note
+            method: GET
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: GetUnifiedNoteRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetUnifiedNoteResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getUnifiedNotes:
+            docs: Get all the notes
+            method: GET
+            path: ''
+            request:
+                name: GetUnifiedNotesRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetUnifiedNotesResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createNote:
+            docs: Create a new note
+            method: POST
+            path: ''
+            request:
+                name: CreateNoteRequest
+                body: unified.Note
+            response: CreateOrUpdateNoteResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateNote:
+            docs: Update a note
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateNoteRequest
+                body: unified.Note
+            response: CreateOrUpdateNoteResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        searchNotes:
+            docs: Search for notes
+            method: POST
+            path: /search
+            request:
+                name: SearchNotesRequest
+                body:
+                    properties:
+                        searchCriteria: unknown
+                query-parameters:
+                    fields: optional<string>
+            response: SearchNotesResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

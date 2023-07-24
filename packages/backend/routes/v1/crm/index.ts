@@ -3,7 +3,6 @@ import contactRouter from './contact';
 import companyRouter from './company';
 import proxyRouter from './proxy';
 import authRouter from './auth';
-import noteRouter from './note';
 import taskRouter from './task';
 import eventRouter from './event';
 import userRouter from './user';
@@ -24,7 +23,6 @@ crmRouter.get('/ping', async (_, res) => {
 crmRouter.use('/', authRouter);
 crmRouter.use('/contacts', contactRouter);
 crmRouter.use('/companies', companyRouter);
-crmRouter.use('/notes', noteRouter);
 crmRouter.use('/tasks', taskRouter);
 crmRouter.use('/events', eventRouter);
 crmRouter.use('/users', userRouter);

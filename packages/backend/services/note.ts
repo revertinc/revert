@@ -1,35 +1,37 @@
 import axios from 'axios';
-import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
-import { disunifyNote, unifyNote } from '../models/unified';
-import { ParsedQs } from 'qs';
-import { TP_ID } from '@prisma/client';
+import { UnifiedNote, disunifyNote, unifyNote } from '../models/unified';
+import { TP_ID, connections } from '@prisma/client';
+import { NotFoundError } from '../generated/typescript/api/resources/common';
 
 class NoteService {
-    async getUnifiedNote(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedNote({
+        connection,
+        noteId,
+        fields,
+    }: {
+        connection: connections;
+        noteId: string;
+        fields?: string;
+    }): Promise<{
+        status: 'ok';
+        result: UnifiedNote;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const noteId = req.params.id;
-        let fields = req.query.fields;
         console.log('Revert::GET NOTE', tenantId, thirdPartyId, thirdPartyToken, noteId);
         if (thirdPartyId === 'hubspot') {
-            fields = [...String(req.query.fields || '').split(','), 'hs_note_body'];
+            const formattedFields = [...String(fields || '').split(','), 'hs_note_body'];
             let note: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/notes/${noteId}?properties=${fields}`,
+                url: `https://api.hubapi.com/crm/v3/objects/notes/${noteId}?properties=${formattedFields}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
             note = ([note.data] as any[])?.[0];
             note = unifyNote({ ...note, ...note?.properties }, thirdPartyId);
-            return {
-                result: { ...note, ...note?.properties },
-            };
+            return { status: 'ok', result: { ...note, ...note?.properties } };
         } else if (thirdPartyId === 'zohocrm') {
             const notes = await axios({
                 method: 'get',
@@ -39,7 +41,7 @@ class NoteService {
                 },
             });
             let note = unifyNote(notes.data.data?.[0], thirdPartyId);
-            return { result: note };
+            return { status: 'ok', result: note };
         } else if (thirdPartyId === 'sfdc') {
             const instanceUrl = connection.tp_account_url;
             const notes = await axios({
@@ -50,41 +52,48 @@ class NoteService {
                 },
             });
             let note = unifyNote(notes.data, thirdPartyId);
-            return { result: note };
+            return { status: 'ok', result: note };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async getUnifiedNotes(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedNotes({
+        connection,
+        fields,
+        pageSize,
+        cursor,
+    }: {
+        connection: connections;
+        fields?: string;
+        pageSize?: number;
+        cursor?: string;
+    }): Promise<{
+        status: 'ok';
+        next?: string;
+        previous?: string;
+        results: UnifiedNote[];
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        let fields = req.query.fields;
-        const pageSize = parseInt(String(req.query.pageSize));
-        const cursor = req.query.cursor;
         console.log('Revert::GET ALL NOTE', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
-            fields = [...String(req.query.fields || '').split(','), 'hs_note_body'];
+            const formattedFields = [...String(fields || '').split(','), 'hs_note_body'];
             const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let notes: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/notes?properties=${fields}&${pagingString}`,
+                url: `https://api.hubapi.com/crm/v3/objects/notes?properties=${formattedFields}&${pagingString}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = notes.data?.paging?.next?.after || null;
+            const nextCursor = notes.data?.paging?.next?.after || undefined;
             notes = notes.data.results as any[];
             notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }, thirdPartyId));
             return {
+                status: 'ok',
                 next: nextCursor,
-                previous: null, // Field not supported by Hubspot.
+                previous: undefined, // Field not supported by Hubspot.
                 results: notes,
             };
         } else if (thirdPartyId === 'zohocrm') {
@@ -96,11 +105,11 @@ class NoteService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = notes.data?.info?.next_page_token || null;
-            const prevCursor = notes.data?.info?.previous_page_token || null;
+            const nextCursor = notes.data?.info?.next_page_token || undefined;
+            const prevCursor = notes.data?.info?.previous_page_token || undefined;
             notes = notes.data.data;
             notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
-            return { next: nextCursor, previous: prevCursor, results: notes };
+            return { status: 'ok', next: nextCursor, previous: prevCursor, results: notes };
         } else if (thirdPartyId === 'sfdc') {
             let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
                 cursor ? `OFFSET+${cursor}` : ''
@@ -121,28 +130,34 @@ class NoteService {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = pageSize ? String(notes.data?.totalSize + (parseInt(String(cursor)) || 0)) : null;
+            const nextCursor = pageSize ? String(notes.data?.totalSize + (parseInt(String(cursor)) || 0)) : undefined;
             const prevCursor =
                 cursor && parseInt(String(cursor)) > 0
                     ? String(parseInt(String(cursor)) - notes.data?.totalSize)
-                    : null;
+                    : undefined;
             notes = notes.data?.records;
             notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
-            return { next: nextCursor, previous: prevCursor, results: notes };
+            return { status: 'ok', next: nextCursor, previous: prevCursor, results: notes };
         } else {
-            return { error: 'Unrecognized CRM' };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async searchUnifiedNotes(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async searchUnifiedNotes({
+        connection,
+        searchCriteria,
+        fields,
+    }: {
+        connection: connections;
+        searchCriteria: any;
+        fields?: string;
+    }): Promise<{
+        status: 'ok';
+        results: UnifiedNote[];
+    }> {
+        const formattedFields = (fields || '').split('').filter(Boolean);
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const searchCriteria = req.body.searchCriteria;
-        const fields = String(req.query.fields || '').split(',');
         console.log('Revert::SEARCH NOTE', tenantId, searchCriteria, fields);
         if (thirdPartyId === 'hubspot') {
             let notes: any = await axios({
@@ -154,15 +169,12 @@ class NoteService {
                 },
                 data: JSON.stringify({
                     ...searchCriteria,
-                    properties: ['hs_note_body', 'hs_object_id', ...fields],
+                    properties: ['hs_note_body', 'hs_object_id', ...formattedFields],
                 }),
             });
             notes = notes.data.results as any[];
             notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }, thirdPartyId));
-            return {
-                status: 'ok',
-                results: notes,
-            };
+            return { status: 'ok', results: notes };
         } else if (thirdPartyId === 'zohocrm') {
             let notes: any = await axios({
                 method: 'get',
@@ -187,20 +199,18 @@ class NoteService {
             notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
             return { status: 'ok', results: notes };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async createNote(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async createNote({ connection, noteData }: { noteData: UnifiedNote; connection: connections }): Promise<{
+        status: 'ok';
+        result: any;
+        message: string;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const note = disunifyNote(req.body, thirdPartyId);
+        const note = disunifyNote(noteData, thirdPartyId);
         console.log('Revert::CREATE NOTE', tenantId, note);
 
         switch (thirdPartyId) {
@@ -242,11 +252,7 @@ class NoteService {
                     },
                     data: JSON.stringify(note),
                 });
-                return {
-                    status: 'ok',
-                    message: 'SFDC note created',
-                    result: noteCreated.data,
-                };
+                return { status: 'ok', message: 'SFDC note created', result: noteCreated.data };
             }
             case TP_ID.pipedrive: {
                 const instanceUrl = connection.tp_account_url;
@@ -264,23 +270,28 @@ class NoteService {
                 };
             }
             default: {
-                return {
-                    error: 'Unrecognised CRM',
-                };
+                throw new NotFoundError({ error: 'Unrecognized CRM' });
             }
         }
     }
 
-    async updateNote(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async updateNote({
+        connection,
+        noteData,
+        noteId,
+    }: {
+        noteData: UnifiedNote;
+        connection: connections;
+        noteId: string;
+    }): Promise<{
+        status: 'ok';
+        result: any;
+        message: string;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const note = disunifyNote(req.body, thirdPartyId);
-        const noteId = req.params.id;
+        const note = disunifyNote(noteData, thirdPartyId);
         console.log('Revert::UPDATE NOTE', tenantId, note, noteId);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -292,11 +303,7 @@ class NoteService {
                 },
                 data: JSON.stringify(note),
             });
-            return {
-                status: 'ok',
-                message: 'Hubspot note updated',
-                result: note,
-            };
+            return { status: 'ok', message: 'Hubspot note updated', result: note };
         } else if (thirdPartyId === 'zohocrm') {
             await axios({
                 method: 'put',
@@ -320,9 +327,7 @@ class NoteService {
             });
             return { status: 'ok', message: 'SFDC note updated', result: note };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
 }
