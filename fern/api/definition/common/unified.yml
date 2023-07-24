@@ -46,3 +46,10 @@ types:
             country: string
             zip: string
             postalCode: string
+    Contact:
+        extends: CommonUnifiedFields
+        properties:
+            firstName: string
+            lastName: string
+            phone: string
+            email: string

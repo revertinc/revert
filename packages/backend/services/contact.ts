@@ -1,25 +1,29 @@
 import axios from 'axios';
-import { disunifyContact, unifyContact } from '../models/unified/contact';
-import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
-import { TP_ID } from '@prisma/client';
-import { PipedrivePagination } from 'constants/pipedrive';
+import { UnifiedContact, disunifyContact, unifyContact } from '../models/unified/contact';
+import { TP_ID, connections } from '@prisma/client';
+import { PipedrivePagination } from '../constants/pipedrive';
+import { NotFoundError } from '../generated/typescript/api/resources/common';
 
 class ContactService {
-    async getUnifiedContact(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedContact({
+        connection,
+        contactId,
+        fields,
+    }: {
+        connection: connections;
+        contactId: string;
+        fields?: string;
+    }): Promise<{
+        status: 'ok';
+        result: UnifiedContact;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const contactId = req.params.id;
-        let fields = req.query.fields;
         console.log('Revert::GET CONTACT', tenantId, thirdPartyId, thirdPartyToken, contactId);
         if (thirdPartyId === 'hubspot') {
-            fields = [
-                ...String(req.query.fields || '').split(','),
+            const formattedFields = [
+                ...String(fields || '').split(','),
                 'hs_lead_status',
                 'firstname',
                 'email',
@@ -29,15 +33,13 @@ class ContactService {
             ];
             let contact: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}?properties=${fields}`,
+                url: `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}?properties=${formattedFields}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
             contact = unifyContact({ ...contact.data, ...contact.data?.properties });
-            return {
-                result: contact,
-            };
+            return { status: 'ok', result: contact };
         } else if (thirdPartyId === 'zohocrm') {
             let contact: any = await axios({
                 method: 'get',
@@ -47,7 +49,7 @@ class ContactService {
                 },
             });
             contact = unifyContact(contact.data.data?.[0]);
-            return { result: contact };
+            return { status: 'ok', result: contact };
         } else if (thirdPartyId === 'sfdc') {
             const instanceUrl = connection.tp_account_url;
             let contact: any = await axios({
@@ -59,28 +61,34 @@ class ContactService {
             });
             contact = contact.data;
             contact = unifyContact(contact);
-            return { result: contact };
+            return { status: 'ok', result: contact };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async getUnifiedContacts(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedContacts({
+        connection,
+        fields,
+        pageSize,
+        cursor,
+    }: {
+        connection: connections;
+        fields?: string;
+        pageSize?: number;
+        cursor?: string;
+    }): Promise<{
+        status: 'ok';
+        next?: string;
+        previous?: string;
+        results: UnifiedContact[];
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        let fields = req.query.fields;
-        const pageSize = parseInt(String(req.query.pageSize));
-        const cursor = req.query.cursor;
         console.log('Revert::GET ALL CONTACTS', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
-            fields = [
-                ...String(req.query.fields || '').split(','),
+            const formattedFields = [
+                ...String(fields || '').split(','),
                 'hs_lead_status',
                 'firstname',
                 'email',
@@ -91,17 +99,18 @@ class ContactService {
             const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let contacts: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/contacts?properties=${fields}&${pagingString}`,
+                url: `https://api.hubapi.com/crm/v3/objects/contacts?properties=${formattedFields}&${pagingString}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = contacts.data?.paging?.next?.after || null;
+            const nextCursor = contacts.data?.paging?.next?.after || undefined;
             contacts = contacts.data.results as any[];
             contacts = contacts?.map((l: any) => unifyContact({ ...l, ...l?.properties }));
             return {
+                status: 'ok',
                 next: nextCursor,
-                previous: null, // Field not supported by Hubspot.
+                previous: undefined, // Field not supported by Hubspot.
                 results: contacts,
             };
         } else if (thirdPartyId === 'zohocrm') {
@@ -113,11 +122,11 @@ class ContactService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = contacts.data?.info?.next_page_token || null;
-            const prevCursor = contacts.data?.info?.previous_page_token || null;
+            const nextCursor = contacts.data?.info?.next_page_token || undefined;
+            const prevCursor = contacts.data?.info?.previous_page_token || undefined;
             contacts = contacts.data.data;
             contacts = contacts?.map((l: any) => unifyContact(l));
-            return { next: nextCursor, previous: prevCursor, results: contacts };
+            return { status: 'ok', next: nextCursor, previous: prevCursor, results: contacts };
         } else if (thirdPartyId === 'sfdc') {
             let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
                 cursor ? `OFFSET+${cursor}` : ''
@@ -138,30 +147,36 @@ class ContactService {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = pageSize ? String(contacts.data?.totalSize + (parseInt(String(cursor)) || 0)) : null;
+            const nextCursor = pageSize
+                ? String(contacts.data?.totalSize + (parseInt(String(cursor)) || 0))
+                : undefined;
             const prevCursor =
                 cursor && parseInt(String(cursor)) > 0
                     ? String(parseInt(String(cursor)) - contacts.data?.totalSize)
-                    : null;
+                    : undefined;
             contacts = contacts.data?.records;
             contacts = contacts?.map((l: any) => unifyContact(l));
-            return { next: nextCursor, previous: prevCursor, results: contacts };
+            return { status: 'ok', next: nextCursor, previous: prevCursor, results: contacts };
         } else {
-            return { error: 'Unrecognized CRM' };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async searchUnifiedContacts(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async searchUnifiedContacts({
+        connection,
+        searchCriteria,
+        fields,
+    }: {
+        connection: connections;
+        searchCriteria: any;
+        fields?: string;
+    }): Promise<{
+        status: 'ok';
+        results: UnifiedContact[];
+    }> {
+        const formattedFields = (fields || '').split('').filter(Boolean);
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const searchCriteria = req.body.searchCriteria;
-        const fields = String(req.query.fields || '')
-            .split(',')
-            .filter(Boolean);
         console.log('Revert::SEARCH CONTACT', tenantId, searchCriteria);
 
         switch (thirdPartyId) {
@@ -182,7 +197,7 @@ class ContactService {
                             'email',
                             'lastname',
                             'hs_object_id',
-                            ...fields,
+                            ...formattedFields,
                         ],
                     }),
                 });
@@ -226,7 +241,7 @@ class ContactService {
                     { data: { items: { item: any; result_score: number }[] } } & PipedrivePagination
                 >(
                     `${instanceUrl}/v1/persons/search?term=${searchCriteria}${
-                        fields.length ? `&fields=${fields.join(',')}` : ''
+                        formattedFields.length ? `&fields=${formattedFields.join(',')}` : ''
                     }`,
                     {
                         headers: {
@@ -239,21 +254,25 @@ class ContactService {
                 return { status: 'ok', results: unifiedContacts };
             }
             default: {
-                return {
-                    error: 'Unrecognised CRM',
-                };
+                throw new NotFoundError({ error: 'Unrecognized CRM' });
             }
         }
     }
-    async createContact(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async createContact({
+        connection,
+        contactData,
+    }: {
+        contactData: UnifiedContact;
+        connection: connections;
+    }): Promise<{
+        status: 'ok';
+        result: any;
+        message: string;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const contact = disunifyContact(req.body, thirdPartyId);
+        const contact = disunifyContact(contactData, thirdPartyId);
         console.log('Revert::CREATE CONTACT', tenantId, contact, thirdPartyId);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -297,21 +316,26 @@ class ContactService {
                 result: contactCreated.data,
             };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async updateContact(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async updateContact({
+        connection,
+        contactData,
+        contactId,
+    }: {
+        contactData: UnifiedContact;
+        connection: connections;
+        contactId: string;
+    }): Promise<{
+        status: 'ok';
+        result: any;
+        message: string;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const contact = disunifyContact(req.body, thirdPartyId);
-        const contactId = req.params.id;
+        const contact = disunifyContact(contactData, thirdPartyId);
         console.log('Revert::UPDATE CONTACT', tenantId, contact, contactId);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -351,9 +375,7 @@ class ContactService {
             });
             return { status: 'ok', message: 'SFDC contact updated', result: contact };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
 }

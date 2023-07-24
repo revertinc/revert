@@ -1,0 +1,104 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    GetUnifiedContactResponse:
+        properties:
+            status: string
+            result: unified.Contact
+    GetUnifiedContactsResponse:
+        properties:
+            status: string
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.Contact>
+    CreateOrUpdateContactResponse:
+        properties:
+            status: string
+            message: string
+            result: unknown
+    SearchContactsResponse:
+        properties:
+            status: string
+            results: list<unified.Contact>
+
+service:
+    base-path: /crm/contacts
+    auth: true
+    endpoints:
+        getUnifiedContact:
+            docs: Get details of a contact
+            method: GET
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: GetUnifiedContactRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetUnifiedContactResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getUnifiedContacts:
+            docs: Get all the contacts
+            method: GET
+            path: ''
+            request:
+                name: GetUnifiedContactsRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetUnifiedContactsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createContact:
+            docs: Create a new contact
+            method: POST
+            path: ''
+            request:
+                name: CreateContactRequest
+                body: unified.Contact
+            response: CreateOrUpdateContactResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateContact:
+            docs: Update a contact
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateContactRequest
+                body: unified.Contact
+            response: CreateOrUpdateContactResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        searchContacts:
+            docs: Search for contacts
+            method: POST
+            path: /search
+            request:
+                name: SearchContactsRequest
+                body:
+                    properties:
+                        searchCriteria: unknown
+                query-parameters:
+                    fields: optional<string>
+            response: SearchContactsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

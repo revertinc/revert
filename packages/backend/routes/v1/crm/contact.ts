@@ -1,102 +1,85 @@
-import express from 'express';
-
-import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
-import ContactService from '../../../services/contact';
+import revertTenantMiddleware from '../../../helpers/tenantIdMiddleware';
+import ContactS from '../../../services/contact';
 import logError from '../../../helpers/logError';
+import revertAuthMiddleware from '../../../helpers/authMiddleware';
+import { ContactService } from '../../../generated/typescript/api/resources/crm/resources/contact/service/ContactService';
+import { InternalServerError } from '../../../generated/typescript/api/resources/common';
+import { UnifiedContact } from '../../../models/unified';
 
-const contactRouter = express.Router({ mergeParams: true });
+const contactService = new ContactService(
+    {
+        async getUnifiedContact(req, res) {
+            try {
+                const result = await ContactS.getUnifiedContact({
+                    connection: res.locals.connection,
+                    contactId: req.params.id,
+                    fields: req.query.fields,
+                });
+                res.send(result);
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not fetch lead', error);
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async getUnifiedContacts(req, res) {
+            try {
+                const result = await ContactS.getUnifiedContacts({
+                    connection: res.locals.connection,
+                    fields: req.query.fields,
+                    pageSize: parseInt(String(req.query.pageSize)),
+                    cursor: req.query.cursor,
+                });
+                res.send(result);
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not fetch leads', error);
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async createContact(req, res) {
+            try {
+                const result = await ContactS.createContact({
+                    contactData: req.body as UnifiedContact,
+                    connection: res.locals.connection,
+                });
+                res.send(result);
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not create lead', error.response);
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async updateContact(req, res) {
+            try {
+                const result = await ContactS.updateContact({
+                    connection: res.locals.connection,
+                    contactData: req.body as UnifiedContact,
+                    contactId: req.params.id,
+                });
+                res.send(result);
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not update lead', error.response);
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async searchContacts(req, res) {
+            try {
+                const result = await ContactS.searchUnifiedContacts({
+                    connection: res.locals.connection,
+                    fields: req.query.fields,
+                    searchCriteria: req.body.searchCriteria,
+                });
+                res.send(result);
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not search CRM', error);
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+    },
+    [revertAuthMiddleware(), revertTenantMiddleware()]
+);
 
-/**
- * Contacts API
- */
-// Get all contacts (paginated)
-contactRouter.get('/', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await ContactService.getUnifiedContacts(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not fetch contacts', error);
-        res.status(500).send({ error: 'Internal server error' });
-    }
-});
-
-// Get a contact object identified by {id}
-contactRouter.get('/:id', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await ContactService.getUnifiedContact(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not fetch contact', error);
-        res.status(500).send({
-            error: 'Internal server error',
-        });
-    }
-});
-
-// Create a contact
-contactRouter.post('/', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await ContactService.createContact(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not create contact', error.response);
-        res.status(500).send({
-            error: 'Internal server error',
-            errorResponse: error.response?.data,
-        });
-    }
-});
-
-// Update a contact identified by {id}
-contactRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await ContactService.updateContact(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not update contact', error.response);
-        res.status(500).send({
-            error: 'Internal server error',
-            errorResponse: error.response?.data,
-        });
-    }
-});
-
-// Search a contact with query.
-contactRouter.post('/search', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await ContactService.searchUnifiedContacts(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not search CRM', error);
-        res.status(500).send({
-            error: 'Internal server error',
-        });
-    }
-});
-
-export default contactRouter;
+export { contactService };
