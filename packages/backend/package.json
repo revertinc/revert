@@ -18,7 +18,8 @@
         "migration:rollback": "prisma migrate resolve --rolled-back $MIGRATION_ID",
         "studio": "prisma studio",
         "migration:dryRun": "prisma migrate dev --create-only --name %1",
-        "migration:generate": "prisma migrate dev --name %1"
+        "migration:generate": "prisma migrate dev --name %1",
+        "migration:diff": " npx prisma migrate diff --shadow-database-url $DATABASE_URL_STAGING --from-url $DATABASE_URL_PROD --to-migrations ./prisma/migrations --script > ./prisma/migrations/scripts/backward.sql"
     },
     "prisma": {
         "seed": "ts-node prisma/seed.ts"
