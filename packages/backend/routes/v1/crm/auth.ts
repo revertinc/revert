@@ -27,11 +27,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     select: { id: true, app_client_id: true, app_client_secret: true, is_revert_app: true },
                     where: { tp_id: integrationId },
                 },
+                accounts: true,
             },
         });
         const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
-        const svixAppId = account!.id;
+        const svixAppId = account!.accounts!.id;
         if (integrationId === TP_ID.hubspot && req.query.code && req.query.t_id && revertPublicKey) {
             // Handle the received code
             const url = 'https://api.hubapi.com/oauth/v1/token';
