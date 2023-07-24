@@ -18,18 +18,18 @@ authRouter.get('/oauth-callback', async (req, res) => {
     const integrationId = req.query.integrationId as TP_ID;
     const revertPublicKey = req.query.x_revert_public_token as string;
     try {
-        const account = await prisma.accounts.findFirst({
+        const account = await prisma.environments.findFirst({
             where: {
                 public_token: String(revertPublicKey),
             },
             include: {
                 apps: {
-                    select: { app_client_id: true, app_client_secret: true, is_revert_app: true },
+                    select: { id: true, app_client_id: true, app_client_secret: true, is_revert_app: true },
                     where: { tp_id: integrationId },
                 },
             },
         });
-        const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id; // FIXME: This is a bug.
+        const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
         const svixAppId = account!.id;
         if (integrationId === TP_ID.hubspot && req.query.code && req.query.t_id && revertPublicKey) {
@@ -80,6 +80,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         app_client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET, // TODO: Fix in other platforms.
                         tp_customer_id: info.data.user,
                         owner_account_public_token: revertPublicKey,
+                        appId: account?.apps[0].id,
                     },
                 });
                 ConnectionService.svix.message.create(svixAppId, {
@@ -160,6 +161,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                             app_client_id: clientId || config.ZOHOCRM_CLIENT_ID,
                             app_client_secret: clientSecret || config.ZOHOCRM_CLIENT_SECRET,
                             owner_account_public_token: revertPublicKey,
+                            appId: account?.apps[0].id,
                         },
                         update: {
                             tp_access_token: result.data.access_token,
@@ -241,6 +243,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         app_client_id: clientId || config.SFDC_CLIENT_ID,
                         app_client_secret: clientSecret || config.SFDC_CLIENT_SECRET,
                         owner_account_public_token: revertPublicKey,
+                        appId: account?.apps[0].id,
                     },
                     update: {
                         tp_access_token: result.data.access_token,
@@ -327,6 +330,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_customer_id: info.data.data.email,
                         owner_account_public_token: revertPublicKey,
                         tp_account_url: result.data.api_domain,
+                        appId: account?.apps[0].id,
                     },
                 });
                 ConnectionService.svix.message.create(svixAppId, {

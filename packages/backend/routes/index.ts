@@ -106,8 +106,8 @@ router.post('/internal/account', async (req, res) => {
 
 router.post('/internal/account/credentials', async (req, res) => {
     try {
-        const { clientId, clientSecret, scopes, tpId, isRevertApp } = req.body;
-        const { 'x-revert-api-token': token } = req.headers;
+        const { clientId, clientSecret, scopes, tpId, isRevertApp, appId } = req.body;
+        const { 'x-revert-api-token': token } = req.headers; // TODO: Recheck this.
         const account = await prisma.accounts.findFirst({
             where: {
                 private_token: token as string,
@@ -122,6 +122,7 @@ router.post('/internal/account/credentials', async (req, res) => {
             });
         }
         const result = await AuthService.setAppCredentialsForUser({
+            appId,
             publicToken: account.public_token,
             clientId,
             clientSecret,
