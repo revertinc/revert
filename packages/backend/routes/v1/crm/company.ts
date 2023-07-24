@@ -1,103 +1,85 @@
-import express from 'express';
-
-import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
-import CompanyService from '../../../services/company';
+import revertTenantMiddleware from '../../../helpers/tenantIdMiddleware';
+import revertAuthMiddleware from '../../../helpers/authMiddleware';
+import CompanyS from '../../../services/company';
 import logError from '../../../helpers/logError';
+import { CompanyService } from '../../../generated/typescript/api/resources/crm/resources/company/service/CompanyService';
+import { InternalServerError } from '../../../generated/typescript/api/resources/common';
+import { UnifiedCompany } from '../../../models/unified';
 
-const companyRouter = express.Router({ mergeParams: true });
+const companyService = new CompanyService(
+    {
+        async getUnifiedCompany(req, res) {
+            try {
+                const result = await CompanyS.getUnifiedCompany({
+                    connection: res.locals.connection,
+                    companyId: req.params.id,
+                    fields: req.query.fields,
+                });
+                res.send(result);
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not fetch lead', error);
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async getUnifiedCompanies(req, res) {
+            try {
+                const result = await CompanyS.getUnifiedCompanies({
+                    connection: res.locals.connection,
+                    fields: req.query.fields,
+                    pageSize: parseInt(String(req.query.pageSize)),
+                    cursor: req.query.cursor,
+                });
+                res.send(result);
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not fetch leads', error);
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async createCompany(req, res) {
+            try {
+                const result = await CompanyS.createCompany({
+                    companyData: req.body as UnifiedCompany,
+                    connection: res.locals.connection,
+                });
+                res.send(result);
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not create lead', error.response);
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async updateCompany(req, res) {
+            try {
+                const result = await CompanyS.updateCompany({
+                    connection: res.locals.connection,
+                    companyData: req.body as UnifiedCompany,
+                    companyId: req.params.id,
+                });
+                res.send(result);
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not update lead', error.response);
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async searchCompanies(req, res) {
+            try {
+                const result = await CompanyS.searchUnifiedCompanies({
+                    connection: res.locals.connection,
+                    fields: req.query.fields,
+                    searchCriteria: req.body.searchCriteria,
+                });
+                res.send(result);
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not search CRM', error);
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+    },
+    [revertAuthMiddleware(), revertTenantMiddleware()]
+);
 
-/**
- * Company API
- */
-
-// Get all companies (paginated)
-companyRouter.get('/', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await CompanyService.getUnifiedCompanies(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not fetch companies', error);
-        res.status(500).send({ error: 'Unexpected error. Could not fetch companies' });
-    }
-});
-
-// Get a company object identified by {id}
-companyRouter.get('/:id', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await CompanyService.getUnifiedCompany(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not fetch company', error);
-        res.status(500).send({
-            error: 'Internal server error',
-        });
-    }
-});
-
-// Create a company
-companyRouter.post('/', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await CompanyService.createCompany(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not create company', error.response);
-        res.status(500).send({
-            error: 'Internal server error',
-            errorResponse: error.response?.data,
-        });
-    }
-});
-
-// Update a company identified by {id}
-companyRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await CompanyService.updateCompany(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not update company', error.response);
-        res.status(500).send({
-            error: 'Internal server error',
-            errorResponse: error.response?.data,
-        });
-    }
-});
-
-// Search a company with query.
-companyRouter.post('/search', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await CompanyService.searchUnifiedCompanies(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not search CRM', error);
-        res.status(500).send({
-            error: 'Internal server error',
-        });
-    }
-});
-
-export default companyRouter;
+export { companyService };

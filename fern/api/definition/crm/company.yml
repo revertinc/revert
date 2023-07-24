@@ -1,0 +1,104 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    GetUnifiedCompanyResponse:
+        properties:
+            status: string
+            result: unified.Company
+    GetUnifiedCompaniesResponse:
+        properties:
+            status: string
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.Company>
+    CreateOrUpdateCompanyResponse:
+        properties:
+            status: string
+            message: string
+            result: unknown
+    SearchCompaniesResponse:
+        properties:
+            status: string
+            results: list<unified.Company>
+
+service:
+    base-path: /crm/Companies
+    auth: true
+    endpoints:
+        getUnifiedCompany:
+            docs: Get details of a company
+            method: GET
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: GetUnifiedCompanyRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetUnifiedCompanyResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getUnifiedCompanies:
+            docs: Get all the Companies
+            method: GET
+            path: ''
+            request:
+                name: GetUnifiedCompaniesRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetUnifiedCompaniesResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createCompany:
+            docs: Create a new company
+            method: POST
+            path: ''
+            request:
+                name: CreateCompanyRequest
+                body: unified.Company
+            response: CreateOrUpdateCompanyResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateCompany:
+            docs: Update a company
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateCompanyRequest
+                body: unified.Company
+            response: CreateOrUpdateCompanyResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        searchCompanies:
+            docs: Search for Companies
+            method: POST
+            path: /search
+            request:
+                name: SearchCompaniesRequest
+                body:
+                    properties:
+                        searchCriteria: unknown
+                query-parameters:
+                    fields: optional<string>
+            response: SearchCompaniesResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

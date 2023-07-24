@@ -28,3 +28,21 @@ types:
         extends: CommonUnifiedFields
         properties:
             content: string
+    Company:
+        extends: CommonUnifiedFields
+        properties:
+            name: string
+            industry: string
+            description: string
+            annualRevenue: integer
+            size: integer
+            phone: string
+            address: CompanyAddress
+    CompanyAddress:
+        properties:
+            street: optional<string>
+            city: string
+            state: string
+            country: string
+            zip: string
+            postalCode: string

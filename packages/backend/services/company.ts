@@ -1,23 +1,28 @@
 import axios from 'axios';
-import { unifyCompany, disunifyCompany } from '../models/unified/company';
-import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
+import { unifyCompany, disunifyCompany, UnifiedCompany } from '../models/unified/company';
+import { connections } from '@prisma/client';
+import { NotFoundError } from '../generated/typescript/api/resources/common';
 
 class CompanyService {
-    async getUnifiedCompany(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedCompany({
+        connection,
+        companyId,
+        fields,
+    }: {
+        connection: connections;
+        companyId: string;
+        fields?: string;
+    }): Promise<{
+        status: 'ok';
+        result: UnifiedCompany;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const companyId = req.params.id;
-        let fields = req.query.fields;
         console.log('Revert::GET COMPANY', tenantId, thirdPartyId, thirdPartyToken, companyId);
         if (thirdPartyId === 'hubspot') {
-            fields = [
-                ...String(req.query.fields || '').split(','),
+            const formattedFields = [
+                ...String(fields || '').split(','),
                 'name',
                 'hs_object_id',
                 'city',
@@ -31,13 +36,13 @@ class CompanyService {
             ];
             const company = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/companies/${companyId}?properties=${fields}`,
+                url: `https://api.hubapi.com/crm/v3/objects/companies/${companyId}?properties=${formattedFields}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
 
-            return {
+            return { status: 'ok',
                 result: unifyCompany({ ...company.data, ...company.data?.properties }),
             };
         } else if (thirdPartyId === 'zohocrm') {
@@ -49,7 +54,7 @@ class CompanyService {
                 },
             });
             company = unifyCompany(company.data.data?.[0]);
-            return { result: company };
+            return { status: 'ok', result: company };
         } else if (thirdPartyId === 'sfdc') {
             const instanceUrl = connection.tp_account_url;
             const company = await axios({
@@ -59,28 +64,34 @@ class CompanyService {
                     Authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            return { result: unifyCompany(company.data) };
+            return { status: 'ok', result: unifyCompany(company.data) };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async getUnifiedCompanies(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedCompanies({
+        connection,
+        fields,
+        pageSize,
+        cursor,
+    }: {
+        connection: connections;
+        fields?: string;
+        pageSize?: number;
+        cursor?: string;
+    }): Promise<{
+        status: 'ok';
+        next?: string;
+        previous?: string;
+        results: UnifiedCompany[];
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        let fields = req.query.fields;
-        const pageSize = parseInt(String(req.query.pageSize));
-        const cursor = req.query.cursor;
         console.log('Revert::GET ALL COMPANIES', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
-            fields = [
-                ...String(req.query.fields || '').split(','),
+            const formattedFields = [
+                ...String(fields || '').split(','),
                 'name',
                 'hs_object_id',
                 'city',
@@ -95,17 +106,17 @@ class CompanyService {
             const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let companies: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/companies?properties=${fields}&${pagingString}`,
+                url: `https://api.hubapi.com/crm/v3/objects/companies?properties=${formattedFields}&${pagingString}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = companies.data?.paging?.next?.after || null;
+            const nextCursor = companies.data?.paging?.next?.after || undefined;
             companies = companies.data.results as any[];
             companies = companies?.map((c: any) => unifyCompany({ ...c, ...c?.properties }));
-            return {
+            return { status: 'ok',
                 next: nextCursor,
-                previous: null, // Field not supported by Hubspot.
+                previous: undefined, // Field not supported by Hubspot.
                 results: companies,
             };
         } else if (thirdPartyId === 'zohocrm') {
@@ -117,11 +128,11 @@ class CompanyService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = companies.data?.info?.next_page_token || null;
-            const prevCursor = companies.data?.info?.previous_page_token || null;
+            const nextCursor = companies.data?.info?.next_page_token || undefined;
+            const prevCursor = companies.data?.info?.previous_page_token || undefined;
             companies = companies.data.data;
             companies = companies?.map((l: any) => unifyCompany(l));
-            return { next: nextCursor, previous: prevCursor, results: companies };
+            return { status: 'ok', next: nextCursor, previous: prevCursor, results: companies };
         } else if (thirdPartyId === 'sfdc') {
             let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
                 cursor ? `OFFSET+${cursor}` : ''
@@ -142,28 +153,34 @@ class CompanyService {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = pageSize ? String(companies.data?.totalSize + (parseInt(String(cursor)) || 0)) : null;
+            const nextCursor = pageSize ? String(companies.data?.totalSize + (parseInt(String(cursor)) || 0)) : undefined;
             const prevCursor =
                 cursor && parseInt(String(cursor)) > 0
                     ? String(parseInt(String(cursor)) - companies.data?.totalSize)
-                    : null;
+                    : undefined;
             companies = companies.data?.records;
             companies = companies?.map((l: any) => unifyCompany(l));
-            return { next: nextCursor, previous: prevCursor, results: companies };
+            return { status: 'ok', next: nextCursor, previous: prevCursor, results: companies };
         } else {
-            return { error: 'Unrecognized CRM' };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async searchUnifiedCompanies(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async searchUnifiedCompanies({
+        connection,
+        searchCriteria,
+        fields,
+    }: {
+        connection: connections;
+        searchCriteria: any;
+        fields?: string;
+    }): Promise<{
+        status: 'ok';
+        results: UnifiedCompany[];
+    }> {
+        const formattedFields = (fields || '').split('').filter(Boolean);
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const searchCriteria = req.body.searchCriteria;
-        const fields = String(req.query.fields || '').split(',');
         console.log('Revert::SEARCH COMPANY', tenantId, searchCriteria, fields);
         if (thirdPartyId === 'hubspot') {
             let companies: any = await axios({
@@ -186,7 +203,7 @@ class CompanyService {
                         'numberofemployees',
                         'phone',
                         'annualrevenue',
-                        ...fields,
+                        ...formattedFields,
                     ],
                 }),
             });
@@ -220,20 +237,18 @@ class CompanyService {
             companies = companies?.map((c: any) => unifyCompany(c));
             return { status: 'ok', results: companies };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async createCompany(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async createCompany({ connection, companyData }: { companyData: UnifiedCompany; connection: connections }): Promise<{
+        status: 'ok';
+        result: any;
+        message: string;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const company = disunifyCompany(req.body, thirdPartyId);
+        const company = disunifyCompany(companyData, thirdPartyId);
         console.log('Revert::CREATE COMPANY', tenantId, company);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -277,21 +292,26 @@ class CompanyService {
                 result: companyCreated.data,
             };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async updateCompany(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async updateCompany({
+        connection,
+        companyData,
+        companyId,
+    }: {
+        companyData: UnifiedCompany;
+        connection: connections;
+        companyId: string;
+    }): Promise<{
+        status: 'ok';
+        result: any;
+        message: string;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const company = disunifyCompany(req.body, thirdPartyId);
-        const companyId = req.params.id;
+        const company = disunifyCompany(companyData, thirdPartyId);
         console.log('Revert::UPDATE COMPANY', tenantId, company, companyId);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -331,9 +351,7 @@ class CompanyService {
             });
             return { status: 'ok', message: 'SFDC company updated', result: company };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
 }
