@@ -19,6 +19,7 @@ import { dealService } from './v1/crm/deal';
 import { noteService } from './v1/crm/note';
 import { companyService } from './v1/crm/company';
 import { contactService } from './v1/crm/contact';
+import { eventService } from './v1/crm/event';
 
 const router = express.Router();
 
@@ -100,7 +101,14 @@ router.use('/connection', cors(), revertAuthMiddleware(), connectionRouter);
 register(router, {
     metadata: metadataService,
     account: accountService,
-    crm: { lead: leadService, deal: dealService, note: noteService, company: companyService, contact: contactService },
+    crm: {
+        lead: leadService,
+        deal: dealService,
+        note: noteService,
+        company: companyService,
+        contact: contactService,
+        event: eventService,
+    },
 });
 
 export default router;

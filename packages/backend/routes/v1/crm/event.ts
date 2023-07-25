@@ -1,102 +1,85 @@
-import express from 'express';
-import tenantMiddleware from '../../../helpers/tenantIdMiddleware';
-import EventService from '../../../services/event';
+import revertTenantMiddleware from '../../../helpers/tenantIdMiddleware';
+import EventS from '../../../services/event';
 import logError from '../../../helpers/logError';
+import { EventService } from '../../../generated/typescript/api/resources/crm/resources/event/service/EventService';
+import revertAuthMiddleware from '../../../helpers/authMiddleware';
+import { InternalServerError } from '../../../generated/typescript/api/resources/common';
+import { UnifiedEvent } from '../../../models/unified';
 
-const eventRouter = express.Router({ mergeParams: true });
+const eventService = new EventService(
+    {
+        async getUnifiedEvent(req, res) {
+            try {
+                const result = await EventS.getUnifiedEvent({
+                    connection: res.locals.connection,
+                    eventId: req.params.id,
+                    fields: req.query.fields,
+                });
+                res.send(result);
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not fetch lead', error);
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async getUnifiedEvents(req, res) {
+            try {
+                const result = await EventS.getUnifiedEvents({
+                    connection: res.locals.connection,
+                    fields: req.query.fields,
+                    pageSize: parseInt(String(req.query.pageSize)),
+                    cursor: req.query.cursor,
+                });
+                res.send(result);
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not fetch leads', error);
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async createEvent(req, res) {
+            try {
+                const result = await EventS.createEvent({
+                    eventData: req.body as UnifiedEvent,
+                    connection: res.locals.connection,
+                });
+                res.send(result);
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not create lead', error.response);
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async updateEvent(req, res) {
+            try {
+                const result = await EventS.updateEvent({
+                    connection: res.locals.connection,
+                    eventData: req.body as UnifiedEvent,
+                    eventId: req.params.id,
+                });
+                res.send(result);
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not update lead', error.response);
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async searchEvents(req, res) {
+            try {
+                const result = await EventS.searchUnifiedEvents({
+                    connection: res.locals.connection,
+                    fields: req.query.fields,
+                    searchCriteria: req.body.searchCriteria,
+                });
+                res.send(result);
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not search CRM', error);
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+    },
+    [revertAuthMiddleware(), revertTenantMiddleware()]
+);
 
-/**
- * Notes API
- */
-
-// Get all notes (paginated)
-eventRouter.get('/', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await EventService.getUnifiedEvents(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not fetch leads', error);
-        res.status(500).send({ error: 'Internal server error' });
-    }
-});
-
-// Get a note object identified by {id}
-eventRouter.get('/:id', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await EventService.getUnifiedEvent(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not fetch lead', error);
-        res.status(500).send({
-            error: 'Internal server error',
-        });
-    }
-});
-
-// Create a note
-eventRouter.post('/', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await EventService.createEvent(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not create lead', error.response);
-        res.status(500).send({
-            error: 'Internal server error',
-            errorResponse: error.response?.data,
-        });
-    }
-});
-
-// Update a note identified by {id}
-eventRouter.patch('/:id', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await EventService.updateEvent(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not update lead', error.response);
-        res.status(500).send({
-            error: 'Internal server error',
-            errorResponse: error.response?.data,
-        });
-    }
-});
-
-// Search a note with query.
-eventRouter.post('/search', tenantMiddleware(), async (req, res) => {
-    try {
-        const result = await EventService.searchUnifiedEvents(req, res);
-        if (result.error) {
-            res.status(400).send(result);
-        } else {
-            res.send(result);
-        }
-    } catch (error: any) {
-        logError(error);
-        console.error('Could not search CRM', error);
-        res.status(500).send({
-            error: 'Internal server error',
-        });
-    }
-});
-
-export default eventRouter;
+export { eventService };

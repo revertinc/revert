@@ -1,0 +1,104 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    GetUnifiedEventResponse:
+        properties:
+            status: string
+            result: unified.Event
+    GetUnifiedEventsResponse:
+        properties:
+            status: string
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.Event>
+    CreateOrUpdateEventResponse:
+        properties:
+            status: string
+            message: string
+            result: unknown
+    SearchEventsResponse:
+        properties:
+            status: string
+            results: list<unified.Event>
+
+service:
+    base-path: /crm/events
+    auth: true
+    endpoints:
+        getUnifiedEvent:
+            docs: Get details of a event
+            method: GET
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: GetUnifiedEventRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetUnifiedEventResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getUnifiedEvents:
+            docs: Get all the events
+            method: GET
+            path: ''
+            request:
+                name: GetUnifiedEventsRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetUnifiedEventsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createEvent:
+            docs: Create a new event
+            method: POST
+            path: ''
+            request:
+                name: CreateEventRequest
+                body: unified.Event
+            response: CreateOrUpdateEventResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateEvent:
+            docs: Update a event
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateEventRequest
+                body: unified.Event
+            response: CreateOrUpdateEventResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        searchEvents:
+            docs: Search for events
+            method: POST
+            path: /search
+            request:
+                name: SearchEventsRequest
+                body:
+                    properties:
+                        searchCriteria: unknown
+                query-parameters:
+                    fields: optional<string>
+            response: SearchEventsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

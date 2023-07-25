@@ -53,3 +53,13 @@ types:
             lastName: string
             phone: string
             email: string
+    Event:
+        extends: CommonUnifiedFields
+        properties:
+            type: string
+            subject: string
+            startDateTime: string
+            endDateTime: string
+            isAllDayEvent: boolean
+            description: string
+            location: string

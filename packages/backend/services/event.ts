@@ -1,23 +1,28 @@
 import axios from 'axios';
-import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
-import { disunifyEvent, unifyEvent } from '../models/unified';
-import { ParsedQs } from 'qs';
+import { UnifiedEvent, disunifyEvent, unifyEvent } from '../models/unified';
+import { connections } from '@prisma/client';
+import { NotFoundError } from '../generated/typescript/api/resources/common';
 
 class EventService {
-    async getUnifiedEvent(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedEvent({
+        connection,
+        eventId,
+        fields,
+    }: {
+        connection: connections;
+        eventId: string;
+        fields?: string;
+    }): Promise<{
+        status: 'ok';
+        result: UnifiedEvent;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const eventId = req.params.id;
-        let fields = req.query.fields;
         console.log('Revert::GET EVENT', tenantId, thirdPartyId, thirdPartyToken, eventId);
         if (thirdPartyId === 'hubspot') {
-            fields = [
-                ...String(req.query.fields || '').split(','),
+            const formattedFields = [
+                ...String(fields || '').split(','),
                 'hs_meeting_title',
                 'hs_meeting_body',
                 'hs_meeting_start_time',
@@ -28,16 +33,14 @@ class EventService {
             ];
             let event: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/meetings/${eventId}?properties=${fields}`,
+                url: `https://api.hubapi.com/crm/v3/objects/meetings/${eventId}?properties=${formattedFields}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
             event = ([event.data] as any[])?.[0];
             event = unifyEvent({ ...event, ...event?.properties });
-            return {
-                result: event,
-            };
+            return { status: 'ok', result: event };
         } else if (thirdPartyId === 'zohocrm') {
             const events = await axios({
                 method: 'get',
@@ -47,7 +50,7 @@ class EventService {
                 },
             });
             let event = unifyEvent(events.data.data?.[0]);
-            return { result: event };
+            return { status: 'ok', result: event };
         } else if (thirdPartyId === 'sfdc') {
             const instanceUrl = connection.tp_account_url;
             const events = await axios({
@@ -58,28 +61,34 @@ class EventService {
                 },
             });
             let event = unifyEvent(events.data);
-            return { result: event };
+            return { status: 'ok', result: event };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async getUnifiedEvents(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedEvents({
+        connection,
+        fields,
+        pageSize,
+        cursor,
+    }: {
+        connection: connections;
+        fields?: string;
+        pageSize?: number;
+        cursor?: string;
+    }): Promise<{
+        status: 'ok';
+        next?: string;
+        previous?: string;
+        results: UnifiedEvent[];
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        let fields = req.query.fields;
-        const pageSize = parseInt(String(req.query.pageSize));
-        const cursor = req.query.cursor;
         console.log('Revert::GET ALL EVENT', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
-            fields = [
-                ...String(req.query.fields || '').split(','),
+            const formattedFields = [
+                ...String(fields || '').split(','),
                 'hs_meeting_title',
                 'hs_meeting_body',
                 'hs_meeting_start_time',
@@ -91,17 +100,18 @@ class EventService {
             const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let events: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/meetings?properties=${fields}&${pagingString}`,
+                url: `https://api.hubapi.com/crm/v3/objects/meetings?properties=${formattedFields}&${pagingString}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = events.data?.paging?.next?.after || null;
+            const nextCursor = events.data?.paging?.next?.after || undefined;
             events = events.data.results as any[];
             events = events?.map((l: any) => unifyEvent({ ...l, ...l?.properties }));
             return {
+                status: 'ok',
                 next: nextCursor,
-                previous: null, // Field not supported by Hubspot.
+                previous: undefined, // Field not supported by Hubspot.
                 results: events,
             };
         } else if (thirdPartyId === 'zohocrm') {
@@ -113,11 +123,11 @@ class EventService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = events.data?.info?.next_page_token || null;
-            const prevCursor = events.data?.info?.previous_page_token || null;
+            const nextCursor = events.data?.info?.next_page_token || undefined;
+            const prevCursor = events.data?.info?.previous_page_token || undefined;
             events = events.data.data;
             events = events?.map((l: any) => unifyEvent(l));
-            return { next: nextCursor, previous: prevCursor, results: events };
+            return { status: 'ok', next: nextCursor, previous: prevCursor, results: events };
         } else if (thirdPartyId === 'sfdc') {
             let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
                 cursor ? `OFFSET+${cursor}` : ''
@@ -138,28 +148,34 @@ class EventService {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = pageSize ? String(events.data?.totalSize + (parseInt(String(cursor)) || 0)) : null;
+            const nextCursor = pageSize ? String(events.data?.totalSize + (parseInt(String(cursor)) || 0)) : undefined;
             const prevCursor =
                 cursor && parseInt(String(cursor)) > 0
                     ? String(parseInt(String(cursor)) - events.data?.totalSize)
-                    : null;
+                    : undefined;
             events = events.data?.records;
             events = events?.map((l: any) => unifyEvent(l));
-            return { next: nextCursor, previous: prevCursor, results: events };
+            return { status: 'ok', next: nextCursor, previous: prevCursor, results: events };
         } else {
-            return { error: 'Unrecognized CRM' };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async searchUnifiedEvents(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async searchUnifiedEvents({
+        connection,
+        searchCriteria,
+        fields,
+    }: {
+        connection: connections;
+        searchCriteria: any;
+        fields?: string;
+    }): Promise<{
+        status: 'ok';
+        results: UnifiedEvent[];
+    }> {
+        const formattedFields = String(fields || '').split(',');
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const searchCriteria = req.body.searchCriteria;
-        const fields = String(req.query.fields || '').split(',');
         console.log('Revert::SEARCH EVENT', tenantId, searchCriteria, fields);
         if (thirdPartyId === 'hubspot') {
             let events: any = await axios({
@@ -179,16 +195,13 @@ class EventService {
                         'hs_meeting_location',
                         'hs_activity_type',
                         'hs_object_id',
-                        ...fields,
+                        ...formattedFields,
                     ],
                 }),
             });
             events = events.data.results as any[];
             events = events?.map((l: any) => unifyEvent({ ...l, ...l?.properties }));
-            return {
-                status: 'ok',
-                results: events,
-            };
+            return { status: 'ok', results: events };
         } else if (thirdPartyId === 'zohocrm') {
             let events: any = await axios({
                 method: 'get',
@@ -213,20 +226,18 @@ class EventService {
             events = events?.map((l: any) => unifyEvent(l));
             return { status: 'ok', results: events };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async createEvent(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async createEvent({ connection, eventData }: { eventData: UnifiedEvent; connection: connections }): Promise<{
+        status: 'ok';
+        result: any;
+        message: string;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const event = disunifyEvent(req.body, thirdPartyId);
+        const event = disunifyEvent(eventData, thirdPartyId);
         console.log('Revert::CREATE EVENT', tenantId, event);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -238,11 +249,7 @@ class EventService {
                 },
                 data: JSON.stringify(event),
             });
-            return {
-                status: 'ok',
-                message: 'Hubspot event created',
-                result: event,
-            };
+            return { status: 'ok', message: 'Hubspot event created', result: event };
         } else if (thirdPartyId === 'zohocrm') {
             await axios({
                 method: 'post',
@@ -264,27 +271,29 @@ class EventService {
                 },
                 data: JSON.stringify(event),
             });
-            return {
-                status: 'ok',
-                message: 'SFDC event created',
-                result: eventCreated.data,
-            };
+            return { status: 'ok', message: 'SFDC event created', result: eventCreated.data };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async updateEvent(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async updateEvent({
+        connection,
+        eventData,
+        eventId,
+    }: {
+        eventData: UnifiedEvent;
+        connection: connections;
+        eventId: string;
+    }): Promise<{
+        status: 'ok';
+        result: any;
+        message: string;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const event = disunifyEvent(req.body, thirdPartyId);
-        const eventId = req.params.id;
+        const event = disunifyEvent(eventData, thirdPartyId);
+
         console.log('Revert::UPDATE EVENT', tenantId, event, eventId);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -296,11 +305,7 @@ class EventService {
                 },
                 data: JSON.stringify(event),
             });
-            return {
-                status: 'ok',
-                message: 'Hubspot event updated',
-                result: event,
-            };
+            return { status: 'ok', message: 'Hubspot event updated', result: event };
         } else if (thirdPartyId === 'zohocrm') {
             await axios({
                 method: 'put',
@@ -324,9 +329,7 @@ class EventService {
             });
             return { status: 'ok', message: 'SFDC event updated', result: event };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
 }
