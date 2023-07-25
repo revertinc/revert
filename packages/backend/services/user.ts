@@ -1,23 +1,28 @@
 import axios from 'axios';
-import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
-import { disunifyUser, unifyUser } from '../models/unified/user';
-import { ParsedQs } from 'qs';
+import { UnifiedUser, disunifyUser, unifyUser } from '../models/unified/user';
+import { NotFoundError } from '../generated/typescript/api/resources/common';
+import { connections } from '@prisma/client';
 
 class UserService {
-    async getUnifiedUser(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedUser({
+        connection,
+        userId,
+        fields,
+    }: {
+        connection: connections;
+        userId: string;
+        fields?: string;
+    }): Promise<{
+        status: 'ok';
+        result: UnifiedUser;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const userId = req.params.id;
-        let fields = req.query.fields;
         console.log('Revert::GET USER', tenantId, thirdPartyId, thirdPartyToken, userId);
         if (thirdPartyId === 'hubspot') {
-            fields = [
-                ...String(req.query.fields || '').split(','),
+            const formattedFields = [
+                ...String(fields || '').split(','),
                 'firstname',
                 'email',
                 'lastname',
@@ -26,16 +31,14 @@ class UserService {
             ];
             let user: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/settings/v3/users/${userId}?properties=${fields}`,
+                url: `https://api.hubapi.com/settings/v3/users/${userId}?properties=${formattedFields}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
             user = ([user.data] as any[])?.[0];
             user = unifyUser({ ...user, ...user?.properties });
-            return {
-                result: { ...user, ...user?.properties },
-            };
+            return { status: 'ok', result: { ...user, ...user?.properties } };
         } else if (thirdPartyId === 'zohocrm') {
             const users = await axios({
                 method: 'get',
@@ -45,7 +48,7 @@ class UserService {
                 },
             });
             let user = unifyUser(users.data.users?.[0]);
-            return { result: user };
+            return { status: 'ok', result: user };
         } else if (thirdPartyId === 'sfdc') {
             const instanceUrl = connection.tp_account_url;
             const users = await axios({
@@ -56,28 +59,35 @@ class UserService {
                 },
             });
             let user = unifyUser(users.data);
-            return { result: user };
+            return { status: 'ok', result: user };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async getUnifiedUsers(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedUsers({
+        connection,
+        fields,
+        pageSize,
+        cursor,
+    }: {
+        connection: connections;
+        fields?: string;
+        pageSize?: number;
+        cursor?: string;
+    }): Promise<{
+        status: 'ok';
+        next?: string;
+        previous?: string;
+        results: UnifiedUser[];
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        let fields = req.query.fields;
-        const pageSize = parseInt(String(req.query.pageSize));
-        const cursor = req.query.cursor;
+
         console.log('Revert::GET ALL USER', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
-            fields = [
-                ...String(req.query.fields || '').split(','),
+            const formattedFields = [
+                ...String(fields || '').split(','),
                 'firstname',
                 'email',
                 'lastname',
@@ -87,17 +97,18 @@ class UserService {
             const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let users: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/settings/v3/users?properties=${fields}&${pagingString}`,
+                url: `https://api.hubapi.com/settings/v3/users?properties=${formattedFields}&${pagingString}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = users.data?.paging?.next?.after || null;
+            const nextCursor = users.data?.paging?.next?.after || undefined;
             users = users.data.results as any[];
             users = users?.map((l: any) => unifyUser({ ...l, ...l?.properties }));
             return {
+                status: 'ok',
                 next: nextCursor,
-                previous: null, // Field not supported by Hubspot.
+                previous: undefined, // Field not supported by Hubspot.
                 results: users,
             };
         } else if (thirdPartyId === 'zohocrm') {
@@ -109,11 +120,11 @@ class UserService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = users.data?.info?.next_page_token || null;
-            const prevCursor = users.data?.info?.previous_page_token || null;
+            const nextCursor = users.data?.info?.next_page_token || undefined;
+            const prevCursor = users.data?.info?.previous_page_token || undefined;
             users = users.data.users;
             users = users?.map((l: any) => unifyUser(l));
-            return { next: nextCursor, previous: prevCursor, results: users };
+            return { status: 'ok', next: nextCursor, previous: prevCursor, results: users };
         } else if (thirdPartyId === 'sfdc') {
             let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
                 cursor ? `OFFSET+${cursor}` : ''
@@ -134,27 +145,27 @@ class UserService {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = pageSize ? String(users.data?.totalSize + (parseInt(String(cursor)) || 0)) : null;
+            const nextCursor = pageSize ? String(users.data?.totalSize + (parseInt(String(cursor)) || 0)) : undefined;
             const prevCursor =
                 cursor && parseInt(String(cursor)) > 0
                     ? String(parseInt(String(cursor)) - users.data?.totalSize)
-                    : null;
+                    : undefined;
             users = users.data?.records;
             users = users?.map((l: any) => unifyUser(l));
-            return { next: nextCursor, previous: prevCursor, results: users };
+            return { status: 'ok', next: nextCursor, previous: prevCursor, results: users };
         } else {
-            return { error: 'Unrecognized CRM' };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async createUser(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async createUser({ connection, userData }: { userData: UnifiedUser; connection: connections }): Promise<{
+        status: 'ok';
+        result: any;
+        message: string;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const user = disunifyUser(req.body, thirdPartyId);
+        const user = disunifyUser(userData, thirdPartyId);
         console.log('Revert::CREATE USER', tenantId, user);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -198,9 +209,7 @@ class UserService {
                 result: userCreated.data,
             };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
 }

@@ -7,7 +7,7 @@ types:
             public_token: string
             domain: string
             skipWaitlist: boolean
-            users: optional<list<User>>
+            users: optional<list<RevertUser>>
             apps: optional<list<App>>
 
     App:
@@ -22,7 +22,7 @@ types:
             connections: optional<list<Connection>>
             is_revert_app: boolean
 
-    User:
+    RevertUser:
         properties:
             id: string
             domain: string

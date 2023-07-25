@@ -21,6 +21,7 @@ import { companyService } from './v1/crm/company';
 import { contactService } from './v1/crm/contact';
 import { eventService } from './v1/crm/event';
 import { taskService } from './v1/crm/task';
+import { userService } from './v1/crm/user';
 
 const router = express.Router();
 
@@ -109,7 +110,8 @@ register(router, {
         company: companyService,
         contact: contactService,
         event: eventService,
-        task: taskService
+        task: taskService,
+        user: userService
     },
 });
 

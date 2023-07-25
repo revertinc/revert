@@ -1,7 +1,6 @@
 import express from 'express';
 import proxyRouter from './proxy';
 import authRouter from './auth';
-import userRouter from './user';
 
 const crmRouter = express.Router();
 
@@ -17,7 +16,6 @@ crmRouter.get('/ping', async (_, res) => {
 });
 
 crmRouter.use('/', authRouter);
-crmRouter.use('/users', userRouter);
 crmRouter.use('/proxy', proxyRouter);
 
 export default crmRouter;

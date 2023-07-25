@@ -71,3 +71,11 @@ types:
             priority: string
             status: string
             dueDate: unknown
+    User:
+        extends: CommonUnifiedFields
+        properties:
+            firstName: string
+            lastName: string
+            phone: string
+            email: string
+
