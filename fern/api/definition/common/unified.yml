@@ -63,3 +63,11 @@ types:
             isAllDayEvent: boolean
             description: string
             location: string
+    Task:
+        extends: CommonUnifiedFields
+        properties:
+            subject: string
+            body: string
+            priority: string
+            status: string
+            dueDate: unknown

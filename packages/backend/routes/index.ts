@@ -20,6 +20,7 @@ import { noteService } from './v1/crm/note';
 import { companyService } from './v1/crm/company';
 import { contactService } from './v1/crm/contact';
 import { eventService } from './v1/crm/event';
+import { taskService } from './v1/crm/task';
 
 const router = express.Router();
 
@@ -108,6 +109,7 @@ register(router, {
         company: companyService,
         contact: contactService,
         event: eventService,
+        task: taskService
     },
 });
 

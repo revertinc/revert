@@ -1,23 +1,28 @@
 import axios from 'axios';
-import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
-import { disunifyTask, unifyTask } from '../models/unified';
-import { ParsedQs } from 'qs';
+import { UnifiedTask, disunifyTask, unifyTask } from '../models/unified';
+import { connections } from '@prisma/client';
+import { NotFoundError } from '../generated/typescript/api/resources/common';
 
 class TaskService {
-    async getUnifiedTask(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedTask({
+        connection,
+        taskId,
+        fields,
+    }: {
+        connection: connections;
+        taskId: string;
+        fields?: string;
+    }): Promise<{
+        status: 'ok';
+        result: UnifiedTask;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const taskId = req.params.id;
-        let fields = req.query.fields;
         console.log('Revert::GET TASK', tenantId, thirdPartyId, thirdPartyToken, taskId);
         if (thirdPartyId === 'hubspot') {
-            fields = [
-                ...String(req.query.fields || '').split(','),
+            const formattedFields = [
+                ...String(fields || '').split(','),
                 'hs_task_body',
                 'hs_task_subject',
                 'hs_task_priority',
@@ -26,16 +31,14 @@ class TaskService {
             ];
             let task: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/tasks/${taskId}?properties=${fields}`,
+                url: `https://api.hubapi.com/crm/v3/objects/tasks/${taskId}?properties=${formattedFields}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
             task = ([task.data] as any[])?.[0];
             task = unifyTask({ ...task, ...task?.properties });
-            return {
-                result: task,
-            };
+            return { status: 'ok', result: task };
         } else if (thirdPartyId === 'zohocrm') {
             const tasks = await axios({
                 method: 'get',
@@ -45,7 +48,7 @@ class TaskService {
                 },
             });
             let task = unifyTask(tasks.data.data?.[0]);
-            return { result: task };
+            return { status: 'ok', result: task };
         } else if (thirdPartyId === 'sfdc') {
             const instanceUrl = connection.tp_account_url;
             const tasks = await axios({
@@ -56,28 +59,34 @@ class TaskService {
                 },
             });
             let task = unifyTask(tasks.data);
-            return { result: task };
+            return { status: 'ok', result: task };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async getUnifiedTasks(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async getUnifiedTasks({
+        connection,
+        fields,
+        pageSize,
+        cursor,
+    }: {
+        connection: connections;
+        fields?: string;
+        pageSize?: number;
+        cursor?: string;
+    }): Promise<{
+        status: 'ok';
+        next?: string;
+        previous?: string;
+        results: UnifiedTask[];
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        let fields = req.query.fields;
-        const pageSize = parseInt(String(req.query.pageSize));
-        const cursor = req.query.cursor;
         console.log('Revert::GET ALL TASK', tenantId, thirdPartyId, thirdPartyToken);
         if (thirdPartyId === 'hubspot') {
-            fields = [
-                ...String(req.query.fields || '').split(','),
+            const formattedFields = [
+                ...String(fields || '').split(','),
                 'hs_task_body',
                 'hs_task_subject',
                 'hs_task_priority',
@@ -87,17 +96,18 @@ class TaskService {
             const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
             let tasks: any = await axios({
                 method: 'get',
-                url: `https://api.hubapi.com/crm/v3/objects/tasks?properties=${fields}&${pagingString}`,
+                url: `https://api.hubapi.com/crm/v3/objects/tasks?properties=${formattedFields}&${pagingString}`,
                 headers: {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = tasks.data?.paging?.next?.after || null;
+            const nextCursor = tasks.data?.paging?.next?.after || undefined;
             tasks = tasks.data.results as any[];
             tasks = tasks?.map((l: any) => unifyTask({ ...l, ...l?.properties }));
             return {
+                status: 'ok',
                 next: nextCursor,
-                previous: null, // Field not supported by Hubspot.
+                previous: undefined, // Field not supported by Hubspot.
                 results: tasks,
             };
         } else if (thirdPartyId === 'zohocrm') {
@@ -109,11 +119,11 @@ class TaskService {
                     authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = tasks.data?.info?.next_page_token || null;
-            const prevCursor = tasks.data?.info?.previous_page_token || null;
+            const nextCursor = tasks.data?.info?.next_page_token || undefined;
+            const prevCursor = tasks.data?.info?.previous_page_token || undefined;
             tasks = tasks.data.data;
             tasks = tasks?.map((l: any) => unifyTask(l));
-            return { next: nextCursor, previous: prevCursor, results: tasks };
+            return { status: 'ok', next: nextCursor, previous: prevCursor, results: tasks };
         } else if (thirdPartyId === 'sfdc') {
             let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
                 cursor ? `OFFSET+${cursor}` : ''
@@ -134,28 +144,34 @@ class TaskService {
                     authorization: `Bearer ${thirdPartyToken}`,
                 },
             });
-            const nextCursor = pageSize ? String(tasks.data?.totalSize + (parseInt(String(cursor)) || 0)) : null;
+            const nextCursor = pageSize ? String(tasks.data?.totalSize + (parseInt(String(cursor)) || 0)) : undefined;
             const prevCursor =
                 cursor && parseInt(String(cursor)) > 0
                     ? String(parseInt(String(cursor)) - tasks.data?.totalSize)
-                    : null;
+                    : undefined;
             tasks = tasks.data?.records;
             tasks = tasks?.map((l: any) => unifyTask(l));
-            return { next: nextCursor, previous: prevCursor, results: tasks };
+            return { status: 'ok', next: nextCursor, previous: prevCursor, results: tasks };
         } else {
-            return { error: 'Unrecognized CRM' };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async searchUnifiedTasks(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async searchUnifiedTasks({
+        connection,
+        searchCriteria,
+        fields,
+    }: {
+        connection: connections;
+        searchCriteria: any;
+        fields?: string;
+    }): Promise<{
+        status: 'ok';
+        results: UnifiedTask[];
+    }> {
+        const formattedFields = (fields || '').split('').filter(Boolean);
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const searchCriteria = req.body.searchCriteria;
-        const fields = String(req.query.fields || '').split(',');
         console.log('Revert::SEARCH TASK', tenantId, searchCriteria, fields);
         if (thirdPartyId === 'hubspot') {
             let tasks: any = await axios({
@@ -173,7 +189,7 @@ class TaskService {
                         'hs_task_priority',
                         'hs_task_status',
                         'hs_timestamp',
-                        ...fields,
+                        ...formattedFields,
                     ],
                 }),
             });
@@ -207,20 +223,18 @@ class TaskService {
             tasks = tasks?.map((l: any) => unifyTask(l));
             return { status: 'ok', results: tasks };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async createTask(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async createTask({ connection, taskData }: { taskData: UnifiedTask; connection: connections }): Promise<{
+        status: 'ok';
+        result: any;
+        message: string;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const task = disunifyTask(req.body, thirdPartyId);
+        const task = disunifyTask(taskData, thirdPartyId);
         console.log('Revert::CREATE TASK', tenantId, task);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -264,21 +278,26 @@ class TaskService {
                 result: taskCreated.data,
             };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
-    async updateTask(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
+    async updateTask({
+        connection,
+        taskData,
+        taskId,
+    }: {
+        taskData: UnifiedTask;
+        connection: connections;
+        taskId: string;
+    }): Promise<{
+        status: 'ok';
+        result: any;
+        message: string;
+    }> {
         const thirdPartyId = connection.tp_id;
         const thirdPartyToken = connection.tp_access_token;
         const tenantId = connection.t_id;
-        const task = disunifyTask(req.body, thirdPartyId);
-        const taskId = req.params.id;
+        const task = disunifyTask(taskData, thirdPartyId);
         console.log('Revert::UPDATE TASK', tenantId, task, taskId);
         if (thirdPartyId === 'hubspot') {
             await axios({
@@ -318,9 +337,7 @@ class TaskService {
             });
             return { status: 'ok', message: 'SFDC task updated', result: task };
         } else {
-            return {
-                error: 'Unrecognised CRM',
-            };
+            throw new NotFoundError({ error: 'Unrecognized CRM' });
         }
     }
 }

@@ -1,0 +1,104 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    GetUnifiedTaskResponse:
+        properties:
+            status: string
+            result: unified.Task
+    GetUnifiedTasksResponse:
+        properties:
+            status: string
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.Task>
+    CreateOrUpdateTaskResponse:
+        properties:
+            status: string
+            message: string
+            result: unknown
+    SearchTasksResponse:
+        properties:
+            status: string
+            results: list<unified.Task>
+
+service:
+    base-path: /crm/tasks
+    auth: true
+    endpoints:
+        getUnifiedTask:
+            docs: Get details of a task
+            method: GET
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: GetUnifiedTaskRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetUnifiedTaskResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getUnifiedTasks:
+            docs: Get all the tasks
+            method: GET
+            path: ''
+            request:
+                name: GetUnifiedTasksRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetUnifiedTasksResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createTask:
+            docs: Create a new task
+            method: POST
+            path: ''
+            request:
+                name: CreateTaskRequest
+                body: unified.Task
+            response: CreateOrUpdateTaskResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateTask:
+            docs: Update a task
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateTaskRequest
+                body: unified.Task
+            response: CreateOrUpdateTaskResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        searchTasks:
+            docs: Search for tasks
+            method: POST
+            path: /search
+            request:
+                name: SearchTasksRequest
+                body:
+                    properties:
+                        searchCriteria: unknown
+                query-parameters:
+                    fields: optional<string>
+            response: SearchTasksResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
