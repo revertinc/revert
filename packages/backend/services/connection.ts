@@ -61,13 +61,14 @@ class ConnectionService {
     ) {
         const connection = res.locals.connection;
         const { 'x-revert-api-token': token } = req.headers;
-        const account = await prisma.accounts.findFirst({
+        const environment = await prisma.environments.findFirst({
             where: {
                 private_token: String(token),
             },
         });
-        const svixAppId = account!.id;
+        const svixAppId = environment?.accountId!;
         const deleted: any = await prisma.connections.delete({
+            // TODO: Add environments to connections.
             where: {
                 uniqueCustomerPerTenantPerThirdParty: {
                     tp_customer_id: connection.tp_customer_id,
@@ -100,12 +101,12 @@ class ConnectionService {
         try {
             const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
             const webhookUrl = req.body.webhookUrl;
-            const account = await prisma.accounts.findFirst({
+            const environment = await prisma.environments.findFirst({
                 where: {
                     private_token: String(token),
                 },
             });
-            const svixAppId = account!.id;
+            const svixAppId = environment?.accountId!;
             const secret = `whsec_${Buffer.from(uuidv4()).toString('base64')}`;
             const webhook = await this.svix.endpoint.create(svixAppId, {
                 url: webhookUrl,
@@ -131,12 +132,12 @@ class ConnectionService {
     ) {
         try {
             const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
-            const account = await prisma.accounts.findFirst({
+            const environment = await prisma.environments.findFirst({
                 where: {
                     private_token: String(token),
                 },
             });
-            const svixAppId = account!.id;
+            const svixAppId = environment?.accountId!;
             const webhook = await this.svix.endpoint.get(svixAppId, String(tenantId));
             return { status: 'ok', webhook: webhook };
         } catch (error: any) {
@@ -156,12 +157,12 @@ class ConnectionService {
         try {
             const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
             const webhookId = String(tenantId);
-            const account = await prisma.accounts.findFirst({
+            const environment = await prisma.environments.findFirst({
                 where: {
                     private_token: String(token),
                 },
             });
-            const svixAppId = account!.id;
+            const svixAppId = environment?.accountId!;
             await this.svix.endpoint.delete(svixAppId, webhookId);
             return { status: 'ok' };
         } catch (error: any) {
