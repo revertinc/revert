@@ -1,13 +1,25 @@
 default-group: local
 groups:
-  local:
-    generators:
-      - name: fernapi/fern-typescript-express
-        version: 0.7.2-rc2
-        output:
-          location: local-file-system
-          path: ../../packages/backend/generated/typescript
-        config:
-          noSerdeLayer: true
-    docs:
-      domain: revert.docs.buildwithfern.com
+    local:
+        generators:
+            - name: fernapi/fern-typescript-express
+              version: 0.7.2-rc2
+              output:
+                  location: local-file-system
+                  path: ../../packages/backend/generated/typescript
+              config:
+                  noSerdeLayer: true
+    external:
+        audiences:
+            - external
+        generators:
+            - name: fernapi/fern-postman
+              version: 0.0.44
+              output:
+                  location: postman
+                  api-key: $POSTMAN_API_KEY
+                  workspace-id: 9941f205-215a-4ba1-803a-0a16c902b491
+              github:
+                  repository: revertinc/revert-postman
+        docs:
+            domain: revert.docs.buildwithfern.com

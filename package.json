@@ -12,6 +12,7 @@
     },
     "scripts": {
         "fern": "fern generate --log-level debug",
+        "fern-docs": "fern generate --group external",
         "build": "yarn workspaces foreach run build"
     },
     "prisma": {
