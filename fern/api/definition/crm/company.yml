@@ -29,6 +29,8 @@ types:
 service:
     base-path: /crm/companies
     auth: true
+    audiences:
+        - external
     endpoints:
         getUnifiedCompany:
             docs: Get details of a company

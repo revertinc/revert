@@ -29,6 +29,8 @@ types:
 service:
     base-path: /crm/tasks
     auth: true
+    audiences:
+        - external
     endpoints:
         getUnifiedTask:
             docs: Get details of a task

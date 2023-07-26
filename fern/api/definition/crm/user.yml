@@ -29,6 +29,8 @@ types:
 service:
     base-path: /crm/users
     auth: true
+    audiences:
+        - external
     endpoints:
         getUnifiedUser:
             docs: Get details of a user

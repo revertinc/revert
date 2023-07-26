@@ -29,6 +29,8 @@ types:
 service:
     base-path: /crm/events
     auth: true
+    audiences:
+        - external
     endpoints:
         getUnifiedEvent:
             docs: Get details of a event

@@ -12,6 +12,8 @@ types:
 service:
     base-path: /internal/account
     auth: true
+    audiences:
+        - internal
     endpoints:
         getAccountDetails:
             docs: Get details of a revert user account

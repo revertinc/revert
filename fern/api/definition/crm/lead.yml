@@ -29,6 +29,8 @@ types:
 service:
     base-path: /crm/leads
     auth: true
+    audiences:
+        - external
     endpoints:
         getUnifiedLead:
             docs: Get details of a lead

@@ -29,6 +29,8 @@ types:
 service:
     base-path: /crm/notes
     auth: true
+    audiences:
+        - external
     endpoints:
         getUnifiedNote:
             docs: Get details of a note

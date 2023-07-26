@@ -27,6 +27,8 @@ types:
 service:
     base-path: /
     auth: false
+    audiences:
+        - external
     endpoints:
         getCrms:
             docs: Retrieve a list of CRMs available for this account from the database based on the public token.

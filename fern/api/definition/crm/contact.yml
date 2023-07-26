@@ -29,6 +29,8 @@ types:
 service:
     base-path: /crm/contacts
     auth: true
+    audiences:
+        - external
     endpoints:
         getUnifiedContact:
             docs: Get details of a contact
