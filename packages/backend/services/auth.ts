@@ -53,7 +53,6 @@ class AuthService {
                                     tp_refresh_token: result.data.refresh_token,
                                 },
                             });
-                            console.log('OAuth creds refreshed for hubspot');
                         } else if (connection.tp_id === TP_ID.zohocrm) {
                             // Refresh the zoho-crm token.
                             const url = `${connection.tp_account_url}/oauth/v2/token`;
@@ -88,7 +87,6 @@ class AuthService {
                                         tp_access_token: result.data.access_token,
                                     },
                                 });
-                                console.log('OAuth creds refreshed for zohocrm');
                             } else {
                                 console.log('Zoho connection could not be refreshed', result);
                             }
@@ -126,7 +124,6 @@ class AuthService {
                                         tp_access_token: result.data.access_token,
                                     },
                                 });
-                                console.log('OAuth creds refreshed for sfdc');
                             } else {
                                 console.log('SFDC connection could not be refreshed', result);
                             }
@@ -169,9 +166,9 @@ class AuthService {
                                     tp_refresh_token: result.data.refresh_token,
                                 },
                             });
-                            console.log('OAuth creds refreshed for pipedrive');
                         }
                     } catch (error: any) {
+                        logError(error);
                         console.error('Could not refresh token', connection.t_id, error.response?.data);
                     }
                 }
