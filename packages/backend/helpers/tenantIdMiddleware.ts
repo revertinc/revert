@@ -23,6 +23,7 @@ const revertTenantMiddleware = () => async (req: Request, res: Response, next: (
             },
         });
         if (!connection || !connection.length) {
+            console.log(`Tenant not found ${tenantId}`);
             return res.status(400).send({
                 error: 'Tenant not found',
             });
