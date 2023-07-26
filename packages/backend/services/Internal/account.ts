@@ -10,7 +10,7 @@ const accountService = new AccountService({
             const userId = req.body.userId;
             const result = await AuthService.getAccountForUser(userId);
             if (result?.error) {
-                throw new NotFoundError({ error: 'Count not get account for user' });
+                throw new NotFoundError({ error: 'Count not get the account for user' });
             } else {
                 res.send(result);
             }
