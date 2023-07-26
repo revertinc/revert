@@ -13,3 +13,6 @@ auth-schemes:
     Authorization:
         header: x-revert-public-token
         type: string
+audiences:
+  - internal
+  - external

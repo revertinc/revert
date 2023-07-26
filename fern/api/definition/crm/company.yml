@@ -27,7 +27,7 @@ types:
             results: list<unified.Company>
 
 service:
-    base-path: /crm/Companies
+    base-path: /crm/companies
     auth: true
     endpoints:
         getUnifiedCompany:
@@ -46,7 +46,7 @@ service:
                 - errors.InternalServerError
                 - errors.NotFoundError
         getUnifiedCompanies:
-            docs: Get all the Companies
+            docs: Get all the companies
             method: GET
             path: ''
             request:
@@ -87,7 +87,7 @@ service:
                 - errors.InternalServerError
                 - errors.NotFoundError
         searchCompanies:
-            docs: Search for Companies
+            docs: Search for companies
             method: POST
             path: /search
             request:
