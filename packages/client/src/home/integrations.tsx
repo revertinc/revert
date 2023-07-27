@@ -8,12 +8,12 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import Modal from '@mui/material/Modal';
 import EditCredentials from './editCredentials';
 import { LOCALSTORAGE_KEYS } from '../data/localstorage';
+import * as Sentry from '@sentry/react';
 
 const Integrations = ({ environment }) => {
     const user = useUser();
     const [account, setAccount] = useState<any>();
     const [isLoading, setLoading] = useState<boolean>(false);
-    const [viewSecret, setViewSecret] = useState<boolean>(false);
     const [open, setOpen] = React.useState(false);
     const [appId, setAppId] = useState<string>('sfdc');
 
@@ -47,18 +47,11 @@ const Integrations = ({ environment }) => {
                 setLoading(false);
             })
             .catch((error) => {
+                Sentry.captureException(error);
                 console.log('error', error);
                 setLoading(false);
             });
     }, [user.user?.id, environment, open]);
-
-    let secretOverlay = {};
-    if (!viewSecret) {
-        secretOverlay = {
-            textShadow: 'white 0px 0px 6px',
-            color: '#00000000',
-        };
-    }
 
     return (
         <div className="w-[80%]">
