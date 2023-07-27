@@ -9,7 +9,7 @@ import revertAuthMiddleware from '../helpers/authMiddleware';
 import connectionRouter from './v1/connection';
 import { register } from '../generated/typescript';
 import { metadataService } from '../services/metadata';
-import { accountService } from '../services/Internal/account';
+import { accountService } from '../services/internal/account';
 
 import AuthService from '../services/auth';
 import logError from '../helpers/logError';
@@ -102,7 +102,9 @@ router.use('/connection', cors(), revertAuthMiddleware(), connectionRouter);
 
 register(router, {
     metadata: metadataService,
-    account: accountService,
+    internal: {
+        account: accountService
+    },
     crm: {
         lead: leadService,
         deal: dealService,

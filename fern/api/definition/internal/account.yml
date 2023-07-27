@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
 
 imports:
-    errors: common/errors.yml
-    types: common/types.yml
+    errors: ../common/errors.yml
+    types: ../common/types.yml
 
 types:
     GetAccountDetailsResponse:

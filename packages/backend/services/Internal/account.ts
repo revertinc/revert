@@ -1,5 +1,5 @@
 import logError from '../../helpers/logError';
-import { AccountService } from '../../generated/typescript/api/resources/account/service/AccountService';
+import { AccountService } from '../../generated/typescript/api/resources/internal/resources/account/service/AccountService';
 import { InternalServerError, NotFoundError, UnAuthorizedError } from '../../generated/typescript/api/resources/common';
 import AuthService from '../auth';
 import prisma from '../../prisma/client';
@@ -10,7 +10,7 @@ const accountService = new AccountService({
             const userId = req.body.userId;
             const result = await AuthService.getAccountForUser(userId);
             if (result?.error) {
-                throw new NotFoundError({ error: 'Count not get the account for user' });
+                throw new NotFoundError({ error: 'Could not get the account for user' });
             } else {
                 res.send(result);
             }
@@ -47,7 +47,7 @@ const accountService = new AccountService({
                 tpId,
             });
             if (result?.error) {
-                throw new NotFoundError({ error: 'Count not get account for user' });
+                throw new NotFoundError({ error: 'Could not get account for user' });
             } else {
                 return res.send(result);
             }
