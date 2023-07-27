@@ -34,6 +34,10 @@ const Home = () => {
             .then((response) => response.json())
             .then((result) => {
                 setAccount(result?.account);
+                const environments: string[] = result?.account?.environments?.map(env => env.env) || [];
+                if (!environments.includes("production")) {
+                    setEnvironment(environments?.[0])
+                }
             })
             .catch((error) => {
                 console.log('error', error);

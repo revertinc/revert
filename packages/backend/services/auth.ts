@@ -301,17 +301,23 @@ class AuthService {
             return { error: 'Account does not exist' };
         }
 
-        const appsWithScope = account.account.environments.map((env) =>
-            env.apps.map((app) => {
-                return {
-                    ...app,
-                    scope: app.scope.length ? app.scope : DEFAULT_SCOPE[app.tp_id],
-                    env: env.env,
-                };
-            })
-        );
+        const appsWithScope = account.account.environments.map((env) => {
+            return {
+                ...env,
+                apps: env.apps.map((app) => {
+                    return {
+                        ...app,
+                        scope: app.scope.length ? app.scope : DEFAULT_SCOPE[app.tp_id],
+                        env: env.env,
+                    };
+                }),
+            };
+        });
 
-        return { ...account, account: { ...account.account, apps: appsWithScope } };
+        return {
+            ...account,
+            account: { ...account.account, environments: appsWithScope },
+        };
     }
     async setAppCredentialsForUser({
         appId,

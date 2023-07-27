@@ -7,6 +7,10 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 export default function EnvironmentSelector({ environmentProp, setEnvironmentProp, environmentList }) {
     const [environment, setEnvironment] = React.useState(environmentProp);
 
+    React.useEffect(() => {
+        setEnvironment(environmentProp);
+    }, [environmentProp]);
+
     const handleChange = (event: SelectChangeEvent) => {
         setEnvironment(event.target.value);
         setEnvironmentProp(event.target.value);

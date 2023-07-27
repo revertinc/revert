@@ -66,18 +66,17 @@ const LoadingButton = styled(MuiLoadingButton)`
     }
 `;
 
-const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount: any }> = ({
-    app,
-    handleClose,
-    setAccount,
-}) => {
+const EditCredentials: React.FC<{
+    app: any;
+    handleClose: ({ refetchOnClose }: { refetchOnClose?: boolean | undefined }) => Promise<void>;
+}> = ({ app, handleClose }) => {
     const [clientId, setClientId] = React.useState<string>(app.app_client_id);
     const [clientSecret, setClientSecret] = React.useState<string>(app.app_client_secret);
     const [scopes, setScopes] = React.useState<string[]>(app.scope);
     const [newScope, setNewScope] = React.useState<string>('');
     const [isRevertApp, setIsRevertApp] = React.useState(app.is_revert_app);
 
-    const { data, loading, status, fetch } = useApi();
+    const { loading, status, fetch } = useApi();
 
     const handleAddNewScope = (e) => {
         if (e.key === 'Enter') {
@@ -102,16 +101,9 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount:
 
     React.useEffect(() => {
         if (status === 200) {
-            handleClose();
-            // Update account locally to avoid additional api call
-            setAccount((account) => {
-                return {
-                    ...account,
-                    apps: [...account.apps.filter((a) => a.tp_id !== app.tp_id), data],
-                };
-            });
+            handleClose({ refetchOnClose: true });
         }
-    }, [status, handleClose, setAccount, data, app]);
+    }, [status, handleClose]);
 
     return (
         <Box>
@@ -170,7 +162,7 @@ const EditCredentials: React.FC<{ app: any; handleClose: () => void; setAccount:
                 </>
             )}
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', gap: '15px' }}>
-                <Button onClick={handleClose} style={{ color: '#000' }}>
+                <Button onClick={() => handleClose({ refetchOnClose: false })} style={{ color: '#000' }}>
                     Close
                 </Button>
                 <LoadingButton
