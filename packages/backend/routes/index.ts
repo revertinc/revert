@@ -14,14 +14,16 @@ import { accountService } from '../services/internal/account';
 import AuthService from '../services/auth';
 import logError from '../helpers/logError';
 import verifyRevertWebhook from '../helpers/verifyRevertWebhook';
-import { leadService } from './v1/crm/lead';
-import { dealService } from './v1/crm/deal';
-import { noteService } from './v1/crm/note';
-import { companyService } from './v1/crm/company';
-import { contactService } from './v1/crm/contact';
-import { eventService } from './v1/crm/event';
-import { taskService } from './v1/crm/task';
-import { userService } from './v1/crm/user';
+import {
+    companyService,
+    contactService,
+    dealService,
+    eventService,
+    leadService,
+    noteService,
+    taskService,
+    userService,
+} from '../services/crm';
 
 const router = express.Router();
 
@@ -103,7 +105,7 @@ router.use('/connection', cors(), revertAuthMiddleware(), connectionRouter);
 register(router, {
     metadata: metadataService,
     internal: {
-        account: accountService
+        account: accountService,
     },
     crm: {
         lead: leadService,
@@ -113,7 +115,7 @@ register(router, {
         contact: contactService,
         event: eventService,
         task: taskService,
-        user: userService
+        user: userService,
     },
 });
 
