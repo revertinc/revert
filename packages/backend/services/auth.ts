@@ -168,7 +168,7 @@ class AuthService {
                             });
                         }
                     } catch (error: any) {
-                        logError(error);
+                        logError(error.response?.data);
                         console.error('Could not refresh token', connection.t_id, error.response?.data);
                     }
                 }
