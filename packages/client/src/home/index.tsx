@@ -6,6 +6,7 @@ import AppsIcon from '@mui/icons-material/Apps';
 import Integrations from './integrations';
 import { useUser } from '@clerk/clerk-react';
 import { REVERT_BASE_API_URL } from '../constants';
+import * as Sentry from '@sentry/react';
 
 const selectedStyle = {
     background: '#f4f4f4',
@@ -36,6 +37,7 @@ const Home = () => {
                 setAccount(result?.account);
             })
             .catch((error) => {
+                Sentry.captureException(error);
                 console.log('error', error);
             });
     }, [user.user?.id]);

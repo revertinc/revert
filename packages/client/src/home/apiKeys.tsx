@@ -6,6 +6,7 @@ import { toast } from 'react-hot-toast';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { REVERT_BASE_API_URL } from '../constants';
+import * as Sentry from '@sentry/react';
 
 const ApiKeys = ({ environment }) => {
     const user = useUser();
@@ -33,6 +34,7 @@ const ApiKeys = ({ environment }) => {
                 setLoading(false);
             })
             .catch((error) => {
+                Sentry.captureException(error);
                 console.log('error', error);
                 setLoading(false);
             });

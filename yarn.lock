@@ -6861,6 +6861,7 @@ __metadata:
     "@mui/icons-material": ^5.10.3
     "@mui/lab": ^5.0.0-alpha.135
     "@mui/material": ^5.10.3
+    "@sentry/react": ^7.60.1
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.3.0
     "@testing-library/user-event": ^13.5.0
@@ -7066,6 +7067,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry-internal/tracing@npm:7.60.1":
+  version: 7.60.1
+  resolution: "@sentry-internal/tracing@npm:7.60.1"
+  dependencies:
+    "@sentry/core": 7.60.1
+    "@sentry/types": 7.60.1
+    "@sentry/utils": 7.60.1
+    tslib: ^2.4.1 || ^1.9.3
+  checksum: b5d4bca6ce673639662e647ce733a831c8b5ee2ba14866b4d9b22dd14a7955bdfe1cbcca6cfca198ad3c5dc9e3e1e06c9d8dc74ed47999b75a0d10b9945f737a
+  languageName: node
+  linkType: hard
+
+"@sentry/browser@npm:7.60.1":
+  version: 7.60.1
+  resolution: "@sentry/browser@npm:7.60.1"
+  dependencies:
+    "@sentry-internal/tracing": 7.60.1
+    "@sentry/core": 7.60.1
+    "@sentry/replay": 7.60.1
+    "@sentry/types": 7.60.1
+    "@sentry/utils": 7.60.1
+    tslib: ^2.4.1 || ^1.9.3
+  checksum: bb3610d86f61da4be15b722b8bf78c0d83ca77ef10f06b573c28c70820cc146dee99f84ec6477a2054cf2a3e24495304b8ccc485696953ea44ce538001b8ce23
+  languageName: node
+  linkType: hard
+
 "@sentry/core@npm:7.55.2":
   version: 7.55.2
   resolution: "@sentry/core@npm:7.55.2"
@@ -7074,6 +7101,17 @@ __metadata:
     "@sentry/utils": 7.55.2
     tslib: ^1.9.3
   checksum: 3f31d14622725a76322f025ffb09186872e856e3783b99a9fa211cf93b22329011a21f5b4f4dd4bcbc9b15bbfc3a867b18303b7b4da3b282b5a677b9d568f6fe
+  languageName: node
+  linkType: hard
+
+"@sentry/core@npm:7.60.1":
+  version: 7.60.1
+  resolution: "@sentry/core@npm:7.60.1"
+  dependencies:
+    "@sentry/types": 7.60.1
+    "@sentry/utils": 7.60.1
+    tslib: ^2.4.1 || ^1.9.3
+  checksum: 19366e7d7b71ac29c333120dbcae9450ba50c886883665b24c05efcdb72d55eb42dd17379ca20f737f6dacbc30df9248f8677daec024225da35ea31a38cb2e4b
   languageName: node
   linkType: hard
 
@@ -7093,10 +7131,43 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry/react@npm:^7.60.1":
+  version: 7.60.1
+  resolution: "@sentry/react@npm:7.60.1"
+  dependencies:
+    "@sentry/browser": 7.60.1
+    "@sentry/types": 7.60.1
+    "@sentry/utils": 7.60.1
+    hoist-non-react-statics: ^3.3.2
+    tslib: ^2.4.1 || ^1.9.3
+  peerDependencies:
+    react: 15.x || 16.x || 17.x || 18.x
+  checksum: 59d00ce1decd3015025b63b9f7aeda1d245996f51f913d7c1a84e0e356e89712c3345e5eef9746701aad7b845ad376cdd8529376bd9ec29977d671d5e147d5c5
+  languageName: node
+  linkType: hard
+
+"@sentry/replay@npm:7.60.1":
+  version: 7.60.1
+  resolution: "@sentry/replay@npm:7.60.1"
+  dependencies:
+    "@sentry/core": 7.60.1
+    "@sentry/types": 7.60.1
+    "@sentry/utils": 7.60.1
+  checksum: e3107451a7b07bab82d8adff0a8f4bcfcd41da73b33618d0d20804e0b6d0d6d2ec98190373382c22d667a830eec433e71816946ef27d424ef57cff647a470370
+  languageName: node
+  linkType: hard
+
 "@sentry/types@npm:7.55.2":
   version: 7.55.2
   resolution: "@sentry/types@npm:7.55.2"
   checksum: 37ca4043dd88e05ea104172e7b0aa39e802f71c01ab3bcc31beb5ef25bccfa98fe1305e57cc929d65cdc59f0da6d71e464556a0309379371e5e350f6866cbf3c
+  languageName: node
+  linkType: hard
+
+"@sentry/types@npm:7.60.1":
+  version: 7.60.1
+  resolution: "@sentry/types@npm:7.60.1"
+  checksum: 56a756edec5ed6783b0ed955832d85a77e1fbadfcc23e9cfbee74d52b9eb70ee333c2d9a2fdc5a07f50ebf3b29d7d6dbf76964682b8687c6d6ce64b1a7e77c79
   languageName: node
   linkType: hard
 
@@ -7107,6 +7178,16 @@ __metadata:
     "@sentry/types": 7.55.2
     tslib: ^1.9.3
   checksum: efcb02ea9d49de7f754f7e9e42a8f5e882aad4d106ba2a3394706d6fc7b7ea74b86d66595da51f026cdde4b6743963ec3b3a7cb2e870354ac1009d7fa9159476
+  languageName: node
+  linkType: hard
+
+"@sentry/utils@npm:7.60.1":
+  version: 7.60.1
+  resolution: "@sentry/utils@npm:7.60.1"
+  dependencies:
+    "@sentry/types": 7.60.1
+    tslib: ^2.4.1 || ^1.9.3
+  checksum: a3bab34c7e023c33c07fb3db5f357325beebf5cf559b1713a725e38927e73298f22e67bac3e5ea9e1c4e5af6a2a6351e5ded214631f6d979297b58462044e8b7
   languageName: node
   linkType: hard
 
@@ -19669,7 +19750,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hoist-non-react-statics@npm:^3.0.0, hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.1":
+"hoist-non-react-statics@npm:^3.0.0, hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.1, hoist-non-react-statics@npm:^3.3.2":
   version: 3.3.2
   resolution: "hoist-non-react-statics@npm:3.3.2"
   dependencies:
@@ -30465,6 +30546,13 @@ __metadata:
   version: 2.5.0
   resolution: "tslib@npm:2.5.0"
   checksum: ae3ed5f9ce29932d049908ebfdf21b3a003a85653a9a140d614da6b767a93ef94f460e52c3d787f0e4f383546981713f165037dc2274df212ea9f8a4541004e1
+  languageName: node
+  linkType: hard
+
+"tslib@npm:^2.4.1 || ^1.9.3":
+  version: 2.6.1
+  resolution: "tslib@npm:2.6.1"
+  checksum: b0d176d176487905b66ae4d5856647df50e37beea7571c53b8d10ba9222c074b81f1410fb91da13debaf2cbc970663609068bdebafa844ea9d69b146527c38fe
   languageName: node
   linkType: hard
 
