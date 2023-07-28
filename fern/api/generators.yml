@@ -17,9 +17,11 @@ groups:
               version: 0.0.44
               output:
                   location: postman
-                  api-key: $POSTMAN_API_KEY
-                  workspace-id: $POSTMAN_WORKSPACE_ID
+                  api-key: ${POSTMAN_API_KEY}
+                  workspace-id: ${POSTMAN_WORKSPACE_ID}
               github:
                   repository: revertinc/revert-postman
         docs:
             domain: revert.docs.buildwithfern.com
+            custom-domains:
+                - docs.revert.dev
