@@ -10,7 +10,7 @@ import { UnifiedEvent, disunifyEvent, unifyEvent } from '../../models/unified';
 
 const eventService = new EventService(
     {
-        async getUnifiedEvent(req, res) {
+        async getEvent(req, res) {
             try {
                 const connection = res.locals.connection;
                 const eventId = req.params.id;
@@ -70,7 +70,7 @@ const eventService = new EventService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
-        async getUnifiedEvents(req, res) {
+        async getEvents(req, res) {
             try {
                 const connection = res.locals.connection;
                 const fields = req.query.fields;

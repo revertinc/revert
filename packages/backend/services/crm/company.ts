@@ -10,7 +10,7 @@ import { unifyCompany, disunifyCompany, UnifiedCompany } from '../../models/unif
 
 const companyService = new CompanyService(
     {
-        async getUnifiedCompany(req, res) {
+        async getCompany(req, res) {
             try {
                 const connection = res.locals.connection;
                 const companyId = req.params.id;
@@ -71,7 +71,7 @@ const companyService = new CompanyService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
-        async getUnifiedCompanies(req, res) {
+        async getCompanies(req, res) {
             try {
                 const connection = res.locals.connection;
                 const fields = req.query.fields;

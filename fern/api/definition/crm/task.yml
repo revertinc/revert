@@ -6,11 +6,11 @@ imports:
     unified: ../common/unified.yml
 
 types:
-    GetUnifiedTaskResponse:
+    GetTaskResponse:
         properties:
             status: string
             result: unified.Task
-    GetUnifiedTasksResponse:
+    GetTasksResponse:
         properties:
             status: string
             next: optional<string>
@@ -28,36 +28,38 @@ types:
 
 service:
     base-path: /crm/tasks
-    auth: true
+    auth: false
+    headers:
+        x-revert-api-token: string
     audiences:
         - external
     endpoints:
-        getUnifiedTask:
+        getTask:
             docs: Get details of a task
             method: GET
             path: /{id}
             path-parameters:
                 id: string
             request:
-                name: GetUnifiedTaskRequest
+                name: GetTaskRequest
                 query-parameters:
                     fields: optional<string>
-            response: GetUnifiedTaskResponse
+            response: GetTaskResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
-        getUnifiedTasks:
+        getTasks:
             docs: Get all the tasks
             method: GET
             path: ''
             request:
-                name: GetUnifiedTasksRequest
+                name: GetTasksRequest
                 query-parameters:
                     fields: optional<string>
                     pageSize: optional<string>
                     cursor: optional<string>
-            response: GetUnifiedTasksResponse
+            response: GetTasksResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

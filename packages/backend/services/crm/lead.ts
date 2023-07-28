@@ -9,16 +9,11 @@ import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { filterLeadsFromContactsForHubspot } from '../../helpers/filterLeadsFromContacts';
 import { UnifiedLead, disunifyLead, unifyLead } from '../../models/unified/lead';
-import {
-    PipedrivePagination,
-    PipedriveLead,
-    PipedriveContact,
-    PipedriveOrganization,
-} from '../../constants/pipedrive';
+import { PipedrivePagination, PipedriveLead, PipedriveContact, PipedriveOrganization } from '../../constants/pipedrive';
 
 const leadService = new LeadService(
     {
-        async getUnifiedLead(req, res) {
+        async getLead(req, res) {
             try {
                 const connection = res.locals.connection;
                 const leadId = req.params.id;
@@ -99,7 +94,7 @@ const leadService = new LeadService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
-        async getUnifiedLeads(req, res) {
+        async getLeads(req, res) {
             try {
                 const connection = res.locals.connection;
                 const fields = req.query.fields;

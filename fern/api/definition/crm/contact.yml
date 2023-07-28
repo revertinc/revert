@@ -6,11 +6,11 @@ imports:
     unified: ../common/unified.yml
 
 types:
-    GetUnifiedContactResponse:
+    GetContactResponse:
         properties:
             status: string
             result: unified.Contact
-    GetUnifiedContactsResponse:
+    GetContactsResponse:
         properties:
             status: string
             next: optional<string>
@@ -28,36 +28,38 @@ types:
 
 service:
     base-path: /crm/contacts
-    auth: true
+    auth: false
+    headers:
+        x-revert-api-token: string
     audiences:
         - external
     endpoints:
-        getUnifiedContact:
+        getContact:
             docs: Get details of a contact
             method: GET
             path: /{id}
             path-parameters:
                 id: string
             request:
-                name: GetUnifiedContactRequest
+                name: GetContactRequest
                 query-parameters:
                     fields: optional<string>
-            response: GetUnifiedContactResponse
+            response: GetContactResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
-        getUnifiedContacts:
+        getContacts:
             docs: Get all the contacts
             method: GET
             path: ''
             request:
-                name: GetUnifiedContactsRequest
+                name: GetContactsRequest
                 query-parameters:
                     fields: optional<string>
                     pageSize: optional<string>
                     cursor: optional<string>
-            response: GetUnifiedContactsResponse
+            response: GetContactsResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

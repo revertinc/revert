@@ -6,11 +6,11 @@ imports:
     unified: ../common/unified.yml
 
 types:
-    GetUnifiedDealResponse:
+    GetDealResponse:
         properties:
             status: string
             result: unified.Deal
-    GetUnifiedDealsResponse:
+    GetDealsResponse:
         properties:
             status: string
             next: optional<string>
@@ -28,36 +28,38 @@ types:
 
 service:
     base-path: /crm/deals
-    auth: true
+    auth: false
+    headers:
+        x-revert-api-token: string
     audiences:
         - external
     endpoints:
-        getUnifiedDeal:
+        getDeal:
             docs: Get details of a deal
             method: GET
             path: /{id}
             path-parameters:
                 id: string
             request:
-                name: GetUnifiedDealRequest
+                name: GetDealRequest
                 query-parameters:
                     fields: optional<string>
-            response: GetUnifiedDealResponse
+            response: GetDealResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
-        getUnifiedDeals:
+        getDeals:
             docs: Get all the deals
             method: GET
             path: ''
             request:
-                name: GetUnifiedDealsRequest
+                name: GetDealsRequest
                 query-parameters:
                     fields: optional<string>
                     pageSize: optional<string>
                     cursor: optional<string>
-            response: GetUnifiedDealsResponse
+            response: GetDealsResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

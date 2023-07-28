@@ -10,7 +10,7 @@ import { UnifiedTask, disunifyTask, unifyTask } from '../../models/unified';
 
 const taskService = new TaskService(
     {
-        async getUnifiedTask(req, res) {
+        async getTask(req, res) {
             try {
                 const connection = res.locals.connection;
                 const taskId = req.params.id;
@@ -68,7 +68,7 @@ const taskService = new TaskService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
-        async getUnifiedTasks(req, res) {
+        async getTasks(req, res) {
             try {
                 const connection = res.locals.connection;
                 const fields = req.query.fields;

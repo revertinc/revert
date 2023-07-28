@@ -12,7 +12,7 @@ import { PipedrivePagination } from '../../constants/pipedrive';
 
 const dealService = new DealService(
     {
-        async getUnifiedDeal(req, res) {
+        async getDeal(req, res) {
             try {
                 const connection = res.locals.connection;
                 const dealId = req.params.id;
@@ -72,7 +72,7 @@ const dealService = new DealService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
-        async getUnifiedDeals(req, res) {
+        async getDeals(req, res) {
             try {
                 const connection = res.locals.connection;
                 const fields = req.query.fields;

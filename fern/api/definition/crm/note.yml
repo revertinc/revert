@@ -6,11 +6,11 @@ imports:
     unified: ../common/unified.yml
 
 types:
-    GetUnifiedNoteResponse:
+    GetNoteResponse:
         properties:
             status: string
             result: unified.Note
-    GetUnifiedNotesResponse:
+    GetNotesResponse:
         properties:
             status: string
             next: optional<string>
@@ -28,36 +28,38 @@ types:
 
 service:
     base-path: /crm/notes
-    auth: true
+    auth: false
+    headers:
+        x-revert-api-token: string
     audiences:
         - external
     endpoints:
-        getUnifiedNote:
+        getNote:
             docs: Get details of a note
             method: GET
             path: /{id}
             path-parameters:
                 id: string
             request:
-                name: GetUnifiedNoteRequest
+                name: GetNoteRequest
                 query-parameters:
                     fields: optional<string>
-            response: GetUnifiedNoteResponse
+            response: GetNoteResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
-        getUnifiedNotes:
+        getNotes:
             docs: Get all the notes
             method: GET
             path: ''
             request:
-                name: GetUnifiedNotesRequest
+                name: GetNotesRequest
                 query-parameters:
                     fields: optional<string>
                     pageSize: optional<string>
                     cursor: optional<string>
-            response: GetUnifiedNotesResponse
+            response: GetNotesResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

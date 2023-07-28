@@ -6,11 +6,11 @@ imports:
     unified: ../common/unified.yml
 
 types:
-    GetUnifiedLeadResponse:
+    GetLeadResponse:
         properties:
             status: string
             result: unified.Lead
-    GetUnifiedLeadsResponse:
+    GetLeadsResponse:
         properties:
             status: string
             next: optional<string>
@@ -28,36 +28,38 @@ types:
 
 service:
     base-path: /crm/leads
-    auth: true
+    auth: false
+    headers:
+        x-revert-api-token: string
     audiences:
         - external
     endpoints:
-        getUnifiedLead:
+        getLead:
             docs: Get details of a lead
             method: GET
             path: /{id}
             path-parameters:
                 id: string
             request:
-                name: GetUnifiedLeadRequest
+                name: GetLeadRequest
                 query-parameters:
                     fields: optional<string>
-            response: GetUnifiedLeadResponse
+            response: GetLeadResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
-        getUnifiedLeads:
+        getLeads:
             docs: Get all the leads
             method: GET
             path: ''
             request:
-                name: GetUnifiedLeadsRequest
+                name: GetLeadsRequest
                 query-parameters:
                     fields: optional<string>
                     pageSize: optional<string>
                     cursor: optional<string>
-            response: GetUnifiedLeadsResponse
+            response: GetLeadsResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

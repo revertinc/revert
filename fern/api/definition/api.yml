@@ -1,4 +1,4 @@
-name: api
+name: revert-api
 error-discrimination:
     strategy: status-code
 environments:
@@ -8,11 +8,14 @@ environments:
         url: https://api-staging.revert.dev
     Local: http://localhost:4001
 default-environment: Local
-auth: Authorization
-auth-schemes:
-    Authorization:
-        header: x-revert-public-token
-        type: string
+# auth: false
+# auth-schemes:
+#     PublicTokenAuthorization:
+#         header: x-revert-public-token
+#         type: string
+#     PrivateTokenAuthorization:
+#         header: x-revert-api-token
+#         type: string
 audiences:
-  - internal
-  - external
+    - internal
+    - external

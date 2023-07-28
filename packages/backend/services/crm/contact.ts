@@ -12,7 +12,7 @@ import { NotFoundError } from '../../generated/typescript/api/resources/common';
 
 const contactService = new ContactService(
     {
-        async getUnifiedContact(req, res) {
+        async getContact(req, res) {
             try {
                 const connection = res.locals.connection;
                 const contactId = req.params.id;
@@ -71,7 +71,7 @@ const contactService = new ContactService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
-        async getUnifiedContacts(req, res) {
+        async getContacts(req, res) {
             try {
                 const connection = res.locals.connection;
                 const fields = req.query.fields;

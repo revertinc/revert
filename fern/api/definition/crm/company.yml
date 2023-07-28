@@ -6,11 +6,11 @@ imports:
     unified: ../common/unified.yml
 
 types:
-    GetUnifiedCompanyResponse:
+    GetCompanyResponse:
         properties:
             status: string
             result: unified.Company
-    GetUnifiedCompaniesResponse:
+    GetCompaniesResponse:
         properties:
             status: string
             next: optional<string>
@@ -28,36 +28,38 @@ types:
 
 service:
     base-path: /crm/companies
-    auth: true
+    auth: false
+    headers:
+        x-revert-api-token: string
     audiences:
         - external
     endpoints:
-        getUnifiedCompany:
+        getCompany:
             docs: Get details of a company
             method: GET
             path: /{id}
             path-parameters:
                 id: string
             request:
-                name: GetUnifiedCompanyRequest
+                name: GetCompanyRequest
                 query-parameters:
                     fields: optional<string>
-            response: GetUnifiedCompanyResponse
+            response: GetCompanyResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
-        getUnifiedCompanies:
+        getCompanies:
             docs: Get all the companies
             method: GET
             path: ''
             request:
-                name: GetUnifiedCompaniesRequest
+                name: GetCompaniesRequest
                 query-parameters:
                     fields: optional<string>
                     pageSize: optional<string>
                     cursor: optional<string>
-            response: GetUnifiedCompaniesResponse
+            response: GetCompaniesResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

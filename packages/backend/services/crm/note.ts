@@ -11,7 +11,7 @@ import { UnifiedNote, disunifyNote, unifyNote } from '../../models/unified';
 
 const noteService = new NoteService(
     {
-        async getUnifiedNote(req, res) {
+        async getNote(req, res) {
             try {
                 const connection = res.locals.connection;
                 const noteId = req.params.id;
@@ -62,7 +62,7 @@ const noteService = new NoteService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
-        async getUnifiedNotes(req, res) {
+        async getNotes(req, res) {
             try {
                 const connection = res.locals.connection;
                 const fields = req.query.fields;

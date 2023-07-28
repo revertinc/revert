@@ -10,7 +10,7 @@ import { UnifiedUser, disunifyUser, unifyUser } from '../../models/unified/user'
 
 const userService = new UserService(
     {
-        async getUnifiedUser(req, res) {
+        async getUser(req, res) {
             try {
                 const connection = res.locals.connection;
                 const userId = req.params.id;
@@ -68,7 +68,7 @@ const userService = new UserService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
-        async getUnifiedUsers(req, res) {
+        async getUsers(req, res) {
             try {
                 const connection = res.locals.connection;
                 const fields = req.query.fields;
