@@ -2,11 +2,11 @@ import React, { useEffect, useMemo } from 'react';
 import { TailSpin } from 'react-loader-spinner';
 import { useParams } from 'react-router-dom';
 import { REVERT_BASE_API_URL } from '../../constants';
+import * as Sentry from '@sentry/react';
 
 export const OAuthCallback = (props) => {
     const rootParams = useParams();
     const integrationId = useMemo(() => rootParams.integrationId, [rootParams]);
-    const [called, setCalled] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
     const [status, setStatus] = React.useState('starting...');
 
@@ -42,6 +42,7 @@ export const OAuthCallback = (props) => {
                         setIsLoading(false);
                     })
                     .catch((err) => {
+                        Sentry.captureException(err);
                         setIsLoading(false);
                         console.error(err);
                         setStatus('Errored out');
@@ -74,6 +75,7 @@ export const OAuthCallback = (props) => {
                         setIsLoading(false);
                     })
                     .catch((err) => {
+                        Sentry.captureException(err);
                         setIsLoading(false);
                         console.error(err);
                         setStatus('Errored out');
@@ -106,13 +108,14 @@ export const OAuthCallback = (props) => {
                         setIsLoading(false);
                     })
                     .catch((err) => {
+                        Sentry.captureException(err);
                         setIsLoading(false);
                         console.error(err);
                         setStatus('Errored out');
                     });
             }
         }
-    }, [called, integrationId]);
+    }, [integrationId]);
 
     return (
         <div>

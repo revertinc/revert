@@ -30,7 +30,6 @@ export default function EnvironmentSelector({ environmentProp, setEnvironmentPro
                 SelectDisplayProps={{
                     style: {
                         color: '#343232',
-                        borderColor: 'red',
                     },
                 }}
                 sx={{
@@ -51,7 +50,18 @@ export default function EnvironmentSelector({ environmentProp, setEnvironmentPro
                 className="capitalize"
             >
                 {environmentList?.map((e) => (
-                    <MenuItem value={e.env} className="capitalize">
+                    <MenuItem
+                        value={e.env}
+                        className="capitalize"
+                        sx={{
+                            '&&.Mui-selected': {
+                                backgroundColor: '#626060',
+                            },
+                            '&.Mui-selected:hover': {
+                                backgroundColor: '#747272',
+                            },
+                        }}
+                    >
                         {e.env}
                     </MenuItem>
                 ))}

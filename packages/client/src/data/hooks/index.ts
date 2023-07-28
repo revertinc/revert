@@ -1,5 +1,6 @@
 import React from 'react';
 import axiosInstance from '../axios';
+import * as Sentry from '@sentry/react';
 
 const useApi = () => {
     const [data, setData] = React.useState<any>();
@@ -21,6 +22,7 @@ const useApi = () => {
             setData(result.data);
             setStatus(result.status);
         } catch (err: any) {
+            Sentry.captureException(err);
             setData(err?.response?.data);
             setStatus(err?.response?.status || 500);
         } finally {

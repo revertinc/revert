@@ -14,7 +14,6 @@ const Integrations = ({ environment }) => {
     const { data, loading, fetch } = useApi();
 
     const [account, setAccount] = useState<any>();
-    const [viewSecret, setViewSecret] = useState<boolean>(false);
     const [open, setOpen] = React.useState(false);
     const [appId, setAppId] = useState<string>('sfdc');
 
@@ -50,14 +49,6 @@ const Integrations = ({ environment }) => {
         setAccount(data?.account);
         localStorage.setItem(LOCALSTORAGE_KEYS.privateToken, data?.account?.private_token);
     }, [data]);
-
-    let secretOverlay = {};
-    if (!viewSecret) {
-        secretOverlay = {
-            textShadow: 'white 0px 0px 6px',
-            color: '#00000000',
-        };
-    }
 
     return (
         <div className="w-[80%]">
