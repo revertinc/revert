@@ -7,6 +7,7 @@ export const getHubspotAssociationObj = (key: NoteAssociation) => {
                 associationCategory: 'HUBSPOT_DEFINED',
                 associationTypeId: 214,
             };
+            break;
         }
         default: {
             return {};

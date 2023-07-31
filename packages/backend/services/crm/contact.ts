@@ -317,6 +317,7 @@ const contactService = new ContactService(
                             status: 'ok',
                             results: contacts,
                         });
+                        break;
                     }
                     case TP_ID.zohocrm: {
                         let contacts: any = await axios({
@@ -329,6 +330,7 @@ const contactService = new ContactService(
                         contacts = contacts.data.data;
                         contacts = contacts?.map((l: any) => unifyContact(l));
                         res.send({ status: 'ok', results: contacts });
+                        break;
                     }
                     case TP_ID.sfdc: {
                         const instanceUrl = connection.tp_account_url;
@@ -344,6 +346,7 @@ const contactService = new ContactService(
                         contacts = contacts?.map((l: any) => unifyContact(l));
 
                         res.send({ status: 'ok', results: contacts });
+                        break;
                     }
                     case TP_ID.pipedrive: {
                         const instanceUrl = connection.tp_account_url;
@@ -362,6 +365,7 @@ const contactService = new ContactService(
                         const contacts = result.data.data.items.map((item) => item.item);
                         const unifiedContacts = contacts?.map((c: any) => unifyContact(c));
                         res.send({ status: 'ok', results: unifiedContacts });
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
