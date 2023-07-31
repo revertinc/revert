@@ -290,7 +290,7 @@ const dealService = new DealService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::SEARCH DEAL', tenantId, searchCriteria, fields);
+                console.log('Revert::SEARCH DEAL', tenantId, thirdPartyId, searchCriteria, fields);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -323,6 +323,7 @@ const dealService = new DealService(
                         deals = deals.data.results as any[];
                         deals = deals?.map((l: any) => unifyDeal({ ...l, ...l?.properties }, thirdPartyId));
                         res.send({ status: 'ok', results: deals });
+                        break;
                     }
                     case TP_ID.zohocrm: {
                         let deals: any = await axios({
@@ -335,6 +336,7 @@ const dealService = new DealService(
                         deals = deals.data.data;
                         deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
                         res.send({ status: 'ok', results: deals });
+                        break;
                     }
                     case TP_ID.sfdc: {
                         const instanceUrl = connection.tp_account_url;
@@ -348,6 +350,7 @@ const dealService = new DealService(
                         deals = deals?.data?.searchRecords;
                         deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
                         res.send({ status: 'ok', results: deals });
+                        break;
                     }
                     case TP_ID.pipedrive: {
                         const instanceUrl = connection.tp_account_url;
@@ -366,6 +369,7 @@ const dealService = new DealService(
                         const deals = result.data.data.items.map((item) => item.item);
                         const unifiedDeals = deals?.map((d: any) => unifyDeal(d, thirdPartyId));
                         res.send({ status: 'ok', results: unifiedDeals });
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });

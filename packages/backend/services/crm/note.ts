@@ -172,6 +172,7 @@ const noteService = new NoteService(
                             message: 'Hubspot note created',
                             result: { id: response.data?.id, ...note },
                         });
+                        break;
                     }
                     case TP_ID.zohocrm: {
                         await axios({
@@ -183,6 +184,7 @@ const noteService = new NoteService(
                             data: JSON.stringify(note),
                         });
                         res.send({ status: 'ok', message: 'Zoho note created', result: note });
+                        break;
                     }
                     case TP_ID.sfdc: {
                         const instanceUrl = connection.tp_account_url;
@@ -196,6 +198,7 @@ const noteService = new NoteService(
                             data: JSON.stringify(note),
                         });
                         res.send({ status: 'ok', message: 'SFDC note created', result: noteCreated.data });
+                        break;
                     }
                     case TP_ID.pipedrive: {
                         const instanceUrl = connection.tp_account_url;
@@ -211,6 +214,7 @@ const noteService = new NoteService(
                                 ...noteCreated.data.data,
                             },
                         });
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });

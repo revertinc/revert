@@ -43,6 +43,7 @@ const leadService = new LeadService(
                         });
                         lead = filterLeadsFromContactsForHubspot([lead.data] as any[])?.[0];
                         res.send({ status: 'ok', result: unifyLead({ ...lead, ...lead?.properties }, thirdPartyId) });
+                        break;
                     }
                     case TP_ID.zohocrm: {
                         const leads = await axios({
@@ -54,6 +55,7 @@ const leadService = new LeadService(
                         });
                         let lead = leads.data.data?.[0];
                         res.send({ status: 'ok', result: unifyLead(lead, thirdPartyId) });
+                        break;
                     }
                     case TP_ID.sfdc: {
                         const instanceUrl = connection.tp_account_url;
@@ -66,6 +68,7 @@ const leadService = new LeadService(
                         });
                         let lead = leads.data;
                         res.send({ status: 'ok', result: unifyLead(lead, thirdPartyId) });
+                        break;
                     }
                     case TP_ID.pipedrive: {
                         const result = await axios.get<{ data: Partial<PipedriveLead> } & PipedrivePagination>(
@@ -83,6 +86,7 @@ const leadService = new LeadService(
                             thirdPartyToken,
                         });
                         res.send({ status: 'ok', result: unifyLead(populatedLead, thirdPartyId) });
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
@@ -135,6 +139,7 @@ const leadService = new LeadService(
                             previous: undefined, // Field not supported by Hubspot.
                             results: leads,
                         });
+                        break;
                     }
                     case TP_ID.zohocrm: {
                         const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
@@ -152,6 +157,7 @@ const leadService = new LeadService(
                         leads = leads.data.data;
                         leads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: leads });
+                        break;
                     }
                     case TP_ID.sfdc: {
                         let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
@@ -183,6 +189,7 @@ const leadService = new LeadService(
                         leads = leads.data?.records;
                         leads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: leads });
+                        break;
                     }
                     case TP_ID.pipedrive: {
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
@@ -210,6 +217,7 @@ const leadService = new LeadService(
                         );
                         const unifiedLeads = populatedLeads?.map((l) => unifyLead(l, thirdPartyId));
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedLeads });
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
@@ -247,6 +255,7 @@ const leadService = new LeadService(
                             message: 'Hubspot lead created',
                             result: lead,
                         });
+                        break;
                     }
                     case TP_ID.zohocrm: {
                         await axios({
@@ -258,6 +267,7 @@ const leadService = new LeadService(
                             data: JSON.stringify(lead),
                         });
                         res.send({ status: 'ok', message: 'Zoho lead created', result: lead });
+                        break;
                     }
                     case TP_ID.sfdc: {
                         const instanceUrl = connection.tp_account_url;
@@ -275,6 +285,7 @@ const leadService = new LeadService(
                             message: 'SFDC lead created',
                             result: leadCreated.data,
                         });
+                        break;
                     }
                     case TP_ID.pipedrive: {
                         const instanceUrl = connection.tp_account_url;
@@ -295,6 +306,7 @@ const leadService = new LeadService(
                                 ...leadCreated.data.data,
                             },
                         });
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
@@ -333,6 +345,7 @@ const leadService = new LeadService(
                             message: 'Hubspot lead updated',
                             result: lead,
                         });
+                        break;
                     }
                     case TP_ID.zohocrm: {
                         await axios({
@@ -344,6 +357,7 @@ const leadService = new LeadService(
                             data: JSON.stringify(lead),
                         });
                         res.send({ status: 'ok', message: 'Zoho lead updated', result: lead });
+                        break;
                     }
                     case TP_ID.sfdc: {
                         const instanceUrl = connection.tp_account_url;
@@ -357,6 +371,7 @@ const leadService = new LeadService(
                             data: JSON.stringify(lead),
                         });
                         res.send({ status: 'ok', message: 'SFDC lead updated', result: lead });
+                        break;
                     }
                     case TP_ID.pipedrive: {
                         const leadUpdated = await axios.patch<{ data: Partial<PipedriveLead> }>(
@@ -375,6 +390,7 @@ const leadService = new LeadService(
                                 ...leadUpdated.data.data,
                             },
                         });
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
@@ -425,6 +441,7 @@ const leadService = new LeadService(
                             status: 'ok',
                             results: leads,
                         });
+                        break;
                     }
                     case TP_ID.zohocrm: {
                         let leads: any = await axios({
@@ -437,6 +454,7 @@ const leadService = new LeadService(
                         leads = leads.data.data;
                         leads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
                         res.send({ status: 'ok', results: leads });
+                        break;
                     }
                     case TP_ID.sfdc: {
                         const instanceUrl = connection.tp_account_url;
@@ -450,6 +468,7 @@ const leadService = new LeadService(
                         leads = leads?.data?.searchRecords;
                         leads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
                         res.send({ status: 'ok', results: leads });
+                        break;
                     }
                     case TP_ID.pipedrive: {
                         const instanceUrl = connection.tp_account_url;
@@ -471,6 +490,7 @@ const leadService = new LeadService(
                         const leads = result.data.data.items.map((item) => item.item);
                         const unifiedLeads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
                         res.send({ status: 'ok', results: unifiedLeads });
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
