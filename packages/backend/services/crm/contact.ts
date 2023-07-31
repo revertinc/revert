@@ -3,7 +3,7 @@ import { TP_ID } from '@prisma/client';
 
 import { ContactService } from '../../generated/typescript/api/resources/crm/resources/contact/service/ContactService';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
-import { PipedrivePagination } from '../../constants/pipedrive';
+import { PipedriveContact, PipedrivePagination } from '../../constants/pipedrive';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import logError from '../../helpers/logError';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
@@ -21,49 +21,71 @@ const contactService = new ContactService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 console.log('Revert::GET CONTACT', tenantId, thirdPartyId, thirdPartyToken, contactId);
-                if (thirdPartyId === 'hubspot') {
-                    const formattedFields = [
-                        ...String(fields || '').split(','),
-                        'hs_lead_status',
-                        'firstname',
-                        'email',
-                        'lastname',
-                        'hs_object_id',
-                        'phone',
-                    ];
-                    let contact: any = await axios({
-                        method: 'get',
-                        url: `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}?properties=${formattedFields}`,
-                        headers: {
-                            authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                    });
-                    contact = unifyContact({ ...contact.data, ...contact.data?.properties });
-                    res.send({ status: 'ok', result: contact });
-                } else if (thirdPartyId === 'zohocrm') {
-                    let contact: any = await axios({
-                        method: 'get',
-                        url: `https://www.zohoapis.com/crm/v3/Contacts/${contactId}?fields=${fields}`,
-                        headers: {
-                            authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                        },
-                    });
-                    contact = unifyContact(contact.data.data?.[0]);
-                    res.send({ status: 'ok', result: contact });
-                } else if (thirdPartyId === 'sfdc') {
-                    const instanceUrl = connection.tp_account_url;
-                    let contact: any = await axios({
-                        method: 'get',
-                        url: `${instanceUrl}/services/data/v56.0/sobjects/Contact/${contactId}`,
-                        headers: {
-                            Authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                    });
-                    contact = contact.data;
-                    contact = unifyContact(contact);
-                    res.send({ status: 'ok', result: contact });
-                } else {
-                    throw new NotFoundError({ error: 'Unrecognized CRM' });
+
+                switch (thirdPartyId) {
+                    case TP_ID.hubspot: {
+                        const formattedFields = [
+                            ...String(fields || '').split(','),
+                            'hs_lead_status',
+                            'firstname',
+                            'email',
+                            'lastname',
+                            'hs_object_id',
+                            'phone',
+                        ];
+                        let contact: any = await axios({
+                            method: 'get',
+                            url: `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}?properties=${formattedFields}`,
+                            headers: {
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+                        contact = unifyContact({ ...contact.data, ...contact.data?.properties });
+                        res.send({ status: 'ok', result: contact });
+                        break;
+                    }
+                    case TP_ID.zohocrm: {
+                        let contact: any = await axios({
+                            method: 'get',
+                            url: `https://www.zohoapis.com/crm/v3/Contacts/${contactId}?fields=${fields}`,
+                            headers: {
+                                authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                            },
+                        });
+                        contact = unifyContact(contact.data.data?.[0]);
+                        res.send({ status: 'ok', result: contact });
+                        break;
+                    }
+                    case TP_ID.sfdc: {
+                        const instanceUrl = connection.tp_account_url;
+                        let contact: any = await axios({
+                            method: 'get',
+                            url: `${instanceUrl}/services/data/v56.0/sobjects/Contact/${contactId}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+                        contact = contact.data;
+                        contact = unifyContact(contact);
+                        res.send({ status: 'ok', result: contact });
+                        break;
+                    }
+                    case TP_ID.pipedrive: {
+                        const result = await axios.get<{ data: Partial<PipedriveContact> } & PipedrivePagination>(
+                            `${connection.tp_account_url}/v1/contacts/${contactId}`,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            }
+                        );
+                        const contact = result.data;
+                        res.send({ status: 'ok', result: unifyContact(contact) });
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized CRM' });
+                    }
                 }
             } catch (error: any) {
                 logError(error);
@@ -81,81 +103,111 @@ const contactService = new ContactService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 console.log('Revert::GET ALL CONTACTS', tenantId, thirdPartyId, thirdPartyToken);
-                if (thirdPartyId === 'hubspot') {
-                    const formattedFields = [
-                        ...String(fields || '').split(','),
-                        'hs_lead_status',
-                        'firstname',
-                        'email',
-                        'lastname',
-                        'hs_object_id',
-                        'phone',
-                    ];
-                    const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
-                    let contacts: any = await axios({
-                        method: 'get',
-                        url: `https://api.hubapi.com/crm/v3/objects/contacts?properties=${formattedFields}&${pagingString}`,
-                        headers: {
-                            authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                    });
-                    const nextCursor = contacts.data?.paging?.next?.after || undefined;
-                    contacts = contacts.data.results as any[];
-                    contacts = contacts?.map((l: any) => unifyContact({ ...l, ...l?.properties }));
-                    res.send({
-                        status: 'ok',
-                        next: nextCursor,
-                        previous: undefined, // Field not supported by Hubspot.
-                        results: contacts,
-                    });
-                } else if (thirdPartyId === 'zohocrm') {
-                    const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
-                        cursor ? `&page_token=${cursor}` : ''
-                    }`;
-                    let contacts: any = await axios({
-                        method: 'get',
-                        url: `https://www.zohoapis.com/crm/v3/Contacts?fields=${fields}${pagingString}`,
-                        headers: {
-                            authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                        },
-                    });
-                    const nextCursor = contacts.data?.info?.next_page_token || undefined;
-                    const prevCursor = contacts.data?.info?.previous_page_token || undefined;
-                    contacts = contacts.data.data;
-                    contacts = contacts?.map((l: any) => unifyContact(l));
-                    res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
-                } else if (thirdPartyId === 'sfdc') {
-                    let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
-                        cursor ? `OFFSET+${cursor}` : ''
-                    }`;
-                    if (!pageSize && !cursor) {
-                        pagingString = 'LIMIT 200';
+
+                switch (thirdPartyId) {
+                    case TP_ID.hubspot: {
+                        const formattedFields = [
+                            ...String(fields || '').split(','),
+                            'hs_lead_status',
+                            'firstname',
+                            'email',
+                            'lastname',
+                            'hs_object_id',
+                            'phone',
+                        ];
+                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&after=${cursor}` : ''
+                        }`;
+                        let contacts: any = await axios({
+                            method: 'get',
+                            url: `https://api.hubapi.com/crm/v3/objects/contacts?properties=${formattedFields}&${pagingString}`,
+                            headers: {
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+                        const nextCursor = contacts.data?.paging?.next?.after || undefined;
+                        contacts = contacts.data.results as any[];
+                        contacts = contacts?.map((l: any) => unifyContact({ ...l, ...l?.properties }));
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: undefined, // Field not supported by Hubspot.
+                            results: contacts,
+                        });
+                        break;
                     }
-                    const instanceUrl = connection.tp_account_url;
-                    // NOTE: Handle "ALL" for Hubspot & Zoho
-                    const query =
-                        !fields || fields === 'ALL'
-                            ? `SELECT+fields(all)+from+Contact+${pagingString}`
-                            : `SELECT+${(fields as string).split(',').join('+,+')}+from+Contact+${pagingString}`;
-                    let contacts: any = await axios({
-                        method: 'get',
-                        url: `${instanceUrl}/services/data/v56.0/query/?q=${query}`,
-                        headers: {
-                            authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                    });
-                    const nextCursor = pageSize
-                        ? String(contacts.data?.totalSize + (parseInt(String(cursor)) || 0))
-                        : undefined;
-                    const prevCursor =
-                        cursor && parseInt(String(cursor)) > 0
-                            ? String(parseInt(String(cursor)) - contacts.data?.totalSize)
+                    case TP_ID.zohocrm: {
+                        const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page_token=${cursor}` : ''
+                        }`;
+                        let contacts: any = await axios({
+                            method: 'get',
+                            url: `https://www.zohoapis.com/crm/v3/Contacts?fields=${fields}${pagingString}`,
+                            headers: {
+                                authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                            },
+                        });
+                        const nextCursor = contacts.data?.info?.next_page_token || undefined;
+                        const prevCursor = contacts.data?.info?.previous_page_token || undefined;
+                        contacts = contacts.data.data;
+                        contacts = contacts?.map((l: any) => unifyContact(l));
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
+                        break;
+                    }
+                    case TP_ID.sfdc: {
+                        let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
+                            cursor ? `OFFSET+${cursor}` : ''
+                        }`;
+                        if (!pageSize && !cursor) {
+                            pagingString = 'LIMIT 200';
+                        }
+                        const instanceUrl = connection.tp_account_url;
+                        // NOTE: Handle "ALL" for Hubspot & Zoho
+                        const query =
+                            !fields || fields === 'ALL'
+                                ? `SELECT+fields(all)+from+Contact+${pagingString}`
+                                : `SELECT+${(fields as string).split(',').join('+,+')}+from+Contact+${pagingString}`;
+                        let contacts: any = await axios({
+                            method: 'get',
+                            url: `${instanceUrl}/services/data/v56.0/query/?q=${query}`,
+                            headers: {
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+                        const nextCursor = pageSize
+                            ? String(contacts.data?.totalSize + (parseInt(String(cursor)) || 0))
                             : undefined;
-                    contacts = contacts.data?.records;
-                    contacts = contacts?.map((l: any) => unifyContact(l));
-                    res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
-                } else {
-                    throw new NotFoundError({ error: 'Unrecognized CRM' });
+                        const prevCursor =
+                            cursor && parseInt(String(cursor)) > 0
+                                ? String(parseInt(String(cursor)) - contacts.data?.totalSize)
+                                : undefined;
+                        contacts = contacts.data?.records;
+                        contacts = contacts?.map((l: any) => unifyContact(l));
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
+                        break;
+                    }
+                    case TP_ID.pipedrive: {
+                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&start=${cursor}` : ''
+                        }`;
+                        const result = await axios.get<{ data: Partial<PipedriveContact>[] } & PipedrivePagination>(
+                            `${connection.tp_account_url}/v1/contacts?${pagingString}`,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            }
+                        );
+                        const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
+                        const prevCursor = undefined;
+                        const contacts = result.data.data;
+                        const unifiedContacts = contacts?.map((d) => unifyContact(d));
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedContacts });
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized CRM' });
+                    }
                 }
             } catch (error: any) {
                 logError(error);
@@ -172,49 +224,79 @@ const contactService = new ContactService(
                 const tenantId = connection.t_id;
                 const contact = disunifyContact(contactData, thirdPartyId);
                 console.log('Revert::CREATE CONTACT', tenantId, contact, thirdPartyId);
-                if (thirdPartyId === 'hubspot') {
-                    await axios({
-                        method: 'post',
-                        url: `https://api.hubapi.com/crm/v3/objects/contacts/`,
-                        headers: {
-                            'content-type': 'application/json',
-                            authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                        data: JSON.stringify(contact),
-                    });
-                    res.send({
-                        status: 'ok',
-                        message: 'Hubspot contact created',
-                        result: contact,
-                    });
-                } else if (thirdPartyId === 'zohocrm') {
-                    await axios({
-                        method: 'post',
-                        url: `https://www.zohoapis.com/crm/v3/Contacts`,
-                        headers: {
-                            authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                        },
-                        data: JSON.stringify(contact),
-                    });
-                    res.send({ status: 'ok', message: 'Zoho contact created', result: contact });
-                } else if (thirdPartyId === 'sfdc') {
-                    const instanceUrl = connection.tp_account_url;
-                    const contactCreated = await axios({
-                        method: 'post',
-                        url: `${instanceUrl}/services/data/v56.0/sobjects/Contact/`,
-                        headers: {
-                            'content-type': 'application/json',
-                            authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                        data: JSON.stringify(contact),
-                    });
-                    res.send({
-                        status: 'ok',
-                        message: 'SFDC contact created',
-                        result: contactCreated.data,
-                    });
-                } else {
-                    throw new NotFoundError({ error: 'Unrecognized CRM' });
+
+                switch (thirdPartyId) {
+                    case TP_ID.hubspot: {
+                        await axios({
+                            method: 'post',
+                            url: `https://api.hubapi.com/crm/v3/objects/contacts/`,
+                            headers: {
+                                'content-type': 'application/json',
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(contact),
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Hubspot contact created',
+                            result: contact,
+                        });
+                        break;
+                    }
+                    case TP_ID.zohocrm: {
+                        await axios({
+                            method: 'post',
+                            url: `https://www.zohoapis.com/crm/v3/Contacts`,
+                            headers: {
+                                authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(contact),
+                        });
+                        res.send({ status: 'ok', message: 'Zoho contact created', result: contact });
+                        break;
+                    }
+                    case TP_ID.sfdc: {
+                        const instanceUrl = connection.tp_account_url;
+                        const contactCreated = await axios({
+                            method: 'post',
+                            url: `${instanceUrl}/services/data/v56.0/sobjects/Contact/`,
+                            headers: {
+                                'content-type': 'application/json',
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(contact),
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'SFDC contact created',
+                            result: contactCreated.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.pipedrive: {
+                        const instanceUrl = connection.tp_account_url;
+                        const pipedriveContact = contact as Partial<PipedriveContact>;
+                        const contactCreated = await axios.post<{ data: Partial<PipedriveContact> }>(
+                            `${instanceUrl}/v1/contacts`,
+                            pipedriveContact,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            }
+                        );
+                        res.send({
+                            status: 'ok',
+                            message: 'Pipedrive contact created',
+                            result: {
+                                ...contactCreated.data.data,
+                            },
+                        });
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized CRM' });
+                    }
                 }
             } catch (error: any) {
                 logError(error);
@@ -232,45 +314,73 @@ const contactService = new ContactService(
                 const tenantId = connection.t_id;
                 const contact = disunifyContact(contactData, thirdPartyId);
                 console.log('Revert::UPDATE CONTACT', tenantId, contact, contactId);
-                if (thirdPartyId === 'hubspot') {
-                    await axios({
-                        method: 'patch',
-                        url: `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}`,
-                        headers: {
-                            'content-type': 'application/json',
-                            authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                        data: JSON.stringify(contact),
-                    });
-                    res.send({
-                        status: 'ok',
-                        message: 'Hubspot contact updated',
-                        result: contact,
-                    });
-                } else if (thirdPartyId === 'zohocrm') {
-                    await axios({
-                        method: 'put',
-                        url: `https://www.zohoapis.com/crm/v3/Contacts/${contactId}`,
-                        headers: {
-                            authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                        },
-                        data: JSON.stringify(contact),
-                    });
-                    res.send({ status: 'ok', message: 'Zoho contact updated', result: contact });
-                } else if (thirdPartyId === 'sfdc') {
-                    const instanceUrl = connection.tp_account_url;
-                    await axios({
-                        method: 'patch',
-                        url: `${instanceUrl}/services/data/v56.0/sobjects/Contact/${contactId}`,
-                        headers: {
-                            'content-type': 'application/json',
-                            authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                        data: JSON.stringify(contact),
-                    });
-                    res.send({ status: 'ok', message: 'SFDC contact updated', result: contact });
-                } else {
-                    throw new NotFoundError({ error: 'Unrecognized CRM' });
+
+                switch (thirdPartyId) {
+                    case TP_ID.hubspot: {
+                        await axios({
+                            method: 'patch',
+                            url: `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}`,
+                            headers: {
+                                'content-type': 'application/json',
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(contact),
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Hubspot contact updated',
+                            result: contact,
+                        });
+                        break;
+                    }
+                    case TP_ID.zohocrm: {
+                        await axios({
+                            method: 'put',
+                            url: `https://www.zohoapis.com/crm/v3/Contacts/${contactId}`,
+                            headers: {
+                                authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(contact),
+                        });
+                        res.send({ status: 'ok', message: 'Zoho contact updated', result: contact });
+                        break;
+                    }
+                    case TP_ID.sfdc: {
+                        const instanceUrl = connection.tp_account_url;
+                        await axios({
+                            method: 'patch',
+                            url: `${instanceUrl}/services/data/v56.0/sobjects/Contact/${contactId}`,
+                            headers: {
+                                'content-type': 'application/json',
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(contact),
+                        });
+                        res.send({ status: 'ok', message: 'SFDC contact updated', result: contact });
+                        break;
+                    }
+                    case TP_ID.pipedrive: {
+                        const contactUpdated = await axios.patch<{ data: Partial<PipedriveContact> }>(
+                            `${connection.tp_account_url}/v1/contacts/${contactId}`,
+                            contact,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            }
+                        );
+                        res.send({
+                            status: 'ok',
+                            message: 'Pipedrive contact updated',
+                            result: {
+                                ...contactUpdated.data.data,
+                            },
+                        });
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized CRM' });
+                    }
                 }
             } catch (error: any) {
                 logError(error);

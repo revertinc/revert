@@ -93,7 +93,7 @@ export interface PipedriveContact {
     cc_email: string;
 }
 
-export interface PipedriveOrganization {
+export interface PipedriveCompany {
     id: string;
     company_id: number;
     owner_id: {
@@ -181,5 +181,102 @@ export interface PipedriveLead {
     visible_to: string;
     cc_email: string;
     person: Partial<PipedriveContact>;
-    organization: Partial<PipedriveOrganization>;
+    organization: Partial<PipedriveCompany>;
+}
+
+export interface PipedriveDeal {
+    id: string;
+    creator_user_id: {
+        id: string;
+        name: string;
+        email: string;
+        has_pic: boolean;
+        active_flag: boolean;
+        value: number;
+    };
+    user_id: {
+        id: string;
+        name: string;
+        email: string;
+        has_pic: boolean;
+        active_flag: boolean;
+        value: string;
+    };
+    person_id: {
+        active_flag: boolean;
+        name: string;
+        email: { label: string; value: string; primary: true }[];
+        phone: { label: string; value: string; primary: true }[];
+        value: string;
+    };
+    org_id: {
+        name: string;
+        people_count: number;
+        owner_id: string;
+        address: string;
+        active_flag: boolean;
+        cc_email: string;
+        value: string;
+    };
+    stage_id: string;
+    title: string;
+    value: number;
+    currency: string;
+    add_time: Date;
+    update_time: Date;
+    stage_change_time: Date;
+    active: boolean;
+    deleted: boolean;
+    status: string;
+    probability: number;
+    next_activity_date: string;
+    next_activity_time: string;
+    next_activity_id: string;
+    last_activity_id: string;
+    last_activity_date: string;
+    lost_reason: string;
+    visible_to: string;
+    close_time: Date;
+    pipeline_id: string;
+    won_time: Date;
+    first_won_time: Date;
+    lost_time: string;
+    products_count: number;
+    files_count: number;
+    notes_count: number;
+    followers_count: number;
+    email_messages_count: number;
+    activities_count: number;
+    done_activities_count: number;
+    undone_activities_count: number;
+    participants_count: number;
+    expected_close_date: string;
+    last_incoming_mail_time: string;
+    last_outgoing_mail_time: string;
+    label: string;
+    stage_order_nr: number;
+    person_name: string;
+    org_name: string;
+    next_activity_subject: string;
+    next_activity_type: string;
+    next_activity_duration: string;
+    next_activity_note: string;
+    formatted_value: string;
+    weighted_value: string;
+    formatted_weighted_value: string;
+    weighted_value_currency: string;
+    rotten_time: string;
+    owner_name: string;
+    cc_email: string;
+    org_hidden: boolean;
+    person_hidden: boolean;
+    // average_time_to_won: { y: 0; m: 0; d: 0; h: 0; i: 20; s: 49; total_seconds: 1249 };
+    // average_stage_progress: 4.99;
+    // age: { y: 0; m: 6; d: 14; h: 8; i: 57; s: 26; total_seconds: 17139446 };
+    // stay_in_pipeline_stages: {
+    //     times_in_stages: { '1': 15721267; '2': 1288449; '3': 4368; '4': 3315; '5': 26460 };
+    //     order_of_stages: [1, 2, 3, 4, 5];
+    // };
+    last_activity: any;
+    next_activity: any;
 }

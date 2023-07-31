@@ -1,5 +1,5 @@
 import { TP_ID } from '@prisma/client';
-import { PipedriveContact, PipedriveLead, PipedriveOrganization } from '../../constants/pipedrive';
+import { PipedriveContact, PipedriveLead, PipedriveCompany } from '../../constants/pipedrive';
 import { HubspotLead } from '../../constants/hubspot';
 import { ZohoLead } from '../../constants/zoho';
 import { SalesforceLead } from '../../constants/salesforce';
@@ -191,7 +191,7 @@ export function unifiedLeadToPipedrivePerson(lead: UnifiedLead): Partial<Pipedri
     };
 }
 
-export function unifiedLeadToPipedriveOrganization(lead: UnifiedLead): Partial<PipedriveOrganization> {
+export function unifiedLeadToPipedriveOrganization(lead: UnifiedLead): Partial<PipedriveCompany> {
     return {
         id: lead.associations?.organizationId,
         name: lead.firstName,
