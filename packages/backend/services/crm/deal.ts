@@ -44,6 +44,7 @@ const dealService = new DealService(
                         deal = ([deal.data] as any[])?.[0];
                         deal = unifyDeal({ ...deal, ...deal?.properties }, thirdPartyId);
                         res.send({ status: 'ok', result: deal });
+                        break;
                     }
                     case TP_ID.zohocrm: {
                         const deals = await axios({
@@ -55,6 +56,7 @@ const dealService = new DealService(
                         });
                         let deal = unifyDeal(deals.data.data?.[0], thirdPartyId);
                         res.send({ status: 'ok', result: deal });
+                        break;
                     }
                     case TP_ID.sfdc: {
                         const instanceUrl = connection.tp_account_url;
@@ -67,6 +69,7 @@ const dealService = new DealService(
                         });
                         let deal = unifyDeal(deals.data, thirdPartyId);
                         res.send({ status: 'ok', result: deal });
+                        break;
                     }
                     case TP_ID.pipedrive: {
                         const result = await axios.get<{ data: Partial<PipedriveDeal> } & PipedrivePagination>(
@@ -79,6 +82,7 @@ const dealService = new DealService(
                         );
                         const deal = result.data;
                         res.send({ status: 'ok', result: unifyDeal(deal, thirdPartyId) });
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
@@ -132,6 +136,7 @@ const dealService = new DealService(
                             previous: undefined, // Field not supported by Hubspot.
                             results: deals,
                         });
+                        break;
                     }
                     case TP_ID.zohocrm: {
                         const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
@@ -149,6 +154,7 @@ const dealService = new DealService(
                         deals = deals.data.data;
                         deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: deals });
+                        break;
                     }
                     case TP_ID.sfdc: {
                         let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
@@ -182,6 +188,7 @@ const dealService = new DealService(
                         deals = deals.data?.records;
                         deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: deals });
+                        break;
                     }
                     case TP_ID.pipedrive: {
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
@@ -200,6 +207,7 @@ const dealService = new DealService(
                         const deals = result.data.data;
                         const unifiedDeals = deals?.map((d) => unifyDeal(d, thirdPartyId));
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedDeals });
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
@@ -237,6 +245,7 @@ const dealService = new DealService(
                             message: 'Hubspot deal created',
                             result: deal,
                         });
+                        break;
                     }
                     case TP_ID.zohocrm: {
                         await axios({
@@ -248,6 +257,7 @@ const dealService = new DealService(
                             data: JSON.stringify(deal),
                         });
                         res.send({ status: 'ok', message: 'Zoho deal created', result: deal });
+                        break;
                     }
                     case TP_ID.sfdc: {
                         const instanceUrl = connection.tp_account_url;
@@ -265,6 +275,7 @@ const dealService = new DealService(
                             message: 'SFDC deal created',
                             result: dealCreated.data,
                         });
+                        break;
                     }
                     case TP_ID.pipedrive: {
                         const instanceUrl = connection.tp_account_url;
@@ -285,6 +296,7 @@ const dealService = new DealService(
                                 ...dealCreated.data.data,
                             },
                         });
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
@@ -323,6 +335,7 @@ const dealService = new DealService(
                             message: 'Hubspot deal updated',
                             result: deal,
                         });
+                        break;
                     }
                     case TP_ID.zohocrm: {
                         await axios({
@@ -334,6 +347,7 @@ const dealService = new DealService(
                             data: JSON.stringify(deal),
                         });
                         res.send({ status: 'ok', message: 'Zoho deal updated', result: deal });
+                        break;
                     }
                     case TP_ID.sfdc: {
                         const instanceUrl = connection.tp_account_url;
@@ -347,6 +361,7 @@ const dealService = new DealService(
                             data: JSON.stringify(deal),
                         });
                         res.send({ status: 'ok', message: 'SFDC deal updated', result: deal });
+                        break;
                     }
                     case TP_ID.pipedrive: {
                         const dealUpdated = await axios.patch<{ data: Partial<PipedriveDeal> }>(
@@ -365,6 +380,7 @@ const dealService = new DealService(
                                 ...dealUpdated.data.data,
                             },
                         });
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
