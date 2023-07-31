@@ -1,6 +1,7 @@
 import prisma from '../prisma/client';
 import { MetadataService } from '../generated/typescript/api/resources/metadata/service/MetadataService';
-import { CrmMetadata, UnAuthorizedError } from '../generated/typescript/api';
+import { CrmMetadata } from '../generated/typescript/api';
+import { InternalServerError, UnAuthorizedError } from '../generated/typescript/api/resources/common';
 import logError from '../helpers/logError';
 import config from '../config';
 import { TP_ID, apps } from '@prisma/client';
@@ -80,6 +81,7 @@ const metadataService = new MetadataService({
         } catch (error: any) {
             logError(error);
             console.error('Could not get metadata', error);
+            throw new InternalServerError({ error: 'Internal server error' });
         }
     },
 });

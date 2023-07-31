@@ -1,0 +1,116 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    GetLeadResponse:
+        properties:
+            status: string
+            result: unified.Lead
+    GetLeadsResponse:
+        properties:
+            status: string
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.Lead>
+    CreateOrUpdateLeadResponse:
+        properties:
+            status: string
+            message: string
+            result: unknown
+    SearchLeadsResponse:
+        properties:
+            status: string
+            results: list<unified.Lead>
+
+service:
+    base-path: /crm/leads
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getLead:
+            docs: Get details of a lead
+            method: GET
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: GetLeadRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetLeadResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getLeads:
+            docs: Get all the leads
+            method: GET
+            path: ''
+            request:
+                name: GetLeadsRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetLeadsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createLead:
+            docs: Create a new lead
+            method: POST
+            path: ''
+            request:
+                name: CreateLeadRequest
+                body: unified.Lead
+            response: CreateOrUpdateLeadResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateLead:
+            docs: Update a lead
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateLeadRequest
+                body: unified.Lead
+            response: CreateOrUpdateLeadResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        searchLeads:
+            docs: Search for leads
+            method: POST
+            path: /search
+            request:
+                name: SearchLeadsRequest
+                body:
+                    properties:
+                        searchCriteria: unknown
+                query-parameters:
+                    fields: optional<string>
+            response: SearchLeadsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

@@ -1,0 +1,13 @@
+title: Revert | API Reference
+navigation:
+    - section: Introduction
+      contents:
+          - page: Getting Started
+            path: ./intro.mdx
+    - api: API Reference
+colors:
+    accentPrimary: '#ffffff'
+logo:
+    path: ./logo.png
+    href: https://revert.dev
+favicon: ./favicon.ico

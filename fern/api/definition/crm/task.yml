@@ -1,0 +1,116 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    GetTaskResponse:
+        properties:
+            status: string
+            result: unified.Task
+    GetTasksResponse:
+        properties:
+            status: string
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.Task>
+    CreateOrUpdateTaskResponse:
+        properties:
+            status: string
+            message: string
+            result: unknown
+    SearchTasksResponse:
+        properties:
+            status: string
+            results: list<unified.Task>
+
+service:
+    base-path: /crm/tasks
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getTask:
+            docs: Get details of a task
+            method: GET
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: GetTaskRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetTaskResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getTasks:
+            docs: Get all the tasks
+            method: GET
+            path: ''
+            request:
+                name: GetTasksRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetTasksResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createTask:
+            docs: Create a new task
+            method: POST
+            path: ''
+            request:
+                name: CreateTaskRequest
+                body: unified.Task
+            response: CreateOrUpdateTaskResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateTask:
+            docs: Update a task
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateTaskRequest
+                body: unified.Task
+            response: CreateOrUpdateTaskResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        searchTasks:
+            docs: Search for tasks
+            method: POST
+            path: /search
+            request:
+                name: SearchTasksRequest
+                body:
+                    properties:
+                        searchCriteria: unknown
+                query-parameters:
+                    fields: optional<string>
+            response: SearchTasksResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

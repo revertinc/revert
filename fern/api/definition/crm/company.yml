@@ -1,0 +1,118 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    GetCompanyResponse:
+        properties:
+            status: string
+            result: unified.Company
+    GetCompaniesResponse:
+        properties:
+            status: string
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.Company>
+    CreateOrUpdateCompanyResponse:
+        properties:
+            status: string
+            message: string
+            result: unknown
+    SearchCompaniesResponse:
+        properties:
+            status: string
+            results: list<unified.Company>
+
+service:
+    base-path: /crm/companies
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getCompany:
+            docs: Get details of a company
+            method: GET
+            path: /{id}
+            path-parameters:
+                id:
+                    type: string
+                    docs: The unique `id` of the company in the CRM.
+            request:
+                name: GetCompanyRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetCompanyResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getCompanies:
+            docs: Get all the companies
+            method: GET
+            path: ''
+            request:
+                name: GetCompaniesRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetCompaniesResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createCompany:
+            docs: Create a new company
+            method: POST
+            path: ''
+            request:
+                name: CreateCompanyRequest
+                body: unified.Company
+            response: CreateOrUpdateCompanyResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateCompany:
+            docs: Update a company
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateCompanyRequest
+                body: unified.Company
+            response: CreateOrUpdateCompanyResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        searchCompanies:
+            docs: Search for companies
+            method: POST
+            path: /search
+            request:
+                name: SearchCompaniesRequest
+                body:
+                    properties:
+                        searchCriteria: unknown
+                query-parameters:
+                    fields: optional<string>
+            response: SearchCompaniesResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

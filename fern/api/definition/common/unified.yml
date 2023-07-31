@@ -1,0 +1,81 @@
+types:
+    CommonUnifiedFields:
+        properties:
+            id: string
+            remoteId: string
+            createdTimestamp: unknown
+            updatedTimestamp: unknown
+            associations: unknown
+            additional: unknown
+    Lead:
+        extends: CommonUnifiedFields
+        properties:
+            firstName: string
+            lastName: string
+            phone: string
+            email: string
+    Deal:
+        extends: CommonUnifiedFields
+        properties:
+            amount: integer
+            priority: optional<string>
+            stage: string
+            name: string
+            expectedCloseDate: unknown
+            isWon: boolean
+            probability: integer
+    Note:
+        extends: CommonUnifiedFields
+        properties:
+            content: string
+    Company:
+        extends: CommonUnifiedFields
+        properties:
+            name: string
+            industry: string
+            description: string
+            annualRevenue: integer
+            size: integer
+            phone: string
+            address: CompanyAddress
+    CompanyAddress:
+        properties:
+            street: optional<string>
+            city: string
+            state: string
+            country: string
+            zip: string
+            postalCode: string
+    Contact:
+        extends: CommonUnifiedFields
+        properties:
+            firstName: string
+            lastName: string
+            phone: string
+            email: string
+    Event:
+        extends: CommonUnifiedFields
+        properties:
+            type: string
+            subject: string
+            startDateTime: string
+            endDateTime: string
+            isAllDayEvent: boolean
+            description: string
+            location: string
+    Task:
+        extends: CommonUnifiedFields
+        properties:
+            subject: string
+            body: string
+            priority: string
+            status: string
+            dueDate: unknown
+    User:
+        extends: CommonUnifiedFields
+        properties:
+            firstName: string
+            lastName: string
+            phone: string
+            email: string
+

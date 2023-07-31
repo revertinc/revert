@@ -1,0 +1,116 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    GetEventResponse:
+        properties:
+            status: string
+            result: unified.Event
+    GetEventsResponse:
+        properties:
+            status: string
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.Event>
+    CreateOrUpdateEventResponse:
+        properties:
+            status: string
+            message: string
+            result: unknown
+    SearchEventsResponse:
+        properties:
+            status: string
+            results: list<unified.Event>
+
+service:
+    base-path: /crm/events
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getEvent:
+            docs: Get details of a event
+            method: GET
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: GetEventRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetEventResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getEvents:
+            docs: Get all the events
+            method: GET
+            path: ''
+            request:
+                name: GetEventsRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetEventsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createEvent:
+            docs: Create a new event
+            method: POST
+            path: ''
+            request:
+                name: CreateEventRequest
+                body: unified.Event
+            response: CreateOrUpdateEventResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateEvent:
+            docs: Update a event
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateEventRequest
+                body: unified.Event
+            response: CreateOrUpdateEventResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        searchEvents:
+            docs: Search for events
+            method: POST
+            path: /search
+            request:
+                name: SearchEventsRequest
+                body:
+                    properties:
+                        searchCriteria: unknown
+                query-parameters:
+                    fields: optional<string>
+            response: SearchEventsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

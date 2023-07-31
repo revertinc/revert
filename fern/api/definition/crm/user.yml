@@ -1,0 +1,86 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    GetUserResponse:
+        properties:
+            status: string
+            result: unified.User
+    GetUsersResponse:
+        properties:
+            status: string
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.User>
+    CreateOrUpdateUserResponse:
+        properties:
+            status: string
+            message: string
+            result: unknown
+    SearchUsersResponse:
+        properties:
+            status: string
+            results: list<unified.User>
+
+service:
+    base-path: /crm/users
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getUser:
+            docs: Get details of a user
+            method: GET
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: GetUserRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetUserResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getUsers:
+            docs: Get all the users
+            method: GET
+            path: ''
+            request:
+                name: GetUsersRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetUsersResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createUser:
+            docs: Create a new user
+            method: POST
+            path: ''
+            request:
+                name: CreateUserRequest
+                body: unified.User
+            response: CreateOrUpdateUserResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

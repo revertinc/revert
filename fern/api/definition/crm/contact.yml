@@ -1,0 +1,116 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    GetContactResponse:
+        properties:
+            status: string
+            result: unified.Contact
+    GetContactsResponse:
+        properties:
+            status: string
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.Contact>
+    CreateOrUpdateContactResponse:
+        properties:
+            status: string
+            message: string
+            result: unknown
+    SearchContactsResponse:
+        properties:
+            status: string
+            results: list<unified.Contact>
+
+service:
+    base-path: /crm/contacts
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getContact:
+            docs: Get details of a contact
+            method: GET
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: GetContactRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetContactResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getContacts:
+            docs: Get all the contacts
+            method: GET
+            path: ''
+            request:
+                name: GetContactsRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetContactsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createContact:
+            docs: Create a new contact
+            method: POST
+            path: ''
+            request:
+                name: CreateContactRequest
+                body: unified.Contact
+            response: CreateOrUpdateContactResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateContact:
+            docs: Update a contact
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateContactRequest
+                body: unified.Contact
+            response: CreateOrUpdateContactResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        searchContacts:
+            docs: Search for contacts
+            method: POST
+            path: /search
+            request:
+                name: SearchContactsRequest
+                body:
+                    properties:
+                        searchCriteria: unknown
+                query-parameters:
+                    fields: optional<string>
+            response: SearchContactsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

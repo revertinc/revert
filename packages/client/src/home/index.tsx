@@ -5,7 +5,7 @@ import KeyIcon from '@mui/icons-material/Key';
 import AppsIcon from '@mui/icons-material/Apps';
 import Integrations from './integrations';
 import { useUser } from '@clerk/clerk-react';
-import { REVERT_BASE_API_URL } from '../constants';
+import { REVERT_BASE_API_URL, DEFAULT_ENV } from '../constants';
 import * as Sentry from '@sentry/react';
 
 const selectedStyle = {
@@ -16,7 +16,7 @@ const selectedStyle = {
 const Home = () => {
     const [tabValue, setTabValue] = React.useState(0);
     const [account, setAccount] = React.useState<any>();
-    const [environment, setEnvironment] = React.useState<string>('production');
+    const [environment, setEnvironment] = React.useState<string>(DEFAULT_ENV);
     const user = useUser();
 
     useEffect(() => {
@@ -35,6 +35,10 @@ const Home = () => {
             .then((response) => response.json())
             .then((result) => {
                 setAccount(result?.account);
+                const environments: string[] = result?.account?.environments?.map(env => env.env) || [];
+                if (!environments.includes(DEFAULT_ENV)) {
+                    setEnvironment(environments?.[0])
+                }
             })
             .catch((error) => {
                 Sentry.captureException(error);

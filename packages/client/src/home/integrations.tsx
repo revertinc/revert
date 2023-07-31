@@ -2,18 +2,18 @@ import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { useUser } from '@clerk/clerk-react';
 import { TailSpin } from 'react-loader-spinner';
-import { REVERT_BASE_API_URL } from '../constants';
 import { IconButton } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Modal from '@mui/material/Modal';
 import EditCredentials from './editCredentials';
 import { LOCALSTORAGE_KEYS } from '../data/localstorage';
-import * as Sentry from '@sentry/react';
+import { useApi } from '../data/hooks';
 
 const Integrations = ({ environment }) => {
     const user = useUser();
+    const { data, loading, fetch } = useApi();
+
     const [account, setAccount] = useState<any>();
-    const [isLoading, setLoading] = useState<boolean>(false);
     const [open, setOpen] = React.useState(false);
     const [appId, setAppId] = useState<string>('sfdc');
 
@@ -21,37 +21,34 @@ const Integrations = ({ environment }) => {
         setAppId(appId);
         setOpen(true);
     };
-    const handleClose = () => {
+    const handleClose = async ({ refetchOnClose = false }: { refetchOnClose?: boolean }) => {
         setOpen(false);
+        if (refetchOnClose) {
+            await fetchAccount();
+        }
     };
+
+    const fetchAccount = React.useCallback(async () => {
+        const payload = {
+            userId: user.user?.id,
+        };
+        await fetch({
+            url: '/internal/account',
+            method: 'POST',
+            payload,
+        });
+    }, [fetch, user.user?.id]);
 
     useEffect(() => {
         if (open) return;
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
+        fetchAccount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
 
-        const data = JSON.stringify({
-            userId: user.user?.id,
-        });
-        const requestOptions = {
-            method: 'POST',
-            body: data,
-            headers: headers,
-        };
-        setLoading(true);
-        fetch(`${REVERT_BASE_API_URL}/internal/account`, requestOptions)
-            .then((response) => response.json())
-            .then((result) => {
-                setAccount(result?.account);
-                localStorage.setItem(LOCALSTORAGE_KEYS.privateToken, result?.account.private_token);
-                setLoading(false);
-            })
-            .catch((error) => {
-                Sentry.captureException(error);
-                console.log('error', error);
-                setLoading(false);
-            });
-    }, [user.user?.id, environment, open]);
+    React.useEffect(() => {
+        setAccount(data?.account);
+        localStorage.setItem(LOCALSTORAGE_KEYS.privateToken, data?.account?.private_token);
+    }, [data]);
 
     return (
         <div className="w-[80%]">
@@ -68,7 +65,7 @@ const Integrations = ({ environment }) => {
                 <h1 className="text-3xl font-bold mb-3">Integrations</h1>
                 <span>Configure & Manage your connected apps here.</span>
             </Box>
-            {isLoading ? (
+            {loading ? (
                 <div className="mt-10">
                     <TailSpin wrapperStyle={{ justifyContent: 'center' }} color="#1C1C1C" height={80} width={80} />
                 </div>
@@ -269,11 +266,10 @@ const Integrations = ({ environment }) => {
 
             <Modal open={open} onClose={handleClose}>
                 <EditCredentials
-                    app={account?.apps
-                        ?.find((app) => app.find((a) => a.env === environment))
-                        ?.find((a) => a.tp_id === appId)}
+                    app={account?.environments
+                        ?.find((env) => env.env === environment)
+                        ?.apps?.find((a) => a.tp_id === appId)}
                     handleClose={handleClose}
-                    setAccount={setAccount}
                 />
             </Modal>
         </div>

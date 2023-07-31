@@ -1,0 +1,116 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    GetDealResponse:
+        properties:
+            status: string
+            result: unified.Deal
+    GetDealsResponse:
+        properties:
+            status: string
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.Deal>
+    CreateOrUpdateDealResponse:
+        properties:
+            status: string
+            message: string
+            result: unknown
+    SearchDealsResponse:
+        properties:
+            status: string
+            results: list<unified.Deal>
+
+service:
+    base-path: /crm/deals
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getDeal:
+            docs: Get details of a deal
+            method: GET
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: GetDealRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetDealResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getDeals:
+            docs: Get all the deals
+            method: GET
+            path: ''
+            request:
+                name: GetDealsRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetDealsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createDeal:
+            docs: Create a new deal
+            method: POST
+            path: ''
+            request:
+                name: CreateDealRequest
+                body: unified.Deal
+            response: CreateOrUpdateDealResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateDeal:
+            docs: Update a deal
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateDealRequest
+                body: unified.Deal
+            response: CreateOrUpdateDealResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        searchDeals:
+            docs: Search for deals
+            method: POST
+            path: /search
+            request:
+                name: SearchDealsRequest
+                body:
+                    properties:
+                        searchCriteria: unknown
+                query-parameters:
+                    fields: optional<string>
+            response: SearchDealsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

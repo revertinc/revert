@@ -11,7 +11,8 @@
         "typescript": "^4.8.4"
     },
     "scripts": {
-        "fern": "fern generate --log-level debug",
+        "fern": "fern generate --log-level debug --group local",
+        "fern-docs": "fern generate --group external",
         "build": "yarn workspaces foreach run build"
     },
     "prisma": {
