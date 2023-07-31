@@ -7,15 +7,7 @@ environments:
         docs: This staging environment is helpful for testing!
         url: https://api-staging.revert.dev
     Local: http://localhost:4001
-default-environment: Local
-# auth: false
-# auth-schemes:
-#     PublicTokenAuthorization:
-#         header: x-revert-public-token
-#         type: string
-#     PrivateTokenAuthorization:
-#         header: x-revert-api-token
-#         type: string
+default-environment: Production
 audiences:
     - internal
     - external
