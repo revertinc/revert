@@ -1,0 +1,22 @@
+### Webhooks
+
+#### How to handle connection webhooks
+
+To verify that the request is being made from us (and not an impersonator) you can add the following verification step in your request handlers.
+
+```js
+Example for Express (Javascript)
+// This is the secret returned in the response when creating a webhook.
+const secret = <UNIQUE*SECRET_FOR_ENDPOINT>
+const payload = req.body;
+const headers = req.headers;
+const signedContent = ${headers['svix-id']}.${headers['svix-timestamp']}.${JSON.stringify(payload)};
+const secretBytes = Buffer.from(secret?.split('*')[1], 'base64');
+const signature = crypto.createHmac('sha256', secretBytes).update(signedContent).digest('base64');
+const verified = (headers['svix-signature'] as any).split(' ')
+.map((x: string) => x.split(',')[1])
+.includes(signature);
+// Use the verified to boolean to continue processing the webhook is true.
+```
+
+We use our friends at [Svix](https://docs.svix.com/receiving/verifying-payloads/how-manual) for sending you webhooks, this piece of code verifies that we are the senders.
