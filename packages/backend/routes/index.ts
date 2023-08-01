@@ -20,6 +20,7 @@ import {
     eventService,
     leadService,
     noteService,
+    proxyService,
     taskService,
     userService,
 } from '../services/crm';
@@ -115,6 +116,7 @@ register(router, {
         event: eventService,
         task: taskService,
         user: userService,
+        proxy: proxyService,
     },
     connection: connectionService,
 });
