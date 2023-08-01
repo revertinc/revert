@@ -51,6 +51,7 @@ RUN yarn install --check-cache
 RUN npm install -g fern-api@0.6.12 && fern -v && fern generate --log-level debug
 RUN mkdir -p /app/packages/backend/dist/generated && cp -r /app/packages/backend/generated/typescript /app/packages/backend/dist/generated
 RUN yarn workspace @revertdotdev/backend build
+RUN yarn fern-docs
 
 # remove development dependencies
 RUN npm prune --production
