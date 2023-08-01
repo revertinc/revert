@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { Svix } from 'svix';
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ const config = {
     SVIX_AUTH_TOKEN: process.env.SVIX_AUTH_TOKEN,
     SHORTLOOP_AUTH_KEY: process.env.SHORTLOOP_AUTH_KEY!,
     SVIX_ENDPOINT_SECRET: process.env.SVIX_ENDPOINT_SECRET!,
+    svix: new Svix(process.env.SVIX_AUTH_TOKEN!),
 };
 
 export default config;

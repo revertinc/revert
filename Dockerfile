@@ -18,6 +18,8 @@ ARG SFDC_CLIENT_SECRET
 ARG OAUTH_REDIRECT_BASE
 ARG FERN_TOKEN
 ARG PORT
+ARG POSTMAN_API_KEY
+ARG POSTMAN_WORKSPACE_ID
 
 RUN echo $PGSQL_URL
 ENV SERVER_PORT $PORT
@@ -32,6 +34,8 @@ ENV SFDC_CLIENT_SECRET $SFDC_CLIENT_SECRET
 ENV OAUTH_REDIRECT_BASE $OAUTH_REDIRECT_BASE
 ENV PORT $PORT
 ENV FERN_TOKEN $FERN_TOKEN
+ENV POSTMAN_API_KEY $POSTMAN_API_KEY
+ENV POSTMAN_WORKSPACE_ID $POSTMAN_WORKSPACE_ID
 
 # create .env from the vars passed.
 RUN echo "SERVER_PORT=$SERVER_PORT" > .env \
@@ -44,6 +48,8 @@ RUN echo "SERVER_PORT=$SERVER_PORT" > .env \
     && echo "SFDC_CLIENT_ID=$SFDC_CLIENT_ID" >> .env \
     && echo "SFDC_CLIENT_SECRET=$SFDC_CLIENT_SECRET" >> .env \
     && echo "OAUTH_REDIRECT_BASE=$OAUTH_REDIRECT_BASE" >> .env \
+    && echo "POSTMAN_API_KEY=$POSTMAN_API_KEY" >> .env \
+    && echo "POSTMAN_WORKSPACE_ID=$POSTMAN_WORKSPACE_ID" >> .env \
     && echo "PORT=$PORT" >> .env \
     && echo "FERN_TOKEN=$FERN_TOKEN" >> .env
 
@@ -51,6 +57,7 @@ RUN yarn install --check-cache
 RUN npm install -g fern-api@0.6.12 && fern -v && fern generate --log-level debug
 RUN mkdir -p /app/packages/backend/dist/generated && cp -r /app/packages/backend/generated/typescript /app/packages/backend/dist/generated
 RUN yarn workspace @revertdotdev/backend build
+RUN yarn fern-docs
 
 # remove development dependencies
 RUN npm prune --production

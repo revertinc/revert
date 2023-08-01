@@ -24,7 +24,7 @@ types:
             - inactive
 
 service:
-    base-path: /
+    base-path: ''
     auth: false
     headers:
         x-revert-public-token: string

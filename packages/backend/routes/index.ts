@@ -6,7 +6,6 @@ import cors from 'cors';
 import crmRouter from './v1/crm';
 import config from '../config';
 import revertAuthMiddleware from '../helpers/authMiddleware';
-import connectionRouter from './v1/connection';
 import { register } from '../generated/typescript';
 import { metadataService } from '../services/metadata';
 import { accountService } from '../services/Internal/account';
@@ -21,9 +20,11 @@ import {
     eventService,
     leadService,
     noteService,
+    proxyService,
     taskService,
     userService,
 } from '../services/crm';
+import { connectionService } from '../services/connection';
 
 const router = express.Router();
 
@@ -100,7 +101,6 @@ router.post('/clerk/webhook', async (req, res) => {
 });
 
 router.use('/crm', cors(), revertAuthMiddleware(), crmRouter);
-router.use('/connection', cors(), revertAuthMiddleware(), connectionRouter);
 
 register(router, {
     metadata: metadataService,
@@ -116,7 +116,9 @@ register(router, {
         event: eventService,
         task: taskService,
         user: userService,
+        proxy: proxyService,
     },
+    connection: connectionService,
 });
 
 export default router;

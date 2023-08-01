@@ -1,0 +1,24 @@
+### Pagination
+
+Learn how to paginate results returned by Revert APIs
+Any data that is returned from our APIs can be paginated with the pageSize and cursor request params. Our API responses will include the next and previous params that can be used to traverse the results in an iterative manner.
+
+The next parameter being null indicates the end of results.
+
+#### Example Request
+
+`curl 'https://api.revert.dev/v1/crm/leads?pageSize=25'`
+
+#### Sample Response
+
+```js {2,4}
+{
+    "next": "hashed_cursor_value",
+    "previous": null,
+    "results": [...]
+}
+```
+
+#### To get the next 25 results
+
+`curl 'https://api.revert.dev/v1/crm/leads?pageSize=25&cursor=hashed_cursor_value'`

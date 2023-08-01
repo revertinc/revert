@@ -1,0 +1,139 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: common/errors.yml
+    types: ./common/types.yml
+
+types:
+    GetConnectionResponse:
+        extends: types.Connection
+        properties:
+            error: optional<string>
+    GetAllConnectionResponse: list<types.Connection>
+    DeleteConnectionResponse:
+        properties:
+            status: string
+            deleted: types.Connection
+    CreateConnectionWebhookResponse:
+        properties:
+            status: string
+            webhookUrl: string
+            createdAt: string
+            secret: string
+            error: optional<string>
+            errorMessage: optional<unknown>
+    GetConnectionWebhookResponse:
+        properties:
+            status: string
+            webhook: unknown
+            error: optional<string>
+            errorMessage: optional<unknown>
+    CreateConnectionWebhookRequest:
+        properties:
+            webhookUrl: string
+    DeleteConnectionWebhookResponse:
+        properties:
+            status: string
+            error: optional<string>
+            errorMessage: optional<unknown>
+
+service:
+    base-path: ''
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getConnection:
+            docs: Get details of a connection for a specific tenant.
+            method: GET
+            path: /connection
+            request:
+                name: GetConnectionRequest
+                headers:
+                    x-revert-t-id:
+                        type: string
+                        docs: The unique customer id used when the customer linked their account.
+            response: GetConnectionResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        deleteConnection:
+            docs: Delete a connection for a specific tenant.
+            method: DELETE
+            path: /connection
+            request:
+                name: DeleteConnectionRequest
+                headers:
+                    x-revert-t-id:
+                        type: string
+                        docs: The unique customer id used when the customer linked their account.
+            response: DeleteConnectionResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getAllConnections:
+            docs: Get details of all the connection for a specific account at Revert.
+            method: GET
+            path: /connection/all
+            request:
+                name: GetAllConnectionRequest
+            response: GetAllConnectionResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createWebhook:
+            docs: Create a webhook endpoint that listens to a connection events of a specific tenant.
+            method: POST
+            path: /connection/webhook
+            request:
+                name: CreateWebhookRequest
+                body: CreateConnectionWebhookRequest
+                headers:
+                    x-revert-t-id:
+                        type: string
+                        docs: The unique customer id used when the customer linked their account.
+            response: CreateConnectionWebhookResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getWebhook:
+            docs: Get details of a connection webhook for a specific tenant.
+            method: GET
+            path: /connection/webhook
+            request:
+                name: GetConnectionWebhookRequest
+                headers:
+                    x-revert-t-id:
+                        type: string
+                        docs: The unique customer id used when the customer linked their account.
+            response: GetConnectionWebhookResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        deleteWebhook:
+            docs: Delete the connection webhook for a specific tenant.
+            method: DELETE
+            path: /connection/webhook
+            request:
+                name: DeleteConnectionWebhookRequest
+                headers:
+                    x-revert-t-id:
+                        type: string
+                        docs: The unique customer id used when the customer linked their account.
+            response: DeleteConnectionWebhookResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
