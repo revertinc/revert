@@ -16,12 +16,16 @@ const connectionService = new ConnectionService({
         }
         const connection: any = await prisma.connections.findFirst({
             where: {
-                t_id: tenantId as string,
-                app: {
-                    env: {
-                        private_token: token as string,
+                AND: [
+                    { t_id: tenantId as string },
+                    {
+                        app: {
+                            env: {
+                                private_token: token as string,
+                            },
+                        },
                     },
-                },
+                ],
             },
             select: {
                 tp_access_token: true,
