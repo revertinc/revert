@@ -261,8 +261,8 @@ const createIntegrationBlock = function (self, integration) {
         };
 
         open = function (integrationId) {
-            let selectedIntegrationId;
             if (!integrationId) {
+                let selectedIntegrationId;
                 // show every integration possible
                 const signInElement = document.createElement('div');
                 signInElement.setAttribute('id', 'revert-signin-container');
@@ -339,8 +339,9 @@ const createIntegrationBlock = function (self, integration) {
                             (a) => ((a as HTMLDivElement).style.border = '1px solid #E8E8EE33')
                         );
                         (ev.target as HTMLDivElement).style.border = '2px solid #2047D080';
-                        (document.getElementById('connect-integration') as HTMLButtonElement).style.background =
-                            '#272DC0';
+                        const btn = document.getElementById('connect-integration') as HTMLButtonElement;
+                        btn.style.background = '#272DC0';
+                        btn.style.cursor = 'pointer';
                     });
                     integrationsContainer.appendChild(integrationConnectBlock);
                 }
@@ -358,7 +359,7 @@ const createIntegrationBlock = function (self, integration) {
                     'div',
                     `connect-integration`,
                     transformStyle({
-                        cursor: 'pointer',
+                        cursor: 'not-allowed',
                         padding: '8px 20px',
                         color: '#fff',
                         textAlign: 'center',
