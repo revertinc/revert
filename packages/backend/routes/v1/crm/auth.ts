@@ -5,7 +5,6 @@ import qs from 'qs';
 import { TP_ID } from '@prisma/client';
 import AuthService from '../../../services/auth';
 import prisma, { Prisma } from '../../../prisma/client';
-import ConnectionService from '../../../services/connection';
 import logError from '../../../helpers/logError';
 
 const authRouter = express.Router({ mergeParams: true });
@@ -84,7 +83,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         appId: account?.apps[0].id,
                     },
                 });
-                ConnectionService.svix.message.create(svixAppId, {
+                config.svix.message.create(svixAppId, {
                     eventType: 'connection.added',
                     payload: {
                         eventType: 'connection.added',
@@ -169,7 +168,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                             tp_refresh_token: result.data.refresh_token,
                         },
                     });
-                    ConnectionService.svix.message.create(svixAppId, {
+                    config.svix.message.create(svixAppId, {
                         eventType: 'connection.added',
                         payload: {
                             eventType: 'connection.added',
@@ -253,7 +252,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         app_client_secret: clientSecret || config.SFDC_CLIENT_SECRET,
                     },
                 });
-                ConnectionService.svix.message.create(svixAppId, {
+                config.svix.message.create(svixAppId, {
                     eventType: 'connection.added',
                     payload: {
                         eventType: 'connection.added',
@@ -334,7 +333,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         appId: account?.apps[0].id,
                     },
                 });
-                ConnectionService.svix.message.create(svixAppId, {
+                config.svix.message.create(svixAppId, {
                     eventType: 'connection.added',
                     payload: {
                         eventType: 'connection.added',
