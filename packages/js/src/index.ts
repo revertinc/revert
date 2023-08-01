@@ -306,7 +306,7 @@ const createIntegrationBlock = function (self, integration) {
                         fontWeight: 'bold',
                         width: '100%',
                         boxSizing: 'border-box',
-                        color: '#777'
+                        color: '#777',
                     }),
                     [],
                     'Select CRM'
@@ -377,57 +377,10 @@ const createIntegrationBlock = function (self, integration) {
                     'Connect →'
                 );
                 button.addEventListener('click', (ev) => {
-                    const state = JSON.stringify({
-                        tenantId: this.tenantId,
-                        revertPublicToken: this.API_REVERT_PUBLIC_TOKEN,
-                    });
                     const selectedIntegration = this.#integrations.find(
                         (int) => int.integrationId === selectedIntegrationId
                     );
-                    if (selectedIntegrationId === 'hubspot') {
-                        window.open(
-                            `https://app.hubspot.com/oauth/authorize?client_id=${
-                                selectedIntegration.clientId
-                            }&redirect_uri=${this.REDIRECT_URL_BASE}/hubspot&scope=${selectedIntegration.scopes.join(
-                                '%20'
-                            )}&state=${state}`
-                        );
-                        this.close();
-                    } else if (selectedIntegrationId === 'zohocrm') {
-                        window.open(
-                            `https://accounts.zoho.com/oauth/v2/auth?scope=${selectedIntegration.scopes.join(
-                                ','
-                            )}&client_id=${
-                                selectedIntegration.clientId
-                            }&response_type=code&access_type=offline&redirect_uri=${
-                                this.REDIRECT_URL_BASE
-                            }/zohocrm&state=${encodeURIComponent(state)}`
-                        );
-                        this.close();
-                    } else if (selectedIntegrationId === 'sfdc') {
-                        const queryParams = {
-                            response_type: 'code',
-                            client_id: selectedIntegration.clientId,
-                            redirect_uri: `${this.REDIRECT_URL_BASE}/sfdc`,
-                            state,
-                        };
-                        const urlSearchParams = new URLSearchParams(queryParams);
-                        const queryString = urlSearchParams.toString();
-
-                        window.open(
-                            `https://login.salesforce.com/services/oauth2/authorize?${queryString}${
-                                selectedIntegration.scopes.length
-                                    ? `&scope=${selectedIntegration.scopes.join('%20')}`
-                                    : ''
-                            }`
-                        );
-                        this.close();
-                    } else if (selectedIntegrationId === 'pipedrive') {
-                        window.open(
-                            `https://oauth.pipedrive.com/oauth/authorize?client_id=${selectedIntegration.clientId}&redirect_uri=${this.REDIRECT_URL_BASE}/pipedrive&state=${state}`
-                        );
-                        this.close();
-                    }
+                    this.handleIntegrationRedirect(selectedIntegration, true);
                 });
                 signInElement.appendChild(button);
                 // let poweredByBanner = createPoweredByBanner(this);
@@ -464,52 +417,7 @@ const createIntegrationBlock = function (self, integration) {
                 const selectedIntegration = this.#integrations.find(
                     (integration) => integration.integrationId === integrationId
                 );
-                if (selectedIntegration) {
-                    const scopes = selectedIntegration.scopes;
-                    const state = JSON.stringify({
-                        tenantId: this.tenantId,
-                        revertPublicToken: this.API_REVERT_PUBLIC_TOKEN,
-                    });
-                    if (selectedIntegration.integrationId === 'hubspot') {
-                        window.open(
-                            `https://app.hubspot.com/oauth/authorize?client_id=${
-                                selectedIntegration.clientId
-                            }&redirect_uri=${this.#REDIRECT_URL_BASE}/hubspot&scope=${scopes.join(
-                                '%20'
-                            )}&state=${state}`
-                        );
-                    } else if (selectedIntegration.integrationId === 'zohocrm') {
-                        window.open(
-                            `https://accounts.zoho.com/oauth/v2/auth?scope=${scopes.join(',')}&client_id=${
-                                selectedIntegration.clientId
-                            }&response_type=code&access_type=offline&redirect_uri=${
-                                this.#REDIRECT_URL_BASE
-                            }/zohocrm&state=${encodeURIComponent(state)}`
-                        );
-                    } else if (selectedIntegration.integrationId === 'sfdc') {
-                        const queryParams = {
-                            response_type: 'code',
-                            client_id: selectedIntegration.clientId,
-                            redirect_uri: `${this.#REDIRECT_URL_BASE}/sfdc`,
-                            state,
-                        };
-                        const urlSearchParams = new URLSearchParams(queryParams);
-                        const queryString = urlSearchParams.toString();
-                        window.open(
-                            `https://login.salesforce.com/services/oauth2/authorize?${queryString}${
-                                scopes.length ? `&scope=${scopes.join('%20')}` : ''
-                            }`
-                        );
-                    } else if (selectedIntegration.integrationId === 'pipedrive') {
-                        window.open(
-                            `https://oauth.pipedrive.com/oauth/authorize?client_id=${
-                                selectedIntegration.clientId
-                            }&redirect_uri=${this.#REDIRECT_URL_BASE}/pipedrive&state=${state}`
-                        );
-                    }
-                } else {
-                    console.warn('Invalid integration ID provided.');
-                }
+                this.handleIntegrationRedirect(selectedIntegration);
             }
         };
 
@@ -521,6 +429,56 @@ const createIntegrationBlock = function (self, integration) {
             }
             this.state = 'close';
             this.#onClose();
+        };
+
+        handleIntegrationRedirect = function (selectedIntegration, closeWindow = false) {
+            if (selectedIntegration) {
+                const scopes = selectedIntegration.scopes;
+                const state = JSON.stringify({
+                    tenantId: this.tenantId,
+                    revertPublicToken: this.API_REVERT_PUBLIC_TOKEN,
+                });
+                if (selectedIntegration.integrationId === 'hubspot') {
+                    window.open(
+                        `https://app.hubspot.com/oauth/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${this.#REDIRECT_URL_BASE}/hubspot&scope=${scopes.join('%20')}&state=${state}`
+                    );
+                } else if (selectedIntegration.integrationId === 'zohocrm') {
+                    window.open(
+                        `https://accounts.zoho.com/oauth/v2/auth?scope=${scopes.join(',')}&client_id=${
+                            selectedIntegration.clientId
+                        }&response_type=code&access_type=offline&redirect_uri=${
+                            this.#REDIRECT_URL_BASE
+                        }/zohocrm&state=${encodeURIComponent(state)}`
+                    );
+                } else if (selectedIntegration.integrationId === 'sfdc') {
+                    const queryParams = {
+                        response_type: 'code',
+                        client_id: selectedIntegration.clientId,
+                        redirect_uri: `${this.#REDIRECT_URL_BASE}/sfdc`,
+                        state,
+                    };
+                    const urlSearchParams = new URLSearchParams(queryParams);
+                    const queryString = urlSearchParams.toString();
+                    window.open(
+                        `https://login.salesforce.com/services/oauth2/authorize?${queryString}${
+                            scopes.length ? `&scope=${scopes.join('%20')}` : ''
+                        }`
+                    );
+                } else if (selectedIntegration.integrationId === 'pipedrive') {
+                    window.open(
+                        `https://oauth.pipedrive.com/oauth/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${this.#REDIRECT_URL_BASE}/pipedrive&state=${state}`
+                    );
+                }
+                if (closeWindow) {
+                    this.close();
+                }
+            } else {
+                console.warn('Invalid integration ID provided.');
+            }
         };
     }
     revert = new Revert();
