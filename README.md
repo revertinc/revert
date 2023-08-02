@@ -8,7 +8,7 @@
 
 [Get started](https://revert.dev) | [Docs](https://docs.revert.dev/) | [Issues](https://github.com/revertinc/revert/issues) | [Discord](https://discord.gg/q5K5cRhymW) </h2>
 <br />
-<img width="100%" style="border-radius:75px;" src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1687937777/Revert/CTA-navigation-1_mrxxep.png"/>
+<img width="100%" style="border-radius:75px;" src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1689828148/Revert/github_o27jvk.png"/>
 
 </p>
 
@@ -41,7 +41,7 @@ Visit: https://revert.dev to sign up for an account or read our docs [here](http
 
 -   [x] **Zoho CRM**
 
--   [ ] **Pipedrive**
+-   [x] **Pipedrive**
 
 -   [ ] Other CRMs such as Close.io, Zendesk Sell, MS 365
 -   [ ] Ability to self-host Revert inside your own cloud
