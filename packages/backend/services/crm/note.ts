@@ -331,7 +331,7 @@ const noteService = new NoteService(
                         break;
                     }
                     case TP_ID.pipedrive: {
-                        const noteUpdated = await axios.patch<{ data: Partial<PipedriveNote> }>(
+                        const noteUpdated = await axios.put<{ data: Partial<PipedriveNote> }>(
                             `${connection.tp_account_url}/v1/notes/${noteId}`,
                             note,
                             {
@@ -417,23 +417,7 @@ const noteService = new NoteService(
                         break;
                     }
                     case TP_ID.pipedrive: {
-                        const instanceUrl = connection.tp_account_url;
-                        const result = await axios.get<
-                            { data: { items: { item: any; result_score: number }[] } } & PipedrivePagination
-                        >(
-                            `${instanceUrl}/v1/notes/search?term=${searchCriteria}${
-                                formattedFields.length ? `&fields=${formattedFields.join(',')}` : ''
-                            }`,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${thirdPartyToken}`,
-                                },
-                            }
-                        );
-                        const notes = result.data.data.items.map((item) => item.item);
-                        const unifiedNotes = notes?.map((d: any) => unifyNote(d, thirdPartyId));
-                        res.send({ status: 'ok', results: unifiedNotes });
-                        break;
+                        throw new InternalServerError({ error: 'Method not allowed' });
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });

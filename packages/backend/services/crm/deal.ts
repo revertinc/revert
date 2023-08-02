@@ -364,7 +364,7 @@ const dealService = new DealService(
                         break;
                     }
                     case TP_ID.pipedrive: {
-                        const dealUpdated = await axios.patch<{ data: Partial<PipedriveDeal> }>(
+                        const dealUpdated = await axios.put<{ data: Partial<PipedriveDeal> }>(
                             `${connection.tp_account_url}/v1/deals/${dealId}`,
                             deal,
                             {

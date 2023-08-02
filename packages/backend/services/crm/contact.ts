@@ -72,7 +72,7 @@ const contactService = new ContactService(
                     }
                     case TP_ID.pipedrive: {
                         const result = await axios.get<{ data: Partial<PipedriveContact> } & PipedrivePagination>(
-                            `${connection.tp_account_url}/v1/contacts/${contactId}`,
+                            `${connection.tp_account_url}/v1/persons/${contactId}`,
                             {
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
@@ -191,7 +191,7 @@ const contactService = new ContactService(
                             cursor ? `&start=${cursor}` : ''
                         }`;
                         const result = await axios.get<{ data: Partial<PipedriveContact>[] } & PipedrivePagination>(
-                            `${connection.tp_account_url}/v1/contacts?${pagingString}`,
+                            `${connection.tp_account_url}/v1/persons?${pagingString}`,
                             {
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
@@ -277,7 +277,7 @@ const contactService = new ContactService(
                         const instanceUrl = connection.tp_account_url;
                         const pipedriveContact = contact as Partial<PipedriveContact>;
                         const contactCreated = await axios.post<{ data: Partial<PipedriveContact> }>(
-                            `${instanceUrl}/v1/contacts`,
+                            `${instanceUrl}/v1/persons`,
                             pipedriveContact,
                             {
                                 headers: {
@@ -360,8 +360,8 @@ const contactService = new ContactService(
                         break;
                     }
                     case TP_ID.pipedrive: {
-                        const contactUpdated = await axios.patch<{ data: Partial<PipedriveContact> }>(
-                            `${connection.tp_account_url}/v1/contacts/${contactId}`,
+                        const contactUpdated = await axios.put<{ data: Partial<PipedriveContact> }>(
+                            `${connection.tp_account_url}/v1/persons/${contactId}`,
                             contact,
                             {
                                 headers: {
