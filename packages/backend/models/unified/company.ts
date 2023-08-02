@@ -1,10 +1,13 @@
+import { TP_ID } from '@prisma/client';
+import { PipedriveCompany } from '../../constants/pipedrive';
+
 export interface UnifiedCompany {
     name: string;
-    industry: string;
-    description: string;
-    annualRevenue: number;
+    industry: string; // not supported by pipedrive
+    description: string; // not supported by pipedrive
+    annualRevenue: number; // not supported by pipedrive
     size: number;
-    phone: string;
+    phone: string; // not supported by pipedrive
     address: {
         street: string; // Note: No street field in Hubspot.
         city: string;
@@ -32,8 +35,18 @@ export function unifyCompany(company: any): UnifiedCompany {
         phone: company.phone || company.Phone || company.phone,
         address: {
             street:
-                company.street || company.BillingAddress?.street || company.address?.street || company.Billing_Street,
-            city: company.city || company.City || company.city || company.BillingAddress?.city || company.Billing_City,
+                company.street ||
+                company.BillingAddress?.street ||
+                company.address?.street ||
+                company.Billing_Street ||
+                company.address_street_number,
+            city:
+                company.city ||
+                company.City ||
+                company.city ||
+                company.BillingAddress?.city ||
+                company.Billing_City ||
+                company.address_locality,
             state:
                 company.state ||
                 company.State ||
@@ -45,9 +58,20 @@ export function unifyCompany(company: any): UnifiedCompany {
                 company.Country ||
                 company.country ||
                 company.BillingAddress?.country ||
-                company.Billing_Country,
-            zip: company.zip || company.Zip || company.zip || company.BillingAddress?.zipCode || company.Billing_Code,
-            postalCode: company.postalCode || company.BillingAddress?.postalCode || company.Billing_Code,
+                company.Billing_Country ||
+                company.address_country,
+            zip:
+                company.zip ||
+                company.Zip ||
+                company.zip ||
+                company.BillingAddress?.zipCode ||
+                company.Billing_Code ||
+                company.address_postal_code,
+            postalCode:
+                company.postalCode ||
+                company.BillingAddress?.postalCode ||
+                company.Billing_Code ||
+                company.address_postal_code,
         },
         industry: company.industry || company.Industry || company.industry,
         size:
@@ -62,13 +86,15 @@ export function unifyCompany(company: any): UnifiedCompany {
             company.Created_Time ||
             company.created_date ||
             company.createdate ||
-            company.CreatedDate,
+            company.CreatedDate ||
+            company.add_time,
         updatedTimestamp:
             company.modifiedDate ||
             company.Modified_Time ||
             company.modified_date ||
             company.hs_lastmodifieddate ||
-            company.LastModifiedDate,
+            company.LastModifiedDate ||
+            company.update_time,
         additional: {},
     };
 
@@ -555,12 +581,40 @@ export function toHubspotCompany(unifiedCompany: UnifiedCompany): Partial<Hubspo
     return hubspotCompany;
 }
 
+export function toPipedriveCompany(unifiedCompany: UnifiedCompany): Partial<PipedriveCompany> {
+    const pipedriveCompany: any = {
+        id: unifiedCompany.remoteId,
+        name: unifiedCompany.name,
+        // industry: unifiedCompany.industry,
+        // description: unifiedCompany.description,
+        // annualRevenue: unifiedCompany.annualRevenue,
+        people_count: unifiedCompany.size,
+        // phone: unifiedCompany.phone,
+        address_street_number: unifiedCompany.address?.street,
+        address_locality: unifiedCompany.address?.city,
+        // state: unifiedCompany.address?.state,
+        address_country: unifiedCompany.address?.country,
+        address_postal_code: unifiedCompany.address?.postalCode || unifiedCompany.address?.zip,
+    };
+
+    // Map custom fields
+    if (unifiedCompany.additional) {
+        Object.keys(unifiedCompany.additional).forEach((key) => {
+            pipedriveCompany[key] = unifiedCompany.additional?.[key];
+        });
+    }
+
+    return pipedriveCompany;
+}
+
 export function disunifyCompany(company: UnifiedCompany, integrationId: string): any {
-    if (integrationId === 'sfdc') {
+    if (integrationId === TP_ID.sfdc) {
         return toSalesforceCompany(company);
-    } else if (integrationId === 'hubspot') {
+    } else if (integrationId === TP_ID.hubspot) {
         return toHubspotCompany(company);
-    } else if (integrationId === 'zohocrm') {
+    } else if (integrationId === TP_ID.zohocrm) {
         return toZohoCompany(company);
+    } else if (integrationId === TP_ID.pipedrive) {
+        return toPipedriveCompany(company);
     }
 }

@@ -1,3 +1,5 @@
+import { TP_ID } from '@prisma/client';
+
 export interface UnifiedUser {
     firstName: string;
     lastName: string;
@@ -16,9 +18,14 @@ export function unifyUser(user: any): UnifiedUser {
         remoteId: user.id || user.Id,
         id: user.id || user.Id,
         createdTimestamp:
-            user.createdDate || user.CreatedDate || user.Created_Time || user.hs_timestamp || user.created_time,
-        updatedTimestamp: user.lastModifiedDate || user.LastModifiedDate || user.Modified_Time,
-        firstName: user.firstname || user.First_Name || user.FirstName || user.first_name,
+            user.createdDate ||
+            user.CreatedDate ||
+            user.Created_Time ||
+            user.hs_timestamp ||
+            user.created_time ||
+            user.created,
+        updatedTimestamp: user.lastModifiedDate || user.LastModifiedDate || user.Modified_Time || user.modified,
+        firstName: user.firstname || user.First_Name || user.FirstName || user.first_name || user.name,
         lastName: user.lastname || user.Last_Name || user.LastName || user.last_name,
         phone: user.phone || user.phone_number || user.Phone || user.mobile,
         email: user.email || user.Email,
@@ -95,12 +102,31 @@ export function toHubspotUser(unified: UnifiedUser): any {
     return hubspotUser;
 }
 
+export function toPipedriveUser(unified: UnifiedUser): any {
+    const pipedriveUser: any = {
+        id: unified.remoteId,
+        name: unified.firstName,
+        phone: unified.phone,
+        email: unified.email,
+    };
+    // Map custom fields
+    if (unified.additional) {
+        Object.keys(unified.additional).forEach((key) => {
+            pipedriveUser[key] = unified.additional?.[key];
+        });
+    }
+
+    return pipedriveUser;
+}
+
 export function disunifyUser(note: UnifiedUser, integrationId: string): any {
-    if (integrationId === 'sfdc') {
+    if (integrationId === TP_ID.sfdc) {
         return toSalesforceUser(note);
-    } else if (integrationId === 'hubspot') {
+    } else if (integrationId === TP_ID.hubspot) {
         return toHubspotUser(note);
-    } else if (integrationId === 'zohocrm') {
+    } else if (integrationId === TP_ID.zohocrm) {
         return toZohoUser(note);
+    } else if (integrationId === TP_ID.pipedrive) {
+        return toPipedriveUser(note);
     }
 }

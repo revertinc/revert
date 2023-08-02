@@ -77,7 +77,7 @@ const companyService = new CompanyService(
                     }
                     case TP_ID.pipedrive: {
                         const result = await axios.get<{ data: Partial<PipedriveCompany> } & PipedrivePagination>(
-                            `${connection.tp_account_url}/v1/companies/${companyId}`,
+                            `${connection.tp_account_url}/v1/organizations/${companyId}`,
                             {
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
@@ -200,7 +200,7 @@ const companyService = new CompanyService(
                             cursor ? `&start=${cursor}` : ''
                         }`;
                         const result = await axios.get<{ data: Partial<PipedriveCompany>[] } & PipedrivePagination>(
-                            `${connection.tp_account_url}/v1/companies?${pagingString}`,
+                            `${connection.tp_account_url}/v1/organizations?${pagingString}`,
                             {
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
@@ -286,7 +286,7 @@ const companyService = new CompanyService(
                         const instanceUrl = connection.tp_account_url;
                         const pipedriveCompany = company as Partial<PipedriveCompany>;
                         const companyCreated = await axios.post<{ data: Partial<PipedriveCompany> }>(
-                            `${instanceUrl}/v1/companies`,
+                            `${instanceUrl}/v1/organizations`,
                             pipedriveCompany,
                             {
                                 headers: {
@@ -369,8 +369,8 @@ const companyService = new CompanyService(
                         break;
                     }
                     case TP_ID.pipedrive: {
-                        const companyUpdated = await axios.patch<{ data: Partial<PipedriveCompany> }>(
-                            `${connection.tp_account_url}/v1/companies/${companyId}`,
+                        const companyUpdated = await axios.put<{ data: Partial<PipedriveCompany> }>(
+                            `${connection.tp_account_url}/v1/organizations/${companyId}`,
                             company,
                             {
                                 headers: {
@@ -474,7 +474,7 @@ const companyService = new CompanyService(
                         const result = await axios.get<
                             { data: { items: { item: any; result_score: number }[] } } & PipedrivePagination
                         >(
-                            `${instanceUrl}/v1/companies/search?term=${searchCriteria}${
+                            `${instanceUrl}/v1/organizations/search?term=${searchCriteria}${
                                 formattedFields.length ? `&fields=${formattedFields.join(',')}` : ''
                             }`,
                             {

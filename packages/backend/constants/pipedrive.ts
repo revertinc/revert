@@ -384,3 +384,25 @@ export interface PipedriveNote {
 }
 
 export interface PipedriveTask extends PipedriveEvent {}
+
+export interface PipedriveUser {
+    id: string;
+    name: string;
+    default_currency: string;
+    locale: string;
+    lang: string;
+    email: string;
+    phone: string;
+    activated: boolean;
+    last_login: Date;
+    created: Date;
+    modified: Date;
+    has_created_company: boolean;
+    access: { app: string; admin: boolean; permission_set_id: string }[];
+    active_flag: boolean;
+    timezone_name: string;
+    timezone_offset: string;
+    role_id: string;
+    icon_url: string;
+    is_you: boolean;
+}
