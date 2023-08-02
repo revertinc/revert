@@ -31,7 +31,7 @@ Visit: https://revert.dev to sign up for an account or read our docs [here](http
 
 ### We are an ideal match for you, If:-
 
--   You are a company building in the GTM space.
+-   You are building a product for the the go-to-market space.
 -   You have integration with CRM's on your roadmap. 
 -   Your focus is building your core product. 
 
