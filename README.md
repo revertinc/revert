@@ -6,7 +6,7 @@
  
 ![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=revert-client-git-main-revertdev)  [![](https://dcbadge.vercel.app/api/server/q5K5cRhymW?style=flat)](https://discord.gg/q5K5cRhymW)
 
-[Get started](https://revert.dev) | [Docs](https://docs.revert.dev/) | [Issues](https://github.com/revertinc/revert/issues) | [Discord](https://discord.gg/q5K5cRhymW) | [Contact](jatin@revert.dev) 
+[Get started](https://revert.dev) | [Docs](https://docs.revert.dev/) | [Issues](https://github.com/revertinc/revert/issues) | [Discord](https://discord.gg/q5K5cRhymW) | [Contact](mailto:jatin@revert.dev) 
 </h2>
 <br />
 <img width="100%" style="border-radius:75px;" src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1689828148/Revert/github_o27jvk.png"/>
