@@ -8,22 +8,22 @@ imports:
 types:
     GetEventResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             result: unified.Event
     GetEventsResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             next: optional<string>
             previous: optional<string>
             results: list<unified.Event>
     CreateOrUpdateEventResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             message: string
             result: unknown
     SearchEventsResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             results: list<unified.Event>
 
 service:
