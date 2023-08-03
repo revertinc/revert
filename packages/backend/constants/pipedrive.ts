@@ -296,8 +296,8 @@ export interface PipedriveEvent {
     due_time: string;
     duration: string;
     busy_flag: boolean;
-    add_time: Date;
-    marked_as_done_time: Date;
+    add_time: string;
+    marked_as_done_time: string;
     last_notification_time: Date;
     last_notification_user_id: string;
     notification_language_id: string;

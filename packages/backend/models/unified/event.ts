@@ -1,3 +1,5 @@
+import { TP_ID } from '@prisma/client';
+
 export interface UnifiedEvent {
     type: string;
     subject: string;
@@ -19,15 +21,15 @@ export function unifyEvent(event: any): UnifiedEvent {
         remoteId: event.id || event.Id,
         id: event.id || event.eventID || event.event_id || event.Id,
         createdTimestamp:
-            event.createdDate || event.CreatedDate || event.Created_Time || event.hs_timestamp || event.hs_createdate,
+            event.createdDate || event.CreatedDate || event.Created_Time || event.hs_timestamp || event.hs_createdate || event.add_time,
         updatedTimestamp:
-            event.lastModifiedDate || event.LastModifiedDate || event.Modified_Time || event.hs_lastmodifieddate,
+            event.lastModifiedDate || event.LastModifiedDate || event.Modified_Time || event.hs_lastmodifieddate || event.update_time,
         type: event.type || event.Type || event.hs_activity_type || event.EventSubtype, // Note: No Type field in zoho
         subject: event.subject || event.Subject || event.hs_meeting_title || event.Event_Title,
-        description: event.description || event.Description || event.hs_meeting_body,
+        description: event.description || event.Description || event.hs_meeting_body || event.public_description,
         isAllDayEvent: event.All_day || event.isAllDay || event.IsAllDayEvent || false,
-        startDateTime: event.Start_DateTime || event.hs_meeting_start_time || event.StartDateTime,
-        endDateTime: event.End_DateTime || event.hs_meeting_end_time || event.EndDateTime,
+        startDateTime: event.Start_DateTime || event.hs_meeting_start_time || event.StartDateTime || event.add_time,
+        endDateTime: event.End_DateTime || event.hs_meeting_end_time || event.EndDateTime || event.due_time,
         location: event.hs_meeting_location || event.location || event.Location || event.Venue,
         additional: {},
     };
@@ -115,12 +117,35 @@ export function toHubspotEvent(unifiedEvent: UnifiedEvent): any {
     return hubspotEvent;
 }
 
+export function toPipedriveEvent(unifiedEvent: UnifiedEvent): any {
+    const pipedriveEvent: any = {
+        id: unifiedEvent.remoteId,
+        type: "meeting",
+        subject: unifiedEvent.subject,
+        add_time: unifiedEvent.startDateTime,
+        due_time: unifiedEvent.endDateTime,
+        location: unifiedEvent.location,
+        public_description: unifiedEvent.description,
+    };
+
+    // Map custom fields
+    if (unifiedEvent.additional) {
+        Object.keys(unifiedEvent.additional).forEach((key) => {
+            pipedriveEvent[key] = unifiedEvent.additional?.[key];
+        });
+    }
+
+    return pipedriveEvent;
+}
+
 export function disunifyEvent(deal: UnifiedEvent, integrationId: string): any {
-    if (integrationId === 'sfdc') {
+    if (integrationId === TP_ID.sfdc) {
         return toSalesforceEvent(deal);
-    } else if (integrationId === 'hubspot') {
+    } else if (integrationId === TP_ID.hubspot) {
         return toHubspotEvent(deal);
-    } else if (integrationId === 'zohocrm') {
+    } else if (integrationId === TP_ID.zohocrm) {
         return toZohoEvent(deal);
+    } else if (integrationId === TP_ID.pipedrive) {
+        return toPipedriveEvent(deal);
     }
 }

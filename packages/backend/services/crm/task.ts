@@ -71,7 +71,7 @@ const taskService = new TaskService(
                     }
                     case TP_ID.pipedrive: {
                         const result = await axios.get<{ data: Partial<PipedriveTask> } & PipedrivePagination>(
-                            `${connection.tp_account_url}/v1/tasks/${taskId}`,
+                            `${connection.tp_account_url}/v1/activities/${taskId}`,
                             {
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
@@ -189,7 +189,7 @@ const taskService = new TaskService(
                             cursor ? `&start=${cursor}` : ''
                         }`;
                         const result = await axios.get<{ data: Partial<PipedriveTask>[] } & PipedrivePagination>(
-                            `${connection.tp_account_url}/v1/tasks?${pagingString}`,
+                            `${connection.tp_account_url}/v1/activities?type=task${pagingString}`,
                             {
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
@@ -275,7 +275,7 @@ const taskService = new TaskService(
                         const instanceUrl = connection.tp_account_url;
                         const pipedriveTask = task as Partial<PipedriveTask>;
                         const taskCreated = await axios.post<{ data: Partial<PipedriveTask> }>(
-                            `${instanceUrl}/v1/tasks`,
+                            `${instanceUrl}/v1/activities`,
                             pipedriveTask,
                             {
                                 headers: {
@@ -358,8 +358,8 @@ const taskService = new TaskService(
                         break;
                     }
                     case TP_ID.pipedrive: {
-                        const taskUpdated = await axios.patch<{ data: Partial<PipedriveTask> }>(
-                            `${connection.tp_account_url}/v1/tasks/${taskId}`,
+                        const taskUpdated = await axios.put<{ data: Partial<PipedriveTask> }>(
+                            `${connection.tp_account_url}/v1/activities/${taskId}`,
                             task,
                             {
                                 headers: {
@@ -454,23 +454,7 @@ const taskService = new TaskService(
                         break;
                     }
                     case TP_ID.pipedrive: {
-                        const instanceUrl = connection.tp_account_url;
-                        const result = await axios.get<
-                            { data: { items: { item: any; result_score: number }[] } } & PipedrivePagination
-                        >(
-                            `${instanceUrl}/v1/tasks/search?term=${searchCriteria}${
-                                formattedFields.length ? `&fields=${formattedFields.join(',')}` : ''
-                            }`,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${thirdPartyToken}`,
-                                },
-                            }
-                        );
-                        const tasks = result.data.data.items.map((item) => item.item);
-                        const unifiedTasks = tasks?.map((d: any) => unifyTask(d));
-                        res.send({ status: 'ok', results: unifiedTasks });
-                        break;
+                        throw new InternalServerError({ error: 'Method not allowed' });
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });

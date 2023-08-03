@@ -73,7 +73,7 @@ const eventService = new EventService(
                     }
                     case TP_ID.pipedrive: {
                         const result = await axios.get<{ data: Partial<PipedriveEvent> } & PipedrivePagination>(
-                            `${connection.tp_account_url}/v1/events/${eventId}`,
+                            `${connection.tp_account_url}/v1/activities/${eventId}`,
                             {
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
@@ -193,7 +193,7 @@ const eventService = new EventService(
                             cursor ? `&start=${cursor}` : ''
                         }`;
                         const result = await axios.get<{ data: Partial<PipedriveEvent>[] } & PipedrivePagination>(
-                            `${connection.tp_account_url}/v1/events?${pagingString}`,
+                            `${connection.tp_account_url}/v1/activities?type=meeting${pagingString}`,
                             {
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
@@ -271,7 +271,7 @@ const eventService = new EventService(
                         const instanceUrl = connection.tp_account_url;
                         const pipedriveEvent = event as Partial<PipedriveEvent>;
                         const eventCreated = await axios.post<{ data: Partial<PipedriveEvent> }>(
-                            `${instanceUrl}/v1/events`,
+                            `${instanceUrl}/v1/activities`,
                             pipedriveEvent,
                             {
                                 headers: {
@@ -350,8 +350,8 @@ const eventService = new EventService(
                         break;
                     }
                     case TP_ID.pipedrive: {
-                        const eventUpdated = await axios.patch<{ data: Partial<PipedriveEvent> }>(
-                            `${connection.tp_account_url}/v1/events/${eventId}`,
+                        const eventUpdated = await axios.put<{ data: Partial<PipedriveEvent> }>(
+                            `${connection.tp_account_url}/v1/activities/${eventId}`,
                             event,
                             {
                                 headers: {
@@ -444,23 +444,7 @@ const eventService = new EventService(
                         break;
                     }
                     case TP_ID.pipedrive: {
-                        const instanceUrl = connection.tp_account_url;
-                        const result = await axios.get<
-                            { data: { items: { item: any; result_score: number }[] } } & PipedrivePagination
-                        >(
-                            `${instanceUrl}/v1/events/search?term=${searchCriteria}${
-                                formattedFields.length ? `&fields=${formattedFields.join(',')}` : ''
-                            }`,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${thirdPartyToken}`,
-                                },
-                            }
-                        );
-                        const events = result.data.data.items.map((item) => item.item);
-                        const unifiedEvents = events?.map((d: any) => unifyEvent(d));
-                        res.send({ status: 'ok', results: unifiedEvents });
-                        break;
+                        throw new InternalServerError({ error: 'Method not allowed' });
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
