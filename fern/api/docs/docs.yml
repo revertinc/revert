@@ -3,32 +3,32 @@ navigation:
     - section: Introduction
       contents:
           - page: Getting Started
-            path: ./intro.mdx
+            path: ./mdx/intro.mdx
     - section: Quick Start
       contents:
           - page: Quick Start
-            path: ./quick-start.mdx
+            path: ./mdx/quick-start.mdx
     - section: How it works
       contents:
           - page: How it works
-            path: ./how-it-works.mdx
+            path: ./mdx/how-it-works.mdx
     - api: API Reference
     - section: Rate Limits
       contents:
           - page: Rate limits
-            path: ./rate-limits.mdx
+            path: ./mdx/rate-limits.mdx
     - section: Pagination
       contents:
           - page: Pagination
-            path: ./pagination.mdx
+            path: ./mdx/pagination.mdx
     - section: API Versioning
       contents:
           - page: API Versioning
-            path: ./versioning.mdx
+            path: ./mdx/versioning.mdx
     - section: Webhooks
       contents:
           - page: Webhooks
-            path: ./webhooks.mdx
+            path: ./mdx/webhooks.mdx
 colors:
     accentPrimary: '#ffffff'
 logo:
