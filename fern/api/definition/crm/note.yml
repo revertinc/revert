@@ -8,22 +8,22 @@ imports:
 types:
     GetNoteResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             result: unified.Note
     GetNotesResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             next: optional<string>
             previous: optional<string>
             results: list<unified.Note>
     CreateOrUpdateNoteResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             message: string
             result: unknown
     SearchNotesResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             results: list<unified.Note>
 
 service:

@@ -8,22 +8,22 @@ imports:
 types:
     GetTaskResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             result: unified.Task
     GetTasksResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             next: optional<string>
             previous: optional<string>
             results: list<unified.Task>
     CreateOrUpdateTaskResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             message: string
             result: unknown
     SearchTasksResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             results: list<unified.Task>
 
 service:

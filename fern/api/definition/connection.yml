@@ -12,11 +12,11 @@ types:
     GetAllConnectionResponse: list<types.Connection>
     DeleteConnectionResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             deleted: types.Connection
     CreateConnectionWebhookResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             webhookUrl: string
             createdAt: string
             secret: string
@@ -24,7 +24,7 @@ types:
             errorMessage: optional<unknown>
     GetConnectionWebhookResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             webhook: unknown
             error: optional<string>
             errorMessage: optional<unknown>
@@ -33,7 +33,7 @@ types:
             webhookUrl: string
     DeleteConnectionWebhookResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             error: optional<string>
             errorMessage: optional<unknown>
 
