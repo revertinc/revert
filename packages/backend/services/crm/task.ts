@@ -463,7 +463,7 @@ const taskService = new TaskService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not search CRM', error);
-                throw error;
+                throw new InternalServerError({ error: 'Internal server error' });
             }
         },
     },
