@@ -454,7 +454,7 @@ const taskService = new TaskService(
                         break;
                     }
                     case TP_ID.pipedrive: {
-                        throw new InternalServerError({ error: 'Method not allowed' });
+                        throw new NotFoundError({ error: 'Method not allowed' });
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
@@ -463,7 +463,7 @@ const taskService = new TaskService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not search CRM', error);
-                throw new InternalServerError({ error: 'Internal server error' });
+                throw error;
             }
         },
     },

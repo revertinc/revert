@@ -417,21 +417,16 @@ const noteService = new NoteService(
                         break;
                     }
                     case TP_ID.pipedrive: {
-                        throw new InternalServerError({ error: 'Method not allowed' });
+                        throw new NotFoundError({ error: 'Method not allowed' });
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
                 }
-                if (thirdPartyId === 'hubspot') {
-                } else if (thirdPartyId === 'zohocrm') {
-                } else if (thirdPartyId === 'sfdc') {
-                } else {
-                }
             } catch (error: any) {
                 logError(error);
                 console.error('Could not search CRM', error);
-                throw new InternalServerError({ error: 'Internal server error' });
+                throw error;
             }
         },
     },
