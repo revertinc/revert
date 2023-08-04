@@ -162,19 +162,7 @@ const createIntegrationBlock = function (self, integration) {
         image.style["-webkit-filter"]= "grayscale(1)";
         image.style.filter= "grayscale(1)";
         integrationConnect.style.cursor = 'not-allowed';
-        let comingSoon = document.createElement('span');
-        comingSoon.innerHTML = 'Coming Soon';
-        comingSoon.style.fontSize = '6px';
-        comingSoon.style.position = 'absolute';
-        comingSoon.style.fontSize = '9px';
-        comingSoon.style.position = 'absolute';
-        comingSoon.style.right = '6px';
-        comingSoon.style.top = '6px';
-        comingSoon.style.padding = '2px 20px';
-        comingSoon.style.borderRadius = '5px';
-        comingSoon.style.background = '#d6d6d6';
-        comingSoon.style.color = '#545151';
-        integrationConnect.appendChild(comingSoon);
+        integrationConnect.title = 'Coming soon'
     }
     return integrationConnect;
 };
