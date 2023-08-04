@@ -41,7 +41,8 @@ const metadataService = new MetadataService({
                 {
                     integrationId: TP_ID.hubspot,
                     name: 'Hubspot',
-                    imageSrc: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1673863171/Revert/Hubspot%20logo.png',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1691139212/Revert/image_57_krrplr.png',
                     status: 'active',
                     scopes: getScope(apps, TP_ID.hubspot),
                     clientId: getClientId(apps, TP_ID.hubspot) || config.HUBSPOT_CLIENT_ID,
@@ -50,7 +51,7 @@ const metadataService = new MetadataService({
                     integrationId: TP_ID.zohocrm,
                     name: 'Zoho CRM',
                     imageSrc:
-                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1674053823/Revert/zoho-crm-logo_u9889x.jpg',
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1691139213/Revert/image_62_bzxn4z.png',
                     status: 'active',
                     scopes: getScope(apps, TP_ID.zohocrm),
                     clientId: getClientId(apps, TP_ID.zohocrm) || config.ZOHOCRM_CLIENT_ID,
@@ -59,7 +60,7 @@ const metadataService = new MetadataService({
                     integrationId: TP_ID.sfdc,
                     name: 'Salesforce',
                     imageSrc:
-                        'https://res.cloudinary.com/dfcnic8wq/image/upload/c_fit,h_20,w_70/v1673887647/Revert/SFDC%20logo.png',
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1691139212/Revert/image_61_svyhd9.png',
                     status: 'active',
                     scopes: getScope(apps, TP_ID.sfdc),
                     clientId: getClientId(apps, TP_ID.sfdc) || config.SFDC_CLIENT_ID,
@@ -68,10 +69,28 @@ const metadataService = new MetadataService({
                     integrationId: TP_ID.pipedrive,
                     name: 'Pipedrive',
                     imageSrc:
-                        'https://res.cloudinary.com/dfcnic8wq/image/upload/w_86/v1688633518/Revert/PipedriveLogo.png',
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1691141825/Revert/pngegg_mhbvfc.png',
                     status: 'active',
                     scopes: getScope(apps, TP_ID.pipedrive),
                     clientId: getClientId(apps, TP_ID.pipedrive) || config.PIPEDRIVE_CLIENT_ID,
+                },
+                {
+                    integrationId: 'microsoft_dynamics',
+                    name: 'microsoft dynamics 365',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1691139212/Revert/image_60_whit0z.png',
+                    status: 'inactive',
+                    scopes: [],
+                    clientId: '',
+                },
+                {
+                    integrationId: 'zendesk',
+                    name: 'Zendesk',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1691139212/Revert/image_58_ighbwk.png',
+                    status: 'inactive',
+                    scopes: [],
+                    clientId: '',
                 },
             ];
             res.send({

@@ -136,6 +136,9 @@ const createIntegrationBlock = function (self, integration) {
     let integrationConnect = document.createElement('div');
     integrationConnect.setAttribute('id', `integration-block-${integration.integrationId}`);
     integrationConnect.setAttribute('class', `integration-block`);
+    if (!isInActive) {
+        integrationConnect.setAttribute('class', `integration-block-active`);
+    }
     integrationConnect.setAttribute('integrationId', integration.integrationId);
     integrationConnect.style.width = '158px';
     integrationConnect.style.height = '82px';
@@ -143,13 +146,22 @@ const createIntegrationBlock = function (self, integration) {
     integrationConnect.style.boxSizing = 'border-box';
     integrationConnect.style.border = '1px solid #E8E8EE33';
     integrationConnect.style.borderRadius = '8px';
-    integrationConnect.style.background = `url(${integration.imageSrc})`;
-    integrationConnect.style.backgroundRepeat = 'no-repeat';
-    integrationConnect.style.backgroundPosition = 'center';
-    integrationConnect.style.boxShadow = '0px 4px 10px 0px #272F4354';
+    integrationConnect.style.padding = '10px';
+    integrationConnect.style.boxShadow = 'rgb(39 47 67 / 13%) 0px 4px 4px 0px';
     integrationConnect.style.position = 'relative';
+    integrationConnect.style.alignItems = 'center';
+    integrationConnect.style.justifyContent = 'center';
 
+    const image = document.createElement('img');
+    image.src = integration.imageSrc;
+    image.height = 62;
+    image.style.pointerEvents = 'none';
+    integrationConnect.appendChild(image);
     if (isInActive) {
+        image.style.filter= "gray";
+        image.style["-webkit-filter"]= "grayscale(1)";
+        image.style.filter= "grayscale(1)";
+        integrationConnect.style.cursor = 'not-allowed';
         let comingSoon = document.createElement('span');
         comingSoon.innerHTML = 'Coming Soon';
         comingSoon.style.fontSize = '6px';
@@ -279,7 +291,7 @@ const createIntegrationBlock = function (self, integration) {
                 signInElement.style.padding = '32px';
                 signInElement.style.boxSizing = 'border-box';
                 signInElement.style.borderRadius = '10px';
-                signInElement.style.gap = '24px';
+                signInElement.style.gap = '36px';
                 let rootElement = document.getElementById('revert-ui-root');
                 if (!rootElement) {
                     console.error('Root element does not exist!');
@@ -334,7 +346,12 @@ const createIntegrationBlock = function (self, integration) {
                     let integrationConnectBlock = createIntegrationBlock(this, integration);
                     integrationConnectBlock.addEventListener('click', (ev) => {
                         const target = ev.target as HTMLDivElement;
-                        selectedIntegrationId = target.getAttribute('integrationId');
+                        const targetIntegrationId = target.getAttribute('integrationId');
+                        const selectedIntegration = this.#integrations.find(i => i.integrationId === targetIntegrationId);
+                        if (selectedIntegration.status !== 'active') {
+                            return;
+                        }
+                        selectedIntegrationId = targetIntegrationId;
                         (target.parentElement as HTMLDivElement).childNodes.forEach(
                             (a) => ((a as HTMLDivElement).style.border = '1px solid #E8E8EE33')
                         );
@@ -345,7 +362,7 @@ const createIntegrationBlock = function (self, integration) {
                     });
                     integrationsContainer.appendChild(integrationConnectBlock);
                 }
-                const integrationBlockHoverCss = '.integration-block:hover { border-color: #2047D044 !important; }';
+                const integrationBlockHoverCss = '.integration-block-active:hover { border-color: #2047D044 !important; }';
                 const style = document.createElement('style') as any;
                 style.setAttribute('type', 'text/css');
                 if (style.styleSheet) {
@@ -364,7 +381,7 @@ const createIntegrationBlock = function (self, integration) {
                         color: '#fff',
                         textAlign: 'center',
                         alignSelf: 'center',
-                        background: '#9394c4',
+                        background: 'rgb(39 45 192 / 56%)',
                         borderRadius: 8,
                         fontSize: 20,
                         width: '100%',
