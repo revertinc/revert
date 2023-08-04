@@ -32,11 +32,19 @@ types:
         extends: CommonUnifiedFields
         properties:
             name: string
-            industry: string
-            description: string
-            annualRevenue: integer
+            industry:
+                type: string
+                docs: not supported by pipedrive
+            description:
+                type: string
+                docs: not supported by pipedrive
+            annualRevenue:
+                type: integer
+                docs: not supported by pipedrive
             size: integer
-            phone: string
+            phone:
+                type: string
+                docs: not supported by pipedrive
             address: CompanyAddress
     CompanyAddress:
         properties:
@@ -68,7 +76,9 @@ types:
         properties:
             subject: string
             body: string
-            priority: string
+            priority:
+                type: string
+                docs: not supported by pipedrive
             status: string
             dueDate: unknown
     User:
