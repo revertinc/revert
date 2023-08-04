@@ -1,33 +1,47 @@
-import { Request, ParamsDictionary, Response } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
+import { ConnectionService } from '../generated/typescript/api/resources/connection/service/ConnectionService';
 import prisma from '../prisma/client';
 import config from '../config';
-import { Svix } from 'svix';
 import logError from '../helpers/logError';
 import { v4 as uuidv4 } from 'uuid';
+import { NotFoundError, UnAuthorizedError } from '../generated/typescript/api/resources/common/resources';
 
-class ConnectionService {
-    public svix;
-    constructor() {
-        this.svix = new Svix(config.SVIX_AUTH_TOKEN!);
-    }
-    async getConnection(
-        _req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
-        if (connection) {
-            return connection;
-        } else {
-            return {
-                error: 'Connection not found!',
-            };
+const connectionService = new ConnectionService({
+    async getConnection(req, res) {
+        const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
+        if (!token) {
+            throw new UnAuthorizedError({ error: 'Api unauthorized' });
         }
-    }
-    async getAllConnections(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        _res: Response<any, Record<string, any>, number>
-    ) {
+        if (!tenantId) {
+            throw new NotFoundError({ error: 'Tenant not found!' });
+        }
+        const connection: any = await prisma.connections.findFirst({
+            where: {
+                AND: [
+                    { t_id: tenantId as string },
+                    {
+                        app: {
+                            env: {
+                                private_token: token as string,
+                            },
+                        },
+                    },
+                ],
+            },
+            select: {
+                tp_access_token: true,
+                tp_id: true,
+                t_id: true,
+                tp_account_url: true,
+                tp_customer_id: true,
+            },
+        });
+        if (connection) {
+            res.send(connection);
+        } else {
+            throw new NotFoundError({ error: 'Connection not found!' });
+        }
+    },
+    async getAllConnections(req, res) {
         const { 'x-revert-api-token': token } = req.headers;
         const connections: any = await prisma.connections.findMany({
             where: {
@@ -48,19 +62,37 @@ class ConnectionService {
             },
         });
         if (connections.length > 0) {
-            return connections;
+            res.send(connections);
         } else {
-            return {
-                error: 'Connections not found!',
-            };
+            throw new NotFoundError({ error: 'Connections not found!' });
         }
-    }
-    async deleteConnection(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        res: Response<any, Record<string, any>, number>
-    ) {
-        const connection = res.locals.connection;
-        const { 'x-revert-api-token': token } = req.headers;
+    },
+    async deleteConnection(req, res) {
+        const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
+        if (!token) {
+            throw new UnAuthorizedError({ error: 'Api unauthorized' });
+        }
+        if (!tenantId) {
+            throw new NotFoundError({ error: 'Tenant not found!' });
+        }
+        const connection: any = await prisma.connections.findFirst({
+            where: {
+                t_id: tenantId as string,
+                app: {
+                    env: {
+                        private_token: token as string,
+                    },
+                },
+            },
+            select: {
+                tp_access_token: true,
+                tp_id: true,
+                t_id: true,
+                tp_account_url: true,
+                tp_customer_id: true,
+            },
+        });
+
         const environment = await prisma.environments.findFirst({
             where: {
                 private_token: String(token),
@@ -78,7 +110,7 @@ class ConnectionService {
             },
         });
         if (deleted) {
-            this.svix.message.create(svixAppId, {
+            config.svix.message.create(svixAppId, {
                 eventType: 'connection.deleted',
                 payload: {
                     eventType: 'connection.deleted',
@@ -86,18 +118,12 @@ class ConnectionService {
                 },
                 channels: [connection.t_id],
             });
-            return { status: 'ok', deleted };
+            res.send({ status: 'ok', deleted });
         } else {
-            return {
-                error: 'Connections not found!',
-            };
+            throw new NotFoundError({ error: 'Connections not found!' });
         }
-    }
-
-    async createWebhook(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        _res: Response<any, Record<string, any>, number>
-    ) {
+    },
+    async createWebhook(req, res) {
         try {
             const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
             const webhookUrl = req.body.webhookUrl;
@@ -108,7 +134,7 @@ class ConnectionService {
             });
             const svixAppId = environment?.accountId!;
             const secret = `whsec_${Buffer.from(uuidv4()).toString('base64')}`;
-            const webhook = await this.svix.endpoint.create(svixAppId, {
+            const webhook = await config.svix.endpoint.create(svixAppId, {
                 url: webhookUrl,
                 version: 1,
                 description: `Connection Webhook for tenant ${tenantId}`,
@@ -116,20 +142,26 @@ class ConnectionService {
                 channels: [String(tenantId)],
                 secret: secret,
             });
-            return { status: 'ok', webhookUrl: webhook.url, createdAt: webhook.createdAt, secret: secret };
+            res.send({
+                status: 'ok',
+                webhookUrl: webhook.url,
+                createdAt: String(webhook.createdAt),
+                secret: secret,
+            });
         } catch (error: any) {
             logError(error);
             console.error(error);
-            return {
+            res.send({
                 error: 'Error creating webhook!',
                 errorMessage: error,
-            };
+                status: 'error',
+                webhookUrl: '',
+                createdAt: '',
+                secret: '',
+            });
         }
-    }
-    async getWebhook(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        _res: Response<any, Record<string, any>, number>
-    ) {
+    },
+    async getWebhook(req, res) {
         try {
             const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
             const environment = await prisma.environments.findFirst({
@@ -138,22 +170,20 @@ class ConnectionService {
                 },
             });
             const svixAppId = environment?.accountId!;
-            const webhook = await this.svix.endpoint.get(svixAppId, String(tenantId));
-            return { status: 'ok', webhook: webhook };
+            const webhook = await config.svix.endpoint.get(svixAppId, String(tenantId));
+            res.send({ status: 'ok', webhook: webhook });
         } catch (error: any) {
             logError(error);
             console.error(error);
-            return {
+            res.send({
+                status: 'error',
                 error: 'Error fetching webhook!',
                 errorMessage: error,
-            };
+            });
         }
-    }
+    },
 
-    async deleteWebhook(
-        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-        _res: Response<any, Record<string, any>, number>
-    ) {
+    async deleteWebhook(req, res) {
         try {
             const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
             const webhookId = String(tenantId);
@@ -163,17 +193,18 @@ class ConnectionService {
                 },
             });
             const svixAppId = environment?.accountId!;
-            await this.svix.endpoint.delete(svixAppId, webhookId);
-            return { status: 'ok' };
+            await config.svix.endpoint.delete(svixAppId, webhookId);
+            res.send({ status: 'ok' });
         } catch (error: any) {
             logError(error);
             console.error(error);
-            return {
+            res.send({
+                status: 'error',
                 error: 'Error deleting webhook!',
                 errorMessage: error,
-            };
+            });
         }
-    }
-}
+    },
+});
 
-export default new ConnectionService();
+export { connectionService };

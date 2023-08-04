@@ -8,22 +8,22 @@ imports:
 types:
     GetUserResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             result: unified.User
     GetUsersResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             next: optional<string>
             previous: optional<string>
             results: list<unified.User>
     CreateOrUpdateUserResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             message: string
             result: unknown
     SearchUsersResponse:
         properties:
-            status: string
+            status: types.ResponseStatus
             results: list<unified.User>
 
 service:

@@ -49,3 +49,7 @@ types:
             - zohocrm
             - sfdc
             - pipedrive
+    ResponseStatus:
+        enum:
+            - ok
+            - error

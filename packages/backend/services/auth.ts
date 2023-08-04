@@ -7,7 +7,6 @@ import isWorkEmail from '../helpers/isWorkEmail';
 import { ENV, TP_ID } from '@prisma/client';
 import logError from '../helpers/logError';
 import { DEFAULT_SCOPE } from '../constants';
-import ConnectionService from './connection';
 
 class AuthService {
     async refreshOAuthTokensForThirdParty() {
@@ -252,7 +251,7 @@ class AuthService {
                     })
                 );
                 // Create Svix application for this account if it doesn't exist.
-                await ConnectionService.svix.application.getOrCreate({
+                await config.svix.application.getOrCreate({
                     name: accountId,
                     uid: accountId,
                 });

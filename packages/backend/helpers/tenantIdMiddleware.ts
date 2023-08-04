@@ -5,6 +5,11 @@ import logError from './logError';
 const revertTenantMiddleware = () => async (req: Request, res: Response, next: () => any) => {
     const { 'x-revert-t-id': tenantId, 'x-revert-api-token': token } = req.headers;
     try {
+        if (!tenantId) {
+            return res.status(400).send({
+                error: 'Tenant not found',
+            });
+        }
         const connection: any = await prisma.connections.findMany({
             where: {
                 t_id: tenantId as string,

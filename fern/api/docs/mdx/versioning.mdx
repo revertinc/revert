@@ -1,0 +1,10 @@
+### API Versioning
+
+We consistently publish updated versions of the API that are timestamped whenever we introduce significant modifications. While our aim is to primarily implement changes that are compatible with previous versions, there are instances where we must make breaking changes in order to advance the API.
+The following alterations are classified as backward compatible:
+
+-   Introducing new API endpoints
+-   Adding optional parameters to existing endpoints
+-   Incorporating additional data elements into existing responses
+
+The `x-api-version` header must be set for every single request to our API to specify the version in use otherwise we default to the latest version.

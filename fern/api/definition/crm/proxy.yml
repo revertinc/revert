@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    ProxyResponse:
+        properties:
+            result: unknown
+    PostProxyRequestBody:
+        properties:
+            path: string
+            body: optional<unknown>
+            method: string
+            queryParams: optional<unknown>
+
+service:
+    base-path: /crm/proxy
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        tunnel:
+            docs: Call the native CRM api for a specific connection
+            method: POST
+            path: ''
+            request:
+                name: PostProxyRequest
+                body: PostProxyRequestBody
+            response: ProxyResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

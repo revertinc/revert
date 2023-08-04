@@ -1,51 +1,91 @@
 types:
     CommonUnifiedFields:
         properties:
-            id: string
-            remoteId: string
-            createdTimestamp: unknown
-            updatedTimestamp: unknown
+            id:
+                type: string
+                docs: The unique `id` of this object in Revert.
+            remoteId:
+                type: string
+                docs: The unique `id` of this object in the downstream CRM.
+            createdTimestamp:
+                type: unknown
+                docs: Creation timestamp of the object.
+            updatedTimestamp:
+                type: unknown
+                docs: The last updated timestamp of the object.
             associations: unknown
-            additional: unknown
+            additional:
+                type: unknown
+                docs: Any fields that are not unified yet/non-unifiable come inside this `json` object.
     Lead:
         extends: CommonUnifiedFields
         properties:
-            firstName: string
-            lastName: string
-            phone: string
-            email: string
+            firstName:
+                type: string
+                docs: The first name of the lead in a CRM.
+            lastName:
+                type: string
+                docs: The last name of the lead in a CRM.
+            phone:
+                type: string
+                docs: The phone number of the lead in a CRM.
+            email:
+                type: string
+                docs: The email of the lead in a CRM.
     Deal:
         extends: CommonUnifiedFields
         properties:
-            amount: integer
-            priority: optional<string>
-            stage: string
-            name: string
-            expectedCloseDate: unknown
-            isWon: boolean
-            probability: integer
+            amount:
+                type: integer
+                docs: The deal amount mentioned in the CRM for this deal.
+            priority:
+                type: optional<string>
+                docs: The priority attached to this deal.
+            stage:
+                type: string
+                docs: Deal stage in the CRM.
+            name:
+                type: string
+                docs: The name of the deal in a CRM.
+            expectedCloseDate:
+                type: unknown
+                docs: Expected close date for this deal.
+            isWon:
+                type: boolean
+                docs: Is `true` if the deal is closed (won).
+            probability:
+                type: integer
+                docs: Probability of the deal getting closed, a decimal number between 0 to 1 (inclusive).
     Note:
         extends: CommonUnifiedFields
         properties:
-            content: string
+            content:
+                type: string
+                docs: The contents of the note in plain text or HTML.
     Company:
         extends: CommonUnifiedFields
         properties:
-            name: string
+            name:
+                type: string
+                docs: Name of the company in a CRM.
             industry:
                 type: string
-                docs: not supported by pipedrive
+                docs: Industry associated with this company. (not supported by pipedrive)
             description:
                 type: string
-                docs: not supported by pipedrive
+                docs: Description of the company. (not supported by pipedrive)
             annualRevenue:
                 type: integer
-                docs: not supported by pipedrive
-            size: integer
+                docs: Annual revenue of the company. (not supported by pipedrive)
+            size:
+                type: integer
+                docs: Number of employees or size of the company.
             phone:
                 type: string
-                docs: not supported by pipedrive
-            address: CompanyAddress
+                docs: Phone number of the company. (not supported by pipedrive)
+            address:
+                type: CompanyAddress
+                docs: Company address.
     CompanyAddress:
         properties:
             street: optional<string>
@@ -57,35 +97,72 @@ types:
     Contact:
         extends: CommonUnifiedFields
         properties:
-            firstName: string
-            lastName: string
-            phone: string
-            email: string
+            firstName:
+                type: string
+                docs: The first name of the contact in a CRM.
+            lastName:
+                type: string
+                docs: The last name of the contact in a CRM.
+            phone:
+                type: string
+                docs: The phone number of the contact in a CRM.
+            email:
+                type: string
+                docs: The email of the contact in a CRM.
     Event:
         extends: CommonUnifiedFields
         properties:
-            type: string
-            subject: string
-            startDateTime: string
-            endDateTime: string
-            isAllDayEvent: boolean
-            description: string
-            location: string
+            type:
+                type: string
+                docs: The type of the event in the CRM.
+            subject:
+                type: string
+                docs: The Subject of the event/meeting in the CRM.
+            startDateTime:
+                type: string
+                docs: Event start date time.
+            endDateTime:
+                type: string
+                docs: Event end date time.
+            isAllDayEvent:
+                type: boolean
+                docs: Is `true` if the event is an all day event.
+            description:
+                type: string
+                docs: Description of the event/meeting.
+            location:
+                type: string
+                docs: The location of the event/meeting.
     Task:
         extends: CommonUnifiedFields
         properties:
-            subject: string
-            body: string
+            subject:
+                type: string
+                docs: Subject of the task.
+            body:
+                type: string
+                docs: Body of the task description.
             priority:
                 type: string
-                docs: not supported by pipedrive
-            status: string
-            dueDate: unknown
+                docs: The priority of the task in hand. (not supported by pipedrive)
+            status:
+                type: string
+                docs: Completion status of the task.
+            dueDate:
+                type: unknown
+                docs: The date when this task is due.
     User:
         extends: CommonUnifiedFields
         properties:
-            firstName: string
-            lastName: string
-            phone: string
-            email: string
-
+            firstName:
+                type: string
+                docs: The first name of a user in a CRM.
+            lastName:
+                type: string
+                docs: The last name of a user in a CRM.
+            phone:
+                type: string
+                docs: The phone number of a user in a CRM.
+            email:
+                type: string
+                docs: The email of a user in a CRM.

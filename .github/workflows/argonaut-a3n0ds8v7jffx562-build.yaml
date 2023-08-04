@@ -1,0 +1,49 @@
+name: "revert-api - Argonaut"
+
+run-name: "${{inputs.arg_task_title}}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      arg_task_title:
+        required: false
+        type: string
+        default: "[Argonaut] [manual] a3n0ds8v7jffx562 build - manual"
+        description: task short title to be used for display, format [Argonaut] [<Task Id>] <organization> <steptype> - <stepname>
+      arg_task_id:
+        required: true
+        type: string
+        description: build-id
+      arg_task_name:
+        required: true
+        type: string
+        description: task name
+      arg_ref:
+        required: true
+        type: string
+        description: user repo ref to be used for task
+      arg_extra_vars:
+        required: false
+        type: string
+        description: field for passing extra info, reserved for future
+
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Execute Task
+    steps:
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+      - name: Execute Argonaut task
+        uses: argonautdev/argonaut-action@main
+        id: argo-task
+        with:
+          task-id: ${{ inputs.arg_task_id }}
+          task-name: ${{ inputs.arg_task_name }}
+          ref: ${{ inputs.arg_ref }}
+          auth-key: ${{ secrets.a3n0ds8v7jffx562_ARGONAUT_KEY }}
+          auth-secret: ${{ secrets.a3n0ds8v7jffx562_ARGONAUT_SECRET }}
+          extra-args: ${{ inputs.arg_extra_vars }}
