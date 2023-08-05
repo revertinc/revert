@@ -35,3 +35,13 @@ logo:
     path: ./logo.png
     href: https://revert.dev
 favicon: ./favicon.ico
+navbar-links:
+    - type: secondary
+      text: Star us on Github ⭐
+      url: https://github.com/revertinc/Revert
+    - type: secondary
+      text: Join our discord
+      url: https://discord.gg/q5K5cRhymW
+    - type: primary
+      text: Book a demo
+      url: https://calendly.com/jatin-revert-dev/30min
