@@ -8,6 +8,7 @@ import logError from '../../helpers/logError';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import { UnifiedNote, disunifyNote, unifyNote } from '../../models/unified';
+import { PipedriveNote, PipedrivePagination } from '../../constants/pipedrive';
 
 const noteService = new NoteService(
     {
@@ -20,41 +21,63 @@ const noteService = new NoteService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 console.log('Revert::GET NOTE', tenantId, thirdPartyId, thirdPartyToken, noteId);
-                if (thirdPartyId === 'hubspot') {
-                    const formattedFields = [...String(fields || '').split(','), 'hs_note_body'];
-                    let note: any = await axios({
-                        method: 'get',
-                        url: `https://api.hubapi.com/crm/v3/objects/notes/${noteId}?properties=${formattedFields}`,
-                        headers: {
-                            authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                    });
-                    note = ([note.data] as any[])?.[0];
-                    note = unifyNote({ ...note, ...note?.properties }, thirdPartyId);
-                    res.send({ status: 'ok', result: { ...note, ...note?.properties } });
-                } else if (thirdPartyId === 'zohocrm') {
-                    const notes = await axios({
-                        method: 'get',
-                        url: `https://www.zohoapis.com/crm/v3/Notes/${noteId}?fields=${fields}`,
-                        headers: {
-                            authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                        },
-                    });
-                    let note = unifyNote(notes.data.data?.[0], thirdPartyId);
-                    res.send({ status: 'ok', result: note });
-                } else if (thirdPartyId === 'sfdc') {
-                    const instanceUrl = connection.tp_account_url;
-                    const notes = await axios({
-                        method: 'get',
-                        url: `${instanceUrl}/services/data/v56.0/sobjects/Note/${noteId}`,
-                        headers: {
-                            Authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                    });
-                    let note = unifyNote(notes.data, thirdPartyId);
-                    res.send({ status: 'ok', result: note });
-                } else {
-                    throw new NotFoundError({ error: 'Unrecognized CRM' });
+
+                switch (thirdPartyId) {
+                    case TP_ID.hubspot: {
+                        const formattedFields = [...String(fields || '').split(','), 'hs_note_body'];
+                        let note: any = await axios({
+                            method: 'get',
+                            url: `https://api.hubapi.com/crm/v3/objects/notes/${noteId}?properties=${formattedFields}`,
+                            headers: {
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+                        note = ([note.data] as any[])?.[0];
+                        note = unifyNote({ ...note, ...note?.properties }, thirdPartyId);
+                        res.send({ status: 'ok', result: { ...note, ...note?.properties } });
+                        break;
+                    }
+                    case TP_ID.zohocrm: {
+                        const notes = await axios({
+                            method: 'get',
+                            url: `https://www.zohoapis.com/crm/v3/Notes/${noteId}?fields=${fields}`,
+                            headers: {
+                                authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                            },
+                        });
+                        let note = unifyNote(notes.data.data?.[0], thirdPartyId);
+                        res.send({ status: 'ok', result: note });
+                        break;
+                    }
+                    case TP_ID.sfdc: {
+                        const instanceUrl = connection.tp_account_url;
+                        const notes = await axios({
+                            method: 'get',
+                            url: `${instanceUrl}/services/data/v56.0/sobjects/Note/${noteId}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+                        let note = unifyNote(notes.data, thirdPartyId);
+                        res.send({ status: 'ok', result: note });
+                        break;
+                    }
+                    case TP_ID.pipedrive: {
+                        const result = await axios.get<{ data: Partial<PipedriveNote> } & PipedrivePagination>(
+                            `${connection.tp_account_url}/v1/notes/${noteId}`,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            }
+                        );
+                        const note = result.data;
+                        res.send({ status: 'ok', result: unifyNote(note, thirdPartyId) });
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized CRM' });
+                    }
                 }
             } catch (error: any) {
                 logError(error);
@@ -72,73 +95,103 @@ const noteService = new NoteService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 console.log('Revert::GET ALL NOTE', tenantId, thirdPartyId, thirdPartyToken);
-                if (thirdPartyId === 'hubspot') {
-                    const formattedFields = [...String(fields || '').split(','), 'hs_note_body'];
-                    const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&after=${cursor}` : ''}`;
-                    let notes: any = await axios({
-                        method: 'get',
-                        url: `https://api.hubapi.com/crm/v3/objects/notes?properties=${formattedFields}&${pagingString}`,
-                        headers: {
-                            authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                    });
-                    const nextCursor = notes.data?.paging?.next?.after || undefined;
-                    notes = notes.data.results as any[];
-                    notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }, thirdPartyId));
-                    res.send({
-                        status: 'ok',
-                        next: nextCursor,
-                        previous: undefined, // Field not supported by Hubspot.
-                        results: notes,
-                    });
-                } else if (thirdPartyId === 'zohocrm') {
-                    const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
-                        cursor ? `&page_token=${cursor}` : ''
-                    }`;
-                    let notes: any = await axios({
-                        method: 'get',
-                        url: `https://www.zohoapis.com/crm/v3/Notes?fields=${fields}${pagingString}`,
-                        headers: {
-                            authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                        },
-                    });
-                    const nextCursor = notes.data?.info?.next_page_token || undefined;
-                    const prevCursor = notes.data?.info?.previous_page_token || undefined;
-                    notes = notes.data.data;
-                    notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
-                    res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: notes });
-                } else if (thirdPartyId === 'sfdc') {
-                    let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
-                        cursor ? `OFFSET+${cursor}` : ''
-                    }`;
-                    if (!pageSize && !cursor) {
-                        pagingString = 'LIMIT 200';
+
+                switch (thirdPartyId) {
+                    case TP_ID.hubspot: {
+                        const formattedFields = [...String(fields || '').split(','), 'hs_note_body'];
+                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&after=${cursor}` : ''
+                        }`;
+                        let notes: any = await axios({
+                            method: 'get',
+                            url: `https://api.hubapi.com/crm/v3/objects/notes?properties=${formattedFields}&${pagingString}`,
+                            headers: {
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+                        const nextCursor = notes.data?.paging?.next?.after || undefined;
+                        notes = notes.data.results as any[];
+                        notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }, thirdPartyId));
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: undefined, // Field not supported by Hubspot.
+                            results: notes,
+                        });
+                        break;
                     }
-                    const instanceUrl = connection.tp_account_url;
-                    // TODO: Handle "ALL" for Hubspot & Zoho
-                    const query =
-                        !fields || fields === 'ALL'
-                            ? `SELECT+fields(all)+from+Note+${pagingString}`
-                            : `SELECT+${(fields as string).split(',').join('+,+')}+from+Note+${pagingString}`;
-                    let notes: any = await axios({
-                        method: 'get',
-                        url: `${instanceUrl}/services/data/v56.0/query/?q=${query}`,
-                        headers: {
-                            authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                    });
-                    const nextCursor = pageSize
-                        ? String(notes.data?.totalSize + (parseInt(String(cursor)) || 0))
-                        : undefined;
-                    const prevCursor =
-                        cursor && parseInt(String(cursor)) > 0
-                            ? String(parseInt(String(cursor)) - notes.data?.totalSize)
+                    case TP_ID.zohocrm: {
+                        const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page_token=${cursor}` : ''
+                        }`;
+                        let notes: any = await axios({
+                            method: 'get',
+                            url: `https://www.zohoapis.com/crm/v3/Notes?fields=${fields}${pagingString}`,
+                            headers: {
+                                authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                            },
+                        });
+                        const nextCursor = notes.data?.info?.next_page_token || undefined;
+                        const prevCursor = notes.data?.info?.previous_page_token || undefined;
+                        notes = notes.data.data;
+                        notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: notes });
+                        break;
+                    }
+                    case TP_ID.sfdc: {
+                        let pagingString = `${pageSize ? `ORDER+BY+Id+DESC+LIMIT+${pageSize}+` : ''}${
+                            cursor ? `OFFSET+${cursor}` : ''
+                        }`;
+                        if (!pageSize && !cursor) {
+                            pagingString = 'LIMIT 200';
+                        }
+                        const instanceUrl = connection.tp_account_url;
+                        // TODO: Handle "ALL" for Hubspot & Zoho
+                        const query =
+                            !fields || fields === 'ALL'
+                                ? `SELECT+fields(all)+from+Note+${pagingString}`
+                                : `SELECT+${(fields as string).split(',').join('+,+')}+from+Note+${pagingString}`;
+                        let notes: any = await axios({
+                            method: 'get',
+                            url: `${instanceUrl}/services/data/v56.0/query/?q=${query}`,
+                            headers: {
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+                        const nextCursor = pageSize
+                            ? String(notes.data?.totalSize + (parseInt(String(cursor)) || 0))
                             : undefined;
-                    notes = notes.data?.records;
-                    notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
-                    res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: notes });
-                } else {
-                    throw new NotFoundError({ error: 'Unrecognized CRM' });
+                        const prevCursor =
+                            cursor && parseInt(String(cursor)) > 0
+                                ? String(parseInt(String(cursor)) - notes.data?.totalSize)
+                                : undefined;
+                        notes = notes.data?.records;
+                        notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: notes });
+                        break;
+                    }
+                    case TP_ID.pipedrive: {
+                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&start=${cursor}` : ''
+                        }`;
+                        const result = await axios.get<{ data: Partial<PipedriveNote>[] } & PipedrivePagination>(
+                            `${connection.tp_account_url}/v1/notes?${pagingString}`,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            }
+                        );
+                        const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
+                        const prevCursor = undefined;
+                        const notes = result.data.data;
+                        const unifiedNotes = notes?.map((d) => unifyNote(d, thirdPartyId));
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedNotes });
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized CRM' });
+                    }
                 }
             } catch (error: any) {
                 logError(error);
@@ -236,41 +289,69 @@ const noteService = new NoteService(
                 const tenantId = connection.t_id;
                 const note = disunifyNote(noteData, thirdPartyId);
                 console.log('Revert::UPDATE NOTE', tenantId, note, noteId);
-                if (thirdPartyId === 'hubspot') {
-                    await axios({
-                        method: 'patch',
-                        url: `https://api.hubapi.com/crm/v3/objects/notes/${noteId}`,
-                        headers: {
-                            'content-type': 'application/json',
-                            authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                        data: JSON.stringify(note),
-                    });
-                    res.send({ status: 'ok', message: 'Hubspot note updated', result: note });
-                } else if (thirdPartyId === 'zohocrm') {
-                    await axios({
-                        method: 'put',
-                        url: `https://www.zohoapis.com/crm/v3/Notes/${noteId}`,
-                        headers: {
-                            authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                        },
-                        data: JSON.stringify(note),
-                    });
-                    res.send({ status: 'ok', message: 'Zoho note updated', result: note });
-                } else if (thirdPartyId === 'sfdc') {
-                    const instanceUrl = connection.tp_account_url;
-                    await axios({
-                        method: 'patch',
-                        url: `${instanceUrl}/services/data/v56.0/sobjects/Note/${noteId}`,
-                        headers: {
-                            'content-type': 'application/json',
-                            authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                        data: JSON.stringify(note),
-                    });
-                    res.send({ status: 'ok', message: 'SFDC note updated', result: note });
-                } else {
-                    throw new NotFoundError({ error: 'Unrecognized CRM' });
+
+                switch (thirdPartyId) {
+                    case TP_ID.hubspot: {
+                        await axios({
+                            method: 'patch',
+                            url: `https://api.hubapi.com/crm/v3/objects/notes/${noteId}`,
+                            headers: {
+                                'content-type': 'application/json',
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(note),
+                        });
+                        res.send({ status: 'ok', message: 'Hubspot note updated', result: note });
+                        break;
+                    }
+                    case TP_ID.zohocrm: {
+                        await axios({
+                            method: 'put',
+                            url: `https://www.zohoapis.com/crm/v3/Notes/${noteId}`,
+                            headers: {
+                                authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(note),
+                        });
+                        res.send({ status: 'ok', message: 'Zoho note updated', result: note });
+                        break;
+                    }
+                    case TP_ID.sfdc: {
+                        const instanceUrl = connection.tp_account_url;
+                        await axios({
+                            method: 'patch',
+                            url: `${instanceUrl}/services/data/v56.0/sobjects/Note/${noteId}`,
+                            headers: {
+                                'content-type': 'application/json',
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(note),
+                        });
+                        res.send({ status: 'ok', message: 'SFDC note updated', result: note });
+                        break;
+                    }
+                    case TP_ID.pipedrive: {
+                        const noteUpdated = await axios.put<{ data: Partial<PipedriveNote> }>(
+                            `${connection.tp_account_url}/v1/notes/${noteId}`,
+                            note,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            }
+                        );
+                        res.send({
+                            status: 'ok',
+                            message: 'Pipedrive note updated',
+                            result: {
+                                ...noteUpdated.data.data,
+                            },
+                        });
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized CRM' });
+                    }
                 }
             } catch (error: any) {
                 logError(error);
@@ -288,47 +369,59 @@ const noteService = new NoteService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 console.log('Revert::SEARCH NOTE', tenantId, searchCriteria, fields);
-                if (thirdPartyId === 'hubspot') {
-                    let notes: any = await axios({
-                        method: 'post',
-                        url: `https://api.hubapi.com/crm/v3/objects/notes/search`,
-                        headers: {
-                            'content-type': 'application/json',
-                            authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                        data: JSON.stringify({
-                            ...searchCriteria,
-                            properties: ['hs_note_body', 'hs_object_id', ...formattedFields],
-                        }),
-                    });
-                    notes = notes.data.results as any[];
-                    notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }, thirdPartyId));
-                    res.send({ status: 'ok', results: notes });
-                } else if (thirdPartyId === 'zohocrm') {
-                    let notes: any = await axios({
-                        method: 'get',
-                        url: `https://www.zohoapis.com/crm/v3/notes/search?criteria=${searchCriteria}`,
-                        headers: {
-                            authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
-                        },
-                    });
-                    notes = notes.data.data;
-                    notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
-                    res.send({ status: 'ok', results: notes });
-                } else if (thirdPartyId === 'sfdc') {
-                    const instanceUrl = connection.tp_account_url;
-                    let notes: any = await axios({
-                        method: 'get',
-                        url: `${instanceUrl}/services/data/v56.0/search?q=${searchCriteria}`,
-                        headers: {
-                            authorization: `Bearer ${thirdPartyToken}`,
-                        },
-                    });
-                    notes = notes?.data?.searchRecords;
-                    notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
-                    res.send({ status: 'ok', results: notes });
-                } else {
-                    throw new NotFoundError({ error: 'Unrecognized CRM' });
+
+                switch (thirdPartyId) {
+                    case TP_ID.hubspot: {
+                        let notes: any = await axios({
+                            method: 'post',
+                            url: `https://api.hubapi.com/crm/v3/objects/notes/search`,
+                            headers: {
+                                'content-type': 'application/json',
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify({
+                                ...searchCriteria,
+                                properties: ['hs_note_body', 'hs_object_id', ...formattedFields],
+                            }),
+                        });
+                        notes = notes.data.results as any[];
+                        notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }, thirdPartyId));
+                        res.send({ status: 'ok', results: notes });
+                        break;
+                    }
+                    case TP_ID.zohocrm: {
+                        let notes: any = await axios({
+                            method: 'get',
+                            url: `https://www.zohoapis.com/crm/v3/notes/search?criteria=${searchCriteria}`,
+                            headers: {
+                                authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                            },
+                        });
+                        notes = notes.data.data;
+                        notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
+                        res.send({ status: 'ok', results: notes });
+                        break;
+                    }
+                    case TP_ID.sfdc: {
+                        const instanceUrl = connection.tp_account_url;
+                        let notes: any = await axios({
+                            method: 'get',
+                            url: `${instanceUrl}/services/data/v56.0/search?q=${searchCriteria}`,
+                            headers: {
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+                        notes = notes?.data?.searchRecords;
+                        notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
+                        res.send({ status: 'ok', results: notes });
+                        break;
+                    }
+                    case TP_ID.pipedrive: {
+                        throw new NotFoundError({ error: 'Method not allowed' });
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized CRM' });
+                    }
                 }
             } catch (error: any) {
                 logError(error);

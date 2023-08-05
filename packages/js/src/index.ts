@@ -52,11 +52,18 @@ const createCloseButton = function () {
     svgCloseElement.setAttributeNS(null, 'width', '24');
     svgCloseElement.setAttributeNS(null, 'height', '24');
 
-    let svgCloseElementPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    const svgCloseElementCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    svgCloseElementCircle.setAttributeNS(null, 'fill', '#B79C9B');
+    svgCloseElementCircle.setAttributeNS(null, 'fill-opacity', '0.33');
+    svgCloseElementCircle.setAttributeNS(null, 'cx', '12');
+    svgCloseElementCircle.setAttributeNS(null, 'cy', '12');
+    svgCloseElementCircle.setAttributeNS(null, 'r', '12');
+    svgCloseElement.appendChild(svgCloseElementCircle);
+    const svgCloseElementPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     svgCloseElementPath.setAttributeNS(
         null,
         'd',
-        'M14.59 8L12 10.59 9.41 8 8 9.41 10.59 12 8 14.59 9.41 16 12 13.41 14.59 16 16 14.59 13.41 12 16 9.41 14.59 8zM12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z'
+        'M8.24264 8.24271C7.85212 8.63324 7.85212 9.2664 8.24264 9.65692L11.0711 12.4854L8.24264 15.3138C7.85212 15.7043 7.85212 16.3375 8.24264 16.728C8.63316 17.1185 9.26633 17.1185 9.65685 16.728L12.4853 13.8996L15.3137 16.728C15.7042 17.1185 16.3374 17.1185 16.7279 16.728C17.1184 16.3375 17.1184 15.7043 16.7279 15.3138L13.8995 12.4854L16.7279 9.65692C17.1184 9.2664 17.1184 8.63323 16.7279 8.24271C16.3374 7.85219 15.7042 7.85219 15.3137 8.24271L12.4853 11.0711L9.65685 8.24271C9.26633 7.85219 8.63316 7.85219 8.24264 8.24271Z'
     );
     svgCloseElement.appendChild(svgCloseElementPath);
 
@@ -64,124 +71,11 @@ const createCloseButton = function () {
         'span',
         'fd-welcome-close-btn',
         transformStyle({
-            position: 'absolute',
-            top: 10,
-            right: 10,
             cursor: 'pointer',
         }),
         [svgCloseElement]
     );
     return closeButton;
-};
-
-const createConnectButton = function (self, integration) {
-    const isInActive = integration.status !== 'active';
-    let button = createViewElement(
-        'span',
-        `connect-${integration.integrationId}`,
-        transformStyle({
-            cursor: isInActive ? 'auto ' : 'pointer',
-            padding: '8px 20px',
-            color: '#fff',
-            textAlign: 'center',
-            alignSelf: 'center',
-            background: isInActive ? '#9394c4' : '#272DC0',
-            borderRadius: 5,
-            fontSize: 14,
-        }),
-        [],
-        'Connect'
-    );
-    const state = JSON.stringify({
-        tenantId: self.tenantId,
-        revertPublicToken: self.API_REVERT_PUBLIC_TOKEN,
-    });
-    if (!isInActive) {
-        if (integration.integrationId === 'hubspot') {
-            button.addEventListener('click', () => {
-                window.open(
-                    `https://app.hubspot.com/oauth/authorize?client_id=${integration.clientId}&redirect_uri=${
-                        self.REDIRECT_URL_BASE
-                    }/hubspot&scope=${integration.scopes.join('%20')}&state=${state}`
-                );
-                self.close();
-            });
-        } else if (integration.integrationId === 'zohocrm') {
-            button.addEventListener('click', () => {
-                window.open(
-                    `https://accounts.zoho.com/oauth/v2/auth?scope=${integration.scopes.join(',')}&client_id=${
-                        integration.clientId
-                    }&response_type=code&access_type=offline&redirect_uri=${
-                        self.REDIRECT_URL_BASE
-                    }/zohocrm&state=${encodeURIComponent(state)}`
-                );
-                self.close();
-            });
-        } else if (integration.integrationId === 'sfdc') {
-            const queryParams = {
-                response_type: 'code',
-                client_id: integration.clientId,
-                redirect_uri: `${self.REDIRECT_URL_BASE}/sfdc`,
-                state,
-            };
-            const urlSearchParams = new URLSearchParams(queryParams);
-            const queryString = urlSearchParams.toString();
-            button.addEventListener('click', () => {
-                window.open(
-                    `https://login.salesforce.com/services/oauth2/authorize?${queryString}${
-                        integration.scopes.length ? `&scope=${integration.scopes.join('%20')}` : ''
-                    }`
-                );
-                self.close();
-            });
-        } else if (integration.integrationId === 'pipedrive') {
-            button.addEventListener('click', () => {
-                window.open(
-                    `https://oauth.pipedrive.com/oauth/authorize?client_id=${integration.clientId}&redirect_uri=${self.REDIRECT_URL_BASE}/pipedrive&state=${state}`
-                );
-                self.close();
-            });
-        }
-    }
-    return button;
-};
-
-const createIntegraionDisplay = function (integration) {
-    let name = createViewElement(
-        'span',
-        `connect-name-${integration.integrationId}`,
-        transformStyle({
-            color: 'grey',
-            flex: 1,
-            marginTop: 15,
-            fontSize: 12,
-        }),
-        [],
-        integration.name
-    );
-    let img = createViewElement(
-        'img',
-        `connect-img-${integration.integrationId}`,
-        transformStyle({
-            objectFit: 'none',
-            alignSelf: 'flex-start',
-        }),
-        []
-    );
-    img.src = integration.imageSrc;
-
-    let container = createViewElement(
-        'div',
-        `connect-container-${integration.integrationId}`,
-        transformStyle({
-            display: 'flex',
-            flex: 1,
-            flexDirection: 'column',
-            justifyContent: 'flex-start',
-        }),
-        [img, name]
-    );
-    return container;
 };
 
 const openInNewTab = function () {
@@ -237,42 +131,39 @@ const createPoweredByBanner = function (self) {
     return poweredBy;
 };
 
-const createIntegrationBlock = function (self, integration, padding) {
+const createIntegrationBlock = function (self, integration) {
     const isInActive = integration.status !== 'active';
     let integrationConnect = document.createElement('div');
-    integrationConnect.style.flex = '1';
-    integrationConnect.style.width = '100%';
-    integrationConnect.style.padding = padding;
+    integrationConnect.setAttribute('id', `integration-block-${integration.integrationId}`);
+    integrationConnect.setAttribute('class', `integration-block`);
+    if (!isInActive) {
+        integrationConnect.setAttribute('class', `integration-block-active`);
+    }
+    integrationConnect.setAttribute('integrationId', integration.integrationId);
+    integrationConnect.style.width = '158px';
+    integrationConnect.style.height = '82px';
     integrationConnect.style.display = 'flex';
     integrationConnect.style.boxSizing = 'border-box';
-    let connectButton = createConnectButton(self, integration);
-    let integrationDisplay = createIntegraionDisplay(integration);
-    let container = document.createElement('div');
-    container.style.flex = '1';
-    container.style.width = '100%';
-    container.style.padding = '33px';
-    container.style.border = '2px solid #f7f7f7';
-    container.style.display = 'flex';
-    container.style.boxShadow = '0px 1px 1px 0px #00000063';
-    container.style.position = 'relative';
-    container.appendChild(integrationDisplay);
-    container.appendChild(connectButton);
+    integrationConnect.style.border = '1px solid #E8E8EE33';
+    integrationConnect.style.borderRadius = '8px';
+    integrationConnect.style.padding = '10px';
+    integrationConnect.style.boxShadow = 'rgb(39 47 67 / 13%) 0px 4px 4px 0px';
+    integrationConnect.style.position = 'relative';
+    integrationConnect.style.alignItems = 'center';
+    integrationConnect.style.justifyContent = 'center';
+
+    const image = document.createElement('img');
+    image.src = integration.imageSrc;
+    image.height = 62;
+    image.style.pointerEvents = 'none';
+    integrationConnect.appendChild(image);
     if (isInActive) {
-        let comingSoon = document.createElement('span');
-        comingSoon.innerHTML = 'Coming Soon';
-        comingSoon.style.fontSize = '6px';
-        comingSoon.style.position = 'absolute';
-        comingSoon.style.fontSize = '9px';
-        comingSoon.style.position = 'absolute';
-        comingSoon.style.right = '6px';
-        comingSoon.style.top = '6px';
-        comingSoon.style.padding = '2px 20px';
-        comingSoon.style.borderRadius = '5px';
-        comingSoon.style.background = '#d6d6d6';
-        comingSoon.style.color = '#545151';
-        container.appendChild(comingSoon);
+        image.style.filter= "gray";
+        image.style["-webkit-filter"]= "grayscale(1)";
+        image.style.filter= "grayscale(1)";
+        integrationConnect.style.cursor = 'not-allowed';
+        integrationConnect.title = 'Coming soon'
     }
-    integrationConnect.appendChild(container);
     return integrationConnect;
 };
 
@@ -371,20 +262,24 @@ const createIntegrationBlock = function (self, integration, padding) {
 
         open = function (integrationId) {
             if (!integrationId) {
+                let selectedIntegrationId;
                 // show every integration possible
                 const signInElement = document.createElement('div');
                 signInElement.setAttribute('id', 'revert-signin-container');
                 signInElement.style.position = 'absolute';
                 signInElement.style.top = '15%';
                 signInElement.style.left = '40%';
-                signInElement.style.width = '370px';
-                signInElement.style.minHeight = '528px';
+                signInElement.style.width = '390px';
                 signInElement.style.display = 'flex';
                 signInElement.style.flexDirection = 'column';
                 signInElement.style.justifyContent = 'center';
                 signInElement.style.alignItems = 'center';
                 signInElement.style.background = '#fff';
                 signInElement.style.flexDirection = 'column';
+                signInElement.style.padding = '32px';
+                signInElement.style.boxSizing = 'border-box';
+                signInElement.style.borderRadius = '10px';
+                signInElement.style.gap = '36px';
                 let rootElement = document.getElementById('revert-ui-root');
                 if (!rootElement) {
                     console.error('Root element does not exist!');
@@ -392,31 +287,110 @@ const createIntegrationBlock = function (self, integration, padding) {
                 }
                 let closeButton = createCloseButton();
                 closeButton.addEventListener('click', this.close.bind(this));
-                signInElement.appendChild(closeButton);
+                let headerDiv = createViewElement(
+                    'div',
+                    'revert-signin-header',
+                    transformStyle({
+                        fontWeight: 'bold',
+                        width: '100%',
+                        boxSizing: 'border-box',
+                        display: 'flex',
+                        alignItems: 'center',
+                    }),
+                    []
+                );
                 let headerText = createViewElement(
                     'span',
                     'revert-signin-header',
                     transformStyle({
                         fontWeight: 'bold',
                         width: '100%',
-                        padding: '33px 33px 0px 33px',
                         boxSizing: 'border-box',
+                        color: '#777',
                     }),
                     [],
                     'Select CRM'
                 );
-                signInElement.appendChild(headerText);
+                headerDiv.appendChild(headerText);
+                headerDiv.appendChild(closeButton);
+                signInElement.appendChild(headerDiv);
+                const integrationsContainer = createViewElement(
+                    'div',
+                    'integrations-container',
+                    transformStyle({
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
+                        gap: '10px',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                    }),
+                    []
+                );
+                signInElement.appendChild(integrationsContainer);
                 for (let index = 0; index < this.#integrations.length; index++) {
                     const integration = this.#integrations[index];
-                    let integrationConnectBlock = createIntegrationBlock(
-                        this,
-                        integration,
-                        index === this.#integrations.length - 1 ? '33px' : '33px 33px 0px 33px'
-                    );
-                    signInElement.appendChild(integrationConnectBlock);
+                    let integrationConnectBlock = createIntegrationBlock(this, integration);
+                    integrationConnectBlock.addEventListener('click', (ev) => {
+                        const target = ev.target as HTMLDivElement;
+                        const targetIntegrationId = target.getAttribute('integrationId');
+                        const selectedIntegration = this.#integrations.find(i => i.integrationId === targetIntegrationId);
+                        if (selectedIntegration.status !== 'active') {
+                            return;
+                        }
+                        selectedIntegrationId = targetIntegrationId;
+                        (target.parentElement as HTMLDivElement).childNodes.forEach(
+                            (a) => ((a as HTMLDivElement).style.border = '1px solid #E8E8EE33')
+                        );
+                        (ev.target as HTMLDivElement).style.border = '2px solid #2047D080';
+                        const btn = document.getElementById('connect-integration') as HTMLButtonElement;
+                        btn.style.background = '#272DC0';
+                        btn.style.cursor = 'pointer';
+                    });
+                    integrationsContainer.appendChild(integrationConnectBlock);
                 }
-                let poweredByBanner = createPoweredByBanner(this);
-                signInElement.appendChild(poweredByBanner);
+                const integrationBlockHoverCss = '.integration-block-active:hover { border-color: #2047D044 !important; }';
+                const style = document.createElement('style') as any;
+                style.setAttribute('type', 'text/css');
+                if (style.styleSheet) {
+                    style.styleSheet.cssText = integrationBlockHoverCss;
+                } else {
+                    style.appendChild(document.createTextNode(integrationBlockHoverCss));
+                }
+                document.getElementsByTagName('head')[0].appendChild(style);
+
+                const button = createViewElement(
+                    'div',
+                    `connect-integration`,
+                    transformStyle({
+                        cursor: 'not-allowed',
+                        padding: '8px 20px',
+                        color: '#fff',
+                        textAlign: 'center',
+                        alignSelf: 'center',
+                        background: 'rgb(39 45 192 / 56%)',
+                        borderRadius: 8,
+                        fontSize: 20,
+                        width: '100%',
+                        height: '72px',
+                        boxSizing: 'border-box',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }),
+                    [],
+                    'Connect →'
+                );
+                button.addEventListener('click', (ev) => {
+                    const selectedIntegration = this.#integrations.find(
+                        (int) => int.integrationId === selectedIntegrationId
+                    );
+                    this.handleIntegrationRedirect(selectedIntegration, true);
+                });
+                signInElement.appendChild(button);
+                // let poweredByBanner = createPoweredByBanner(this);
+                // signInElement.appendChild(poweredByBanner);
                 let signInElementWrapper = createViewElement(
                     'div',
                     'revert-signin-container-wrapper',
@@ -449,52 +423,7 @@ const createIntegrationBlock = function (self, integration, padding) {
                 const selectedIntegration = this.#integrations.find(
                     (integration) => integration.integrationId === integrationId
                 );
-                if (selectedIntegration) {
-                    const scopes = selectedIntegration.scopes;
-                    const state = JSON.stringify({
-                        tenantId: this.tenantId,
-                        revertPublicToken: this.API_REVERT_PUBLIC_TOKEN,
-                    });
-                    if (selectedIntegration.integrationId === 'hubspot') {
-                        window.open(
-                            `https://app.hubspot.com/oauth/authorize?client_id=${
-                                selectedIntegration.clientId
-                            }&redirect_uri=${this.#REDIRECT_URL_BASE}/hubspot&scope=${scopes.join(
-                                '%20'
-                            )}&state=${state}`
-                        );
-                    } else if (selectedIntegration.integrationId === 'zohocrm') {
-                        window.open(
-                            `https://accounts.zoho.com/oauth/v2/auth?scope=${scopes.join(',')}&client_id=${
-                                selectedIntegration.clientId
-                            }&response_type=code&access_type=offline&redirect_uri=${
-                                this.#REDIRECT_URL_BASE
-                            }/zohocrm&state=${encodeURIComponent(state)}`
-                        );
-                    } else if (selectedIntegration.integrationId === 'sfdc') {
-                        const queryParams = {
-                            response_type: 'code',
-                            client_id: selectedIntegration.clientId,
-                            redirect_uri: `${this.#REDIRECT_URL_BASE}/sfdc`,
-                            state,
-                        };
-                        const urlSearchParams = new URLSearchParams(queryParams);
-                        const queryString = urlSearchParams.toString();
-                        window.open(
-                            `https://login.salesforce.com/services/oauth2/authorize?${queryString}${
-                                scopes.length ? `&scope=${scopes.join('%20')}` : ''
-                            }`
-                        );
-                    } else if (selectedIntegration.integrationId === 'pipedrive') {
-                        window.open(
-                            `https://oauth.pipedrive.com/oauth/authorize?client_id=${
-                                selectedIntegration.clientId
-                            }&redirect_uri=${this.#REDIRECT_URL_BASE}/pipedrive&state=${state}`
-                        );
-                    }
-                } else {
-                    console.warn('Invalid integration ID provided.');
-                }
+                this.handleIntegrationRedirect(selectedIntegration);
             }
         };
 
@@ -506,6 +435,56 @@ const createIntegrationBlock = function (self, integration, padding) {
             }
             this.state = 'close';
             this.#onClose();
+        };
+
+        handleIntegrationRedirect = function (selectedIntegration, closeWindow = false) {
+            if (selectedIntegration) {
+                const scopes = selectedIntegration.scopes;
+                const state = JSON.stringify({
+                    tenantId: this.tenantId,
+                    revertPublicToken: this.API_REVERT_PUBLIC_TOKEN,
+                });
+                if (selectedIntegration.integrationId === 'hubspot') {
+                    window.open(
+                        `https://app.hubspot.com/oauth/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${this.#REDIRECT_URL_BASE}/hubspot&scope=${scopes.join('%20')}&state=${state}`
+                    );
+                } else if (selectedIntegration.integrationId === 'zohocrm') {
+                    window.open(
+                        `https://accounts.zoho.com/oauth/v2/auth?scope=${scopes.join(',')}&client_id=${
+                            selectedIntegration.clientId
+                        }&response_type=code&access_type=offline&redirect_uri=${
+                            this.#REDIRECT_URL_BASE
+                        }/zohocrm&state=${encodeURIComponent(state)}`
+                    );
+                } else if (selectedIntegration.integrationId === 'sfdc') {
+                    const queryParams = {
+                        response_type: 'code',
+                        client_id: selectedIntegration.clientId,
+                        redirect_uri: `${this.#REDIRECT_URL_BASE}/sfdc`,
+                        state,
+                    };
+                    const urlSearchParams = new URLSearchParams(queryParams);
+                    const queryString = urlSearchParams.toString();
+                    window.open(
+                        `https://login.salesforce.com/services/oauth2/authorize?${queryString}${
+                            scopes.length ? `&scope=${scopes.join('%20')}` : ''
+                        }`
+                    );
+                } else if (selectedIntegration.integrationId === 'pipedrive') {
+                    window.open(
+                        `https://oauth.pipedrive.com/oauth/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${this.#REDIRECT_URL_BASE}/pipedrive&state=${state}`
+                    );
+                }
+                if (closeWindow) {
+                    this.close();
+                }
+            } else {
+                console.warn('Invalid integration ID provided.');
+            }
         };
     }
     revert = new Revert();

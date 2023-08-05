@@ -70,17 +70,19 @@ types:
                 docs: Name of the company in a CRM.
             industry:
                 type: string
-                docs: Industry associated with this company.
+                docs: Industry associated with this company. (not supported by pipedrive)
             description:
                 type: string
-                docs: Description of the company.
-            annualRevenue: integer
+                docs: Description of the company. (not supported by pipedrive)
+            annualRevenue:
+                type: integer
+                docs: Annual revenue of the company. (not supported by pipedrive)
             size:
                 type: integer
                 docs: Number of employees or size of the company.
             phone:
                 type: string
-                docs: Phone number of the company.
+                docs: Phone number of the company. (not supported by pipedrive)
             address:
                 type: CompanyAddress
                 docs: Company address.
@@ -142,7 +144,7 @@ types:
                 docs: Body of the task description.
             priority:
                 type: string
-                docs: The priority of the task in hand.
+                docs: The priority of the task in hand. (not supported by pipedrive)
             status:
                 type: string
                 docs: Completion status of the task.

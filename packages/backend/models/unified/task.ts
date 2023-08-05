@@ -1,7 +1,9 @@
+import { TP_ID } from '@prisma/client';
+
 export interface UnifiedTask {
     subject: string;
     body: string;
-    priority: string;
+    priority: string; // not available in pipedrive
     status: string;
     dueDate: Date;
     id: string;
@@ -17,14 +19,14 @@ export function unifyTask(task: any): UnifiedTask {
         remoteId: task.id || task.Id,
         id: task.id || task.Id,
         createdTimestamp:
-            task.createdDate || task.CreatedDate || task.Created_Time || task.hs_timestamp || task.hs_createdate,
+            task.createdDate || task.CreatedDate || task.Created_Time || task.hs_timestamp || task.hs_createdate || task.add_time,
         updatedTimestamp:
-            task.lastModifiedDate || task.LastModifiedDate || task.Modified_Time || task.hs_lastmodifieddate,
-        body: task.Description || task.description || task.hs_task_body,
-        subject: task.hs_task_subject || task.Subject,
+            task.lastModifiedDate || task.LastModifiedDate || task.Modified_Time || task.hs_lastmodifieddate || task.update_time,
+        body: task.Description || task.description || task.hs_task_body || task.public_description,
+        subject: task.hs_task_subject || task.Subject || task.subject,
         priority: task.priority || task.Priority || task.hs_task_priority,
-        status: task.status || task.Status || task.hs_task_status,
-        dueDate: task.hs_timestamp || task.Due_Date || task.ActivityDate,
+        status: task.status || task.Status || task.hs_task_status || task.done ? 'done' : '',
+        dueDate: task.hs_timestamp || task.Due_Date || task.ActivityDate || task.due_date,
         additional: {},
     };
 
@@ -105,12 +107,34 @@ export function toHubspotTask(unified: UnifiedTask): any {
     return hubspotTask;
 }
 
+export function toPipedriveTask(unifiedEvent: UnifiedTask): any {
+    const pipedriveEvent: any = {
+        id: unifiedEvent.remoteId,
+        type: 'task',
+        subject: unifiedEvent.subject,
+        public_description: unifiedEvent.body,
+        due_date: unifiedEvent.dueDate ? `${unifiedEvent.dueDate}` : undefined,
+        done: unifiedEvent.status === 'done',
+    };
+
+    // Map custom fields
+    if (unifiedEvent.additional) {
+        Object.keys(unifiedEvent.additional).forEach((key) => {
+            pipedriveEvent[key] = unifiedEvent.additional?.[key];
+        });
+    }
+
+    return pipedriveEvent;
+}
+
 export function disunifyTask(task: UnifiedTask, integrationId: string): any {
-    if (integrationId === 'sfdc') {
+    if (integrationId === TP_ID.sfdc) {
         return toSalesforceTask(task);
-    } else if (integrationId === 'hubspot') {
+    } else if (integrationId === TP_ID.hubspot) {
         return toHubspotTask(task);
-    } else if (integrationId === 'zohocrm') {
+    } else if (integrationId === TP_ID.zohocrm) {
         return toZohoTask(task);
+    } else if (integrationId === TP_ID.pipedrive) {
+        return toPipedriveTask(task);
     }
 }

@@ -9,7 +9,7 @@ import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { filterLeadsFromContactsForHubspot } from '../../helpers/filterLeadsFromContacts';
 import { UnifiedLead, disunifyLead, unifyLead } from '../../models/unified/lead';
-import { PipedrivePagination, PipedriveLead, PipedriveContact, PipedriveOrganization } from '../../constants/pipedrive';
+import { PipedrivePagination, PipedriveLead, PipedriveContact, PipedriveCompany } from '../../constants/pipedrive';
 
 const leadService = new LeadService(
     {
@@ -521,7 +521,7 @@ const populatePersonOrOrganizationForPipedriveLead = async ({
     const url = isPerson
         ? `${account_url}/v1/persons/${lead.person_id}`
         : `${account_url}/v1/organizations/${lead.organization_id}`;
-    const result = await axios.get<{ data: Partial<PipedriveContact | PipedriveOrganization> } & PipedrivePagination>(
+    const result = await axios.get<{ data: Partial<PipedriveContact | PipedriveCompany> } & PipedrivePagination>(
         url,
         {
             headers: {
