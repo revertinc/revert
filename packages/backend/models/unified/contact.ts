@@ -3,6 +3,11 @@ import { PipedriveContact } from '../../constants/pipedrive';
 import { HubspotContact } from '../../constants/hubspot';
 import { ZohoContact } from '../../constants/zoho';
 import { SalesforceContact } from '../../constants/salesforce';
+import { Subtype } from '../../constants/typehelpers';
+import { AllAssociation } from '../../constants/common';
+import { getHubspotAssociationObj } from '../../helpers/hubspot';
+
+export type ContactAssociation = Subtype<AllAssociation, 'dealId'>;
 
 export interface UnifiedContact {
     firstName: string;
@@ -13,7 +18,9 @@ export interface UnifiedContact {
     remoteId: string; // TODO: Make this unique.
     createdTimestamp: Date;
     updatedTimestamp: Date;
-    associations?: any; // TODO: Support associations
+    associations?: {
+        [x in ContactAssociation]?: string;
+    };
     additional: any;
 }
 
@@ -136,6 +143,18 @@ export function toHubspotContact(unifiedContact: UnifiedContact): Partial<Hubspo
         Object.keys(unifiedContact.additional).forEach((key) => {
             hubspotContact['properties'][key] = unifiedContact.additional?.[key];
         });
+    }
+    if (unifiedContact.associations) {
+        const associationObj = unifiedContact.associations;
+        const associationArr = Object.keys(associationObj).map((key) => {
+            return {
+                to: {
+                    id: associationObj[key as ContactAssociation],
+                },
+                types: [getHubspotAssociationObj(key as ContactAssociation, 'contact')],
+            };
+        });
+        hubspotContact['associations'] = associationArr;
     }
 
     return hubspotContact;
