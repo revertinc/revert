@@ -1,7 +1,9 @@
 import { TP_ID } from '@prisma/client';
 import { getHubspotAssociationObj } from '../../helpers/hubspot';
+import { Subtype } from '../../constants/typehelpers';
+import { AllAssociation } from '../../constants/common';
 
-export type NoteAssociation = 'contactId' | 'companyId' | 'leadId' | 'dealId';
+export type NoteAssociation = Subtype<AllAssociation, 'contactId' | 'companyId' | 'leadId' | 'dealId'>;
 
 export interface UnifiedNote {
     content: string;

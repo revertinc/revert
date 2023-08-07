@@ -1,6 +1,6 @@
-import { NoteAssociation } from '../models/unified';
+import { AllAssociation } from "../constants/common";
 
-export const getHubspotAssociationObj = (key: NoteAssociation) => {
+export const getHubspotAssociationObj = (key: AllAssociation) => {
     switch (key) {
         case 'dealId': {
             return {

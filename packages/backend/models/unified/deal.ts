@@ -1,7 +1,9 @@
 import { TP_ID } from '@prisma/client';
 import { PipedriveDealStatus } from '../../constants/pipedrive';
+import { Subtype } from '../../constants/typehelpers';
+import { AllAssociation } from '../../constants/common';
 
-export type DealAssociation = 'contactId' | 'companyId';
+export type DealAssociation = Subtype<AllAssociation, 'contactId' | 'companyId'>;
 
 export interface UnifiedDeal {
     amount: number;

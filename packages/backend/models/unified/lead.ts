@@ -3,8 +3,10 @@ import { PipedriveContact, PipedriveLead, PipedriveCompany } from '../../constan
 import { HubspotLead } from '../../constants/hubspot';
 import { ZohoLead } from '../../constants/zoho';
 import { SalesforceLead } from '../../constants/salesforce';
+import { AllAssociation } from '../../constants/common';
+import { Subtype } from '../../constants/typehelpers';
 
-export type LeadAssociation = 'contactId' | 'companyId';
+export type LeadAssociation = Subtype<AllAssociation, 'contactId' | 'companyId'>;
 
 export interface UnifiedLead {
     firstName: string;
