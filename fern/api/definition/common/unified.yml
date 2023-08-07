@@ -40,7 +40,7 @@ types:
                 docs: The deal amount mentioned in the CRM for this deal.
             priority:
                 type: optional<string>
-                docs: The priority attached to this deal.
+                docs: The priority attached to this deal. (not supported by pipedrive)
             stage:
                 type: string
                 docs: Deal stage in the CRM.
@@ -49,7 +49,7 @@ types:
                 docs: The name of the deal in a CRM.
             expectedCloseDate:
                 type: unknown
-                docs: Expected close date for this deal.
+                docs: Expected close date for this deal. (not supported by pipedrive search api)
             isWon:
                 type: boolean
                 docs: Is `true` if the deal is closed (won).

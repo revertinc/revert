@@ -1,7 +1,7 @@
 import { TP_ID } from '@prisma/client';
 import { getHubspotAssociationObj } from '../../helpers/hubspot';
 
-export type NoteAssociation = 'personId' | 'organizationId' | 'leadId' | 'dealId';
+export type NoteAssociation = 'contactId' | 'companyId' | 'leadId' | 'dealId';
 
 export interface UnifiedNote {
     content: string;
@@ -36,8 +36,8 @@ export function unifyNote(note: any, tpId: TP_ID): UnifiedNote {
         additional: {},
         associations: {
             ...(tpId === TP_ID.pipedrive && {
-                personId: note.person_id,
-                organizationId: note.org_id,
+                contactId: note.person_id,
+                companyId: note.org_id,
                 leadId: note.lead_id,
                 dealId: note.deal_id,
             }),
@@ -138,11 +138,11 @@ export function toPipedriveNote(unified: UnifiedNote): any {
         content: unified.content,
         add_time: unified.createdTimestamp,
         update_time: unified.updatedTimestamp,
-        ...(unified.associations?.personId && {
-            person_id: unified.associations.personId,
+        ...(unified.associations?.contactId && {
+            person_id: unified.associations.contactId,
         }),
-        ...(unified.associations?.organizationId && {
-            organization_id: unified.associations.organizationId,
+        ...(unified.associations?.companyId && {
+            organization_id: unified.associations.companyId,
         }),
         ...(unified.associations?.leadId && {
             lead_id: unified.associations.leadId,
