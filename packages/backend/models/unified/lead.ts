@@ -5,8 +5,9 @@ import { ZohoLead } from '../../constants/zoho';
 import { SalesforceLead } from '../../constants/salesforce';
 import { AllAssociation } from '../../constants/common';
 import { Subtype } from '../../constants/typehelpers';
+import { getHubspotAssociationObj } from '../../helpers/hubspot';
 
-export type LeadAssociation = Subtype<AllAssociation, 'contactId' | 'companyId'>;
+export type LeadAssociation = Subtype<AllAssociation, 'contactId' | 'companyId' | 'dealId'>;
 
 export interface UnifiedLead {
     firstName: string;
@@ -154,6 +155,18 @@ export function toHubspotLead(lead: UnifiedLead): Partial<HubspotLead> {
         Object.keys(lead.additional).forEach((key) => {
             hubspotLead['properties'][key] = lead.additional?.[key];
         });
+    }
+    if (lead.associations) {
+        const associationObj = lead.associations;
+        const associationArr = Object.keys(associationObj).map((key) => {
+            return {
+                to: {
+                    id: associationObj[key as LeadAssociation],
+                },
+                types: [getHubspotAssociationObj(key as LeadAssociation, 'lead')],
+            };
+        });
+        hubspotLead['associations'] = associationArr;
     }
     return hubspotLead;
 }
