@@ -2,7 +2,7 @@ import { AllAssociation } from '../constants/common';
 
 export const getHubspotAssociationObj = (
     key: AllAssociation,
-    associateObj: 'note' | 'deal' | 'contact' | 'lead' | 'company' | 'event'
+    associateObj: 'note' | 'deal' | 'contact' | 'lead' | 'company' | 'event' | 'task'
 ) => {
     const associationTypeMapping: {
         [x in typeof associateObj]: { [y in AllAssociation]: number | undefined };
@@ -48,6 +48,13 @@ export const getHubspotAssociationObj = (
             dealId: 212,
             noteId: undefined,
             companyId: 188,
+        },
+        task: {
+            contactId: 204,
+            leadId: undefined,
+            dealId: 216,
+            noteId: undefined,
+            companyId: 192,
         },
     };
     const associationTypeId = associationTypeMapping[associateObj][key];

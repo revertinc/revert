@@ -1,4 +1,9 @@
 import { TP_ID } from '@prisma/client';
+import { AllAssociation } from '../../constants/common';
+import { Subtype } from '../../constants/typehelpers';
+import { getHubspotAssociationObj } from '../../helpers/hubspot';
+
+export type TaskAssociation = Subtype<AllAssociation, 'dealId'>;
 
 export interface UnifiedTask {
     subject: string;
@@ -10,7 +15,9 @@ export interface UnifiedTask {
     remoteId: string;
     createdTimestamp: Date;
     updatedTimestamp: Date;
-    associations?: any; // TODO: Support associations
+    associations?: {
+        [x in TaskAssociation]?: string;
+    };
     additional: any;
 }
 
@@ -19,9 +26,18 @@ export function unifyTask(task: any): UnifiedTask {
         remoteId: task.id || task.Id,
         id: task.id || task.Id,
         createdTimestamp:
-            task.createdDate || task.CreatedDate || task.Created_Time || task.hs_timestamp || task.hs_createdate || task.add_time,
+            task.createdDate ||
+            task.CreatedDate ||
+            task.Created_Time ||
+            task.hs_timestamp ||
+            task.hs_createdate ||
+            task.add_time,
         updatedTimestamp:
-            task.lastModifiedDate || task.LastModifiedDate || task.Modified_Time || task.hs_lastmodifieddate || task.update_time,
+            task.lastModifiedDate ||
+            task.LastModifiedDate ||
+            task.Modified_Time ||
+            task.hs_lastmodifieddate ||
+            task.update_time,
         body: task.Description || task.description || task.hs_task_body || task.public_description,
         subject: task.hs_task_subject || task.Subject || task.subject,
         priority: task.priority || task.Priority || task.hs_task_priority,
@@ -102,6 +118,18 @@ export function toHubspotTask(unified: UnifiedTask): any {
         Object.keys(unified.additional).forEach((key) => {
             hubspotTask['properties'][key] = unified.additional?.[key];
         });
+    }
+    if (unified.associations) {
+        const associationObj = unified.associations;
+        const associationArr = Object.keys(associationObj).map((key) => {
+            return {
+                to: {
+                    id: associationObj[key as TaskAssociation],
+                },
+                types: [getHubspotAssociationObj(key as TaskAssociation, 'task')],
+            };
+        });
+        hubspotTask['associations'] = associationArr;
     }
 
     return hubspotTask;
