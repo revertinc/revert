@@ -1,3 +1,11 @@
+<p align="center">
+<img width="150" style="border-radius:75px;" src="../../public/logo.png"/>
+<h1 align="center"><b>Revert.dev</b></h1>
+<p align="center">
+ <h2 align="center">The fastest way to build user-facing integrations
+
+# @revertdotdev/backend
+
 ### Running locally
 
 -   Run `yarn workspace @revertdotdev/backend dev` to the run service locally at `:4001`

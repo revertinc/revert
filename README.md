@@ -4,7 +4,7 @@
 <p align="center">
  <h2 align="center">The fastest way to build user-facing integrations
  
-![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=revert-client-git-main-revertdev)  [![](https://dcbadge.vercel.app/api/server/q5K5cRhymW?style=flat)](https://discord.gg/q5K5cRhymW)
+![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=revert-client-git-main-revertdev)  [![](https://dcbadge.vercel.app/api/server/q5K5cRhymW?style=flat)](https://discord.gg/q5K5cRhymW) [![twitter](https://img.shields.io/twitter/follow/Revertdotdev?style=social)](https://twitter.com/intent/follow?screen_name=RevertdotDev)
 
 [Get started](https://revert.dev) · [Docs](https://docs.revert.dev/) · [Issues](https://github.com/revertinc/revert/issues) · [Discord](https://discord.gg/q5K5cRhymW) · [Get in touch](mailto:team@revert.dev)
 
