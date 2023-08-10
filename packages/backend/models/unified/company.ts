@@ -1,6 +1,6 @@
 import { TP_ID } from '@prisma/client';
 import { PipedriveCompany } from '../../constants/pipedrive';
-import { Subtype } from '../../constants/typehelpers';
+import { Subtype } from '../../constants/typeHelpers';
 import { AllAssociation } from '../../constants/common';
 import { getHubspotAssociationObj } from '../../helpers/hubspot';
 

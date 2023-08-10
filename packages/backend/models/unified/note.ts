@@ -1,6 +1,6 @@
 import { TP_ID } from '@prisma/client';
 import { getHubspotAssociationObj } from '../../helpers/hubspot';
-import { Subtype } from '../../constants/typehelpers';
+import { Subtype } from '../../constants/typeHelpers';
 import { AllAssociation } from '../../constants/common';
 
 export type NoteAssociation = Subtype<AllAssociation, 'contactId' | 'companyId' | 'leadId' | 'dealId'>;

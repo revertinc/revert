@@ -1,4 +1,8 @@
 import { TP_ID } from '@prisma/client';
+import { AllAssociation } from '../../constants/common';
+import { Subtype } from '../../constants/typeHelpers';
+
+export type UserAssociation = Subtype<AllAssociation, 'dealId'>;
 
 export interface UnifiedUser {
     firstName: string;
@@ -9,7 +13,9 @@ export interface UnifiedUser {
     remoteId: string;
     createdTimestamp: Date;
     updatedTimestamp: Date;
-    associations?: any; // TODO: Support associations
+    associations?: {
+        [x in UserAssociation]?: string;
+    };
     additional: any;
 }
 

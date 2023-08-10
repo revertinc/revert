@@ -4,7 +4,7 @@ import { HubspotLead } from '../../constants/hubspot';
 import { ZohoLead } from '../../constants/zoho';
 import { SalesforceLead } from '../../constants/salesforce';
 import { AllAssociation } from '../../constants/common';
-import { Subtype } from '../../constants/typehelpers';
+import { Subtype } from '../../constants/typeHelpers';
 import { getHubspotAssociationObj } from '../../helpers/hubspot';
 
 export type LeadAssociation = Subtype<AllAssociation, 'contactId' | 'companyId' | 'dealId'>;

@@ -3,7 +3,7 @@ import { PipedriveContact } from '../../constants/pipedrive';
 import { HubspotContact } from '../../constants/hubspot';
 import { ZohoContact } from '../../constants/zoho';
 import { SalesforceContact } from '../../constants/salesforce';
-import { Subtype } from '../../constants/typehelpers';
+import { Subtype } from '../../constants/typeHelpers';
 import { AllAssociation } from '../../constants/common';
 import { getHubspotAssociationObj } from '../../helpers/hubspot';
 
