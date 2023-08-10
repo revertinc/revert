@@ -79,7 +79,14 @@ export function toSalesforceNote(unified: UnifiedNote): any {
 
 export function toZohoNote(unified: UnifiedNote): any {
     const zoho: any = {
-        data: [{}],
+        data: [
+            {
+                ...(unified.associations?.dealId && {
+                    Parent_Id: unified.associations.dealId,
+                    se_module: 'Deals',
+                }),
+            },
+        ],
         apply_feature_execution: [
             {
                 name: 'layout_rules',
