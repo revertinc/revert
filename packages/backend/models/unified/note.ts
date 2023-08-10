@@ -63,6 +63,9 @@ export function toSalesforceNote(unified: UnifiedNote): any {
     const salesforceNote: any = {
         Id: unified.remoteId,
         Body: unified.content,
+        ...(unified.associations?.dealId && {
+            parentId: unified.associations.dealId,
+        }),
     };
 
     // Map custom fields
