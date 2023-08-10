@@ -64,6 +64,9 @@ export function toSalesforceTask(unified: UnifiedTask): any {
         Priority: unified.priority,
         Status: unified.status,
         ActivityDate: unified.dueDate,
+        ...(unified.associations?.dealId && {
+            WhatId: unified.associations.dealId,
+        }),
     };
 
     // Map custom fields
