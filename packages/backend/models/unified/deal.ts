@@ -1,6 +1,6 @@
 import { TP_ID } from '@prisma/client';
 import { PipedriveDealStatus } from '../../constants/pipedrive';
-import { Subtype } from '../../constants/typehelpers';
+import { Subtype } from '../../constants/typeHelpers';
 import { AllAssociation } from '../../constants/common';
 
 export type DealAssociation = Subtype<AllAssociation, 'contactId' | 'companyId'>;

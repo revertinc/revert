@@ -1,6 +1,6 @@
 import { TP_ID } from '@prisma/client';
 import { AllAssociation } from '../../constants/common';
-import { Subtype } from '../../constants/typehelpers';
+import { Subtype } from '../../constants/typeHelpers';
 import { getHubspotAssociationObj } from '../../helpers/hubspot';
 
 export type EventAssociation = Subtype<AllAssociation, 'dealId' | 'contactId'>;
