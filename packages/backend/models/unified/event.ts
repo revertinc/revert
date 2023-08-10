@@ -3,7 +3,7 @@ import { AllAssociation } from '../../constants/common';
 import { Subtype } from '../../constants/typehelpers';
 import { getHubspotAssociationObj } from '../../helpers/hubspot';
 
-export type EventAssociation = Subtype<AllAssociation, 'dealId'>;
+export type EventAssociation = Subtype<AllAssociation, 'dealId' | 'contactId'>;
 
 export interface UnifiedEvent {
     type: string;
@@ -70,6 +70,12 @@ export function toSalesforceEvent(unified: UnifiedEvent): any {
         IsAllDayEvent: unified.isAllDayEvent,
         Location: unified.location,
         Description: unified.description,
+        ...(unified.associations?.dealId && {
+            WhatId: unified.associations.dealId,
+        }),
+        ...(unified.associations?.contactId && {
+            WhoId: unified.associations.contactId,
+        }),
     };
 
     // Map custom fields
