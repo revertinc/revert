@@ -4,8 +4,8 @@ on:
     push:
         branches:
             - main
-        paths:
-            - packages/js/**
+        # paths:
+        #     - packages/js/**
 
 jobs:
     build-upload-invalidate:
@@ -28,6 +28,8 @@ jobs:
               env:
                   CORE_API_BASE_URL: ${{ secrets.CORE_API_BASE_URL }}
                   REDIRECT_URL_BASE: ${{ secrets.REDIRECT_URL_BASE }}
+            - name: List Files in Workspace
+              run: ls -R
             - name: Upload bundle to S3
               uses: jakejarvis/s3-sync-action@master
               with:
