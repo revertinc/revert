@@ -80,7 +80,11 @@ export function toSalesforceTask(unified: UnifiedTask): any {
 
 export function toZohoTask(unified: UnifiedTask): any {
     const zoho: any = {
-        data: [{}],
+        data: [
+            {
+                ...(unified.associations?.dealId && { What_Id: unified.associations.dealId, $se_module: 'Deals' }),
+            },
+        ],
         apply_feature_execution: [
             {
                 name: 'layout_rules',
