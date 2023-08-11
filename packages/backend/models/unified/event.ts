@@ -89,7 +89,11 @@ export function toSalesforceEvent(unified: UnifiedEvent): any {
 
 export function toZohoEvent(unified: UnifiedEvent): any {
     const zoho: any = {
-        data: [{}],
+        data: [
+            {
+                ...(unified.associations?.dealId && { What_Id: unified.associations.dealId, $se_module: 'Deals' }),
+            },
+        ],
         apply_feature_execution: [
             {
                 name: 'layout_rules',
