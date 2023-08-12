@@ -24,7 +24,7 @@ jobs:
               run: yarn install
 
             - name: Build SDK
-              run: yarn workspace @revertdotdev/js build
+              run: yarn workspace @revertdotdev/js deploy
               env:
                   CORE_API_BASE_URL: ${{ secrets.CORE_API_BASE_URL }}
                   REDIRECT_URL_BASE: ${{ secrets.REDIRECT_URL_BASE }}
