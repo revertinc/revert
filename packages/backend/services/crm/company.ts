@@ -253,7 +253,7 @@ const companyService = new CompanyService(
                         break;
                     }
                     case TP_ID.zohocrm: {
-                        await axios({
+                        const result = await axios({
                             method: 'post',
                             url: `https://www.zohoapis.com/crm/v3/Accounts`,
                             headers: {
@@ -261,6 +261,19 @@ const companyService = new CompanyService(
                             },
                             data: JSON.stringify(company),
                         });
+                        if (companyData.associations?.dealId) {
+                            await axios.put(
+                                `https://www.zohoapis.com/crm/v3/Deals/${companyData.associations.dealId}`,
+                                {
+                                    data: [{ Account_Name: { id: result.data?.data?.[0]?.details?.id } }],
+                                },
+                                {
+                                    headers: {
+                                        authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                                    },
+                                }
+                            );
+                        }
                         res.send({ status: 'ok', message: 'Zoho company created', result: company });
                         break;
                     }
@@ -309,7 +322,7 @@ const companyService = new CompanyService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not create lead', error.response);
+                console.error('Could not create company', error.response);
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
