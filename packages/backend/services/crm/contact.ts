@@ -47,7 +47,7 @@ const contactService = new ContactService(
                     case TP_ID.zohocrm: {
                         let contact: any = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/Contacts/${contactId}?fields=${fields}`,
+                            url: `https://www.zohoapis.com/crm/v3/Contacts/${contactId}${fields ? `?fields=${fields}` : ''}`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
@@ -244,7 +244,7 @@ const contactService = new ContactService(
                         break;
                     }
                     case TP_ID.zohocrm: {
-                        await axios({
+                        const result = await axios({
                             method: 'post',
                             url: `https://www.zohoapis.com/crm/v3/Contacts`,
                             headers: {
@@ -252,6 +252,23 @@ const contactService = new ContactService(
                             },
                             data: JSON.stringify(contact),
                         });
+                        if (contactData.associations?.dealId) {
+                            await axios.put(
+                                `https://www.zohoapis.com/crm/v3/Contacts/${result.data?.data?.[0]?.details?.id}/Deals/${contactData.associations.dealId}`,
+                                {
+                                    data: [
+                                        {
+                                            Contact_Role: 'Developer/Evaluator',
+                                        },
+                                    ],
+                                },
+                                {
+                                    headers: {
+                                        authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                                    },
+                                }
+                            );
+                        }
                         res.send({ status: 'ok', message: 'Zoho contact created', result: contact });
                         break;
                     }
@@ -300,7 +317,7 @@ const contactService = new ContactService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not create lead', error.response);
+                console.error('Could not create contact', error.response);
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
