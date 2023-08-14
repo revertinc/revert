@@ -288,6 +288,17 @@ const companyService = new CompanyService(
                             },
                             data: JSON.stringify(company),
                         });
+                        if (companyData.associations?.dealId) {
+                            await axios({
+                                method: 'patch',
+                                url: `${instanceUrl}/services/data/v56.0/sobjects/Opportunity/${companyData.associations.dealId}`,
+                                headers: {
+                                    'content-type': 'application/json',
+                                    authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                                data: JSON.stringify({ AccountId: companyCreated.data?.id }),
+                            });
+                        }
                         res.send({
                             status: 'ok',
                             message: 'SFDC company created',
