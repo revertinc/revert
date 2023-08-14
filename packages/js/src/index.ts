@@ -158,11 +158,11 @@ const createIntegrationBlock = function (self, integration) {
     image.style.pointerEvents = 'none';
     integrationConnect.appendChild(image);
     if (isInActive) {
-        image.style.filter= "gray";
-        image.style["-webkit-filter"]= "grayscale(1)";
-        image.style.filter= "grayscale(1)";
+        image.style.filter = 'gray';
+        image.style['-webkit-filter'] = 'grayscale(1)';
+        image.style.filter = 'grayscale(1)';
         integrationConnect.style.cursor = 'not-allowed';
-        integrationConnect.title = 'Coming soon'
+        integrationConnect.title = 'Coming soon';
     }
     return integrationConnect;
 };
@@ -335,7 +335,9 @@ const createIntegrationBlock = function (self, integration) {
                     integrationConnectBlock.addEventListener('click', (ev) => {
                         const target = ev.target as HTMLDivElement;
                         const targetIntegrationId = target.getAttribute('integrationId');
-                        const selectedIntegration = this.#integrations.find(i => i.integrationId === targetIntegrationId);
+                        const selectedIntegration = this.#integrations.find(
+                            (i) => i.integrationId === targetIntegrationId
+                        );
                         if (selectedIntegration.status !== 'active') {
                             return;
                         }
@@ -350,7 +352,8 @@ const createIntegrationBlock = function (self, integration) {
                     });
                     integrationsContainer.appendChild(integrationConnectBlock);
                 }
-                const integrationBlockHoverCss = '.integration-block-active:hover { border-color: #2047D044 !important; }';
+                const integrationBlockHoverCss =
+                    '.integration-block-active:hover { border-color: #2047D044 !important; }';
                 const style = document.createElement('style') as any;
                 style.setAttribute('type', 'text/css');
                 if (style.styleSheet) {

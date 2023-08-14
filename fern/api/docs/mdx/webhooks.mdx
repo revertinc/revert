@@ -5,7 +5,7 @@
 To verify that the request is being made from us (and not an impersonator) you can add the following verification step in your request handlers.
 
 ```js
-Example for Express (Javascript)
+// Example for Express (Javascript)
 // This is the secret returned in the response when creating a webhook.
 const secret = <UNIQUE*SECRET_FOR_ENDPOINT>
 const payload = req.body;
@@ -16,7 +16,29 @@ const signature = crypto.createHmac('sha256', secretBytes).update(signedContent)
 const verified = (headers['svix-signature'] as any).split(' ')
 .map((x: string) => x.split(',')[1])
 .includes(signature);
-// Use the verified to boolean to continue processing the webhook is true.
+// Use the verified boolean to continue processing the webhook if true.
 ```
 
 We use our friends at [Svix](https://docs.svix.com/receiving/verifying-payloads/how-manual) for sending you webhooks, this piece of code verifies that we are the senders.
+
+An easier way is to use the `svix` library. Here's an example of using `svix` lib in js
+
+```js
+// Example for Express (Javascript) using Svix library.
+
+import { Webhook } from 'svix';
+
+const secret = <UNIQUE*SECRET_FOR_ENDPOINT>
+const wh = new Webhook(secret);
+const payload = req.body;
+const headers = req.headers;
+
+try {
+    //@ts-ignore
+    const verified = wh.verify(JSON.stringify(payload), headers);
+    // This will throw if the webhook comes from an unverified source, returns the verified content on success.
+
+} catch (error) {
+    console.log('error verifying', error);
+}
+```

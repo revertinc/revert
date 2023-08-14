@@ -18,6 +18,14 @@ const limiter = rateLimit({
     message: async () => {
         return JSON.stringify({ message: 'Rate limit reached.' });
     },
+    skip: (req: Request, _res: Response) => {
+        const basePath = req.baseUrl + req.path;
+        const allowedRoutes = ['/health-check'];
+        if (allowedRoutes.includes(basePath)) {
+            return true;
+        }
+        return false;
+    },
 });
 
 const app: Express = express();

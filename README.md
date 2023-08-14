@@ -4,9 +4,10 @@
 <p align="center">
  <h2 align="center">The fastest way to build user-facing integrations
  
-![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=revert-client-git-main-revertdev)  [![](https://dcbadge.vercel.app/api/server/q5K5cRhymW?style=flat)](https://discord.gg/q5K5cRhymW)
+![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=revert-client-git-main-revertdev)  [![](https://dcbadge.vercel.app/api/server/q5K5cRhymW?style=flat)](https://discord.gg/q5K5cRhymW) [![twitter](https://img.shields.io/twitter/follow/Revertdotdev?style=social)](https://twitter.com/intent/follow?screen_name=RevertdotDev)
 
-[Get started](https://revert.dev) | [Docs](https://docs.revert.dev/) | [Issues](https://github.com/revertinc/revert/issues) | [Discord](https://discord.gg/q5K5cRhymW) | [Contact](mailto:team@revert.dev) 
+[Get started](https://revert.dev) · [Docs](https://docs.revert.dev/) · [Issues](https://github.com/revertinc/revert/issues) · [Discord](https://discord.gg/q5K5cRhymW) · [Get in touch](mailto:team@revert.dev)
+
 </h2>
 <br />
 <img width="100%" style="border-radius:75px;" src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1689828148/Revert/github_o27jvk.png"/>
@@ -32,13 +33,12 @@ Visit: https://revert.dev to sign up for an account or read our docs [here](http
 ### We are an ideal match for you, If:-
 
 -   You are building a product for the the go-to-market space.
--   You have integration with CRM's on your roadmap. 
--   Your focus is building your core product. 
+-   You have integration with CRM's on your roadmap.
+-   Your focus is building your core product.
 
 ## Roadmap
 
 -   [x] **Salesforce**
-        
 -   [x] **Hubspot**
 
 -   [x] **Zoho CRM**
