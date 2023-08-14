@@ -230,10 +230,10 @@ const contactService = new ContactService(
                 if (
                     thirdPartyId === TP_ID.zohocrm &&
                     contactData.associations?.dealId &&
-                    !contactData.additional?.associations?.contactRole
+                    !contactData.additional?.Contact_Role
                 ) {
                     throw new BadRequestError({
-                        error: 'Required field for association is missing: (additional.associations.contactRole)',
+                        error: 'Required field for association is missing: (additional.Contact_Role)',
                     });
                 }
 
@@ -270,7 +270,7 @@ const contactService = new ContactService(
                                 {
                                     data: [
                                         {
-                                            Contact_Role: contactData.additional.associations.contactRole,
+                                            Contact_Role: contactData.additional.Contact_Role,
                                         },
                                     ],
                                 },
