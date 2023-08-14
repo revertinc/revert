@@ -2,7 +2,7 @@ import axios from 'axios';
 import { TP_ID } from '@prisma/client';
 
 import { ContactService } from '../../generated/typescript/api/resources/crm/resources/contact/service/ContactService';
-import { InternalServerError } from '../../generated/typescript/api/resources/common';
+import { BadRequestError, InternalServerError } from '../../generated/typescript/api/resources/common';
 import { PipedriveContact, PipedrivePagination } from '../../constants/pipedrive';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import logError from '../../helpers/logError';
@@ -47,7 +47,9 @@ const contactService = new ContactService(
                     case TP_ID.zohocrm: {
                         let contact: any = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/Contacts/${contactId}${fields ? `?fields=${fields}` : ''}`,
+                            url: `https://www.zohoapis.com/crm/v3/Contacts/${contactId}${
+                                fields ? `?fields=${fields}` : ''
+                            }`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
@@ -225,6 +227,16 @@ const contactService = new ContactService(
                 const contact = disunifyContact(contactData, thirdPartyId);
                 console.log('Revert::CREATE CONTACT', tenantId, contact, thirdPartyId);
 
+                if (
+                    thirdPartyId === TP_ID.zohocrm &&
+                    contactData.associations?.dealId &&
+                    !contactData.additional?.associations?.contactRole
+                ) {
+                    throw new BadRequestError({
+                        error: 'Required field for association is missing: (additional.associations.contactRole)',
+                    });
+                }
+
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
                         await axios({
@@ -258,7 +270,7 @@ const contactService = new ContactService(
                                 {
                                     data: [
                                         {
-                                            Contact_Role: 'Developer/Evaluator',
+                                            Contact_Role: contactData.additional.associations.contactRole,
                                         },
                                     ],
                                 },
@@ -283,6 +295,21 @@ const contactService = new ContactService(
                             },
                             data: JSON.stringify(contact),
                         });
+                        if (contactData.associations?.dealId) {
+                            await axios.post(
+                                `${instanceUrl}/services/data/v56.0/sobjects/OpportunityContactRole/`,
+                                {
+                                    ContactId: contactCreated.data?.id,
+                                    OpportunityId: contactData.associations.dealId,
+                                },
+                                {
+                                    headers: {
+                                        'content-type': 'application/json',
+                                        authorization: `Bearer ${thirdPartyToken}`,
+                                    },
+                                }
+                            );
+                        }
                         res.send({
                             status: 'ok',
                             message: 'SFDC contact created',

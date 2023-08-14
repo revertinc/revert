@@ -94,7 +94,9 @@ export function toSalesforceContact(unifiedContact: UnifiedContact): Partial<Sal
     // Map custom fields
     if (unifiedContact.additional) {
         Object.keys(unifiedContact.additional).forEach((key) => {
-            salesforceContact[key] = unifiedContact.additional?.[key];
+            if (key !== 'associations') {
+                salesforceContact[key] = unifiedContact.additional?.[key];
+            }
         });
     }
 
@@ -120,7 +122,9 @@ export function toZohoContact(unifiedContact: UnifiedContact): ZohoContact {
     // Map custom fields
     if (unifiedContact.additional) {
         Object.keys(unifiedContact.additional).forEach((key) => {
-            zohoContact.data[0][key] = unifiedContact.additional?.[key];
+            if (key !== 'associations') {
+                zohoContact.data[0][key] = unifiedContact.additional?.[key];
+            }
         });
     }
 

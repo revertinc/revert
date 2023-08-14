@@ -11,5 +11,8 @@ errors:
         status-code: 500
         type: BaseError
     NotFoundError:
+        status-code: 404
+        type: BaseError
+    BadRequestError:
         status-code: 400
         type: BaseError
