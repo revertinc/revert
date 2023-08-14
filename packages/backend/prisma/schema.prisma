@@ -26,6 +26,7 @@ model accounts {
   public_token  String         @unique
   domain        String         @unique @default("")
   skipWaitlist  Boolean        @default(false)
+  workspaceName String?
   users         users[]
   environments  environments[]
 }

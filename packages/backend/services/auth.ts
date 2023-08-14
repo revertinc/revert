@@ -185,8 +185,10 @@ class AuthService {
             try {
                 const userEmail = webhookData.email_addresses[0].email_address;
                 let userDomain = userEmail.split('@').pop();
+                let workspaceName = userDomain.charAt(0).toUpperCase() + userDomain.slice(1) + "'s Workspace";
                 if (!isWorkEmail(userEmail)) {
                     // make the personal email the unique domain.
+                    workspaceName = 'Personal Workspace';
                     userDomain = userEmail;
                 }
                 // Create account only if an account does not exist for this user's domain.
@@ -207,6 +209,7 @@ class AuthService {
                         tenant_count: 0,
                         domain: userDomain,
                         skipWaitlist: false,
+                        workspaceName: workspaceName,
                         environments: {
                             createMany: {
                                 data: [

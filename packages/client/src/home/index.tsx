@@ -35,9 +35,9 @@ const Home = () => {
             .then((response) => response.json())
             .then((result) => {
                 setAccount(result?.account);
-                const environments: string[] = result?.account?.environments?.map(env => env.env) || [];
+                const environments: string[] = result?.account?.environments?.map((env) => env.env) || [];
                 if (!environments.includes(DEFAULT_ENV)) {
-                    setEnvironment(environments?.[0])
+                    setEnvironment(environments?.[0]);
                 }
             })
             .catch((error) => {
@@ -59,7 +59,12 @@ const Home = () => {
     };
     return (
         <>
-            <Navbar environment={environment} setEnvironment={setEnvironment} environmentList={account?.environments} />
+            <Navbar
+                workspaceName={account?.workspaceName}
+                environment={environment}
+                setEnvironment={setEnvironment}
+                environmentList={account?.environments}
+            />
             <div className="flex h-[100%]">
                 <div className="w-[20%] flex flex-col items-center pt-[120px] text-[#6e6e6e]">
                     <ul>
