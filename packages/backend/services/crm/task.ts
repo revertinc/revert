@@ -298,7 +298,7 @@ const taskService = new TaskService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not create lead', error.response);
+                console.error('Could not create task', error.response);
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },

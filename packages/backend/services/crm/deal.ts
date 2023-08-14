@@ -49,7 +49,7 @@ const dealService = new DealService(
                     case TP_ID.zohocrm: {
                         const deals = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/Deals/${dealId}?fields=${fields}`,
+                            url: `https://www.zohoapis.com/crm/v3/Deals/${dealId}${ fields ? `?fields=${fields}` : ''}`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
