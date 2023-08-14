@@ -227,16 +227,6 @@ const contactService = new ContactService(
                 const contact = disunifyContact(contactData, thirdPartyId);
                 console.log('Revert::CREATE CONTACT', tenantId, contact, thirdPartyId);
 
-                if (
-                    thirdPartyId === TP_ID.zohocrm &&
-                    contactData.associations?.dealId &&
-                    !contactData.additional?.Contact_Role
-                ) {
-                    throw new BadRequestError({
-                        error: 'Required field for association is missing: (additional.Contact_Role)',
-                    });
-                }
-
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
                         await axios({
@@ -256,6 +246,11 @@ const contactService = new ContactService(
                         break;
                     }
                     case TP_ID.zohocrm: {
+                        if (contactData.associations?.dealId && !contactData.additional?.Contact_Role) {
+                            throw new BadRequestError({
+                                error: 'Required field for association is missing: (additional.Contact_Role)',
+                            });
+                        }
                         const result = await axios({
                             method: 'post',
                             url: `https://www.zohoapis.com/crm/v3/Contacts`,

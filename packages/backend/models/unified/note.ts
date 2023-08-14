@@ -43,9 +43,6 @@ export function unifyNote(note: any, tpId: TP_ID): UnifiedNote {
                 leadId: note.lead_id,
                 dealId: note.deal_id,
             }),
-            // ...(tpId === TP_ID.hubspot && {
-            //     deal_id: '',
-            // }),
         },
     };
 
