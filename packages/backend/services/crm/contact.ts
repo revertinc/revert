@@ -3,12 +3,13 @@ import { TP_ID } from '@prisma/client';
 
 import { ContactService } from '../../generated/typescript/api/resources/crm/resources/contact/service/ContactService';
 import { BadRequestError, InternalServerError } from '../../generated/typescript/api/resources/common';
+import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import { PipedriveContact, PipedrivePagination } from '../../constants/pipedrive';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import logError from '../../helpers/logError';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
+import { isStandardError } from '../../helpers/error';
 import { UnifiedContact, disunifyContact, unifyContact } from '../../models/unified/contact';
-import { NotFoundError } from '../../generated/typescript/api/resources/common';
 
 const contactService = new ContactService(
     {
@@ -340,6 +341,9 @@ const contactService = new ContactService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not create contact', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
