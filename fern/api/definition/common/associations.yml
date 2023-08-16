@@ -1,0 +1,62 @@
+types:
+    CompanyAssociation:
+        properties:
+            dealId:
+                type: optional<string>
+                docs: The id of the deal to associate with company
+    ContactAssociation:
+        properties:
+            dealId:
+                type: optional<string>
+                docs: The id of the deal to associate with contact
+    DealAssociation:
+        properties:
+            contactId:
+                type: optional<string>
+                docs: The id of the contact to associate with deal
+            companyId:
+                type: optional<string>
+                docs: The id of the company to associate with deal
+    EventAssociation:
+        properties:
+            dealId:
+                type: optional<string>
+                docs: The id of the deal to associate with event
+            contactId:
+                type: optional<string>
+                docs: The id of the contact to associate with event
+    LeadAssociation:
+        properties:
+            contactId:
+                type: optional<string>
+                docs: The id of the contact to associate with lead
+            companyId:
+                type: optional<string>
+                docs: The id of the company to associate with lead
+            dealId:
+                type: optional<string>
+                docs: The id of the deal to associate with lead
+    NoteAssociation:
+        properties:
+            contactId:
+                type: optional<string>
+                docs: The id of the contact to associate with note
+            companyId:
+                type: optional<string>
+                docs: The id of the company to associate with note
+            leadId:
+                type: optional<string>
+                docs: The id of the lead to associate with note
+            dealId:
+                type: optional<string>
+                docs: The id of the deal to associate with note
+    TaskAssociation:
+        properties:
+            dealId:
+                type: optional<string>
+                docs: The id of the deal to associate with task
+    UserAssociation:
+        properties:
+            dealId:
+                type: optional<string>
+                docs: The id of the deal to associate with user
