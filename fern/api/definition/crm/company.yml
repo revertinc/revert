@@ -4,6 +4,7 @@ imports:
     errors: ../common/errors.yml
     types: ../common/types.yml
     unified: ../common/unified.yml
+    associations: ../common/associations.yml
 
 types:
     GetCompanyResponse:
@@ -16,6 +17,10 @@ types:
             next: optional<string>
             previous: optional<string>
             results: list<unified.Company>
+    CreateOrUpdateCompanyRequest:
+        extends: unified.Company
+        properties:
+            associations: optional<associations.CompanyAssociation>
     CreateOrUpdateCompanyResponse:
         properties:
             status: types.ResponseStatus
@@ -80,7 +85,7 @@ service:
             path: ''
             request:
                 name: CreateCompanyRequest
-                body: unified.Company
+                body: CreateOrUpdateCompanyRequest
             response: CreateOrUpdateCompanyResponse
             errors:
                 - errors.UnAuthorizedError

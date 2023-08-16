@@ -4,6 +4,7 @@ imports:
     errors: ../common/errors.yml
     types: ../common/types.yml
     unified: ../common/unified.yml
+    associations: ../common/associations.yml
 
 types:
     GetUserResponse:
@@ -16,6 +17,10 @@ types:
             next: optional<string>
             previous: optional<string>
             results: list<unified.User>
+    CreateOrUpdateUserRequest:
+        extends: unified.User
+        properties:
+            associations: optional<associations.UserAssociation>
     CreateOrUpdateUserResponse:
         properties:
             status: types.ResponseStatus
@@ -78,7 +83,7 @@ service:
             path: ''
             request:
                 name: CreateUserRequest
-                body: unified.User
+                body: CreateOrUpdateUserRequest
             response: CreateOrUpdateUserResponse
             errors:
                 - errors.UnAuthorizedError

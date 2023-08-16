@@ -4,6 +4,7 @@ imports:
     errors: ../common/errors.yml
     types: ../common/types.yml
     unified: ../common/unified.yml
+    associations: ../common/associations.yml
 
 types:
     GetLeadResponse:
@@ -16,6 +17,10 @@ types:
             next: optional<string>
             previous: optional<string>
             results: list<unified.Lead>
+    CreateOrUpdateLeadRequest:
+        extends: unified.Lead
+        properties:
+            associations: optional<associations.LeadAssociation>
     CreateOrUpdateLeadResponse:
         properties:
             status: types.ResponseStatus
@@ -78,7 +83,7 @@ service:
             path: ''
             request:
                 name: CreateLeadRequest
-                body: unified.Lead
+                body: CreateOrUpdateLeadRequest
             response: CreateOrUpdateLeadResponse
             errors:
                 - errors.UnAuthorizedError
