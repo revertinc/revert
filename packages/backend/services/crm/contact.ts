@@ -93,6 +93,9 @@ const contactService = new ContactService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch lead', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -215,6 +218,9 @@ const contactService = new ContactService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch leads', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -428,6 +434,9 @@ const contactService = new ContactService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not update lead', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -527,6 +536,9 @@ const contactService = new ContactService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not search CRM', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },

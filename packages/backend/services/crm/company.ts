@@ -7,6 +7,7 @@ import { InternalServerError } from '../../generated/typescript/api/resources/co
 import logError from '../../helpers/logError';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
+import { isStandardError } from '../../helpers/error';
 import { unifyCompany, disunifyCompany, UnifiedCompany } from '../../models/unified/company';
 import { PipedriveCompany, PipedrivePagination } from '../../constants/pipedrive';
 
@@ -95,6 +96,9 @@ const companyService = new CompanyService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch lead', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -221,6 +225,9 @@ const companyService = new CompanyService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch leads', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -334,6 +341,9 @@ const companyService = new CompanyService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not create company', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -418,6 +428,9 @@ const companyService = new CompanyService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not update lead', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -519,6 +532,9 @@ const companyService = new CompanyService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not search CRM', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },

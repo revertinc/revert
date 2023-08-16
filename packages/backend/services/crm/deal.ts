@@ -7,6 +7,7 @@ import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import logError from '../../helpers/logError';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
+import { isStandardError } from '../../helpers/error';
 import { UnifiedDeal, disunifyDeal, unifyDeal } from '../../models/unified';
 import { PipedriveDeal, PipedrivePagination } from '../../constants/pipedrive';
 
@@ -91,6 +92,9 @@ const dealService = new DealService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch deal', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -216,6 +220,9 @@ const dealService = new DealService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch deals', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -305,6 +312,9 @@ const dealService = new DealService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not create deal', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -389,6 +399,9 @@ const dealService = new DealService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not update deal', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -489,6 +502,9 @@ const dealService = new DealService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not search CRM', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },

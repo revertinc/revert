@@ -7,6 +7,7 @@ import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import logError from '../../helpers/logError';
+import { isStandardError } from '../../helpers/error';
 import { UnifiedUser, disunifyUser, unifyUser } from '../../models/unified/user';
 import { PipedriveUser } from '../../constants/pipedrive';
 
@@ -89,6 +90,9 @@ const userService = new UserService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch user', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -210,6 +214,9 @@ const userService = new UserService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch users', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -299,6 +306,9 @@ const userService = new UserService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not create user', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
