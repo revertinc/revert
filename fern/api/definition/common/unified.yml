@@ -1,3 +1,6 @@
+imports:
+    associations: ./associations.yml
+
 types:
     CommonUnifiedFields:
         properties:
@@ -13,7 +16,6 @@ types:
             updatedTimestamp:
                 type: unknown
                 docs: The last updated timestamp of the object.
-            associations: unknown
             additional:
                 type: unknown
                 docs: Any fields that are not unified yet/non-unifiable come inside this `json` object.
@@ -32,6 +34,7 @@ types:
             email:
                 type: string
                 docs: The email of the lead in a CRM.
+            associations: optional<associations.LeadAssociation>
     Deal:
         extends: CommonUnifiedFields
         properties:
@@ -40,7 +43,7 @@ types:
                 docs: The deal amount mentioned in the CRM for this deal.
             priority:
                 type: optional<string>
-                docs: The priority attached to this deal.
+                docs: The priority attached to this deal. (not supported by pipedrive)
             stage:
                 type: string
                 docs: Deal stage in the CRM.
@@ -49,19 +52,21 @@ types:
                 docs: The name of the deal in a CRM.
             expectedCloseDate:
                 type: unknown
-                docs: Expected close date for this deal.
+                docs: Expected close date for this deal. (not supported by pipedrive search api)
             isWon:
                 type: boolean
                 docs: Is `true` if the deal is closed (won).
             probability:
                 type: integer
                 docs: Probability of the deal getting closed, a decimal number between 0 to 1 (inclusive).
+            associations: optional<associations.DealAssociation>
     Note:
         extends: CommonUnifiedFields
         properties:
             content:
                 type: string
                 docs: The contents of the note in plain text or HTML.
+            associations: optional<associations.NoteAssociation>
     Company:
         extends: CommonUnifiedFields
         properties:
@@ -86,6 +91,7 @@ types:
             address:
                 type: CompanyAddress
                 docs: Company address.
+            associations: optional<associations.CompanyAssociation>
     CompanyAddress:
         properties:
             street: optional<string>
@@ -109,6 +115,7 @@ types:
             email:
                 type: string
                 docs: The email of the contact in a CRM.
+            associations: optional<associations.ContactAssociation>
     Event:
         extends: CommonUnifiedFields
         properties:
@@ -133,6 +140,7 @@ types:
             location:
                 type: string
                 docs: The location of the event/meeting.
+            associations: optional<associations.EventAssociation>
     Task:
         extends: CommonUnifiedFields
         properties:
@@ -151,6 +159,7 @@ types:
             dueDate:
                 type: unknown
                 docs: The date when this task is due.
+            associations: optional<associations.TaskAssociation>
     User:
         extends: CommonUnifiedFields
         properties:
@@ -166,3 +175,4 @@ types:
             email:
                 type: string
                 docs: The email of a user in a CRM.
+            associations: optional<associations.UserAssociation>

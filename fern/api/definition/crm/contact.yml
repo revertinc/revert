@@ -84,6 +84,7 @@ service:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
+                - errors.BadRequestError
         updateContact:
             docs: Update a contact
             method: PATCH
@@ -98,6 +99,7 @@ service:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
+                - errors.BadRequestError
         searchContacts:
             docs: Search for contacts
             method: POST

@@ -36,4 +36,4 @@ export const DEFAULT_SCOPE = {
     [TP_ID.pipedrive]: [],
 };
 
-export type ValueOf<T> = T[keyof T];
+export type AllAssociation = 'contactId' | 'companyId' | 'leadId' | 'dealId' | 'noteId';

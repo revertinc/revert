@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import isWorkEmail from '../helpers/isWorkEmail';
 import { ENV, TP_ID } from '@prisma/client';
 import logError from '../helpers/logError';
-import { DEFAULT_SCOPE } from '../constants';
+import { DEFAULT_SCOPE } from '../constants/common';
 
 class AuthService {
     async refreshOAuthTokensForThirdParty() {

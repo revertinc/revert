@@ -8,6 +8,7 @@ import logError from '../../helpers/logError';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { filterLeadsFromContactsForHubspot } from '../../helpers/filterLeadsFromContacts';
+import { isStandardError } from '../../helpers/error';
 import { UnifiedLead, disunifyLead, unifyLead } from '../../models/unified/lead';
 import { PipedrivePagination, PipedriveLead, PipedriveContact, PipedriveCompany } from '../../constants/pipedrive';
 
@@ -95,6 +96,9 @@ const leadService = new LeadService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch lead', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -226,6 +230,9 @@ const leadService = new LeadService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch leads', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -315,6 +322,9 @@ const leadService = new LeadService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not create lead', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -399,6 +409,9 @@ const leadService = new LeadService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not update lead', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -499,6 +512,9 @@ const leadService = new LeadService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not search CRM', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },

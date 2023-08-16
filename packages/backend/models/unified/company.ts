@@ -1,5 +1,10 @@
 import { TP_ID } from '@prisma/client';
 import { PipedriveCompany } from '../../constants/pipedrive';
+import { Subtype } from '../../constants/typeHelpers';
+import { AllAssociation } from '../../constants/common';
+import { getHubspotAssociationObj } from '../../helpers/hubspot';
+
+export type CompanyAssociation = Subtype<AllAssociation, 'dealId'>;
 
 export interface UnifiedCompany {
     name: string;
@@ -20,7 +25,9 @@ export interface UnifiedCompany {
     remoteId: string;
     createdTimestamp: Date;
     updatedTimestamp: Date;
-    associations?: any; // TODO: Support associations
+    associations?: {
+        [x in CompanyAssociation]?: string;
+    };
     additional: any;
 }
 
@@ -576,6 +583,19 @@ export function toHubspotCompany(unifiedCompany: UnifiedCompany): Partial<Hubspo
         Object.keys(unifiedCompany.additional).forEach((key) => {
             hubspotCompany['properties'][key] = unifiedCompany.additional?.[key];
         });
+    }
+
+    if (unifiedCompany.associations) {
+        const associationObj = unifiedCompany.associations;
+        const associationArr = Object.keys(associationObj).map((key) => {
+            return {
+                to: {
+                    id: associationObj[key as CompanyAssociation],
+                },
+                types: [getHubspotAssociationObj(key as CompanyAssociation, 'company')],
+            };
+        });
+        hubspotCompany['associations'] = associationArr;
     }
 
     return hubspotCompany;

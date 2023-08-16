@@ -2,13 +2,14 @@ import axios from 'axios';
 import { TP_ID } from '@prisma/client';
 
 import { ContactService } from '../../generated/typescript/api/resources/crm/resources/contact/service/ContactService';
-import { InternalServerError } from '../../generated/typescript/api/resources/common';
+import { BadRequestError, InternalServerError } from '../../generated/typescript/api/resources/common';
+import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import { PipedriveContact, PipedrivePagination } from '../../constants/pipedrive';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import logError from '../../helpers/logError';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
+import { isStandardError } from '../../helpers/error';
 import { UnifiedContact, disunifyContact, unifyContact } from '../../models/unified/contact';
-import { NotFoundError } from '../../generated/typescript/api/resources/common';
 
 const contactService = new ContactService(
     {
@@ -47,7 +48,9 @@ const contactService = new ContactService(
                     case TP_ID.zohocrm: {
                         let contact: any = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/Contacts/${contactId}?fields=${fields}`,
+                            url: `https://www.zohoapis.com/crm/v3/Contacts/${contactId}${
+                                fields ? `?fields=${fields}` : ''
+                            }`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
@@ -90,6 +93,9 @@ const contactService = new ContactService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch lead', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -212,6 +218,9 @@ const contactService = new ContactService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch leads', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -244,7 +253,12 @@ const contactService = new ContactService(
                         break;
                     }
                     case TP_ID.zohocrm: {
-                        await axios({
+                        if (contactData.associations?.dealId && !contactData.additional?.Contact_Role) {
+                            throw new BadRequestError({
+                                error: 'Required field for association is missing: (additional.Contact_Role)',
+                            });
+                        }
+                        const result = await axios({
                             method: 'post',
                             url: `https://www.zohoapis.com/crm/v3/Contacts`,
                             headers: {
@@ -252,6 +266,23 @@ const contactService = new ContactService(
                             },
                             data: JSON.stringify(contact),
                         });
+                        if (contactData.associations?.dealId) {
+                            await axios.put(
+                                `https://www.zohoapis.com/crm/v3/Contacts/${result.data?.data?.[0]?.details?.id}/Deals/${contactData.associations.dealId}`,
+                                {
+                                    data: [
+                                        {
+                                            Contact_Role: contactData.additional.Contact_Role,
+                                        },
+                                    ],
+                                },
+                                {
+                                    headers: {
+                                        authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                                    },
+                                }
+                            );
+                        }
                         res.send({ status: 'ok', message: 'Zoho contact created', result: contact });
                         break;
                     }
@@ -266,6 +297,21 @@ const contactService = new ContactService(
                             },
                             data: JSON.stringify(contact),
                         });
+                        if (contactData.associations?.dealId) {
+                            await axios.post(
+                                `${instanceUrl}/services/data/v56.0/sobjects/OpportunityContactRole/`,
+                                {
+                                    ContactId: contactCreated.data?.id,
+                                    OpportunityId: contactData.associations.dealId,
+                                },
+                                {
+                                    headers: {
+                                        'content-type': 'application/json',
+                                        authorization: `Bearer ${thirdPartyToken}`,
+                                    },
+                                }
+                            );
+                        }
                         res.send({
                             status: 'ok',
                             message: 'SFDC contact created',
@@ -300,7 +346,10 @@ const contactService = new ContactService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not create lead', error.response);
+                console.error('Could not create contact', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -385,6 +434,9 @@ const contactService = new ContactService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not update lead', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -484,6 +536,9 @@ const contactService = new ContactService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not search CRM', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },

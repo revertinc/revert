@@ -1,7 +1,9 @@
 import { TP_ID } from '@prisma/client';
 import { getHubspotAssociationObj } from '../../helpers/hubspot';
+import { Subtype } from '../../constants/typeHelpers';
+import { AllAssociation } from '../../constants/common';
 
-export type NoteAssociation = 'personId' | 'organizationId' | 'leadId' | 'dealId';
+export type NoteAssociation = Subtype<AllAssociation, 'contactId' | 'companyId' | 'leadId' | 'dealId'>;
 
 export interface UnifiedNote {
     content: string;
@@ -36,13 +38,10 @@ export function unifyNote(note: any, tpId: TP_ID): UnifiedNote {
         additional: {},
         associations: {
             ...(tpId === TP_ID.pipedrive && {
-                personId: note.person_id,
-                organizationId: note.org_id,
+                contactId: note.person_id,
+                companyId: note.org_id,
                 leadId: note.lead_id,
                 dealId: note.deal_id,
-            }),
-            ...(tpId === TP_ID.hubspot && {
-                deal_id: '',
             }),
         },
     };
@@ -61,6 +60,9 @@ export function toSalesforceNote(unified: UnifiedNote): any {
     const salesforceNote: any = {
         Id: unified.remoteId,
         Body: unified.content,
+        ...(unified.associations?.dealId && {
+            parentId: unified.associations.dealId,
+        }),
     };
 
     // Map custom fields
@@ -74,7 +76,14 @@ export function toSalesforceNote(unified: UnifiedNote): any {
 
 export function toZohoNote(unified: UnifiedNote): any {
     const zoho: any = {
-        data: [{}],
+        data: [
+            {
+                ...(unified.associations?.dealId && {
+                    Parent_Id: unified.associations.dealId,
+                    se_module: 'Deals',
+                }),
+            },
+        ],
         apply_feature_execution: [
             {
                 name: 'layout_rules',
@@ -123,7 +132,7 @@ export function toHubspotNote(unified: UnifiedNote): any {
                 to: {
                     id: associationObj[key as NoteAssociation],
                 },
-                types: [getHubspotAssociationObj(key as NoteAssociation)],
+                types: [getHubspotAssociationObj(key as NoteAssociation, 'note')],
             };
         });
         hubspotNote['associations'] = associationArr;
@@ -138,11 +147,11 @@ export function toPipedriveNote(unified: UnifiedNote): any {
         content: unified.content,
         add_time: unified.createdTimestamp,
         update_time: unified.updatedTimestamp,
-        ...(unified.associations?.personId && {
-            person_id: unified.associations.personId,
+        ...(unified.associations?.contactId && {
+            person_id: unified.associations.contactId,
         }),
-        ...(unified.associations?.organizationId && {
-            organization_id: unified.associations.organizationId,
+        ...(unified.associations?.companyId && {
+            organization_id: unified.associations.companyId,
         }),
         ...(unified.associations?.leadId && {
             lead_id: unified.associations.leadId,

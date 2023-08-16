@@ -7,6 +7,7 @@ import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import logError from '../../helpers/logError';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
+import { isStandardError } from '../../helpers/error';
 import { UnifiedNote, disunifyNote, unifyNote } from '../../models/unified';
 import { PipedriveNote, PipedrivePagination } from '../../constants/pipedrive';
 
@@ -82,6 +83,9 @@ const noteService = new NoteService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch lead', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -196,6 +200,9 @@ const noteService = new NoteService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch leads', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -276,6 +283,9 @@ const noteService = new NoteService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not create lead', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -356,6 +366,9 @@ const noteService = new NoteService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not update lead', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -426,6 +439,9 @@ const noteService = new NoteService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not search CRM', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },

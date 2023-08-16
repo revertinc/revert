@@ -3,8 +3,11 @@ import { PipedriveContact, PipedriveLead, PipedriveCompany } from '../../constan
 import { HubspotLead } from '../../constants/hubspot';
 import { ZohoLead } from '../../constants/zoho';
 import { SalesforceLead } from '../../constants/salesforce';
+import { AllAssociation } from '../../constants/common';
+import { Subtype } from '../../constants/typeHelpers';
+import { getHubspotAssociationObj } from '../../helpers/hubspot';
 
-export type LeadAssociation = 'personId' | 'organizationId';
+export type LeadAssociation = Subtype<AllAssociation, 'contactId' | 'companyId' | 'dealId'>;
 
 export interface UnifiedLead {
     firstName: string;
@@ -68,8 +71,8 @@ export function unifyLead(lead: any, tpId: TP_ID): UnifiedLead {
         additional: {},
         associations: {
             ...(tpId === TP_ID.pipedrive && {
-                personId: lead.person_id || lead.person?.id,
-                organizationId: lead.organization_id || lead.organization?.id,
+                contactId: lead.person_id || lead.person?.id,
+                companyId: lead.organization_id || lead.organization?.id,
             }),
         },
     };
@@ -153,6 +156,18 @@ export function toHubspotLead(lead: UnifiedLead): Partial<HubspotLead> {
             hubspotLead['properties'][key] = lead.additional?.[key];
         });
     }
+    if (lead.associations) {
+        const associationObj = lead.associations;
+        const associationArr = Object.keys(associationObj).map((key) => {
+            return {
+                to: {
+                    id: associationObj[key as LeadAssociation],
+                },
+                types: [getHubspotAssociationObj(key as LeadAssociation, 'lead')],
+            };
+        });
+        hubspotLead['associations'] = associationArr;
+    }
     return hubspotLead;
 }
 
@@ -162,11 +177,11 @@ export function toPipedriveLead(lead: UnifiedLead): Partial<PipedriveLead> {
         title: `${lead.firstName} ${lead.lastName}`,
         add_time: lead.createdTimestamp,
         update_time: lead.updatedTimestamp,
-        ...(lead.associations?.personId && {
-            person_id: lead.associations.personId,
+        ...(lead.associations?.contactId && {
+            person_id: lead.associations.contactId,
         }),
-        ...(lead.associations?.organizationId && {
-            organization_id: lead.associations.organizationId,
+        ...(lead.associations?.companyId && {
+            organization_id: lead.associations.companyId,
         }),
     };
 
@@ -181,7 +196,7 @@ export function toPipedriveLead(lead: UnifiedLead): Partial<PipedriveLead> {
 
 export function unifiedLeadToPipedrivePerson(lead: UnifiedLead): Partial<PipedriveContact> {
     return {
-        id: lead.associations?.personId,
+        id: lead.associations?.contactId,
         first_name: lead.firstName,
         last_name: lead.lastName,
         name: `${lead.firstName} ${lead.lastName}`,
@@ -193,7 +208,7 @@ export function unifiedLeadToPipedrivePerson(lead: UnifiedLead): Partial<Pipedri
 
 export function unifiedLeadToPipedriveOrganization(lead: UnifiedLead): Partial<PipedriveCompany> {
     return {
-        id: lead.associations?.organizationId,
+        id: lead.associations?.companyId,
         name: lead.firstName,
         cc_email: lead.email,
     };

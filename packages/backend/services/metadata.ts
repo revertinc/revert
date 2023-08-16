@@ -5,7 +5,7 @@ import { InternalServerError, UnAuthorizedError } from '../generated/typescript/
 import logError from '../helpers/logError';
 import config from '../config';
 import { TP_ID, apps } from '@prisma/client';
-import { DEFAULT_SCOPE } from '../constants';
+import { DEFAULT_SCOPE } from '../constants/common';
 
 const metadataService = new MetadataService({
     async getCrms(req, res) {

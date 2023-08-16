@@ -7,6 +7,7 @@ import { InternalServerError } from '../../generated/typescript/api/resources/co
 import logError from '../../helpers/logError';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
+import { isStandardError } from '../../helpers/error';
 import { unifyCompany, disunifyCompany, UnifiedCompany } from '../../models/unified/company';
 import { PipedriveCompany, PipedrivePagination } from '../../constants/pipedrive';
 
@@ -95,6 +96,9 @@ const companyService = new CompanyService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch lead', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -221,6 +225,9 @@ const companyService = new CompanyService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch leads', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -253,7 +260,7 @@ const companyService = new CompanyService(
                         break;
                     }
                     case TP_ID.zohocrm: {
-                        await axios({
+                        const result = await axios({
                             method: 'post',
                             url: `https://www.zohoapis.com/crm/v3/Accounts`,
                             headers: {
@@ -261,6 +268,19 @@ const companyService = new CompanyService(
                             },
                             data: JSON.stringify(company),
                         });
+                        if (companyData.associations?.dealId) {
+                            await axios.put(
+                                `https://www.zohoapis.com/crm/v3/Deals/${companyData.associations.dealId}`,
+                                {
+                                    data: [{ Account_Name: { id: result.data?.data?.[0]?.details?.id } }],
+                                },
+                                {
+                                    headers: {
+                                        authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                                    },
+                                }
+                            );
+                        }
                         res.send({ status: 'ok', message: 'Zoho company created', result: company });
                         break;
                     }
@@ -275,6 +295,17 @@ const companyService = new CompanyService(
                             },
                             data: JSON.stringify(company),
                         });
+                        if (companyData.associations?.dealId) {
+                            await axios({
+                                method: 'patch',
+                                url: `${instanceUrl}/services/data/v56.0/sobjects/Opportunity/${companyData.associations.dealId}`,
+                                headers: {
+                                    'content-type': 'application/json',
+                                    authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                                data: JSON.stringify({ AccountId: companyCreated.data?.id }),
+                            });
+                        }
                         res.send({
                             status: 'ok',
                             message: 'SFDC company created',
@@ -309,7 +340,10 @@ const companyService = new CompanyService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not create lead', error.response);
+                console.error('Could not create company', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -394,6 +428,9 @@ const companyService = new CompanyService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not update lead', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -495,6 +532,9 @@ const companyService = new CompanyService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not search CRM', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },

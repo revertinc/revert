@@ -1,4 +1,9 @@
 import { TP_ID } from '@prisma/client';
+import { AllAssociation } from '../../constants/common';
+import { Subtype } from '../../constants/typeHelpers';
+import { getHubspotAssociationObj } from '../../helpers/hubspot';
+
+export type EventAssociation = Subtype<AllAssociation, 'dealId' | 'contactId'>;
 
 export interface UnifiedEvent {
     type: string;
@@ -12,7 +17,9 @@ export interface UnifiedEvent {
     remoteId: string;
     createdTimestamp: Date;
     updatedTimestamp: Date;
-    associations?: any; // TODO: Support associations
+    associations?: {
+        [x in EventAssociation]?: string;
+    };
     additional: any;
 }
 
@@ -21,9 +28,18 @@ export function unifyEvent(event: any): UnifiedEvent {
         remoteId: event.id || event.Id,
         id: event.id || event.eventID || event.event_id || event.Id,
         createdTimestamp:
-            event.createdDate || event.CreatedDate || event.Created_Time || event.hs_timestamp || event.hs_createdate || event.add_time,
+            event.createdDate ||
+            event.CreatedDate ||
+            event.Created_Time ||
+            event.hs_timestamp ||
+            event.hs_createdate ||
+            event.add_time,
         updatedTimestamp:
-            event.lastModifiedDate || event.LastModifiedDate || event.Modified_Time || event.hs_lastmodifieddate || event.update_time,
+            event.lastModifiedDate ||
+            event.LastModifiedDate ||
+            event.Modified_Time ||
+            event.hs_lastmodifieddate ||
+            event.update_time,
         type: event.type || event.Type || event.hs_activity_type || event.EventSubtype, // Note: No Type field in zoho
         subject: event.subject || event.Subject || event.hs_meeting_title || event.Event_Title,
         description: event.description || event.Description || event.hs_meeting_body || event.public_description,
@@ -54,6 +70,12 @@ export function toSalesforceEvent(unified: UnifiedEvent): any {
         IsAllDayEvent: unified.isAllDayEvent,
         Location: unified.location,
         Description: unified.description,
+        ...(unified.associations?.dealId && {
+            WhatId: unified.associations.dealId,
+        }),
+        ...(unified.associations?.contactId && {
+            WhoId: unified.associations.contactId,
+        }),
     };
 
     // Map custom fields
@@ -67,7 +89,11 @@ export function toSalesforceEvent(unified: UnifiedEvent): any {
 
 export function toZohoEvent(unified: UnifiedEvent): any {
     const zoho: any = {
-        data: [{}],
+        data: [
+            {
+                ...(unified.associations?.dealId && { What_Id: unified.associations.dealId, $se_module: 'Deals' }),
+            },
+        ],
         apply_feature_execution: [
             {
                 name: 'layout_rules',
@@ -114,13 +140,26 @@ export function toHubspotEvent(unifiedEvent: UnifiedEvent): any {
         });
     }
 
+    if (unifiedEvent.associations) {
+        const associationObj = unifiedEvent.associations;
+        const associationArr = Object.keys(associationObj).map((key) => {
+            return {
+                to: {
+                    id: associationObj[key as EventAssociation],
+                },
+                types: [getHubspotAssociationObj(key as EventAssociation, 'event')],
+            };
+        });
+        hubspotEvent['associations'] = associationArr;
+    }
+
     return hubspotEvent;
 }
 
 export function toPipedriveEvent(unifiedEvent: UnifiedEvent): any {
     const pipedriveEvent: any = {
         id: unifiedEvent.remoteId,
-        type: "meeting",
+        type: 'meeting',
         subject: unifiedEvent.subject,
         add_time: unifiedEvent.startDateTime,
         due_time: unifiedEvent.endDateTime,

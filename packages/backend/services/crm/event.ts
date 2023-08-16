@@ -7,6 +7,7 @@ import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import logError from '../../helpers/logError';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
+import { isStandardError } from '../../helpers/error';
 import { UnifiedEvent, disunifyEvent, unifyEvent } from '../../models/unified';
 import { PipedriveEvent, PipedrivePagination } from '../../constants/pipedrive';
 
@@ -91,6 +92,9 @@ const eventService = new EventService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch lead', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -214,6 +218,9 @@ const eventService = new EventService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch leads', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -295,6 +302,9 @@ const eventService = new EventService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not create lead', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -374,6 +384,9 @@ const eventService = new EventService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not update lead', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
@@ -453,6 +466,9 @@ const eventService = new EventService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not search CRM', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
