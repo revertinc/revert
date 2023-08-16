@@ -81,6 +81,6 @@ npm-debug.log*
 !.yarn/versions
 *.DS_Store
 *.tgz
-
+!.github/**/*.yml
 !fern/**/*.yml
 revert-dev.js
