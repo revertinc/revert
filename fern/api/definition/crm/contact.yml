@@ -4,6 +4,7 @@ imports:
     errors: ../common/errors.yml
     types: ../common/types.yml
     unified: ../common/unified.yml
+    associations: ../common/associations.yml
 
 types:
     GetContactResponse:
@@ -16,6 +17,10 @@ types:
             next: optional<string>
             previous: optional<string>
             results: list<unified.Contact>
+    CreateOrUpdateContactRequest:
+        extends: unified.Contact
+        properties:
+            associations: optional<associations.ContactAssociation>
     CreateOrUpdateContactResponse:
         properties:
             status: types.ResponseStatus
@@ -78,7 +83,7 @@ service:
             path: ''
             request:
                 name: CreateContactRequest
-                body: unified.Contact
+                body: CreateOrUpdateContactRequest
             response: CreateOrUpdateContactResponse
             errors:
                 - errors.UnAuthorizedError
