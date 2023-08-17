@@ -4,11 +4,19 @@ types:
             dealId:
                 type: optional<string>
                 docs: The id of the deal to associate with company
+        examples:
+            - name: Associate hubspot company with deal
+              value:
+                  dealId: '14189075991'
     ContactAssociation:
         properties:
             dealId:
                 type: optional<string>
                 docs: The id of the deal to associate with contact
+        examples:
+            - name: Associate hubspot contact with deal
+              value:
+                  dealId: '14189075991'
     DealAssociation:
         properties:
             contactId:
@@ -17,6 +25,10 @@ types:
             companyId:
                 type: optional<string>
                 docs: The id of the company to associate with deal
+        examples:
+            - name: Associate pipedrive deal with contact
+              value:
+                  contactId: '2'
     EventAssociation:
         properties:
             dealId:
@@ -25,6 +37,11 @@ types:
             contactId:
                 type: optional<string>
                 docs: The id of the contact to associate with event
+        examples:
+            - name: Associate salesforce event with deal and contact
+              value:
+                  dealId: '0065i00000DGtndAAD'
+                  contactId: '0059e00001BYvndFAC'
     LeadAssociation:
         properties:
             contactId:
@@ -36,6 +53,11 @@ types:
             dealId:
                 type: optional<string>
                 docs: The id of the deal to associate with lead
+        examples:
+            - name: Associate hubspot lead with deal and company
+              value:
+                  dealId: '14189075991'
+                  companyId: '15661756020'
     NoteAssociation:
         properties:
             contactId:
@@ -50,13 +72,25 @@ types:
             dealId:
                 type: optional<string>
                 docs: The id of the deal to associate with note
+        examples:
+            - name: Associate zoho note with deal
+              value:
+                  dealId: '535586000000287437'
     TaskAssociation:
         properties:
             dealId:
                 type: optional<string>
                 docs: The id of the deal to associate with task
+        examples:
+            - name: Associate zoho task with deal
+              value:
+                  dealId: '535586000000287437'
     UserAssociation:
         properties:
             dealId:
                 type: optional<string>
                 docs: The id of the deal to associate with user
+        examples:
+            - name: Associate hubspot user with deal
+              value:
+                  dealId: '14189075991'
