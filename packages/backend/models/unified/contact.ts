@@ -74,7 +74,7 @@ export function unifyContact(contact: any): UnifiedContact {
 
     // Map additional fields
     Object.keys(contact).forEach((key) => {
-        if (!(key in unifiedContact)) {
+        if (!(key in unifiedContact) && key !== 'properties') {
             unifiedContact['additional'][key] = contact[key];
         }
     });

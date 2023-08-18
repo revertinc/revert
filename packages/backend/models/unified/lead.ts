@@ -79,7 +79,7 @@ export function unifyLead(lead: any, tpId: TP_ID): UnifiedLead {
 
     // Map additional fields
     Object.keys(lead).forEach((key) => {
-        if (!(key in unifiedlead)) {
+        if (!(key in unifiedlead) && key !== 'properties') {
             unifiedlead['additional'][key] = lead[key];
         }
     });

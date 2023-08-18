@@ -40,7 +40,7 @@ export function unifyUser(user: any): UnifiedUser {
 
     // Map additional fields
     Object.keys(user).forEach((key) => {
-        if (!(key in unifiedUser)) {
+        if (!(key in unifiedUser) && key !== 'properties') {
             unifiedUser['additional'][key] = user[key];
         }
     });

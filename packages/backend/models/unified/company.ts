@@ -107,7 +107,7 @@ export function unifyCompany(company: any): UnifiedCompany {
 
     // Map additional fields
     Object.keys(company).forEach((key) => {
-        if (!(key in unifiedCompany)) {
+        if (!(key in unifiedCompany) && key !== 'properties') {
             unifiedCompany['additional'][key] = company[key];
         }
     });

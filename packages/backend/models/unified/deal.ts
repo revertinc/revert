@@ -56,7 +56,7 @@ export function unifyDeal(deal: any, tpId: TP_ID): UnifiedDeal {
 
     // Map additional fields
     Object.keys(deal).forEach((key) => {
-        if (!(key in unifiedDeal)) {
+        if (!(key in unifiedDeal) && key !== 'properties') {
             unifiedDeal['additional'][key] = deal[key];
         }
     });
