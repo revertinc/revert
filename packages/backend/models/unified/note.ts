@@ -48,7 +48,7 @@ export function unifyNote(note: any, tpId: TP_ID): UnifiedNote {
 
     // Map additional fields
     Object.keys(note).forEach((key) => {
-        if (!(key in unifiednote)) {
+        if (!(key in unifiednote) && key !== 'properties') {
             unifiednote['additional'][key] = note[key];
         }
     });

@@ -52,7 +52,7 @@ export function unifyEvent(event: any): UnifiedEvent {
 
     // Map additional fields
     Object.keys(event).forEach((key) => {
-        if (!(key in unifiedEvent)) {
+        if (!(key in unifiedEvent) && key !== 'properties') {
             unifiedEvent['additional'][key] = event[key];
         }
     });

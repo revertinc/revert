@@ -48,7 +48,7 @@ export function unifyTask(task: any): UnifiedTask {
 
     // Map additional fields
     Object.keys(task).forEach((key) => {
-        if (!(key in unifiedTask)) {
+        if (!(key in unifiedTask) && key !== 'properties') {
             unifiedTask['additional'][key] = task[key];
         }
     });
