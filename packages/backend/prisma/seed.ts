@@ -41,7 +41,19 @@ async function main() {
     //         console.log({ localAccount, localRevertApp });
     //     })
     // );
-    const noteFields = [{ source_field_name: 'hs_note_body', target_field_name: 'content' }];
+
+    // root schema mapping for note starts --------------------------------------------------
+    const noteFields = [
+        {
+            source_field_name: {
+                [TP_ID.hubspot]: 'hs_note_body',
+                [TP_ID.pipedrive]: 'content',
+                [TP_ID.sfdc]: 'Body',
+                [TP_ID.zohocrm]: 'Note_Content',
+            },
+            target_field_name: 'content',
+        },
+    ];
     const rootSchema = await prisma.schemas.create({
         data: {
             id: randomUUID(),
@@ -49,18 +61,27 @@ async function main() {
             fields: noteFields.map((n) => n.target_field_name),
         },
     });
-    const noteFieldMappings = noteFields.map((noteField) => ({
-        id: randomUUID(),
-        source_tp_id: TP_ID.hubspot,
-        target_schema_id: rootSchema.id,
-        source_field_name: noteField.source_field_name,
-        target_field_name: noteField.target_field_name,
-        is_standard_field: true,
-    }));
-    await prisma.fieldMappings.createMany({
-        data: noteFieldMappings,
+    const schemaMapIds: string[] = [];
+    await Promise.all(
+        Object.values(TP_ID).map(async (tpId) => {
+            const noteFieldMappings = noteFields.map((noteField) => ({
+                id: randomUUID(),
+                source_tp_id: tpId,
+                target_schema_id: rootSchema.id,
+                source_field_name: noteField.source_field_name[tpId],
+                target_field_name: noteField.target_field_name,
+                is_standard_field: true,
+            }));
+            await prisma.fieldMappings.createMany({
+                data: noteFieldMappings,
+            });
+            schemaMapIds.push(...noteFieldMappings.map((n) => n.id));
+        })
+    );
+    await prisma.schema_mapping.create({
+        data: { id: randomUUID(), field_mapping_config_id: schemaMapIds },
     });
-    await prisma.schema_mapping.createMany({ data: noteFieldMappings.map((n) => ({ id: n.id })) });
+    // root schema mapping for note ends --------------------------------------------------
 }
 main()
     .then(async () => {
