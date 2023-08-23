@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
-import { PrismaClient, OBJECT_TYPES, TP_ID } from '@prisma/client';
+import { PrismaClient, OBJECT_TYPES, TP_ID, fieldMappings } from '@prisma/client';
+import { rootSchemaMappingId } from '../constants/common';
 // import { PrismaClient, TP_ID, ENV, OBJECT_TYPES } from '@prisma/client';
 const prisma = new PrismaClient();
 
@@ -61,7 +62,7 @@ async function main() {
             fields: noteFields.map((n) => n.target_field_name),
         },
     });
-    const schemaMapIds: string[] = [];
+    const noteFieldMappingForAll: any[] = [];
     await Promise.all(
         Object.values(TP_ID).map(async (tpId) => {
             const noteFieldMappings = noteFields.map((noteField) => ({
@@ -72,14 +73,11 @@ async function main() {
                 target_field_name: noteField.target_field_name,
                 is_standard_field: true,
             }));
-            await prisma.fieldMappings.createMany({
-                data: noteFieldMappings,
-            });
-            schemaMapIds.push(...noteFieldMappings.map((n) => n.id));
+            noteFieldMappingForAll.push(...noteFieldMappings);
         })
     );
     await prisma.schema_mapping.create({
-        data: { id: randomUUID(), field_mapping_config_id: schemaMapIds },
+        data: { id: rootSchemaMappingId, field_mapping_config_id: noteFieldMappingForAll.map(n => n.id), fieldMappings: { createMany: { data: noteFieldMappingForAll as fieldMappings[] } } },
     });
     // root schema mapping for note ends --------------------------------------------------
 }
