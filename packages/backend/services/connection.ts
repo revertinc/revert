@@ -102,7 +102,8 @@ const connectionService = new ConnectionService({
         const deleted: any = await prisma.connections.delete({
             // TODO: Add environments to connections.
             where: {
-                uniqueThirdPartyPerTenant: {
+                uniqueCustomerPerTenantPerThirdParty: {
+                    tp_customer_id: connection.tp_customer_id,
                     t_id: connection.t_id,
                     tp_id: connection.tp_id,
                 },
