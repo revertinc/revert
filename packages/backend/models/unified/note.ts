@@ -1,9 +1,8 @@
-import { OBJECT_TYPES, PrismaClient, TP_ID } from '@prisma/client';
+import { OBJECT_TYPES, TP_ID } from '@prisma/client';
 import { getHubspotAssociationObj } from '../../helpers/hubspot';
+import { transformFieldMappingToModel } from '../../helpers/transformFieldMappingToModel';
 import { Subtype } from '../../constants/typeHelpers';
-import { AllAssociation, rootSchemaMappingId } from '../../constants/common';
-
-const prisma = new PrismaClient();
+import { AllAssociation } from '../../constants/common';
 
 export type NoteAssociation = Subtype<AllAssociation, 'contactId' | 'companyId' | 'leadId' | 'dealId'>;
 
@@ -20,39 +19,9 @@ export interface UnifiedNote {
 }
 
 export async function unifyNote(note: any, tpId: TP_ID): Promise<UnifiedNote> {
-    console.log("blah note")
-    console.dir(note, {depth: null});
-    const rootSchema = await prisma.schemas.findFirst({
-        where: { object: OBJECT_TYPES.note, schema_mapping_id: rootSchemaMappingId },
-        include: { fieldMappings: { where: { source_tp_id: tpId } } },
-    });
-    const trandformedNote: Record<string, string> = {};
-    rootSchema?.fields?.forEach((field) => {
-        const fieldMapping = rootSchema?.fieldMappings?.find((r) => r?.target_field_name === field);
-        const transformedKey = fieldMapping?.source_field_name;
-        if (transformedKey) {
-            trandformedNote[field] = note[transformedKey];
-        }
-    });
-    console.log('blah transformedNote');
-    console.dir(trandformedNote, { depth: null });
-    const unifiednote: UnifiedNote = {
-        remoteId: note.id || note.Id,
-        id: note.id || note.noteID || note.note_id || note.Id,
-        createdTimestamp:
-            note.createdDate ||
-            note.CreatedDate ||
-            note.Created_Time ||
-            note.hs_timestamp ||
-            note.hs_createdate ||
-            note.add_time,
-        updatedTimestamp:
-            note.lastModifiedDate ||
-            note.LastModifiedDate ||
-            note.Modified_Time ||
-            note.hs_lastmodifieddate ||
-            note.update_time,
-        content: note.content || note.hs_note_body || note.Body || note.Note_Content,
+    const trandformedNote = await transformFieldMappingToModel({ obj: note, tpId, objType: OBJECT_TYPES.note });
+    const unifiednote = {
+        ...trandformedNote,
         additional: {},
         associations: {
             ...(tpId === TP_ID.pipedrive && {
@@ -62,7 +31,7 @@ export async function unifyNote(note: any, tpId: TP_ID): Promise<UnifiedNote> {
                 dealId: note.deal_id,
             }),
         },
-    };
+    } as UnifiedNote;
 
     // Map additional fields
     Object.keys(note).forEach((key) => {
