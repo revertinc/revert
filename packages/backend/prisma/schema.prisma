@@ -91,29 +91,30 @@ enum OBJECT_TYPES {
   user
 }
 
+model schema_mapping {
+  id                String    @id
+  object_schema_ids String[]
+  object_schemas    schemas[]
+}
+
 model schemas {
-  id            String          @id
-  object        OBJECT_TYPES
-  fields        String[]
-  fieldMappings fieldMappings[]
+  id                 String          @id
+  fields             String[]
+  object             OBJECT_TYPES
+  schema_mapping_id  String
+  schema_mapping     schema_mapping  @relation(fields: [schema_mapping_id], references: [id])
+  fields_mapping_ids String[]
+  fieldMappings      fieldMappings[]
 }
 
 model fieldMappings {
-  id                String          @id
+  id                String  @id
   source_tp_id      TP_ID
-  target_schema_id  String
-  target_schema     schemas         @relation(fields: [target_schema_id], references: [id])
   source_field_name String
   target_field_name String
   is_standard_field Boolean
-  schema_mapping    schema_mapping? @relation(fields: [schema_mapping_id], references: [id])
-  schema_mapping_id String?
-}
-
-model schema_mapping {
-  id                      String          @id
-  field_mapping_config_id String[]
-  fieldMappings           fieldMappings[]
+  schema_id         String
+  schema            schemas @relation(fields: [schema_id], references: [id])
 }
 
 model waitlist {

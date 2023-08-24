@@ -44,40 +44,67 @@ async function main() {
     // );
 
     // root schema mapping for note starts --------------------------------------------------
-    const noteFields = [
-        {
-            source_field_name: {
-                [TP_ID.hubspot]: 'hs_note_body',
-                [TP_ID.pipedrive]: 'content',
-                [TP_ID.sfdc]: 'Body',
-                [TP_ID.zohocrm]: 'Note_Content',
+    const allFields = {
+        [OBJECT_TYPES.note]: [
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_note_body',
+                    [TP_ID.pipedrive]: 'content',
+                    [TP_ID.sfdc]: 'Body',
+                    [TP_ID.zohocrm]: 'Note_Content',
+                },
+                target_field_name: 'content',
             },
-            target_field_name: 'content',
-        },
-    ];
-    const rootSchema = await prisma.schemas.create({
-        data: {
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'id',
+                    [TP_ID.pipedrive]: 'id',
+                    [TP_ID.sfdc]: 'Id',
+                    [TP_ID.zohocrm]: 'id',
+                },
+                target_field_name: 'id',
+            },
+        ],
+    };
+    const allSchemas = Object.keys(allFields).map(obj => {
+        return {
             id: randomUUID(),
-            object: OBJECT_TYPES.note,
-            fields: noteFields.map((n) => n.target_field_name),
+            fields: allFields[obj as keyof typeof allFields].map((n) => n.target_field_name),
+            object: obj as OBJECT_TYPES,
+        }
+    }) 
+    await prisma.schema_mapping.create({
+        data: {
+            id: rootSchemaMappingId,
+            object_schemas: {
+                createMany: {
+                    data: allSchemas,
+                },
+            },
+            object_schema_ids: allSchemas.map(s => s.id)
         },
     });
-    const noteFieldMappingForAll: any[] = [];
-    await Promise.all(
-        Object.values(TP_ID).map(async (tpId) => {
-            const noteFieldMappings = noteFields.map((noteField) => ({
-                id: randomUUID(),
-                source_tp_id: tpId,
-                target_schema_id: rootSchema.id,
-                source_field_name: noteField.source_field_name[tpId],
-                target_field_name: noteField.target_field_name,
-                is_standard_field: true,
-            }));
-            noteFieldMappingForAll.push(...noteFieldMappings);
-        })
-    );
-    await prisma.schema_mapping.create({
-        data: { id: rootSchemaMappingId, field_mapping_config_id: noteFieldMappingForAll.map(n => n.id), fieldMappings: { createMany: { data: noteFieldMappingForAll as fieldMappings[] } } },
+
+    const fieldMappingForAll: fieldMappings[] = [];
+        Object.values(OBJECT_TYPES).forEach(obj => {
+            Object.values(TP_ID).forEach(async (tpId) => {
+                const objSchema = allSchemas.find(s => s.object === obj);
+                const fieldMappings = objSchema?.fields.map((field) => ({
+                    id: randomUUID(),
+                    source_tp_id: tpId,
+                    schema_id: objSchema.id,
+                    source_field_name: allFields[obj as "note"].find(a => a.target_field_name === field)?.source_field_name[tpId]!,
+                    target_field_name: field,
+                    is_standard_field: true,
+                }));
+                if (fieldMappings) {
+                    fieldMappingForAll.push(...fieldMappings);
+                }
+            })
+
+        }) 
+    await prisma.fieldMappings.createMany({
+        data: fieldMappingForAll,
     });
     // root schema mapping for note ends --------------------------------------------------
 }
