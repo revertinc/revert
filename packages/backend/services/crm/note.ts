@@ -73,7 +73,7 @@ const noteService = new NoteService(
                             }
                         );
                         const note = result.data;
-                        res.send({ status: 'ok', result: await unifyNote(note, thirdPartyId) });
+                        res.send({ status: 'ok', result: await unifyNote(note.data, thirdPartyId) });
                         break;
                     }
                     default: {

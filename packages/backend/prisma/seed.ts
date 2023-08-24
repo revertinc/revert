@@ -64,6 +64,33 @@ async function main() {
                 },
                 target_field_name: 'id',
             },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'id',
+                    [TP_ID.pipedrive]: 'id',
+                    [TP_ID.sfdc]: 'Id',
+                    [TP_ID.zohocrm]: 'id',
+                },
+                target_field_name: 'remoteId',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_timestamp',
+                    [TP_ID.pipedrive]: 'add_time',
+                    [TP_ID.sfdc]: 'CreatedDate',
+                    [TP_ID.zohocrm]: 'Created_Time',
+                },
+                target_field_name: 'createdTimestamp',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_lastmodifieddate',
+                    [TP_ID.pipedrive]: 'update_time',
+                    [TP_ID.sfdc]: 'LastModifiedDate',
+                    [TP_ID.zohocrm]: 'Modified_Time',
+                },
+                target_field_name: 'updatedTimestamp',
+            },
         ],
     };
     const allSchemas = Object.keys(allFields).map(obj => {
