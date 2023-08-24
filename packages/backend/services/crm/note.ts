@@ -41,7 +41,7 @@ const noteService = new NoteService(
                             },
                         });
                         note = ([note.data] as any[])?.[0];
-                        note = unifyNote({ ...note, ...note?.properties }, thirdPartyId);
+                        note = await unifyNote({ ...note, ...note?.properties }, thirdPartyId);
                         res.send({ status: 'ok', result: { ...note, ...note?.properties } });
                         break;
                     }
@@ -53,7 +53,7 @@ const noteService = new NoteService(
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
-                        let note = unifyNote(notes.data.data?.[0], thirdPartyId);
+                        let note = await unifyNote(notes.data.data?.[0], thirdPartyId);
                         res.send({ status: 'ok', result: note });
                         break;
                     }
@@ -66,7 +66,7 @@ const noteService = new NoteService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
-                        let note = unifyNote(notes.data, thirdPartyId);
+                        let note = await unifyNote(notes.data, thirdPartyId);
                         res.send({ status: 'ok', result: note });
                         break;
                     }
@@ -80,7 +80,7 @@ const noteService = new NoteService(
                             }
                         );
                         const note = result.data;
-                        res.send({ status: 'ok', result: unifyNote(note, thirdPartyId) });
+                        res.send({ status: 'ok', result: await unifyNote(note, thirdPartyId) });
                         break;
                     }
                     default: {
@@ -128,7 +128,9 @@ const noteService = new NoteService(
                         });
                         const nextCursor = notes.data?.paging?.next?.after || undefined;
                         notes = notes.data.results as any[];
-                        notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }, thirdPartyId));
+                        notes = await Promise.all(
+                            notes?.map(async (l: any) => await unifyNote({ ...l, ...l?.properties }, thirdPartyId))
+                        );
                         res.send({
                             status: 'ok',
                             next: nextCursor,
@@ -151,7 +153,7 @@ const noteService = new NoteService(
                         const nextCursor = notes.data?.info?.next_page_token || undefined;
                         const prevCursor = notes.data?.info?.previous_page_token || undefined;
                         notes = notes.data.data;
-                        notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
+                        notes = await Promise.all(notes?.map(async (l: any) => await unifyNote(l, thirdPartyId)));
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: notes });
                         break;
                     }
@@ -183,7 +185,7 @@ const noteService = new NoteService(
                                 ? String(parseInt(String(cursor)) - notes.data?.totalSize)
                                 : undefined;
                         notes = notes.data?.records;
-                        notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
+                        notes = await Promise.all(notes?.map(async (l: any) => await unifyNote(l, thirdPartyId)));
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: notes });
                         break;
                     }
@@ -202,7 +204,9 @@ const noteService = new NoteService(
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
                         const notes = result.data.data;
-                        const unifiedNotes = notes?.map((d) => unifyNote(d, thirdPartyId));
+                        const unifiedNotes = await Promise.all(
+                            notes?.map(async (d) => await unifyNote(d, thirdPartyId))
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedNotes });
                         break;
                     }
@@ -411,7 +415,9 @@ const noteService = new NoteService(
                             }),
                         });
                         notes = notes.data.results as any[];
-                        notes = notes?.map((l: any) => unifyNote({ ...l, ...l?.properties }, thirdPartyId));
+                        notes = await Promise.all(
+                            notes?.map(async (l: any) => await unifyNote({ ...l, ...l?.properties }, thirdPartyId))
+                        );
                         res.send({ status: 'ok', results: notes });
                         break;
                     }
@@ -424,7 +430,7 @@ const noteService = new NoteService(
                             },
                         });
                         notes = notes.data.data;
-                        notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
+                        notes = await Promise.all(notes?.map(async (l: any) => await unifyNote(l, thirdPartyId)));
                         res.send({ status: 'ok', results: notes });
                         break;
                     }
@@ -438,7 +444,7 @@ const noteService = new NoteService(
                             },
                         });
                         notes = notes?.data?.searchRecords;
-                        notes = notes?.map((l: any) => unifyNote(l, thirdPartyId));
+                        notes = await Promise.all(notes?.map(async (l: any) => await unifyNote(l, thirdPartyId)));
                         res.send({ status: 'ok', results: notes });
                         break;
                     }

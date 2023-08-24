@@ -37,3 +37,5 @@ export const DEFAULT_SCOPE = {
 };
 
 export type AllAssociation = 'contactId' | 'companyId' | 'leadId' | 'dealId' | 'noteId';
+
+export const rootSchemaMappingId = 'revertRootSchemaMapping';
