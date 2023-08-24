@@ -107,7 +107,7 @@ model fieldMappings {
   target_field_name String
   is_standard_field Boolean
   schema_mapping    schema_mapping? @relation(fields: [schema_mapping_id], references: [id])
-  schema_mapping_id  String?
+  schema_mapping_id String?
 }
 
 model schema_mapping {

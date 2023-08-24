@@ -1,7 +1,9 @@
-import { TP_ID } from '@prisma/client';
+import { PrismaClient, TP_ID } from '@prisma/client';
 import { getHubspotAssociationObj } from '../../helpers/hubspot';
 import { Subtype } from '../../constants/typeHelpers';
-import { AllAssociation } from '../../constants/common';
+import { AllAssociation, rootSchemaMappingId } from '../../constants/common';
+
+const prisma = new PrismaClient();
 
 export type NoteAssociation = Subtype<AllAssociation, 'contactId' | 'companyId' | 'leadId' | 'dealId'>;
 
@@ -17,7 +19,24 @@ export interface UnifiedNote {
     additional: any;
 }
 
-export function unifyNote(note: any, tpId: TP_ID): UnifiedNote {
+export async function unifyNote(note: any, tpId: TP_ID): Promise<UnifiedNote> {
+    const rootFieldMapping = await prisma.fieldMappings.findMany({
+        where: { source_tp_id: tpId, schema_mapping_id: rootSchemaMappingId },
+        include: { target_schema: true },
+    });
+    const schemaFields = rootFieldMapping[0].target_schema.fields;
+    const trandformedNote: Record<string, string> = {};
+    schemaFields.forEach((field) => {
+        const fieldMapping = rootFieldMapping.find((r) => r.target_field_name === field);
+        if (fieldMapping) {
+            const transformedKey = fieldMapping.source_field_name;
+            if (transformedKey) {
+                trandformedNote[field] = note[transformedKey]; // FIXME: note.data[transformedKey] for single note.
+            }
+        }
+    });
+    console.log("blah transformedNote")
+    console.dir(trandformedNote, { depth: null });
     const unifiednote: UnifiedNote = {
         remoteId: note.id || note.Id,
         id: note.id || note.noteID || note.note_id || note.Id,
