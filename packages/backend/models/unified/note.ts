@@ -20,6 +20,8 @@ export interface UnifiedNote {
 }
 
 export async function unifyNote(note: any, tpId: TP_ID): Promise<UnifiedNote> {
+    console.log("blah note")
+    console.dir(note, {depth: null});
     const rootSchema = await prisma.schemas.findFirst({
         where: { object: OBJECT_TYPES.note, schema_mapping_id: rootSchemaMappingId },
         include: { fieldMappings: { where: { source_tp_id: tpId } } },
@@ -29,7 +31,7 @@ export async function unifyNote(note: any, tpId: TP_ID): Promise<UnifiedNote> {
         const fieldMapping = rootSchema?.fieldMappings?.find((r) => r?.target_field_name === field);
         const transformedKey = fieldMapping?.source_field_name;
         if (transformedKey) {
-            trandformedNote[field] = note[transformedKey]; // FIXME: note.data[transformedKey] for single note.
+            trandformedNote[field] = note[transformedKey];
         }
     });
     console.log('blah transformedNote');
