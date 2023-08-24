@@ -75,7 +75,7 @@ async function main() {
             },
             {
                 source_field_name: {
-                    [TP_ID.hubspot]: 'hs_timestamp',
+                    [TP_ID.hubspot]: 'hs_createdate',
                     [TP_ID.pipedrive]: 'add_time',
                     [TP_ID.sfdc]: 'CreatedDate',
                     [TP_ID.zohocrm]: 'Created_Time',
