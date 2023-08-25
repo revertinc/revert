@@ -69,3 +69,12 @@ In case of questions/feedback, you can get in touch in the following ways
 
 -   Open a Github support issue
 -   Contact us at [email](mailto:team@revert.dev)
+-   Ask a question in our [discord](https://discord.gg/q5K5cRhymW)
+
+## Contributors
+
+Thankful to the community for making Revert better every day ❤️
+
+<a href="https://github.com/revertinc/revert/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=revertinc/revert" />
+</a>
