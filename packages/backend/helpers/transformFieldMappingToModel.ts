@@ -30,3 +30,31 @@ export const transformFieldMappingToModel = async ({
     console.dir(transformedObj, { depth: null });
     return transformedObj;
 };
+
+export const transformModelToFieldMapping = async ({
+    unifiedObj,
+    tpId,
+    objType,
+}: {
+    unifiedObj: any;
+    tpId: TP_ID;
+    objType: OBJECT_TYPES;
+}) => {
+    console.log('blah unifiedObj');
+    console.dir(unifiedObj, { depth: null });
+    const rootSchema = await prisma.schemas.findFirst({
+        where: { object: objType, schema_mapping_id: rootSchemaMappingId },
+        include: { fieldMappings: { where: { source_tp_id: tpId } } },
+    });
+    const crmObj: Record<string, string> = {};
+    Object.keys(unifiedObj).forEach(key => {
+        const fieldMapping = rootSchema?.fieldMappings?.find((r) => r?.target_field_name === key);
+        const crmKey = fieldMapping?.source_field_name;
+        if (crmKey) {
+            crmObj[crmKey] = unifiedObj[key];
+        }
+    })
+    console.log('blah crmObj');
+    console.dir(crmObj, { depth: null });
+    return crmObj;
+};
