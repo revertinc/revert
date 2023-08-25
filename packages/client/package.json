@@ -20,7 +20,7 @@
     "@uiw/codemirror-extensions-langs": "^4.12.4",
     "@uiw/codemirror-theme-atomone": "^4.12.1",
     "@uiw/codemirror-theme-eclipse": "^4.12.3",
-    "@uiw/codemirror-theme-sublime": "^4.12.4",
+    "@uiw/codemirror-theme-sublime": "^4.21.9",
     "@uiw/react-codemirror": "^4.11.5",
     "axios": "^1.4.0",
     "cronstrue": "^2.11.0",
