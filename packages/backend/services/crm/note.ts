@@ -217,7 +217,7 @@ const noteService = new NoteService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const note = disunifyNote(noteData, thirdPartyId);
+                const note = await disunifyNote(noteData, thirdPartyId);
                 console.log('Revert::CREATE NOTE', tenantId, note);
 
                 switch (thirdPartyId) {
@@ -301,7 +301,7 @@ const noteService = new NoteService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const note = disunifyNote(noteData, thirdPartyId);
+                const note = await disunifyNote(noteData, thirdPartyId);
                 console.log('Revert::UPDATE NOTE', tenantId, note, noteId);
 
                 switch (thirdPartyId) {

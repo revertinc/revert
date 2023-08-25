@@ -1,6 +1,6 @@
 import { OBJECT_TYPES, TP_ID } from '@prisma/client';
 import { getHubspotAssociationObj } from '../../helpers/hubspot';
-import { transformFieldMappingToModel } from '../../helpers/transformFieldMappingToModel';
+import { transformFieldMappingToModel, transformModelToFieldMapping } from '../../helpers/transformFieldMappingToModel';
 import { Subtype } from '../../constants/typeHelpers';
 import { AllAssociation } from '../../constants/common';
 
@@ -43,10 +43,14 @@ export async function unifyNote(note: any, tpId: TP_ID): Promise<UnifiedNote> {
     return unifiednote;
 }
 
-export function toSalesforceNote(unified: UnifiedNote): any {
+export async function toSalesforceNote(unified: UnifiedNote, tpId: TP_ID) {
+    const transformedObj = await transformModelToFieldMapping({
+        unifiedObj: unified,
+        tpId,
+        objType: OBJECT_TYPES.note,
+    });
     const salesforceNote: any = {
-        Id: unified.remoteId,
-        Body: unified.content,
+        ...transformedObj,
         ...(unified.associations?.dealId && {
             parentId: unified.associations.dealId,
         }),
@@ -61,7 +65,12 @@ export function toSalesforceNote(unified: UnifiedNote): any {
     return salesforceNote;
 }
 
-export function toZohoNote(unified: UnifiedNote): any {
+export async function toZohoNote(unified: UnifiedNote, tpId: TP_ID) {
+    const transformedObj = await transformModelToFieldMapping({
+        unifiedObj: unified,
+        tpId,
+        objType: OBJECT_TYPES.note,
+    });
     const zoho: any = {
         data: [
             {
@@ -69,6 +78,7 @@ export function toZohoNote(unified: UnifiedNote): any {
                     Parent_Id: unified.associations.dealId,
                     se_module: 'Deals',
                 }),
+                ...transformedObj,
             },
         ],
         apply_feature_execution: [
@@ -78,8 +88,6 @@ export function toZohoNote(unified: UnifiedNote): any {
         ],
         trigger: ['approval', 'workflow', 'blueprint'],
     };
-    zoho.data[0].Note_Content = unified.content;
-    zoho.data[0].id = unified.remoteId;
 
     // Map custom fields
     if (unified.additional) {
@@ -90,12 +98,16 @@ export function toZohoNote(unified: UnifiedNote): any {
     return zoho;
 }
 
-export function toHubspotNote(unified: UnifiedNote): any {
+export async function toHubspotNote(unified: UnifiedNote, tpId: TP_ID) {
+    const transformedObj = await transformModelToFieldMapping({
+        unifiedObj: unified,
+        tpId,
+        objType: OBJECT_TYPES.note,
+    });
     const hubspotNote: any = {
         properties: {
-            id: unified.remoteId,
-            hs_note_body: unified.content,
             hs_timestamp: Date.now().toString(),
+            ...transformedObj,
             ...(unified.associations && {}),
         },
     };
@@ -128,12 +140,14 @@ export function toHubspotNote(unified: UnifiedNote): any {
     return hubspotNote;
 }
 
-export function toPipedriveNote(unified: UnifiedNote): any {
+export async function toPipedriveNote(unified: UnifiedNote, tpId: TP_ID) {
+    const transformedObj = await transformModelToFieldMapping({
+        unifiedObj: unified,
+        tpId,
+        objType: OBJECT_TYPES.note,
+    });
     const pipedriveNote: any = {
-        id: unified.remoteId,
-        content: unified.content,
-        add_time: unified.createdTimestamp,
-        update_time: unified.updatedTimestamp,
+        ...transformedObj,
         ...(unified.associations?.contactId && {
             person_id: unified.associations.contactId,
         }),
@@ -160,14 +174,14 @@ export function toPipedriveNote(unified: UnifiedNote): any {
     return pipedriveNote;
 }
 
-export function disunifyNote(note: UnifiedNote, integrationId: string): any {
+export async function disunifyNote(note: UnifiedNote, integrationId: TP_ID) {
     if (integrationId === TP_ID.sfdc) {
-        return toSalesforceNote(note);
+        return await toSalesforceNote(note, integrationId);
     } else if (integrationId === TP_ID.hubspot) {
-        return toHubspotNote(note);
+        return await toHubspotNote(note, integrationId);
     } else if (integrationId === TP_ID.zohocrm) {
-        return toZohoNote(note);
+        return await toZohoNote(note, integrationId);
     } else if (integrationId === TP_ID.pipedrive) {
-        return toPipedriveNote(note);
+        return await toPipedriveNote(note, integrationId);
     }
 }
