@@ -6873,7 +6873,7 @@ __metadata:
     "@uiw/codemirror-extensions-langs": ^4.12.4
     "@uiw/codemirror-theme-atomone": ^4.12.1
     "@uiw/codemirror-theme-eclipse": ^4.12.3
-    "@uiw/codemirror-theme-sublime": ^4.12.4
+    "@uiw/codemirror-theme-sublime": ^4.21.11
     "@uiw/react-codemirror": ^4.11.5
     autoprefixer: ^10.4.8
     axios: ^1.4.0
@@ -10668,12 +10668,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uiw/codemirror-theme-sublime@npm:^4.12.4":
-  version: 4.19.9
-  resolution: "@uiw/codemirror-theme-sublime@npm:4.19.9"
+"@uiw/codemirror-theme-sublime@npm:^4.21.11":
+  version: 4.21.11
+  resolution: "@uiw/codemirror-theme-sublime@npm:4.21.11"
   dependencies:
-    "@uiw/codemirror-themes": 4.19.9
-  checksum: ac99286781b9074b3e0b53dca104062f169d37cb1ddd9d820f5250c72452dcf35f34147f541de6f09b75056b0f24932c1c63c9872d7ed1e3c69185f5d90a74bf
+    "@uiw/codemirror-themes": 4.21.11
+  checksum: 7a3df5ba372376639a74a621e3e9e60f69bf9a81011c98e7c6437340941be3eecf91c18b91dfbbc612ca3affacbdbe94cc0704cda0469b6806739dd42ccfad29
   languageName: node
   linkType: hard
 
@@ -10689,6 +10689,21 @@ __metadata:
     "@codemirror/state": ">=6.0.0"
     "@codemirror/view": ">=6.0.0"
   checksum: 96d5117744d7b9f768454ed710389d589903aa9503c4a15b5ce8496033b07235a2014a9ec34925b95019f70d74fbfc751212ca9c6b1e921d58fc22e4d9203707
+  languageName: node
+  linkType: hard
+
+"@uiw/codemirror-themes@npm:4.21.11":
+  version: 4.21.11
+  resolution: "@uiw/codemirror-themes@npm:4.21.11"
+  dependencies:
+    "@codemirror/language": ^6.0.0
+    "@codemirror/state": ^6.0.0
+    "@codemirror/view": ^6.0.0
+  peerDependencies:
+    "@codemirror/language": ">=6.0.0"
+    "@codemirror/state": ">=6.0.0"
+    "@codemirror/view": ">=6.0.0"
+  checksum: ef0544d169b0dff057714ad94e6215994ef5e7d85ac71852f2875d953acf1bc35203b7b98c2fe742ae4c0394b92693e39e65d7382a265ff979459b58f374e99b
   languageName: node
   linkType: hard
 
