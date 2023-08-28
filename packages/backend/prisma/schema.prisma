@@ -72,8 +72,10 @@ model connections {
   owner_account_public_token String
   app_client_id              String?
   app_client_secret          String?
-  app                        apps?   @relation(fields: [appId], references: [id])
+  app                        apps?           @relation(fields: [appId], references: [id])
   appId                      String?
+  schema_mapping_id          String?
+  schema_mapping             schema_mapping? @relation(fields: [schema_mapping_id], references: [id])
 
   @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")
   @@unique([tp_id, t_id], name: "uniqueThirdPartyPerTenant")
@@ -92,9 +94,10 @@ enum OBJECT_TYPES {
 }
 
 model schema_mapping {
-  id                String    @id
+  id                String        @id
   object_schema_ids String[]
   object_schemas    schemas[]
+  connections       connections[]
 }
 
 model schemas {

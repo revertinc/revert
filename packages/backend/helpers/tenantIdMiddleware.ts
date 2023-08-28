@@ -25,6 +25,7 @@ const revertTenantMiddleware = () => async (req: Request, res: Response, next: (
                 t_id: true,
                 tp_account_url: true,
                 tp_customer_id: true,
+                schema_mapping_id: true
             },
         });
         if (!connection || !connection.length) {

@@ -15,6 +15,7 @@
         "db-seed": "prisma db seed",
         "db-pull": "prisma db pull",
         "migration:resolve": "prisma migrate resolve --applied $MIGRATION_ID",
+        "migration:dev": "prisma migrate dev",
         "migration:rollback": "prisma migrate resolve --rolled-back $MIGRATION_ID",
         "studio": "prisma studio",
         "migration:dryRun": "prisma migrate dev --create-only --name %1",
