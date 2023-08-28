@@ -83,17 +83,6 @@ model connections {
   @@unique([tp_customer_id, t_id, tp_id], name: "uniqueCustomerPerTenantPerThirdParty")
 }
 
-enum OBJECT_TYPES {
-  company
-  contact
-  deal
-  event
-  lead
-  note
-  task
-  user
-}
-
 model schema_mapping {
   id                String        @id
   object_schema_ids String[]
@@ -104,7 +93,7 @@ model schema_mapping {
 model schemas {
   id                 String          @id
   fields             String[]
-  object             OBJECT_TYPES
+  object             String
   schema_mapping_id  String
   schema_mapping     schema_mapping  @relation(fields: [schema_mapping_id], references: [id])
   fields_mapping_ids String[]

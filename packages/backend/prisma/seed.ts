@@ -1,7 +1,6 @@
 import { randomUUID } from 'crypto';
-import { PrismaClient, OBJECT_TYPES, TP_ID, fieldMappings } from '@prisma/client';
-import { rootSchemaMappingId } from '../constants/common';
-// import { PrismaClient, TP_ID, ENV, OBJECT_TYPES } from '@prisma/client';
+import { PrismaClient, TP_ID, fieldMappings } from '@prisma/client';
+import { StandardObjects, rootSchemaMappingId } from '../constants/common';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -45,7 +44,7 @@ async function main() {
 
     // root schema mapping for note starts --------------------------------------------------
     const allFields = {
-        [OBJECT_TYPES.note]: [
+        [StandardObjects.note]: [
             {
                 source_field_name: {
                     [TP_ID.hubspot]: 'hs_note_body',
@@ -97,7 +96,7 @@ async function main() {
         return {
             id: randomUUID(),
             fields: allFields[obj as keyof typeof allFields].map((n) => n.target_field_name),
-            object: obj as OBJECT_TYPES,
+            object: obj as StandardObjects,
         }
     }) 
     await prisma.schema_mapping.create({
@@ -113,7 +112,7 @@ async function main() {
     });
 
     const fieldMappingForAll: fieldMappings[] = [];
-        Object.values(OBJECT_TYPES).forEach(obj => {
+        Object.values(StandardObjects).forEach(obj => {
             Object.values(TP_ID).forEach(async (tpId) => {
                 const objSchema = allSchemas.find(s => s.object === obj);
                 const fieldMappings = objSchema?.fields.map((field) => ({

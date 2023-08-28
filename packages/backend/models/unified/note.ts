@@ -1,8 +1,8 @@
-import { OBJECT_TYPES, TP_ID } from '@prisma/client';
+import { TP_ID } from '@prisma/client';
 import { getHubspotAssociationObj } from '../../helpers/hubspot';
-import { transformFieldMappingToModel, transformModelToFieldMapping } from '../../helpers/transformFieldMappingToModel';
+import { transformFieldMappingToModel, transformModelToFieldMapping } from '../../helpers/transformSchemaMapping';
 import { Subtype } from '../../constants/typeHelpers';
-import { AllAssociation } from '../../constants/common';
+import { AllAssociation, StandardObjects } from '../../constants/common';
 
 export type NoteAssociation = Subtype<AllAssociation, 'contactId' | 'companyId' | 'leadId' | 'dealId'>;
 
@@ -19,15 +19,17 @@ export interface UnifiedNote {
 }
 
 export async function unifyNote(note: any, tpId: TP_ID, tenantSchemaMappingId?: string): Promise<UnifiedNote> {
-    const trandformedNote = await transformFieldMappingToModel({
+    const transformedNote = await transformFieldMappingToModel({
         obj: note,
         tpId,
-        objType: OBJECT_TYPES.note,
+        objType: StandardObjects.note,
         tenantSchemaMappingId,
     });
     const unifiednote = {
-        ...trandformedNote,
-        additional: {},
+        ...transformedNote,
+        additional: {
+            ...(transformedNote.additional || {})
+        },
         associations: {
             ...(tpId === TP_ID.pipedrive && {
                 contactId: note.person_id,
@@ -52,7 +54,7 @@ export async function toSalesforceNote(unified: UnifiedNote, tpId: TP_ID) {
     const transformedObj = await transformModelToFieldMapping({
         unifiedObj: unified,
         tpId,
-        objType: OBJECT_TYPES.note,
+        objType: StandardObjects.note,
     });
     const salesforceNote: any = {
         ...transformedObj,
@@ -74,7 +76,7 @@ export async function toZohoNote(unified: UnifiedNote, tpId: TP_ID) {
     const transformedObj = await transformModelToFieldMapping({
         unifiedObj: unified,
         tpId,
-        objType: OBJECT_TYPES.note,
+        objType: StandardObjects.note,
     });
     const zoho: any = {
         data: [
@@ -107,7 +109,7 @@ export async function toHubspotNote(unified: UnifiedNote, tpId: TP_ID) {
     const transformedObj = await transformModelToFieldMapping({
         unifiedObj: unified,
         tpId,
-        objType: OBJECT_TYPES.note,
+        objType: StandardObjects.note,
     });
     const hubspotNote: any = {
         properties: {
@@ -149,7 +151,7 @@ export async function toPipedriveNote(unified: UnifiedNote, tpId: TP_ID) {
     const transformedObj = await transformModelToFieldMapping({
         unifiedObj: unified,
         tpId,
-        objType: OBJECT_TYPES.note,
+        objType: StandardObjects.note,
     });
     const pipedriveNote: any = {
         ...transformedObj,
