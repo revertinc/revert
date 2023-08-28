@@ -39,3 +39,14 @@ export const DEFAULT_SCOPE = {
 export type AllAssociation = 'contactId' | 'companyId' | 'leadId' | 'dealId' | 'noteId';
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';
+
+export enum StandardObjects {
+    company = 'company',
+    contact = 'contact',
+    deal = 'deal',
+    event = 'event',
+    lead = 'lead',
+    note = 'note',
+    task = 'task',
+    user = 'user',
+}

@@ -1,5 +1,5 @@
-import { OBJECT_TYPES, PrismaClient, TP_ID } from '@prisma/client';
-import { rootSchemaMappingId } from '../constants/common';
+import { PrismaClient, TP_ID } from '@prisma/client';
+import { StandardObjects, rootSchemaMappingId } from '../constants/common';
 
 const prisma = new PrismaClient();
 
@@ -11,7 +11,7 @@ export const transformFieldMappingToModel = async ({
 }: {
     obj: any;
     tpId: TP_ID;
-    objType: OBJECT_TYPES;
+    objType: StandardObjects;
     tenantSchemaMappingId?: string;
 }) => {
     console.log('blah obj');
@@ -24,14 +24,21 @@ export const transformFieldMappingToModel = async ({
         where: { object: objType, schema_mapping_id: rootSchemaMappingId },
         include: { fieldMappings: { where: { source_tp_id: tpId } } },
     });
-    const transformedObj: Record<string, string> = {};
+    const transformedObj: Record<string, any> = {};
     (connectionSchema?.fields || rootSchema?.fields)?.forEach((field) => {
         const fieldMapping =
             connectionSchema?.fieldMappings?.find((r) => r?.target_field_name === field) ||
             rootSchema?.fieldMappings?.find((r) => r?.target_field_name === field);
         const transformedKey = fieldMapping?.source_field_name;
         if (transformedKey) {
-            transformedObj[field] = obj[transformedKey];
+            if (fieldMapping.is_standard_field) {
+                transformedObj[field] = obj[transformedKey];
+            } else {
+                transformedObj['additional'] = {
+                    ...transformedObj.additional,
+                    [field]: obj[transformedKey],
+                };
+            }
         }
     });
     console.log('blah transformedObj');
@@ -47,7 +54,7 @@ export const transformModelToFieldMapping = async ({
 }: {
     unifiedObj: any;
     tpId: TP_ID;
-    objType: OBJECT_TYPES;
+    objType: StandardObjects;
     tenantSchemaMappingId?: string;
 }) => {
     console.log('blah unifiedObj');
