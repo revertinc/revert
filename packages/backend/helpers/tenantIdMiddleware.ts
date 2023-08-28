@@ -34,6 +34,7 @@ const revertTenantMiddleware = () => async (req: Request, res: Response, next: (
                         },
                     },
                 },
+                schema_mapping_id: true,
             },
         });
         if (!connection || !connection.length) {

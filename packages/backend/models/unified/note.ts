@@ -18,8 +18,13 @@ export interface UnifiedNote {
     additional: any;
 }
 
-export async function unifyNote(note: any, tpId: TP_ID): Promise<UnifiedNote> {
-    const trandformedNote = await transformFieldMappingToModel({ obj: note, tpId, objType: OBJECT_TYPES.note });
+export async function unifyNote(note: any, tpId: TP_ID, tenantSchemaMappingId?: string): Promise<UnifiedNote> {
+    const trandformedNote = await transformFieldMappingToModel({
+        obj: note,
+        tpId,
+        objType: OBJECT_TYPES.note,
+        tenantSchemaMappingId,
+    });
     const unifiednote = {
         ...trandformedNote,
         additional: {},

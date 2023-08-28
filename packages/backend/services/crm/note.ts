@@ -41,7 +41,11 @@ const noteService = new NoteService(
                             },
                         });
                         note = ([note.data] as any[])?.[0];
-                        note = await unifyNote({ ...note, ...note?.properties }, thirdPartyId);
+                        note = await unifyNote(
+                            { ...note, ...note?.properties },
+                            thirdPartyId,
+                            connection.schema_mapping_id
+                        );
                         res.send({ status: 'ok', result: { ...note, ...note?.properties } });
                         break;
                     }
@@ -53,7 +57,7 @@ const noteService = new NoteService(
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
-                        let note = await unifyNote(notes.data.data?.[0], thirdPartyId);
+                        let note = await unifyNote(notes.data.data?.[0], thirdPartyId, connection.schema_mapping_id);
                         res.send({ status: 'ok', result: note });
                         break;
                     }
@@ -66,7 +70,7 @@ const noteService = new NoteService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
-                        let note = await unifyNote(notes.data, thirdPartyId);
+                        let note = await unifyNote(notes.data, thirdPartyId, connection.schema_mapping_id);
                         res.send({ status: 'ok', result: note });
                         break;
                     }
@@ -80,7 +84,10 @@ const noteService = new NoteService(
                             }
                         );
                         const note = result.data;
-                        res.send({ status: 'ok', result: await unifyNote(note.data, thirdPartyId) });
+                        res.send({
+                            status: 'ok',
+                            result: await unifyNote(note.data, thirdPartyId, connection.schema_mapping_id),
+                        });
                         break;
                     }
                     default: {
@@ -129,7 +136,14 @@ const noteService = new NoteService(
                         const nextCursor = notes.data?.paging?.next?.after || undefined;
                         notes = notes.data.results as any[];
                         notes = await Promise.all(
-                            notes?.map(async (l: any) => await unifyNote({ ...l, ...l?.properties }, thirdPartyId))
+                            notes?.map(
+                                async (l: any) =>
+                                    await unifyNote(
+                                        { ...l, ...l?.properties },
+                                        thirdPartyId,
+                                        connection.schema_mapping_id
+                                    )
+                            )
                         );
                         res.send({
                             status: 'ok',
@@ -153,7 +167,9 @@ const noteService = new NoteService(
                         const nextCursor = notes.data?.info?.next_page_token || undefined;
                         const prevCursor = notes.data?.info?.previous_page_token || undefined;
                         notes = notes.data.data;
-                        notes = await Promise.all(notes?.map(async (l: any) => await unifyNote(l, thirdPartyId)));
+                        notes = await Promise.all(
+                            notes?.map(async (l: any) => await unifyNote(l, thirdPartyId, connection.schema_mapping_id))
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: notes });
                         break;
                     }
@@ -185,7 +201,9 @@ const noteService = new NoteService(
                                 ? String(parseInt(String(cursor)) - notes.data?.totalSize)
                                 : undefined;
                         notes = notes.data?.records;
-                        notes = await Promise.all(notes?.map(async (l: any) => await unifyNote(l, thirdPartyId)));
+                        notes = await Promise.all(
+                            notes?.map(async (l: any) => await unifyNote(l, thirdPartyId, connection.schema_mapping_id))
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: notes });
                         break;
                     }
@@ -205,7 +223,7 @@ const noteService = new NoteService(
                         const prevCursor = undefined;
                         const notes = result.data.data;
                         const unifiedNotes = await Promise.all(
-                            notes?.map(async (d) => await unifyNote(d, thirdPartyId))
+                            notes?.map(async (d) => await unifyNote(d, thirdPartyId, connection.schema_mapping_id))
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedNotes });
                         break;
@@ -416,7 +434,14 @@ const noteService = new NoteService(
                         });
                         notes = notes.data.results as any[];
                         notes = await Promise.all(
-                            notes?.map(async (l: any) => await unifyNote({ ...l, ...l?.properties }, thirdPartyId))
+                            notes?.map(
+                                async (l: any) =>
+                                    await unifyNote(
+                                        { ...l, ...l?.properties },
+                                        thirdPartyId,
+                                        connection.schema_mapping_id
+                                    )
+                            )
                         );
                         res.send({ status: 'ok', results: notes });
                         break;
@@ -430,7 +455,9 @@ const noteService = new NoteService(
                             },
                         });
                         notes = notes.data.data;
-                        notes = await Promise.all(notes?.map(async (l: any) => await unifyNote(l, thirdPartyId)));
+                        notes = await Promise.all(
+                            notes?.map(async (l: any) => await unifyNote(l, thirdPartyId, connection.schema_mapping_id))
+                        );
                         res.send({ status: 'ok', results: notes });
                         break;
                     }
@@ -444,7 +471,9 @@ const noteService = new NoteService(
                             },
                         });
                         notes = notes?.data?.searchRecords;
-                        notes = await Promise.all(notes?.map(async (l: any) => await unifyNote(l, thirdPartyId)));
+                        notes = await Promise.all(
+                            notes?.map(async (l: any) => await unifyNote(l, thirdPartyId, connection.schema_mapping_id))
+                        );
                         res.send({ status: 'ok', results: notes });
                         break;
                     }
