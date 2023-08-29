@@ -1,5 +1,6 @@
 import { PrismaClient, TP_ID } from '@prisma/client';
 import { StandardObjects, rootSchemaMappingId } from '../constants/common';
+import logger from './logger';
 
 const prisma = new PrismaClient();
 
@@ -14,8 +15,7 @@ export const transformFieldMappingToModel = async ({
     objType: StandardObjects;
     tenantSchemaMappingId?: string;
 }) => {
-    console.log('blah obj');
-    console.dir(obj, { depth: null });
+    logger.debug('blah obj: %o', obj);
     const connectionSchema = await prisma.schemas.findFirst({
         where: { object: objType, schema_mapping_id: !!tenantSchemaMappingId ? tenantSchemaMappingId : undefined },
         include: { fieldMappings: { where: { source_tp_id: tpId } } },
@@ -31,6 +31,7 @@ export const transformFieldMappingToModel = async ({
             rootSchema?.fieldMappings?.find((r) => r?.target_field_name === field);
         const transformedKey = fieldMapping?.source_field_name;
         if (transformedKey) {
+            // map custom fields under "additional"
             if (fieldMapping.is_standard_field) {
                 transformedObj[field] = obj[transformedKey];
             } else {
@@ -41,8 +42,7 @@ export const transformFieldMappingToModel = async ({
             }
         }
     });
-    console.log('blah transformedObj');
-    console.dir(transformedObj, { depth: null });
+    logger.debug('blah transformedObj: %o', transformedObj);
     return transformedObj;
 };
 
@@ -57,8 +57,7 @@ export const transformModelToFieldMapping = async ({
     objType: StandardObjects;
     tenantSchemaMappingId?: string;
 }) => {
-    console.log('blah unifiedObj');
-    console.dir(unifiedObj, { depth: null });
+    logger.debug('blah unifiedObj: %o', unifiedObj);
     const connectionSchema = await prisma.schemas.findFirst({
         where: { object: objType, schema_mapping_id: !!tenantSchemaMappingId ? tenantSchemaMappingId : undefined },
         include: { fieldMappings: { where: { source_tp_id: tpId } } },
@@ -77,7 +76,6 @@ export const transformModelToFieldMapping = async ({
             crmObj[crmKey] = unifiedObj[key];
         }
     });
-    console.log('blah crmObj');
-    console.dir(crmObj, { depth: null });
+    logger.debug('blah crmObj: %o', crmObj);
     return crmObj;
 };
