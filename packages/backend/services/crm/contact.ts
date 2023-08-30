@@ -9,6 +9,7 @@ import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import logError, { logInfo } from '../../helpers/logger';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { isStandardError } from '../../helpers/error';
+import { mapPipedriveObjectCustomFields } from '../../helpers/pipedrive';
 import { UnifiedContact, disunifyContact, unifyContact } from '../../models/unified/contact';
 
 const contactService = new ContactService(
@@ -48,7 +49,11 @@ const contactService = new ContactService(
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
-                        contact = unifyContact({ ...contact.data, ...contact.data?.properties });
+                        contact = await unifyContact(
+                            { ...contact.data, ...contact.data?.properties },
+                            thirdPartyId,
+                            connection.schema_mapping_id
+                        );
                         res.send({ status: 'ok', result: contact });
                         break;
                     }
@@ -62,7 +67,11 @@ const contactService = new ContactService(
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
-                        contact = unifyContact(contact.data.data?.[0]);
+                        contact = await unifyContact(
+                            contact.data.data?.[0],
+                            thirdPartyId,
+                            connection.schema_mapping_id
+                        );
                         res.send({ status: 'ok', result: contact });
                         break;
                     }
@@ -76,12 +85,12 @@ const contactService = new ContactService(
                             },
                         });
                         contact = contact.data;
-                        contact = unifyContact(contact);
+                        contact = await unifyContact(contact, thirdPartyId, connection.schema_mapping_id);
                         res.send({ status: 'ok', result: contact });
                         break;
                     }
                     case TP_ID.pipedrive: {
-                        const result = await axios.get<{ data: Partial<PipedriveContact> } & PipedrivePagination>(
+                        const result = await axios.get<{ data: Partial<PipedriveContact> | any } & PipedrivePagination>(
                             `${connection.tp_account_url}/v1/persons/${contactId}`,
                             {
                                 headers: {
@@ -90,7 +99,21 @@ const contactService = new ContactService(
                             }
                         );
                         const contact = result.data;
-                        res.send({ status: 'ok', result: unifyContact(contact) });
+                        const personFields = (
+                            await axios.get(`${connection.tp_account_url}/v1/personFields`, {
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            })
+                        ).data.data;
+                        const mappedContact = mapPipedriveObjectCustomFields({
+                            object: contact.data,
+                            objectFields: personFields,
+                        });
+                        res.send({
+                            status: 'ok',
+                            result: await unifyContact(mappedContact, thirdPartyId, connection.schema_mapping_id),
+                        });
                         break;
                     }
                     default: {
@@ -146,7 +169,16 @@ const contactService = new ContactService(
                         });
                         const nextCursor = contacts.data?.paging?.next?.after || undefined;
                         contacts = contacts.data.results as any[];
-                        contacts = contacts?.map((l: any) => unifyContact({ ...l, ...l?.properties }));
+                        contacts = await Promise.all(
+                            contacts?.map(
+                                async (l: any) =>
+                                    await unifyContact(
+                                        { ...l, ...l?.properties },
+                                        thirdPartyId,
+                                        connection.schema_mapping_id
+                                    )
+                            )
+                        );
                         res.send({
                             status: 'ok',
                             next: nextCursor,
@@ -169,7 +201,11 @@ const contactService = new ContactService(
                         const nextCursor = contacts.data?.info?.next_page_token || undefined;
                         const prevCursor = contacts.data?.info?.previous_page_token || undefined;
                         contacts = contacts.data.data;
-                        contacts = contacts?.map((l: any) => unifyContact(l));
+                        contacts = await Promise.all(
+                            contacts?.map(
+                                async (l: any) => await unifyContact(l, thirdPartyId, connection.schema_mapping_id)
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
                         break;
                     }
@@ -201,7 +237,11 @@ const contactService = new ContactService(
                                 ? String(parseInt(String(cursor)) - contacts.data?.totalSize)
                                 : undefined;
                         contacts = contacts.data?.records;
-                        contacts = contacts?.map((l: any) => unifyContact(l));
+                        contacts = await Promise.all(
+                            contacts?.map(
+                                async (l: any) => await unifyContact(l, thirdPartyId, connection.schema_mapping_id)
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
                         break;
                     }
@@ -220,7 +260,21 @@ const contactService = new ContactService(
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
                         const contacts = result.data.data;
-                        const unifiedContacts = contacts?.map((d) => unifyContact(d));
+                        const personFields = (
+                            await axios.get(`${connection.tp_account_url}/v1/personFields`, {
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            })
+                        ).data.data;
+                        const mappedContacts = contacts.map((c: any) =>
+                            mapPipedriveObjectCustomFields({ object: c, objectFields: personFields })
+                        );
+                        const unifiedContacts = await Promise.all(
+                            mappedContacts?.map(
+                                async (d) => await unifyContact(d, thirdPartyId, connection.schema_mapping_id)
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedContacts });
                         break;
                     }
@@ -487,7 +541,16 @@ const contactService = new ContactService(
                             }),
                         });
                         contacts = contacts.data.results as any[];
-                        contacts = contacts?.map((l: any) => unifyContact({ ...l, ...l?.properties }));
+                        contacts = await Promise.all(
+                            contacts?.map(
+                                async (l: any) =>
+                                    await unifyContact(
+                                        { ...l, ...l?.properties },
+                                        thirdPartyId,
+                                        connection.schema_mapping_id
+                                    )
+                            )
+                        );
                         res.send({
                             status: 'ok',
                             results: contacts,
@@ -503,7 +566,11 @@ const contactService = new ContactService(
                             },
                         });
                         contacts = contacts.data.data;
-                        contacts = contacts?.map((l: any) => unifyContact(l));
+                        contacts = await Promise.all(
+                            contacts?.map(
+                                async (l: any) => await unifyContact(l, thirdPartyId, connection.schema_mapping_id)
+                            )
+                        );
                         res.send({ status: 'ok', results: contacts });
                         break;
                     }
@@ -518,7 +585,11 @@ const contactService = new ContactService(
                         });
 
                         contacts = contacts.data?.searchRecords;
-                        contacts = contacts?.map((l: any) => unifyContact(l));
+                        contacts = await Promise.all(
+                            contacts?.map(
+                                async (l: any) => await unifyContact(l, thirdPartyId, connection.schema_mapping_id)
+                            )
+                        );
 
                         res.send({ status: 'ok', results: contacts });
                         break;
@@ -538,7 +609,21 @@ const contactService = new ContactService(
                             }
                         );
                         const contacts = result.data.data.items.map((item) => item.item);
-                        const unifiedContacts = contacts?.map((c: any) => unifyContact(c));
+                        const personFields = (
+                            await axios.get(`${connection.tp_account_url}/v1/personFields`, {
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            })
+                        ).data.data;
+                        const mappedContacts = contacts.map((c: any) =>
+                            mapPipedriveObjectCustomFields({ object: c, objectFields: personFields })
+                        );
+                        const unifiedContacts = await Promise.all(
+                            mappedContacts?.map(
+                                async (c: any) => await unifyContact(c, thirdPartyId, connection.schema_mapping_id)
+                            )
+                        );
                         res.send({ status: 'ok', results: unifiedContacts });
                         break;
                     }
