@@ -4,8 +4,9 @@ import { HubspotContact } from '../../constants/hubspot';
 import { ZohoContact } from '../../constants/zoho';
 import { SalesforceContact } from '../../constants/salesforce';
 import { Subtype } from '../../constants/typeHelpers';
-import { AllAssociation } from '../../constants/common';
+import { AllAssociation, StandardObjects } from '../../constants/common';
 import { getHubspotAssociationObj } from '../../helpers/hubspot';
+import { transformFieldMappingToModel } from '../../helpers/transformSchemaMapping';
 
 export type ContactAssociation = Subtype<AllAssociation, 'dealId'>;
 
@@ -24,8 +25,15 @@ export interface UnifiedContact {
     additional: any;
 }
 
-export function unifyContact(contact: any): UnifiedContact {
+export async function unifyContact(contact: any, tpId: TP_ID, tenantSchemaMappingId?: string): Promise<UnifiedContact> {
+    const transformedContact = await transformFieldMappingToModel({
+        obj: contact,
+        tpId,
+        objType: StandardObjects.contact,
+        tenantSchemaMappingId,
+    });
     const unifiedContact: UnifiedContact = {
+        // TODO: Remove this and move to root field mapping
         remoteId: contact.id || contact.ContactID || contact.contact_id || contact.Id,
         id: contact.id || contact.ContactID || contact.contact_id || contact.Id,
         firstName:
@@ -69,7 +77,8 @@ export function unifyContact(contact: any): UnifiedContact {
             contact.Modified_Time ||
             contact.lastmodifieddate ||
             contact.update_time,
-        additional: {},
+        ...transformedContact,
+        additional: { ...transformedContact.additional },
     };
 
     // Map additional fields
