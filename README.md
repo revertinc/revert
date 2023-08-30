@@ -70,6 +70,9 @@ In case of questions/feedback, you can get in touch in the following ways
 -   Open a Github support issue
 -   Contact us at [email](mailto:team@revert.dev)
 -   Ask a question in our [discord](https://discord.gg/q5K5cRhymW)
+-   If you'd like you can book a call with our team below
+
+<a href="https://cal.com/jatinsandilya/chat-with-jatin-from-revert?utm_source=banner&utm_campaign=oss"><img alt="Book us with Cal.com" src="https://cal.com/book-with-cal-dark.svg" /></a>
 
 ## Contributors
 
