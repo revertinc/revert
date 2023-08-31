@@ -184,12 +184,16 @@ class AuthService {
         if (webhookData && ['user.created'].includes(webhookEventType)) {
             try {
                 const userEmail = webhookData.email_addresses[0].email_address;
+                let skipWaitlist = false;
                 let userDomain = userEmail.split('@').pop();
                 let workspaceName = userDomain.charAt(0).toUpperCase() + userDomain.slice(1) + "'s Workspace";
                 if (!isWorkEmail(userEmail)) {
                     // make the personal email the unique domain.
                     workspaceName = 'Personal Workspace';
                     userDomain = userEmail;
+                }
+                if (config.WHITE_LISTED_DOMAINS?.includes(userDomain)) {
+                    skipWaitlist = true;
                 }
                 // Create account only if an account does not exist for this user's domain.
                 const accountId = 'acc_' + uuidv4();
@@ -208,7 +212,7 @@ class AuthService {
                         public_token: publicTokenProd,
                         tenant_count: 0,
                         domain: userDomain,
-                        skipWaitlist: false,
+                        skipWaitlist: skipWaitlist,
                         workspaceName: workspaceName,
                         environments: {
                             createMany: {
