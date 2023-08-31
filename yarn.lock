@@ -6582,7 +6582,7 @@ __metadata:
     react: 17.0.2
     react-dom: 17.0.2
     react-script-hook: ^1.7.2
-    storybook-builder-vite: 0.1.21
+    storybook-builder-vite: 0.1.23
     typescript: 4.6.3
     vite: 2.8.6
     vite-plugin-dts: 1.0.3
@@ -28734,9 +28734,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook-builder-vite@npm:0.1.21":
-  version: 0.1.21
-  resolution: "storybook-builder-vite@npm:0.1.21"
+"storybook-builder-vite@npm:0.1.23":
+  version: 0.1.23
+  resolution: "storybook-builder-vite@npm:0.1.23"
   dependencies:
     "@joshwooding/vite-plugin-react-docgen-typescript": 0.0.2
     "@mdx-js/mdx": ^1.6.22
@@ -28751,7 +28751,7 @@ __metadata:
   peerDependencies:
     "@storybook/core-common": ^6.4.3
     vite: ">=2.6.7"
-  checksum: b916cafa01c873f276fd3a0a529bfaad537759b5f6ec8d2ae1f2add53752f9998b11594d498b78a131dbc4739c47b4c5c6510c8823e88786090e783087884606
+  checksum: 5cc0bde928d5032f6819a0e5ff98fe93eb71f840c1d1dfbddb439a7f6ca0e79b0721942bca457705e52573b3835a5c59287a4ff352e29493b9778d357007383c
   languageName: node
   linkType: hard
 
