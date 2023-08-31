@@ -1,7 +1,7 @@
 import { TP_ID } from '@prisma/client';
-import { AllAssociation } from '../../constants/common';
+import { AllAssociation, StandardObjects } from '../../constants/common';
 import { Subtype } from '../../constants/typeHelpers';
-import { getHubspotAssociationObj } from '../../helpers/hubspot';
+import { getHubspotAssociationObj } from '../../helpers/crm';
 
 export type TaskAssociation = Subtype<AllAssociation, 'dealId'>;
 
@@ -133,7 +133,7 @@ export function toHubspotTask(unified: UnifiedTask): any {
                 to: {
                     id: associationObj[key as TaskAssociation],
                 },
-                types: [getHubspotAssociationObj(key as TaskAssociation, 'task')],
+                types: [getHubspotAssociationObj(key as TaskAssociation, StandardObjects.task)],
             };
         });
         hubspotTask['associations'] = associationArr;

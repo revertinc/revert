@@ -1,8 +1,8 @@
 import { TP_ID } from '@prisma/client';
 import { PipedriveCompany } from '../../constants/pipedrive';
 import { Subtype } from '../../constants/typeHelpers';
-import { AllAssociation } from '../../constants/common';
-import { getHubspotAssociationObj } from '../../helpers/hubspot';
+import { AllAssociation, StandardObjects } from '../../constants/common';
+import { getHubspotAssociationObj } from '../../helpers/crm';
 
 export type CompanyAssociation = Subtype<AllAssociation, 'dealId'>;
 
@@ -592,7 +592,7 @@ export function toHubspotCompany(unifiedCompany: UnifiedCompany): Partial<Hubspo
                 to: {
                     id: associationObj[key as CompanyAssociation],
                 },
-                types: [getHubspotAssociationObj(key as CompanyAssociation, 'company')],
+                types: [getHubspotAssociationObj(key as CompanyAssociation, StandardObjects.company)],
             };
         });
         hubspotCompany['associations'] = associationArr;
