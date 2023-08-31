@@ -1,4 +1,4 @@
-import { PrismaClient, TP_ID } from '@prisma/client';
+import { PrismaClient, TP_ID, accountFieldMappingConfig } from '@prisma/client';
 import { StandardObjects, rootSchemaMappingId } from '../constants/common';
 import logger from './logger';
 
@@ -9,11 +9,13 @@ export const transformFieldMappingToModel = async ({
     tpId,
     objType,
     tenantSchemaMappingId,
+    accountFieldMappingConfig,
 }: {
     obj: any;
     tpId: TP_ID;
     objType: StandardObjects;
     tenantSchemaMappingId?: string;
+    accountFieldMappingConfig?: accountFieldMappingConfig;
 }) => {
     logger.debug('blah obj: %o', obj);
     const connectionSchema = await prisma.schemas.findFirst({
@@ -27,14 +29,22 @@ export const transformFieldMappingToModel = async ({
     const transformedObj: Record<string, any> = {};
     (connectionSchema?.fields || rootSchema?.fields)?.forEach((field) => {
         const fieldMapping =
-            connectionSchema?.fieldMappings?.find((r) => r?.target_field_name === field) ||
-            rootSchema?.fieldMappings?.find((r) => r?.target_field_name === field);
+            connectionSchema?.fieldMappings?.find(
+                (r) =>
+                    r?.target_field_name === field &&
+                    (!accountFieldMappingConfig?.id ||
+                        (accountFieldMappingConfig?.mappable_by_connection_field_list || []).includes(field))
+            ) || rootSchema?.fieldMappings?.find((r) => r?.target_field_name === field);
         const transformedKey = fieldMapping?.source_field_name;
         if (transformedKey) {
-            // map custom fields under "additional"
             if (fieldMapping.is_standard_field) {
                 transformedObj[field] = obj[transformedKey];
-            } else {
+            }
+            // map custom fields under "additional"
+            if (
+                !fieldMapping.is_standard_field &&
+                (!accountFieldMappingConfig || accountFieldMappingConfig?.allow_connection_override_custom_fields)
+            ) {
                 transformedObj['additional'] = {
                     ...transformedObj.additional,
                     [field]: obj[transformedKey],
