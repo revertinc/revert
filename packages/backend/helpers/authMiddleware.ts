@@ -24,6 +24,7 @@ const revertAuthMiddleware = () => async (req: Request, res: Response, next: () 
             },
             include: {
                 environments: true,
+                accountFieldMappingConfig: true,
             },
         });
         if (!account || !account.length) {
@@ -31,6 +32,7 @@ const revertAuthMiddleware = () => async (req: Request, res: Response, next: () 
                 error: 'Api token unauthorized',
             });
         }
+        res.locals.account = account[0];
         return next();
     } catch (error: any) {
         logError(error);

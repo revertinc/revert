@@ -20,15 +20,16 @@ enum ENV {
 }
 
 model accounts {
-  id            String         @id
-  tenant_count  Int?           @default(0)
-  private_token String         @unique
-  public_token  String         @unique
-  domain        String         @unique @default("")
-  skipWaitlist  Boolean        @default(false)
-  workspaceName String?
-  users         users[]
-  environments  environments[]
+  id                        String                     @id
+  tenant_count              Int?                       @default(0)
+  private_token             String                     @unique
+  public_token              String                     @unique
+  domain                    String                     @unique @default("")
+  skipWaitlist              Boolean                    @default(false)
+  workspaceName             String?
+  users                     users[]
+  environments              environments[]
+  accountFieldMappingConfig accountFieldMappingConfig?
 }
 
 model environments {
@@ -86,7 +87,7 @@ model schema_mapping {
   id                String        @id
   object_schema_ids String[]
   object_schemas    schemas[]
-  connections       connections[]
+  connections       connections[] // TODO: can make this single to enforce one-on-one relationship (set schema_mapping_id on connections unique)
 }
 
 model schemas {
@@ -111,4 +112,12 @@ model fieldMappings {
 
 model waitlist {
   email String @id
+}
+
+model accountFieldMappingConfig {
+  id                                      String   @id
+  account_id                              String   @unique
+  account                                 accounts @relation(fields: [account_id], references: [id])
+  allow_connection_override_custom_fields Boolean  @default(true)
+  mappable_by_connection_field_list       String[]
 }

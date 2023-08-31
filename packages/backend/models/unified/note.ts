@@ -1,4 +1,4 @@
-import { TP_ID } from '@prisma/client';
+import { TP_ID, accountFieldMappingConfig } from '@prisma/client';
 import { getHubspotAssociationObj } from '../../helpers/hubspot';
 import { transformFieldMappingToModel, transformModelToFieldMapping } from '../../helpers/transformSchemaMapping';
 import { Subtype } from '../../constants/typeHelpers';
@@ -18,17 +18,23 @@ export interface UnifiedNote {
     additional: any;
 }
 
-export async function unifyNote(note: any, tpId: TP_ID, tenantSchemaMappingId?: string): Promise<UnifiedNote> {
+export async function unifyNote(
+    note: any,
+    tpId: TP_ID,
+    tenantSchemaMappingId?: string,
+    accountFieldMappingConfig?: accountFieldMappingConfig
+): Promise<UnifiedNote> {
     const transformedNote = await transformFieldMappingToModel({
         obj: note,
         tpId,
         objType: StandardObjects.note,
         tenantSchemaMappingId,
+        accountFieldMappingConfig
     });
     const unifiednote = {
         ...transformedNote,
         additional: {
-            ...(transformedNote.additional || {})
+            ...(transformedNote.additional || {}),
         },
         associations: {
             ...(tpId === TP_ID.pipedrive && {
