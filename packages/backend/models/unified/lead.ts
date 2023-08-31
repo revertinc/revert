@@ -3,9 +3,9 @@ import { PipedriveContact, PipedriveLead, PipedriveCompany } from '../../constan
 import { HubspotLead } from '../../constants/hubspot';
 import { ZohoLead } from '../../constants/zoho';
 import { SalesforceLead } from '../../constants/salesforce';
-import { AllAssociation } from '../../constants/common';
+import { AllAssociation, StandardObjects } from '../../constants/common';
 import { Subtype } from '../../constants/typeHelpers';
-import { getHubspotAssociationObj } from '../../helpers/hubspot';
+import { getHubspotAssociationObj } from '../../helpers/crm';
 
 export type LeadAssociation = Subtype<AllAssociation, 'contactId' | 'companyId' | 'dealId'>;
 
@@ -163,7 +163,7 @@ export function toHubspotLead(lead: UnifiedLead): Partial<HubspotLead> {
                 to: {
                     id: associationObj[key as LeadAssociation],
                 },
-                types: [getHubspotAssociationObj(key as LeadAssociation, 'lead')],
+                types: [getHubspotAssociationObj(key as LeadAssociation, StandardObjects.lead)],
             };
         });
         hubspotLead['associations'] = associationArr;

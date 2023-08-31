@@ -8,8 +8,13 @@ import logError from '../../helpers/logError';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import { isStandardError } from '../../helpers/error';
-import { UnifiedNote, disunifyNote, unifyNote } from '../../models/unified';
+import { unifyObject } from '../../helpers/unify';
+import { disunifyObject } from '../../helpers/disunify';
+import { UnifiedNote } from '../../models/unified';
 import { PipedriveNote, PipedrivePagination } from '../../constants/pipedrive';
+import { StandardObjects } from '../../constants/common';
+
+const objType = StandardObjects.note;
 
 const noteService = new NoteService(
     {
@@ -35,12 +40,13 @@ const noteService = new NoteService(
                             },
                         });
                         note = ([note.data] as any[])?.[0];
-                        note = await unifyNote(
-                            { ...note, ...note?.properties },
-                            thirdPartyId,
-                            connection.schema_mapping_id,
-                            account.accountFieldMappingConfig
-                        );
+                        note = await unifyObject<any, UnifiedNote>({
+                            obj: { ...note, ...note?.properties },
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: { ...note, ...note?.properties } });
                         break;
                     }
@@ -52,12 +58,13 @@ const noteService = new NoteService(
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
-                        let note = await unifyNote(
-                            notes.data.data?.[0],
-                            thirdPartyId,
-                            connection.schema_mapping_id,
-                            account.accountFieldMappingConfig
-                        );
+                        let note = await unifyObject<any, UnifiedNote>({
+                            obj: notes.data.data?.[0],
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: note });
                         break;
                     }
@@ -70,12 +77,13 @@ const noteService = new NoteService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
-                        let note = await unifyNote(
-                            notes.data,
-                            thirdPartyId,
-                            connection.schema_mapping_id,
-                            account.accountFieldMappingConfig
-                        );
+                        let note = await unifyObject<any, UnifiedNote>({
+                            obj: notes.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: note });
                         break;
                     }
@@ -91,12 +99,13 @@ const noteService = new NoteService(
                         const note = result.data;
                         res.send({
                             status: 'ok',
-                            result: await unifyNote(
-                                note.data,
-                                thirdPartyId,
-                                connection.schema_mapping_id,
-                                account.accountFieldMappingConfig
-                            ),
+                            result: await unifyObject<any, UnifiedNote>({
+                                obj: note.data,
+                                tpId: thirdPartyId,
+                                objType,
+                                tenantSchemaMappingId: connection.schema_mapping_id,
+                                accountFieldMappingConfig: account.accountFieldMappingConfig,
+                            }),
                         });
                         break;
                     }
@@ -143,12 +152,13 @@ const noteService = new NoteService(
                         notes = await Promise.all(
                             notes?.map(
                                 async (l: any) =>
-                                    await unifyNote(
-                                        { ...l, ...l?.properties },
-                                        thirdPartyId,
-                                        connection.schema_mapping_id,
-                                        account.accountFieldMappingConfig
-                                    )
+                                    await unifyObject<any, UnifiedNote>({
+                                        obj: { ...l, ...l?.properties },
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
                             )
                         );
                         res.send({
@@ -176,12 +186,13 @@ const noteService = new NoteService(
                         notes = await Promise.all(
                             notes?.map(
                                 async (l: any) =>
-                                    await unifyNote(
-                                        l,
-                                        thirdPartyId,
-                                        connection.schema_mapping_id,
-                                        account.accountFieldMappingConfig
-                                    )
+                                    await unifyObject<any, UnifiedNote>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
                             )
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: notes });
@@ -218,12 +229,13 @@ const noteService = new NoteService(
                         notes = await Promise.all(
                             notes?.map(
                                 async (l: any) =>
-                                    await unifyNote(
-                                        l,
-                                        thirdPartyId,
-                                        connection.schema_mapping_id,
-                                        account.accountFieldMappingConfig
-                                    )
+                                    await unifyObject<any, UnifiedNote>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
                             )
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: notes });
@@ -247,12 +259,13 @@ const noteService = new NoteService(
                         const unifiedNotes = await Promise.all(
                             notes?.map(
                                 async (d) =>
-                                    await unifyNote(
-                                        d,
-                                        thirdPartyId,
-                                        connection.schema_mapping_id,
-                                        account.accountFieldMappingConfig
-                                    )
+                                    await unifyObject<any, UnifiedNote>({
+                                        obj: d,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
                             )
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedNotes });
@@ -275,10 +288,17 @@ const noteService = new NoteService(
             try {
                 const noteData = req.body as UnifiedNote;
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const note = await disunifyNote(noteData, thirdPartyId);
+                const note = await disunifyObject<UnifiedNote>({
+                    obj: noteData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
                 console.log('Revert::CREATE NOTE', tenantId, note);
 
                 switch (thirdPartyId) {
@@ -357,12 +377,19 @@ const noteService = new NoteService(
         async updateNote(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const noteData = req.body as UnifiedNote;
                 const noteId = req.params.id;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const note = await disunifyNote(noteData, thirdPartyId);
+                const note = await disunifyObject<UnifiedNote>({
+                    obj: noteData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
                 console.log('Revert::UPDATE NOTE', tenantId, note, noteId);
 
                 switch (thirdPartyId) {
@@ -467,12 +494,13 @@ const noteService = new NoteService(
                         notes = await Promise.all(
                             notes?.map(
                                 async (l: any) =>
-                                    await unifyNote(
-                                        { ...l, ...l?.properties },
-                                        thirdPartyId,
-                                        connection.schema_mapping_id,
-                                        account.accountFieldMappingConfig
-                                    )
+                                    await unifyObject<any, UnifiedNote>({
+                                        obj: { ...l, ...l?.properties },
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
                             )
                         );
                         res.send({ status: 'ok', results: notes });
@@ -490,12 +518,13 @@ const noteService = new NoteService(
                         notes = await Promise.all(
                             notes?.map(
                                 async (l: any) =>
-                                    await unifyNote(
-                                        l,
-                                        thirdPartyId,
-                                        connection.schema_mapping_id,
-                                        account.accountFieldMappingConfig
-                                    )
+                                    await unifyObject<any, UnifiedNote>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
                             )
                         );
                         res.send({ status: 'ok', results: notes });
@@ -514,12 +543,13 @@ const noteService = new NoteService(
                         notes = await Promise.all(
                             notes?.map(
                                 async (l: any) =>
-                                    await unifyNote(
-                                        l,
-                                        thirdPartyId,
-                                        connection.schema_mapping_id,
-                                        account.accountFieldMappingConfig
-                                    )
+                                    await unifyObject<any, UnifiedNote>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
                             )
                         );
                         res.send({ status: 'ok', results: notes });

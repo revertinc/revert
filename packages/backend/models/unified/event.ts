@@ -1,7 +1,7 @@
 import { TP_ID } from '@prisma/client';
-import { AllAssociation } from '../../constants/common';
+import { AllAssociation, StandardObjects } from '../../constants/common';
 import { Subtype } from '../../constants/typeHelpers';
-import { getHubspotAssociationObj } from '../../helpers/hubspot';
+import { getHubspotAssociationObj } from '../../helpers/crm';
 
 export type EventAssociation = Subtype<AllAssociation, 'dealId' | 'contactId'>;
 
@@ -147,7 +147,7 @@ export function toHubspotEvent(unifiedEvent: UnifiedEvent): any {
                 to: {
                     id: associationObj[key as EventAssociation],
                 },
-                types: [getHubspotAssociationObj(key as EventAssociation, 'event')],
+                types: [getHubspotAssociationObj(key as EventAssociation, StandardObjects.event)],
             };
         });
         hubspotEvent['associations'] = associationArr;

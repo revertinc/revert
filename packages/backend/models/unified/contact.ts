@@ -5,7 +5,7 @@ import { ZohoContact } from '../../constants/zoho';
 import { SalesforceContact } from '../../constants/salesforce';
 import { Subtype } from '../../constants/typeHelpers';
 import { AllAssociation, StandardObjects } from '../../constants/common';
-import { getHubspotAssociationObj } from '../../helpers/hubspot';
+import { getHubspotAssociationObj } from '../../helpers/crm';
 import { transformFieldMappingToModel } from '../../helpers/transformSchemaMapping';
 
 export type ContactAssociation = Subtype<AllAssociation, 'dealId'>;
@@ -162,7 +162,7 @@ export function toHubspotContact(unifiedContact: UnifiedContact): Partial<Hubspo
                 to: {
                     id: associationObj[key as ContactAssociation],
                 },
-                types: [getHubspotAssociationObj(key as ContactAssociation, 'contact')],
+                types: [getHubspotAssociationObj(key as ContactAssociation, StandardObjects.contact)],
             };
         });
         hubspotContact['associations'] = associationArr;

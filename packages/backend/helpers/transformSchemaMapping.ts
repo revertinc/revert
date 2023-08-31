@@ -33,18 +33,16 @@ export const transformFieldMappingToModel = async ({
                 (r) =>
                     r?.target_field_name === field &&
                     (!accountFieldMappingConfig?.id ||
-                        (accountFieldMappingConfig?.mappable_by_connection_field_list || []).includes(field))
+                        (r?.is_standard_field
+                            ? (accountFieldMappingConfig?.mappable_by_connection_field_list || []).includes(field)
+                            : accountFieldMappingConfig?.allow_connection_override_custom_fields))
             ) || rootSchema?.fieldMappings?.find((r) => r?.target_field_name === field);
         const transformedKey = fieldMapping?.source_field_name;
         if (transformedKey) {
             if (fieldMapping.is_standard_field) {
                 transformedObj[field] = obj[transformedKey];
-            }
-            // map custom fields under "additional"
-            if (
-                !fieldMapping.is_standard_field &&
-                (!accountFieldMappingConfig || accountFieldMappingConfig?.allow_connection_override_custom_fields)
-            ) {
+            } else {
+                // map custom fields under "additional"
                 transformedObj['additional'] = {
                     ...transformedObj.additional,
                     [field]: obj[transformedKey],

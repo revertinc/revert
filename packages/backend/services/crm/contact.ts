@@ -9,7 +9,7 @@ import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import logError from '../../helpers/logError';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { isStandardError } from '../../helpers/error';
-import { mapPipedriveObjectCustomFields } from '../../helpers/pipedrive';
+import { mapPipedriveObjectCustomFields } from '../../helpers/crm';
 import { UnifiedContact, disunifyContact, unifyContact } from '../../models/unified/contact';
 
 const contactService = new ContactService(
