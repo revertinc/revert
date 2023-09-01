@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import { PrismaClient, TP_ID, accountFieldMappingConfig } from '@prisma/client';
 import { StandardObjects, rootSchemaMappingId } from '../constants/common';
 import logger from './logger';
@@ -40,7 +41,7 @@ export const transformFieldMappingToModel = async ({
         const transformedKey = fieldMapping?.source_field_name;
         if (transformedKey) {
             if (fieldMapping.is_standard_field) {
-                transformedObj[field] = obj[transformedKey];
+                transformedObj[field] = get(obj, transformedKey);
             } else {
                 // map custom fields under "additional"
                 transformedObj['additional'] = {

@@ -6781,6 +6781,7 @@ __metadata:
     express-rate-limit: ^6.7.0
     fern-api: ^0.0.184
     jest: ^26.6.3
+    lodash: ^4.17.21
     mongoose: ^6.6.5
     morgan: ^1.10.0
     nanoid: ^3.0.0
