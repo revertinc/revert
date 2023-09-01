@@ -1,0 +1,33 @@
+name: Generate docs & postman collection
+
+on:
+    push:
+        branches:
+            - main
+        # paths:
+        #     - fern/**
+
+jobs:
+    deploy-fern-external:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v2
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: 17
+            - name: Install Fern
+              run: npm install -g fern-api@0.6.12 && fern -v
+
+            - name: Install Dependencies
+              run: yarn install
+
+            - name: Generate docs & postman collection
+              run: fern generate --group external
+              env:
+                  POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+                  POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
+                  FERN_TOKEN: ${{ secrets.FERN_TOKEN }}

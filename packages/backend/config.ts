@@ -23,6 +23,7 @@ const config = {
     SHORTLOOP_AUTH_KEY: process.env.SHORTLOOP_AUTH_KEY!,
     SVIX_ENDPOINT_SECRET: process.env.SVIX_ENDPOINT_SECRET!,
     svix: new Svix(process.env.SVIX_AUTH_TOKEN!),
+    WHITE_LISTED_DOMAINS: process.env.WHITE_LISTED_DOMAINS?.split(','),
 };
 
 export default config;
