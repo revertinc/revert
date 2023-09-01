@@ -20,7 +20,7 @@ jobs:
               with:
                   node-version: 17
             - name: Install Fern
-              run: npm install -g fern-api@0.6.12 && fern -v
+              run: npm install -g fern-api
 
             - name: Install Dependencies
               run: yarn install
