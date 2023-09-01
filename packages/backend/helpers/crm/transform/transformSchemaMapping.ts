@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import { PrismaClient, TP_ID, accountFieldMappingConfig } from '@prisma/client';
-import { StandardObjects, rootSchemaMappingId } from '../constants/common';
-import logger from './logger';
+import { StandardObjects, rootSchemaMappingId } from '../../../constants/common';
+import logger from '../../logger';
 
 const prisma = new PrismaClient();
 

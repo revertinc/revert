@@ -10,13 +10,18 @@ import logError from '../../helpers/logError';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { isStandardError } from '../../helpers/error';
 import { mapPipedriveObjectCustomFields } from '../../helpers/crm';
-import { UnifiedContact, disunifyContact, unifyContact } from '../../models/unified/contact';
+import { unifyObject, disunifyObject } from '../../helpers/crm/transform';
+import { UnifiedContact } from '../../models/unified/contact';
+import { StandardObjects } from '../../constants/common';
+
+const objType = StandardObjects.contact;
 
 const contactService = new ContactService(
     {
         async getContact(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const contactId = req.params.id;
                 const fields = req.query.fields;
                 const thirdPartyId = connection.tp_id;
@@ -42,11 +47,13 @@ const contactService = new ContactService(
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
-                        contact = await unifyContact(
-                            { ...contact.data, ...contact.data?.properties },
-                            thirdPartyId,
-                            connection.schema_mapping_id
-                        );
+                        contact = await unifyObject<any, UnifiedContact>({
+                            obj: { ...contact.data, ...contact.data?.properties },
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: contact });
                         break;
                     }
@@ -60,11 +67,13 @@ const contactService = new ContactService(
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
-                        contact = await unifyContact(
-                            contact.data.data?.[0],
-                            thirdPartyId,
-                            connection.schema_mapping_id
-                        );
+                        contact = await unifyObject<any, UnifiedContact>({
+                            obj: contact.data.data?.[0],
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: contact });
                         break;
                     }
@@ -78,7 +87,13 @@ const contactService = new ContactService(
                             },
                         });
                         contact = contact.data;
-                        contact = await unifyContact(contact, thirdPartyId, connection.schema_mapping_id);
+                        contact = await unifyObject<any, UnifiedContact>({
+                            obj: contact,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: contact });
                         break;
                     }
@@ -105,7 +120,13 @@ const contactService = new ContactService(
                         });
                         res.send({
                             status: 'ok',
-                            result: await unifyContact(mappedContact, thirdPartyId, connection.schema_mapping_id),
+                            result: await unifyObject<any, UnifiedContact>({
+                                obj: mappedContact,
+                                tpId: thirdPartyId,
+                                objType,
+                                tenantSchemaMappingId: connection.schema_mapping_id,
+                                accountFieldMappingConfig: account.accountFieldMappingConfig,
+                            }),
                         });
                         break;
                     }
@@ -125,6 +146,7 @@ const contactService = new ContactService(
         async getContacts(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const fields = req.query.fields;
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
@@ -159,11 +181,13 @@ const contactService = new ContactService(
                         contacts = await Promise.all(
                             contacts?.map(
                                 async (l: any) =>
-                                    await unifyContact(
-                                        { ...l, ...l?.properties },
-                                        thirdPartyId,
-                                        connection.schema_mapping_id
-                                    )
+                                    await unifyObject<any, UnifiedContact>({
+                                        obj: { ...l, ...l?.properties },
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
                             )
                         );
                         res.send({
@@ -190,7 +214,14 @@ const contactService = new ContactService(
                         contacts = contacts.data.data;
                         contacts = await Promise.all(
                             contacts?.map(
-                                async (l: any) => await unifyContact(l, thirdPartyId, connection.schema_mapping_id)
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedContact>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
                             )
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
@@ -226,7 +257,14 @@ const contactService = new ContactService(
                         contacts = contacts.data?.records;
                         contacts = await Promise.all(
                             contacts?.map(
-                                async (l: any) => await unifyContact(l, thirdPartyId, connection.schema_mapping_id)
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedContact>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
                             )
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
@@ -259,7 +297,14 @@ const contactService = new ContactService(
                         );
                         const unifiedContacts = await Promise.all(
                             mappedContacts?.map(
-                                async (d) => await unifyContact(d, thirdPartyId, connection.schema_mapping_id)
+                                async (d) =>
+                                    await unifyObject<any, UnifiedContact>({
+                                        obj: d,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
                             )
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedContacts });
@@ -282,10 +327,11 @@ const contactService = new ContactService(
             try {
                 const contactData = req.body as UnifiedContact;
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const contact = disunifyContact(contactData, thirdPartyId);
+                const contact = disunifyObject({obj: contactData, tpId: thirdPartyId, objType, tenantSchemaMappingId: connection.schema_mapping_id, accountFieldMappingConfig: account.accountFieldMappingConfig});
                 console.log('Revert::CREATE CONTACT', tenantId, contact, thirdPartyId);
 
                 switch (thirdPartyId) {
@@ -410,12 +456,13 @@ const contactService = new ContactService(
         async updateContact(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const contactData = req.body as UnifiedContact;
                 const contactId = req.params.id;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const contact = disunifyContact(contactData, thirdPartyId);
+                const contact = disunifyObject({obj: contactData, tpId: thirdPartyId, objType, tenantSchemaMappingId: connection.schema_mapping_id, accountFieldMappingConfig: account.accountFieldMappingConfig});
                 console.log('Revert::UPDATE CONTACT', tenantId, contact, contactId);
 
                 switch (thirdPartyId) {
@@ -497,6 +544,7 @@ const contactService = new ContactService(
         async searchContacts(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const fields = req.query.fields;
                 const searchCriteria: any = req.body.searchCriteria;
                 const formattedFields = (fields || '').split('').filter(Boolean);
@@ -531,11 +579,13 @@ const contactService = new ContactService(
                         contacts = await Promise.all(
                             contacts?.map(
                                 async (l: any) =>
-                                    await unifyContact(
-                                        { ...l, ...l?.properties },
-                                        thirdPartyId,
-                                        connection.schema_mapping_id
-                                    )
+                                    await unifyObject<any, UnifiedContact>({
+                                        obj: { ...l, ...l?.properties },
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
                             )
                         );
                         res.send({
@@ -555,7 +605,14 @@ const contactService = new ContactService(
                         contacts = contacts.data.data;
                         contacts = await Promise.all(
                             contacts?.map(
-                                async (l: any) => await unifyContact(l, thirdPartyId, connection.schema_mapping_id)
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedContact>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
                             )
                         );
                         res.send({ status: 'ok', results: contacts });
@@ -574,7 +631,14 @@ const contactService = new ContactService(
                         contacts = contacts.data?.searchRecords;
                         contacts = await Promise.all(
                             contacts?.map(
-                                async (l: any) => await unifyContact(l, thirdPartyId, connection.schema_mapping_id)
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedContact>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
                             )
                         );
 
@@ -608,7 +672,14 @@ const contactService = new ContactService(
                         );
                         const unifiedContacts = await Promise.all(
                             mappedContacts?.map(
-                                async (c: any) => await unifyContact(c, thirdPartyId, connection.schema_mapping_id)
+                                async (c: any) =>
+                                    await unifyObject<any, UnifiedContact>({
+                                        obj: c,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
                             )
                         );
                         res.send({ status: 'ok', results: unifiedContacts });
