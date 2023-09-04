@@ -37,7 +37,7 @@
         "@types/cors": "^2.8.13",
         "@types/jest": "^29.5.4",
         "@types/node": "*",
-        "@types/node-cron": "^3.0.7",
+        "@types/node-cron": "^3.0.8",
         "@types/uuid": "^9.0.2",
         "babel-jest": "^29.2.2",
         "concurrently": "^7.3.0",

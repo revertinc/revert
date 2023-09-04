@@ -6498,7 +6498,7 @@ __metadata:
     "@types/express": ^4.17.13
     "@types/jest": ^29.5.4
     "@types/node": "*"
-    "@types/node-cron": ^3.0.7
+    "@types/node-cron": ^3.0.8
     "@types/uuid": ^9.0.2
     "@yarnpkg/pnpify": ^4.0.0-rc.42
     axios: ^0.27.2
@@ -9614,10 +9614,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-cron@npm:^3.0.7":
-  version: 3.0.7
-  resolution: "@types/node-cron@npm:3.0.7"
-  checksum: 1a37bd32efe55a285b08299ef4fb8b11edaa1c0d4ef5d541611a9a4a631b4d5db3dbb5b02321ce04b882d4d07f4b3a05c2ff5fd70ce4614d7f8abd45d2f28da2
+"@types/node-cron@npm:^3.0.8":
+  version: 3.0.8
+  resolution: "@types/node-cron@npm:3.0.8"
+  checksum: e45f3fb8e0f3ed57bb6bc7b365a3fd50a93e64c0751381bb6db5d8e758f8b54b6af61bf68c72fc5be3b550c01f06b16dca56c05e9507cd3f345c39f44f250ec2
   languageName: node
   linkType: hard
 
