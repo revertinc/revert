@@ -1,5 +1,5 @@
 import { ConnectionService } from '../generated/typescript/api/resources/connection/service/ConnectionService';
-import prisma from '../prisma/client';
+import prisma, { xprisma } from '../prisma/client';
 import config from '../config';
 import logError from '../helpers/logError';
 import { v4 as uuidv4 } from 'uuid';
@@ -14,7 +14,7 @@ const connectionService = new ConnectionService({
         if (!tenantId) {
             throw new NotFoundError({ error: 'Tenant not found!' });
         }
-        const connection: any = await prisma.connections.findFirst({
+        const connection: any = await xprisma.connections.findFirst({
             where: {
                 AND: [
                     { t_id: tenantId as string },
@@ -43,7 +43,7 @@ const connectionService = new ConnectionService({
     },
     async getAllConnections(req, res) {
         const { 'x-revert-api-token': token } = req.headers;
-        const connections: any = await prisma.connections.findMany({
+        const connections: any = await xprisma.connections.findMany({
             where: {
                 app: {
                     env: {
@@ -102,11 +102,7 @@ const connectionService = new ConnectionService({
         const deleted: any = await prisma.connections.delete({
             // TODO: Add environments to connections.
             where: {
-                uniqueCustomerPerTenantPerThirdParty: {
-                    tp_customer_id: connection.tp_customer_id,
-                    t_id: connection.t_id,
-                    tp_id: connection.tp_id,
-                },
+                id: connection.id,
             },
         });
         if (deleted) {

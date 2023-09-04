@@ -24,6 +24,7 @@ const config = {
     SVIX_ENDPOINT_SECRET: process.env.SVIX_ENDPOINT_SECRET!,
     svix: new Svix(process.env.SVIX_AUTH_TOKEN!),
     WHITE_LISTED_DOMAINS: process.env.WHITE_LISTED_DOMAINS?.split(','),
+    AES_ENCRYPTION_SECRET: process.env.AES_ENCRYPTION_SECRET!,
 };
 
 export default config;

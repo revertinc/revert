@@ -42,10 +42,7 @@ class AuthService {
                             });
                             await prisma.connections.update({
                                 where: {
-                                    uniqueCustomerPerTenant: {
-                                        tp_customer_id: connection.tp_customer_id,
-                                        t_id: connection.t_id,
-                                    },
+                                    id: connection.id,
                                 },
                                 data: {
                                     tp_access_token: result.data.access_token,
@@ -77,10 +74,7 @@ class AuthService {
                             if (result.data && result.data.access_token) {
                                 await prisma.connections.update({
                                     where: {
-                                        uniqueCustomerPerTenant: {
-                                            tp_customer_id: connection.tp_customer_id,
-                                            t_id: connection.t_id,
-                                        },
+                                        id: connection.id,
                                     },
                                     data: {
                                         tp_access_token: result.data.access_token,
@@ -114,10 +108,7 @@ class AuthService {
                             if (result.data && result.data.access_token) {
                                 await prisma.connections.update({
                                     where: {
-                                        uniqueCustomerPerTenant: {
-                                            tp_customer_id: connection.tp_customer_id,
-                                            t_id: connection.t_id,
-                                        },
+                                        id: connection.id,
                                     },
                                     data: {
                                         tp_access_token: result.data.access_token,
@@ -155,10 +146,7 @@ class AuthService {
                             });
                             await prisma.connections.update({
                                 where: {
-                                    uniqueCustomerPerTenant: {
-                                        tp_customer_id: connection.tp_customer_id,
-                                        t_id: connection.t_id,
-                                    },
+                                    id: connection.id,
                                 },
                                 data: {
                                     tp_access_token: result.data.access_token,
