@@ -16,7 +16,7 @@
     "license": "ISC",
     "devDependencies": {
         "@babel/cli": "^7.12.10",
-        "@babel/core": "^7.12.10",
+        "@babel/core": "^7.22.11",
         "@babel/plugin-proposal-class-properties": "^7.12.1",
         "@babel/preset-env": "^7.12.11",
         "browserify": "^17.0.0",
