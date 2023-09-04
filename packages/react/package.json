@@ -18,7 +18,7 @@
         "react-script-hook": "^1.7.2"
     },
     "devDependencies": {
-        "@babel/core": "7.17.8",
+        "@babel/core": "7.22.11",
         "@storybook/addon-a11y": "6.5.0-alpha.50",
         "@storybook/addon-actions": "6.5.0-alpha.50",
         "@storybook/addon-docs": "6.5.0-alpha.50",

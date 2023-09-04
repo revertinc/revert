@@ -16,11 +16,11 @@
     "license": "ISC",
     "devDependencies": {
         "@babel/cli": "^7.12.10",
-        "@babel/core": "^7.12.10",
+        "@babel/core": "^7.22.11",
         "@babel/plugin-proposal-class-properties": "^7.12.1",
         "@babel/preset-env": "^7.12.11",
         "browserify": "^17.0.0",
-        "concurrently": "^8.2.0",
+        "concurrently": "^8.2.1",
         "dotenv": "^16.3.1",
         "javascript-obfuscator": "^2.10.3",
         "nodemon": "^2.0.22",

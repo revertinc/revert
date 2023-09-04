@@ -4,8 +4,8 @@ on:
     push:
         branches:
             - main
-        # paths:
-        #     - fern/**
+        paths:
+            - fern/**
 
 jobs:
     deploy-fern-external:
