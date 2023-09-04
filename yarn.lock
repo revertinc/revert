@@ -6627,7 +6627,7 @@ __metadata:
     react-loader-spinner: ^5.3.4
     react-router-dom: ^6.4.1
     react-scripts: 5.0.1
-    styled-components: ^6.0.2
+    styled-components: ^6.0.7
     tailwindcss: ^3.1.8
     typescript: ^4.7.4
     web-vitals: ^2.1.4
@@ -29184,9 +29184,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"styled-components@npm:^6.0.2":
-  version: 6.0.2
-  resolution: "styled-components@npm:6.0.2"
+"styled-components@npm:^6.0.7":
+  version: 6.0.7
+  resolution: "styled-components@npm:6.0.7"
   dependencies:
     "@babel/cli": ^7.21.0
     "@babel/core": ^7.21.0
@@ -29214,7 +29214,7 @@ __metadata:
   peerDependenciesMeta:
     babel-plugin-styled-components:
       optional: true
-  checksum: 3fedf429fb0c1e2973b5e86acd27b26e8f5a3fb2576ea1ecd00d554f3f2544c6257d0f738fc705210df76ab680ab1430f55e6c1f7cb3995fd7635f04a6f96e5e
+  checksum: 38645f38f145225e456f8f9303f5be1d988180e0e3d84d1f3e1d14fb006c7deb69704745e266d61016616a154938697d011a0bff6eaeb7dd25dbba659e2411f7
   languageName: node
   linkType: hard
 
