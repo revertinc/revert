@@ -60,11 +60,13 @@ export const transformModelToFieldMapping = async ({
     tpId,
     objType,
     tenantSchemaMappingId,
+    accountFieldMappingConfig,
 }: {
     unifiedObj: any;
     tpId: TP_ID;
     objType: StandardObjects;
     tenantSchemaMappingId?: string;
+    accountFieldMappingConfig?: accountFieldMappingConfig;
 }) => {
     logger.debug('blah unifiedObj: %o', unifiedObj);
     const connectionSchema = await prisma.schemas.findFirst({
@@ -76,11 +78,17 @@ export const transformModelToFieldMapping = async ({
         include: { fieldMappings: { where: { source_tp_id: tpId } } },
     });
     const crmObj: Record<string, string> = {};
-    // should this loop be on connection / root schema fields?
     Object.keys(unifiedObj).forEach((key) => {
-        const tenantFieldMapping = connectionSchema?.fieldMappings?.find((r) => r?.target_field_name === key);
-        const fieldMapping = rootSchema?.fieldMappings?.find((r) => r?.target_field_name === key);
-        const crmKey = tenantFieldMapping?.source_field_name || fieldMapping?.source_field_name;
+        const tenantFieldMapping = connectionSchema?.fieldMappings?.find(
+            (r) =>
+                r?.target_field_name === key &&
+                (!accountFieldMappingConfig?.id ||
+                    (r.is_standard_field
+                        ? (accountFieldMappingConfig?.mappable_by_connection_field_list || []).includes(key)
+                        : accountFieldMappingConfig?.allow_connection_override_custom_fields))
+        );
+        const rootFieldMapping = rootSchema?.fieldMappings?.find((r) => r?.target_field_name === key);
+        const crmKey = tenantFieldMapping?.source_field_name || rootFieldMapping?.source_field_name;
         if (crmKey) {
             crmObj[crmKey] = unifiedObj[key];
         }
