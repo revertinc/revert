@@ -7,6 +7,8 @@ export async function disunifyObject<T extends Record<string, any>>({
     obj,
     tpId,
     objType,
+    tenantSchemaMappingId,
+    accountFieldMappingConfig,
 }: {
     obj: T;
     tpId: TP_ID;
@@ -18,6 +20,8 @@ export async function disunifyObject<T extends Record<string, any>>({
         unifiedObj: obj,
         tpId,
         objType,
+        tenantSchemaMappingId,
+        accountFieldMappingConfig,
     });
     switch (tpId) {
         case TP_ID.hubspot: {
