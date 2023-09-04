@@ -1,4 +1,3 @@
-
 export interface ZohoContact {
     Owner: string;
     Lead_Source: string;
@@ -87,6 +86,44 @@ export interface ZohoLead {
     State: string;
     Zip_Code: string;
     Country: string;
+    Description: string;
+    Record_Image: string;
+}
+
+export interface ZohoCompany {
+    Owner: string;
+    Rating: string;
+    Account_Name: string;
+    Phone: string;
+    Account_Site: string;
+    Fax: string;
+    Parent_Account: string;
+    Website: string;
+    Account_Number: bigint;
+    Ticker_Symbol: string;
+    Account_Type: string;
+    Ownership: string;
+    Industry: string;
+    Employees: number;
+    Annual_Revenue: number;
+    SIC_Code: number;
+    Created_By: string;
+    Modified_By: string;
+    Created_Time: Date;
+    Modified_Time: Date;
+    Last_Activity_Time: Date;
+    Last_Enriched_Time__s: Date;
+    Enrich_Status__s: string;
+    Billing_Street: string;
+    Shipping_Street: string;
+    Billing_City: string;
+    Shipping_City: string;
+    Billing_State: string;
+    Shipping_State: string;
+    Billing_Code: string;
+    Shipping_Code: string;
+    Billing_Country: string;
+    Shipping_Country: string;
     Description: string;
     Record_Image: string;
 }

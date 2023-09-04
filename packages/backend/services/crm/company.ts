@@ -8,14 +8,19 @@ import logError from '../../helpers/logError';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { isStandardError } from '../../helpers/error';
-import { unifyCompany, disunifyCompany, UnifiedCompany } from '../../models/unified/company';
+import { unifyObject, disunifyObject } from '../../helpers/crm/transform';
+import { UnifiedCompany } from '../../models/unified/company';
 import { PipedriveCompany, PipedrivePagination } from '../../constants/pipedrive';
+import { StandardObjects } from '../../constants/common';
+
+const objType = StandardObjects.company;
 
 const companyService = new CompanyService(
     {
         async getCompany(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const companyId = req.params.id;
                 const fields = req.query.fields;
                 const thirdPartyId = connection.tp_id;
@@ -48,7 +53,16 @@ const companyService = new CompanyService(
 
                         res.send({
                             status: 'ok',
-                            result: unifyCompany({ ...company.data, ...company.data?.properties }),
+                            result: await unifyObject<any, UnifiedCompany>({
+                                obj: {
+                                    ...company.data,
+                                    ...company.data?.properties,
+                                },
+                                tpId: thirdPartyId,
+                                objType,
+                                tenantSchemaMappingId: connection.schema_mapping_id,
+                                accountFieldMappingConfig: account.accountFieldMappingConfig,
+                            }),
                         });
                         break;
                     }
@@ -60,7 +74,13 @@ const companyService = new CompanyService(
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
-                        company = unifyCompany(company.data.data?.[0]);
+                        company = await unifyObject<any, UnifiedCompany>({
+                            obj: company.data.data?.[0],
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: company });
                         break;
                     }
@@ -73,7 +93,16 @@ const companyService = new CompanyService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
-                        res.send({ status: 'ok', result: unifyCompany(company.data) });
+                        res.send({
+                            status: 'ok',
+                            result: await unifyObject<any, UnifiedCompany>({
+                                obj: company.data,
+                                tpId: thirdPartyId,
+                                objType,
+                                tenantSchemaMappingId: connection.schema_mapping_id,
+                                accountFieldMappingConfig: account.accountFieldMappingConfig,
+                            }),
+                        });
                         break;
                     }
                     case TP_ID.pipedrive: {
@@ -86,7 +115,16 @@ const companyService = new CompanyService(
                             }
                         );
                         const company = result.data;
-                        res.send({ status: 'ok', result: unifyCompany(company) });
+                        res.send({
+                            status: 'ok',
+                            result: await unifyObject<any, UnifiedCompany>({
+                                obj: company,
+                                tpId: thirdPartyId,
+                                objType,
+                                tenantSchemaMappingId: connection.schema_mapping_id,
+                                accountFieldMappingConfig: account.accountFieldMappingConfig,
+                            }),
+                        });
                         break;
                     }
                     default: {
@@ -105,6 +143,7 @@ const companyService = new CompanyService(
         async getCompanies(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const fields = req.query.fields;
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
@@ -140,7 +179,18 @@ const companyService = new CompanyService(
                         });
                         const nextCursor = companies.data?.paging?.next?.after || undefined;
                         companies = companies.data.results as any[];
-                        companies = companies?.map((c: any) => unifyCompany({ ...c, ...c?.properties }));
+                        companies = await Promise.all(
+                            companies?.map(
+                                async (c: any) =>
+                                    await unifyObject<any, UnifiedCompany>({
+                                        obj: { ...c, ...c?.properties },
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({
                             status: 'ok',
                             next: nextCursor,
@@ -163,7 +213,18 @@ const companyService = new CompanyService(
                         const nextCursor = companies.data?.info?.next_page_token || undefined;
                         const prevCursor = companies.data?.info?.previous_page_token || undefined;
                         companies = companies.data.data;
-                        companies = companies?.map((l: any) => unifyCompany(l));
+                        companies = await Promise.all(
+                            companies?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedCompany>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: companies });
                         break;
                     }
@@ -195,7 +256,18 @@ const companyService = new CompanyService(
                                 ? String(parseInt(String(cursor)) - companies.data?.totalSize)
                                 : undefined;
                         companies = companies.data?.records;
-                        companies = companies?.map((l: any) => unifyCompany(l));
+                        companies = await Promise.all(
+                            companies?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedCompany>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: companies });
                         break;
                     }
@@ -214,7 +286,18 @@ const companyService = new CompanyService(
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
                         const companies = result.data.data;
-                        const unifiedCompanies = companies?.map((d) => unifyCompany(d));
+                        const unifiedCompanies = await Promise.all(
+                            companies?.map(
+                                async (d) =>
+                                    await unifyObject<any, UnifiedCompany>({
+                                        obj: d,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedCompanies });
                         break;
                     }
@@ -235,10 +318,17 @@ const companyService = new CompanyService(
             try {
                 const companyData = req.body as UnifiedCompany;
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const company = disunifyCompany(companyData, thirdPartyId);
+                const company = await disunifyObject<UnifiedCompany>({
+                    obj: companyData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
                 console.log('Revert::CREATE COMPANY', tenantId, company);
 
                 switch (thirdPartyId) {
@@ -350,12 +440,19 @@ const companyService = new CompanyService(
         async updateCompany(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const companyData = req.body as UnifiedCompany;
                 const companyId = req.params.id;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const company = disunifyCompany(companyData, thirdPartyId);
+                const company = await disunifyObject<UnifiedCompany>({
+                    obj: companyData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
                 console.log('Revert::UPDATE COMPANY', tenantId, company, companyId);
 
                 switch (thirdPartyId) {
@@ -437,6 +534,7 @@ const companyService = new CompanyService(
         async searchCompanies(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const fields = req.query.fields;
                 const searchCriteria: any = req.body.searchCriteria;
                 const formattedFields = (fields || '').split('').filter(Boolean);
@@ -472,7 +570,18 @@ const companyService = new CompanyService(
                             }),
                         });
                         companies = companies.data.results as any[];
-                        companies = companies?.map((c: any) => unifyCompany({ ...c, ...c?.properties }));
+                        companies = await Promise.all(
+                            companies?.map(
+                                async (c: any) =>
+                                    await unifyObject<any, UnifiedCompany>({
+                                        obj: { ...c, ...c?.properties },
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({
                             status: 'ok',
                             results: companies,
@@ -488,7 +597,18 @@ const companyService = new CompanyService(
                             },
                         });
                         companies = companies.data.data;
-                        companies = companies?.map((c: any) => unifyCompany(c));
+                        companies = await Promise.all(
+                            companies?.map(
+                                async (c: any) =>
+                                    await unifyObject<any, UnifiedCompany>({
+                                        obj: c,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', results: companies });
                         break;
                     }
@@ -502,7 +622,18 @@ const companyService = new CompanyService(
                             },
                         });
                         companies = companies?.data?.searchRecords;
-                        companies = companies?.map((c: any) => unifyCompany(c));
+                        companies = await Promise.all(
+                            companies?.map(
+                                async (c: any) =>
+                                    await unifyObject<any, UnifiedCompany>({
+                                        obj: c,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', results: companies });
                         break;
                     }
@@ -521,7 +652,18 @@ const companyService = new CompanyService(
                             }
                         );
                         const companies = result.data.data.items.map((item) => item.item);
-                        const unifiedCompanies = companies?.map((d: any) => unifyCompany(d));
+                        const unifiedCompanies = await Promise.all(
+                            companies?.map(
+                                async (d: any) =>
+                                    await unifyObject<any, UnifiedCompany>({
+                                        obj: d,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', results: unifiedCompanies });
                         break;
                     }

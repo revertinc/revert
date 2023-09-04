@@ -43,6 +43,7 @@ async function main() {
     // );
 
     // root schema mapping for note starts --------------------------------------------------
+    // TODO: map additional fields (check mapping in models for disunify)
     const allFields = {
         [StandardObjects.note]: [
             {
@@ -127,6 +128,152 @@ async function main() {
                     [TP_ID.zohocrm]: 'Email',
                 },
                 target_field_name: 'email',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'id',
+                    [TP_ID.pipedrive]: 'id',
+                    [TP_ID.sfdc]: 'Id',
+                    [TP_ID.zohocrm]: 'id',
+                },
+                target_field_name: 'id',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'id',
+                    [TP_ID.pipedrive]: 'id',
+                    [TP_ID.sfdc]: 'Id',
+                    [TP_ID.zohocrm]: 'id',
+                },
+                target_field_name: 'remoteId',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_createdate',
+                    [TP_ID.pipedrive]: 'add_time',
+                    [TP_ID.sfdc]: 'CreatedDate',
+                    [TP_ID.zohocrm]: 'Created_Time',
+                },
+                target_field_name: 'createdTimestamp',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_lastmodifieddate',
+                    [TP_ID.pipedrive]: 'update_time',
+                    [TP_ID.sfdc]: 'LastModifiedDate',
+                    [TP_ID.zohocrm]: 'Modified_Time',
+                },
+                target_field_name: 'updatedTimestamp',
+            },
+        ],
+        [StandardObjects.company]: [
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'name',
+                    [TP_ID.pipedrive]: 'name',
+                    [TP_ID.sfdc]: 'Name',
+                    [TP_ID.zohocrm]: 'Account_Name',
+                },
+                target_field_name: 'name',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'industry',
+                    [TP_ID.pipedrive]: undefined,
+                    [TP_ID.sfdc]: 'Industry',
+                    [TP_ID.zohocrm]: 'Industry',
+                },
+                target_field_name: 'industry',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'description',
+                    [TP_ID.pipedrive]: undefined,
+                    [TP_ID.sfdc]: 'Description',
+                    [TP_ID.zohocrm]: 'Description',
+                },
+                target_field_name: 'description',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'annualrevenue',
+                    [TP_ID.pipedrive]: undefined,
+                    [TP_ID.sfdc]: 'AnnualRevenue',
+                    [TP_ID.zohocrm]: 'Annual_Revenue',
+                },
+                target_field_name: 'annualRevenue',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'numberofemployees',
+                    [TP_ID.pipedrive]: 'people_count',
+                    [TP_ID.sfdc]: 'NumberOfEmployees',
+                    [TP_ID.zohocrm]: 'Employees',
+                },
+                target_field_name: 'size',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'phone',
+                    [TP_ID.pipedrive]: undefined,
+                    [TP_ID.sfdc]: 'Phone',
+                    [TP_ID.zohocrm]: 'Phone',
+                },
+                target_field_name: 'phone',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: undefined,
+                    [TP_ID.pipedrive]: 'address_street_number',
+                    [TP_ID.sfdc]: 'BillingStreet',
+                    [TP_ID.zohocrm]: 'Billing_Street',
+                },
+                target_field_name: 'address.street',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'city',
+                    [TP_ID.pipedrive]: 'address_locality',
+                    [TP_ID.sfdc]: 'BillingCity',
+                    [TP_ID.zohocrm]: 'Billing_City',
+                },
+                target_field_name: 'address.city',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'state',
+                    [TP_ID.pipedrive]: undefined,
+                    [TP_ID.sfdc]: 'BillingState',
+                    [TP_ID.zohocrm]: 'Billing_State',
+                },
+                target_field_name: 'address.state',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'country',
+                    [TP_ID.pipedrive]: 'address_country',
+                    [TP_ID.sfdc]: 'BillingCountry',
+                    [TP_ID.zohocrm]: 'Billing_Country',
+                },
+                target_field_name: 'address.country',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'zip',
+                    [TP_ID.pipedrive]: 'address_postal_code',
+                    [TP_ID.sfdc]: 'BillingPostalCode',
+                    [TP_ID.zohocrm]: 'Billing_Code',
+                },
+                target_field_name: 'address.zip',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'zip',
+                    [TP_ID.pipedrive]: 'address_postal_code',
+                    [TP_ID.sfdc]: 'BillingPostalCode',
+                    [TP_ID.zohocrm]: 'Billing_Code',
+                },
+                target_field_name: 'address.postalCode',
             },
             {
                 source_field_name: {
