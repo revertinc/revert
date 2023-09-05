@@ -331,7 +331,13 @@ const contactService = new ContactService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const contact = disunifyObject({obj: contactData, tpId: thirdPartyId, objType, tenantSchemaMappingId: connection.schema_mapping_id, accountFieldMappingConfig: account.accountFieldMappingConfig});
+                const contact = disunifyObject<UnifiedContact>({
+                    obj: contactData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
                 console.log('Revert::CREATE CONTACT', tenantId, contact, thirdPartyId);
 
                 switch (thirdPartyId) {
@@ -462,7 +468,13 @@ const contactService = new ContactService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const contact = disunifyObject({obj: contactData, tpId: thirdPartyId, objType, tenantSchemaMappingId: connection.schema_mapping_id, accountFieldMappingConfig: account.accountFieldMappingConfig});
+                const contact = disunifyObject<UnifiedContact>({
+                    obj: contactData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
                 console.log('Revert::UPDATE CONTACT', tenantId, contact, contactId);
 
                 switch (thirdPartyId) {
