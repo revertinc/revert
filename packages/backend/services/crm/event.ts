@@ -5,17 +5,22 @@ import { EventService } from '../../generated/typescript/api/resources/crm/resou
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
-import logError, { logInfo } from '../../helpers/logger';
+import { logInfo, logError } from '../../helpers/logger';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { isStandardError } from '../../helpers/error';
-import { UnifiedEvent, disunifyEvent, unifyEvent } from '../../models/unified';
+import { UnifiedEvent } from '../../models/unified';
 import { PipedriveEvent, PipedrivePagination } from '../../constants/pipedrive';
+import { disunifyObject, unifyObject } from 'helpers/crm/transform';
+import { StandardObjects } from 'constants/common';
+
+const objType = StandardObjects.event;
 
 const eventService = new EventService(
     {
         async getEvent(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const eventId = req.params.id;
                 const fields = req.query.fields;
                 const thirdPartyId = connection.tp_id;
@@ -50,7 +55,13 @@ const eventService = new EventService(
                             },
                         });
                         event = ([event.data] as any[])?.[0];
-                        event = unifyEvent({ ...event, ...event?.properties });
+                        event = await unifyObject<any, UnifiedEvent>({
+                            obj: { ...event, ...event?.properties },
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: event });
                         break;
                     }
@@ -62,7 +73,13 @@ const eventService = new EventService(
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
-                        let event = unifyEvent(events.data.data?.[0]);
+                        let event = await unifyObject<any, UnifiedEvent>({
+                            obj: events.data.data?.[0],
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: event });
                         break;
                     }
@@ -75,7 +92,13 @@ const eventService = new EventService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
-                        let event = unifyEvent(events.data);
+                        let event = await unifyObject<any, UnifiedEvent>({
+                            obj: events.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: event });
                         break;
                     }
@@ -89,7 +112,16 @@ const eventService = new EventService(
                             }
                         );
                         const event = result.data;
-                        res.send({ status: 'ok', result: unifyEvent(event) });
+                        res.send({
+                            status: 'ok',
+                            result: await unifyObject<any, UnifiedEvent>({
+                                obj: event,
+                                tpId: thirdPartyId,
+                                objType,
+                                tenantSchemaMappingId: connection.schema_mapping_id,
+                                accountFieldMappingConfig: account.accountFieldMappingConfig,
+                            }),
+                        });
                         break;
                     }
                     default: {
@@ -108,6 +140,7 @@ const eventService = new EventService(
         async getEvents(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const fields = req.query.fields;
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
@@ -146,7 +179,18 @@ const eventService = new EventService(
                         });
                         const nextCursor = events.data?.paging?.next?.after || undefined;
                         events = events.data.results as any[];
-                        events = events?.map((l: any) => unifyEvent({ ...l, ...l?.properties }));
+                        events = await Promise.all(
+                            events?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedEvent>({
+                                        obj: { ...l, ...l?.properties },
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({
                             status: 'ok',
                             next: nextCursor,
@@ -169,7 +213,18 @@ const eventService = new EventService(
                         const nextCursor = events.data?.info?.next_page_token || undefined;
                         const prevCursor = events.data?.info?.previous_page_token || undefined;
                         events = events.data.data;
-                        events = events?.map((l: any) => unifyEvent(l));
+                        events = await Promise.all(
+                            events?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedEvent>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: events });
                         break;
                     }
@@ -201,7 +256,18 @@ const eventService = new EventService(
                                 ? String(parseInt(String(cursor)) - events.data?.totalSize)
                                 : undefined;
                         events = events.data?.records;
-                        events = events?.map((l: any) => unifyEvent(l));
+                        events = await Promise.all(
+                            events?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedEvent>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: events });
                         break;
                     }
@@ -220,7 +286,18 @@ const eventService = new EventService(
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
                         const events = result.data.data;
-                        const unifiedEvents = events?.map((d) => unifyEvent(d));
+                        const unifiedEvents = await Promise.all(
+                            events?.map(
+                                async (d) =>
+                                    await unifyObject<any, UnifiedEvent>({
+                                        obj: d,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedEvents });
                         break;
                     }
@@ -241,11 +318,18 @@ const eventService = new EventService(
             try {
                 const eventData = req.body as UnifiedEvent;
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const event = disunifyEvent(eventData, thirdPartyId);
-                logInfo('Revert::CREATE EVENT', connection.app?.env?.accountId, tenantId, event);
+                const event = await disunifyObject<UnifiedEvent>({
+                    obj: eventData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+                console.log('Revert::CREATE EVENT', connection.app?.env?.accountId, tenantId, event);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -328,13 +412,20 @@ const eventService = new EventService(
         async updateEvent(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const eventData = req.body as UnifiedEvent;
                 const eventId = req.params.id;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const event = disunifyEvent(eventData, thirdPartyId);
-                logInfo('Revert::UPDATE EVENT', connection.app?.env?.accountId, tenantId, event, eventId);
+                const event = await disunifyObject<UnifiedEvent>({
+                    obj: eventData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+                console.log('Revert::UPDATE EVENT', connection.app?.env?.accountId, tenantId, event, eventId);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -410,6 +501,7 @@ const eventService = new EventService(
         async searchEvents(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const fields = req.query.fields;
                 const searchCriteria: any = req.body.searchCriteria;
                 const formattedFields = String(fields || '').split(',');
@@ -442,7 +534,18 @@ const eventService = new EventService(
                             }),
                         });
                         events = events.data.results as any[];
-                        events = events?.map((l: any) => unifyEvent({ ...l, ...l?.properties }));
+                        events = await Promise.all(
+                            events?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedEvent>({
+                                        obj: { ...l, ...l?.properties },
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', results: events });
                         break;
                     }
@@ -455,7 +558,18 @@ const eventService = new EventService(
                             },
                         });
                         events = events.data.data;
-                        events = events?.map((l: any) => unifyEvent(l));
+                        events = await Promise.all(
+                            events?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedEvent>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', results: events });
                         break;
                     }
@@ -469,7 +583,18 @@ const eventService = new EventService(
                             },
                         });
                         events = events?.data?.searchRecords;
-                        events = events?.map((l: any) => unifyEvent(l));
+                        events = await Promise.all(
+                            events?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedEvent>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', results: events });
                         break;
                     }

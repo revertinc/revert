@@ -413,6 +413,107 @@ async function main() {
                 target_field_name: 'updatedTimestamp',
             },
         ],
+        [StandardObjects.event]: [
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_activity_type',
+                    [TP_ID.pipedrive]: 'xxxx',
+                    [TP_ID.sfdc]: 'Type',
+                    [TP_ID.zohocrm]: 'Type',
+                },
+                target_field_name: 'type',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_meeting_title',
+                    [TP_ID.pipedrive]: 'subject',
+                    [TP_ID.sfdc]: 'Subject',
+                    [TP_ID.zohocrm]: 'Event_Title',
+                },
+                target_field_name: 'subject',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_meeting_start_time',
+                    [TP_ID.pipedrive]: 'add_time',
+                    [TP_ID.sfdc]: 'StartDateTime',
+                    [TP_ID.zohocrm]: 'Start_DateTime',
+                },
+                target_field_name: 'startDateTime',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_meeting_end_time',
+                    [TP_ID.pipedrive]: 'due_time',
+                    [TP_ID.sfdc]: 'EndDateTime',
+                    [TP_ID.zohocrm]: 'End_DateTime',
+                },
+                target_field_name: 'endDateTime',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: undefined,
+                    [TP_ID.pipedrive]: undefined,
+                    [TP_ID.sfdc]: 'IsAllDayEvent',
+                    [TP_ID.zohocrm]: 'All_day',
+                },
+                target_field_name: 'isAllDayEvent',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_meeting_body',
+                    [TP_ID.pipedrive]: 'public_description',
+                    [TP_ID.sfdc]: 'Description',
+                    [TP_ID.zohocrm]: 'Description',
+                },
+                target_field_name: 'description',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_meeting_location',
+                    [TP_ID.pipedrive]: 'location',
+                    [TP_ID.sfdc]: 'Location',
+                    [TP_ID.zohocrm]: 'Location',
+                },
+                target_field_name: 'location',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'id',
+                    [TP_ID.pipedrive]: 'id',
+                    [TP_ID.sfdc]: 'Id',
+                    [TP_ID.zohocrm]: 'id',
+                },
+                target_field_name: 'id',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'id',
+                    [TP_ID.pipedrive]: 'id',
+                    [TP_ID.sfdc]: 'Id',
+                    [TP_ID.zohocrm]: 'id',
+                },
+                target_field_name: 'remoteId',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_createdate',
+                    [TP_ID.pipedrive]: 'add_time',
+                    [TP_ID.sfdc]: 'CreatedDate',
+                    [TP_ID.zohocrm]: 'Created_Time',
+                },
+                target_field_name: 'createdTimestamp',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_lastmodifieddate',
+                    [TP_ID.pipedrive]: 'update_time',
+                    [TP_ID.sfdc]: 'LastModifiedDate',
+                    [TP_ID.zohocrm]: 'Modified_Time',
+                },
+                target_field_name: 'updatedTimestamp',
+            },
+        ],
     };
     const allSchemas = Object.keys(allFields).map(obj => {
         return {
