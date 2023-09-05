@@ -59,11 +59,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             try {
                 await prisma.connections.upsert({
                     where: {
-                        uniqueCustomerPerTenantPerThirdParty: {
-                            tp_customer_id: info.data.user,
-                            t_id: String(req.query.t_id),
-                            tp_id: integrationId,
-                        },
+                        id: String(req.query.t_id),
                     },
                     update: {
                         tp_access_token: result.data.access_token,
@@ -72,6 +68,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         app_client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET,
                     },
                     create: {
+                        id: String(req.query.t_id),
                         t_id: req.query.t_id as string,
                         tp_id: integrationId,
                         tp_access_token: result.data.access_token,
@@ -145,13 +142,10 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 try {
                     await prisma.connections.upsert({
                         where: {
-                            uniqueCustomerPerTenantPerThirdParty: {
-                                tp_customer_id: info.data.Email,
-                                t_id: String(req.query.t_id),
-                                tp_id: integrationId,
-                            },
+                            id: String(req.query.t_id),
                         },
                         create: {
+                            id: String(req.query.t_id),
                             t_id: req.query.t_id as string,
                             tp_id: integrationId,
                             tp_access_token: result.data.access_token,
@@ -227,13 +221,10 @@ authRouter.get('/oauth-callback', async (req, res) => {
             try {
                 await prisma.connections.upsert({
                     where: {
-                        uniqueCustomerPerTenantPerThirdParty: {
-                            tp_customer_id: info.data.email,
-                            t_id: String(req.query.t_id),
-                            tp_id: integrationId,
-                        },
+                        id: String(req.query.t_id),
                     },
                     create: {
+                        id: String(req.query.t_id),
                         t_id: req.query.t_id as string,
                         tp_id: integrationId,
                         tp_access_token: result.data.access_token,
@@ -312,17 +303,14 @@ authRouter.get('/oauth-callback', async (req, res) => {
             try {
                 await prisma.connections.upsert({
                     where: {
-                        uniqueCustomerPerTenantPerThirdParty: {
-                            tp_customer_id: info.data.data.email,
-                            t_id: String(req.query.t_id),
-                            tp_id: integrationId,
-                        },
+                        id: String(req.query.t_id),
                     },
                     update: {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
                     },
                     create: {
+                        id: String(req.query.t_id),
                         t_id: req.query.t_id as string,
                         tp_id: integrationId,
                         tp_access_token: result.data.access_token,

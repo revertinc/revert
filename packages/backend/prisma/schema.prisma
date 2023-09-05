@@ -63,6 +63,7 @@ model users {
 }
 
 model connections {
+  id                         String  @id @default(uuid())
   tp_id                      TP_ID
   tp_access_token            String
   tp_refresh_token           String?
