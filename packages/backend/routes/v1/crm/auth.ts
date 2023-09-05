@@ -4,7 +4,7 @@ import config from '../../../config';
 import qs from 'qs';
 import { TP_ID } from '@prisma/client';
 import AuthService from '../../../services/auth';
-import prisma, { Prisma } from '../../../prisma/client';
+import prisma, { Prisma, xprisma } from '../../../prisma/client';
 import logError from '../../../helpers/logError';
 
 const authRouter = express.Router({ mergeParams: true });
@@ -57,7 +57,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             });
             console.log('Oauth token info', info.data);
             try {
-                await prisma.connections.upsert({
+                await xprisma.connections.upsert({
                     where: {
                         id: String(req.query.t_id),
                     },
@@ -140,7 +140,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 });
                 console.log('Oauth token info', info.data);
                 try {
-                    await prisma.connections.upsert({
+                    await xprisma.connections.upsert({
                         where: {
                             id: String(req.query.t_id),
                         },
@@ -219,7 +219,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             });
             console.log('Oauth token info', info.data);
             try {
-                await prisma.connections.upsert({
+                await xprisma.connections.upsert({
                     where: {
                         id: String(req.query.t_id),
                     },
@@ -301,7 +301,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             });
             console.log('Oauth token info', info.data);
             try {
-                await prisma.connections.upsert({
+                await xprisma.connections.upsert({
                     where: {
                         id: String(req.query.t_id),
                     },
