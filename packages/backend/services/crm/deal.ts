@@ -4,18 +4,23 @@ import { TP_ID } from '@prisma/client';
 import { DealService } from '../../generated/typescript/api/resources/crm/resources/deal/service/DealService';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
-import logError, { logInfo } from '../../helpers/logger';
+import { logInfo, logError } from '../../helpers/logger';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { isStandardError } from '../../helpers/error';
-import { UnifiedDeal, disunifyDeal, unifyDeal } from '../../models/unified';
+import { unifyObject, disunifyObject } from '../../helpers/crm/transform';
+import { UnifiedDeal } from '../../models/unified';
 import { PipedriveDeal, PipedrivePagination } from '../../constants/pipedrive';
+import { StandardObjects } from '../../constants/common';
+
+const objType = StandardObjects.deal;
 
 const dealService = new DealService(
     {
         async getDeal(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const dealId = req.params.id;
                 const fields = req.query.fields;
                 const thirdPartyId = connection.tp_id;
@@ -50,7 +55,13 @@ const dealService = new DealService(
                             },
                         });
                         deal = ([deal.data] as any[])?.[0];
-                        deal = unifyDeal({ ...deal, ...deal?.properties }, thirdPartyId);
+                        deal = await unifyObject<any, UnifiedDeal>({
+                            obj: { ...deal, ...deal?.properties },
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: deal });
                         break;
                     }
@@ -62,7 +73,13 @@ const dealService = new DealService(
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
-                        let deal = unifyDeal(deals.data.data?.[0], thirdPartyId);
+                        let deal = await unifyObject<any, UnifiedDeal>({
+                            obj: deals.data.data?.[0],
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: deal });
                         break;
                     }
@@ -75,7 +92,13 @@ const dealService = new DealService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
-                        let deal = unifyDeal(deals.data, thirdPartyId);
+                        let deal = await unifyObject<any, UnifiedDeal>({
+                            obj: deals.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: deal });
                         break;
                     }
@@ -89,7 +112,16 @@ const dealService = new DealService(
                             }
                         );
                         const deal = result.data;
-                        res.send({ status: 'ok', result: unifyDeal(deal, thirdPartyId) });
+                        res.send({
+                            status: 'ok',
+                            result: await unifyObject<any, UnifiedDeal>({
+                                obj: deal,
+                                tpId: thirdPartyId,
+                                objType,
+                                tenantSchemaMappingId: connection.schema_mapping_id,
+                                accountFieldMappingConfig: account.accountFieldMappingConfig,
+                            }),
+                        });
                         break;
                     }
                     default: {
@@ -108,6 +140,7 @@ const dealService = new DealService(
         async getDeals(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const fields = req.query.fields;
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
@@ -146,7 +179,18 @@ const dealService = new DealService(
                         });
                         const nextCursor = deals.data?.paging?.next?.after || undefined;
                         deals = deals.data.results as any[];
-                        deals = deals?.map((l: any) => unifyDeal({ ...l, ...l?.properties }, thirdPartyId));
+                        deals = await Promise.all(
+                            deals?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedDeal>({
+                                        obj: { ...l, ...l?.properties },
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({
                             status: 'ok',
                             next: nextCursor,
@@ -169,7 +213,18 @@ const dealService = new DealService(
                         const nextCursor = deals.data?.info?.next_page_token || undefined;
                         const prevCursor = deals.data?.info?.previous_page_token || undefined;
                         deals = deals.data.data;
-                        deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
+                        deals = await Promise.all(
+                            deals?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedDeal>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: deals });
                         break;
                     }
@@ -203,7 +258,18 @@ const dealService = new DealService(
                                 ? String(parseInt(String(cursor)) - deals.data?.totalSize)
                                 : undefined;
                         deals = deals.data?.records;
-                        deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
+                        deals = await Promise.all(
+                            deals?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedDeal>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: deals });
                         break;
                     }
@@ -222,7 +288,18 @@ const dealService = new DealService(
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
                         const deals = result.data.data;
-                        const unifiedDeals = deals?.map((d) => unifyDeal(d, thirdPartyId));
+                        const unifiedDeals = await Promise.all(
+                            deals?.map(
+                                async (d) =>
+                                    await unifyObject<any, UnifiedDeal>({
+                                        obj: d,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedDeals });
                         break;
                     }
@@ -243,11 +320,18 @@ const dealService = new DealService(
             try {
                 const dealData = req.body as UnifiedDeal;
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const deal = disunifyDeal(dealData, thirdPartyId);
-                logInfo('Revert::CREATE DEAL', connection.app?.env?.accountId, tenantId, deal);
+                const deal = await disunifyObject<UnifiedDeal>({
+                    obj: dealData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+                console.log('Revert::CREATE DEAL', connection.app?.env?.accountId, tenantId, deal);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -334,13 +418,20 @@ const dealService = new DealService(
         async updateDeal(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const dealData = req.body as UnifiedDeal;
                 const dealId = req.params.id;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const deal = disunifyDeal(dealData, thirdPartyId);
-                logInfo('Revert::UPDATE DEAL', connection.app?.env?.accountId, tenantId, deal, dealId);
+                const deal = await disunifyObject<UnifiedDeal>({
+                    obj: dealData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+                console.log('Revert::UPDATE DEAL', connection.app?.env?.accountId, tenantId, deal, dealId);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -421,6 +512,7 @@ const dealService = new DealService(
         async searchDeals(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const fields = req.query.fields;
                 const searchCriteria: any = req.body.searchCriteria;
                 const formattedFields = (fields || '').split('').filter(Boolean);
@@ -465,7 +557,18 @@ const dealService = new DealService(
                             }),
                         });
                         deals = deals.data.results as any[];
-                        deals = deals?.map((l: any) => unifyDeal({ ...l, ...l?.properties }, thirdPartyId));
+                        deals = await Promise.all(
+                            deals?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedDeal>({
+                                        obj: { ...l, ...l?.properties },
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', results: deals });
                         break;
                     }
@@ -478,7 +581,18 @@ const dealService = new DealService(
                             },
                         });
                         deals = deals.data.data;
-                        deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
+                        deals = await Promise.all(
+                            deals?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedDeal>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', results: deals });
                         break;
                     }
@@ -492,7 +606,18 @@ const dealService = new DealService(
                             },
                         });
                         deals = deals?.data?.searchRecords;
-                        deals = deals?.map((l: any) => unifyDeal(l, thirdPartyId));
+                        deals = await Promise.all(
+                            deals?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedDeal>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', results: deals });
                         break;
                     }
@@ -511,7 +636,18 @@ const dealService = new DealService(
                             }
                         );
                         const deals = result.data.data.items.map((item) => item.item);
-                        const unifiedDeals = deals?.map((d: any) => unifyDeal(d, thirdPartyId));
+                        const unifiedDeals = await Promise.all(
+                            deals?.map(
+                                async (d: any) =>
+                                    await unifyObject<any, UnifiedDeal>({
+                                        obj: d,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', results: unifiedDeals });
                         break;
                     }
