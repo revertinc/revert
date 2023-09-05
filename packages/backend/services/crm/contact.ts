@@ -331,7 +331,7 @@ const contactService = new ContactService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const contact = disunifyObject<UnifiedContact>({
+                const contact = await disunifyObject<UnifiedContact>({
                     obj: contactData,
                     tpId: thirdPartyId,
                     objType,
@@ -468,7 +468,7 @@ const contactService = new ContactService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const contact = disunifyObject<UnifiedContact>({
+                const contact = await disunifyObject<UnifiedContact>({
                     obj: contactData,
                     tpId: thirdPartyId,
                     objType,
