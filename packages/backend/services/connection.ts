@@ -85,6 +85,7 @@ const connectionService = new ConnectionService({
                 },
             },
             select: {
+                id: true,
                 tp_access_token: true,
                 tp_id: true,
                 t_id: true,
