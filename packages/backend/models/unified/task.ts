@@ -1,7 +1,4 @@
-import { AllAssociation } from '../../constants/common';
-import { Subtype } from '../../constants/typeHelpers';
-
-export type TaskAssociation = Subtype<AllAssociation, 'dealId'>;
+import { TaskAssociation } from '../../constants/associations';
 
 export interface UnifiedTask {
     subject: string;

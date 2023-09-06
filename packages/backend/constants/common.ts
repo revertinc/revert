@@ -36,8 +36,6 @@ export const DEFAULT_SCOPE = {
     [TP_ID.pipedrive]: [],
 };
 
-export type AllAssociation = 'contactId' | 'companyId' | 'leadId' | 'dealId' | 'noteId';
-
 export const rootSchemaMappingId = 'revertRootSchemaMapping';
 
 export enum StandardObjects {

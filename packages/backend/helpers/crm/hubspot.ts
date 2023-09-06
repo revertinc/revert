@@ -1,4 +1,5 @@
-import { AllAssociation, StandardObjects } from '../../constants/common';
+import { AllAssociation } from '../../constants/associations';
+import { StandardObjects } from '../../constants/common';
 
 export const getHubspotAssociationObj = (key: AllAssociation, associateObj: StandardObjects) => {
     const associationTypeMapping: {
