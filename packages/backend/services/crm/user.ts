@@ -6,16 +6,21 @@ import { InternalServerError } from '../../generated/typescript/api/resources/co
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
-import logError, { logInfo } from '../../helpers/logger';
+import { logInfo, logError } from '../../helpers/logger';
 import { isStandardError } from '../../helpers/error';
-import { UnifiedUser, disunifyUser, unifyUser } from '../../models/unified/user';
+import { disunifyObject, unifyObject } from '../../helpers/crm/transform';
+import { UnifiedUser } from '../../models/unified/user';
 import { PipedriveUser } from '../../constants/pipedrive';
+import { StandardObjects } from '../../constants/common';
+
+const objType = StandardObjects.user;
 
 const userService = new UserService(
     {
         async getUser(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const userId = req.params.id;
                 const fields = req.query.fields;
                 const thirdPartyId = connection.tp_id;
@@ -48,7 +53,13 @@ const userService = new UserService(
                             },
                         });
                         user = ([user.data] as any[])?.[0];
-                        user = unifyUser({ ...user, ...user?.properties });
+                        user = await unifyObject<any, UnifiedUser>({
+                            obj: { ...user, ...user?.properties },
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: { ...user, ...user?.properties } });
                         break;
                     }
@@ -60,7 +71,13 @@ const userService = new UserService(
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
-                        let user = unifyUser(users.data.users?.[0]);
+                        let user = await unifyObject<any, UnifiedUser>({
+                            obj: users.data.users?.[0],
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: user });
                         break;
                     }
@@ -73,7 +90,13 @@ const userService = new UserService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
-                        let user = unifyUser(users.data);
+                        let user = await unifyObject<any, UnifiedUser>({
+                            obj: users.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: user });
                         break;
                     }
@@ -87,7 +110,16 @@ const userService = new UserService(
                             }
                         );
                         const user = result.data;
-                        res.send({ status: 'ok', result: unifyUser(user) });
+                        res.send({
+                            status: 'ok',
+                            result: await unifyObject<any, UnifiedUser>({
+                                obj: user,
+                                tpId: thirdPartyId,
+                                objType,
+                                tenantSchemaMappingId: connection.schema_mapping_id,
+                                accountFieldMappingConfig: account.accountFieldMappingConfig,
+                            }),
+                        });
                         break;
                     }
                     default: {
@@ -106,6 +138,7 @@ const userService = new UserService(
         async getUsers(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const fields = req.query.fields;
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
@@ -142,7 +175,18 @@ const userService = new UserService(
                         });
                         const nextCursor = users.data?.paging?.next?.after || undefined;
                         users = users.data.results as any[];
-                        users = users?.map((l: any) => unifyUser({ ...l, ...l?.properties }));
+                        users = await Promise.all(
+                            users?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedUser>({
+                                        obj: { ...l, ...l?.properties },
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({
                             status: 'ok',
                             next: nextCursor,
@@ -165,7 +209,18 @@ const userService = new UserService(
                         const nextCursor = users.data?.info?.next_page_token || undefined;
                         const prevCursor = users.data?.info?.previous_page_token || undefined;
                         users = users.data.users;
-                        users = users?.map((l: any) => unifyUser(l));
+                        users = await Promise.all(
+                            users?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedUser>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: users });
                         break;
                     }
@@ -197,7 +252,18 @@ const userService = new UserService(
                                 ? String(parseInt(String(cursor)) - users.data?.totalSize)
                                 : undefined;
                         users = users.data?.records;
-                        users = users?.map((l: any) => unifyUser(l));
+                        users = await Promise.all(
+                            users?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedUser>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: users });
                         break;
                     }
@@ -216,7 +282,18 @@ const userService = new UserService(
                         const nextCursor = undefined;
                         const prevCursor = undefined;
                         const users = result.data.data;
-                        const unifiedUsers = users?.map((l) => unifyUser(l));
+                        const unifiedUsers = await Promise.all(
+                            users?.map(
+                                async (l) =>
+                                    await unifyObject<any, UnifiedUser>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedUsers });
                         break;
                     }
@@ -237,11 +314,18 @@ const userService = new UserService(
             try {
                 const userData = req.body as UnifiedUser;
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const user = disunifyUser(userData, thirdPartyId);
-                logInfo('Revert::CREATE USER', connection.app?.env?.accountId, tenantId, user);
+                const user = await disunifyObject<UnifiedUser>({
+                    obj: userData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+                console.log('Revert::CREATE USER', connection.app?.env?.accountId, tenantId, user);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
