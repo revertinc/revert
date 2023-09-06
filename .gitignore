@@ -72,6 +72,7 @@ npm-debug.log*
 *.code-workspace 
 *.log
 !.yarnrc.yml
+!docker-compose*.yml
 .pnp.*
 .yarn/*
 !.yarn/patches
