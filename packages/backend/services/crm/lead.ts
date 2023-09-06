@@ -4,19 +4,24 @@ import { TP_ID } from '@prisma/client';
 import { LeadService } from '../../generated/typescript/api/resources/crm/resources/lead/service/LeadService';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
-import logError, { logInfo } from '../../helpers/logger';
+import { logInfo, logError } from '../../helpers/logger';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { filterLeadsFromContactsForHubspot } from '../../helpers/filterLeadsFromContacts';
 import { isStandardError } from '../../helpers/error';
-import { UnifiedLead, disunifyLead, unifyLead } from '../../models/unified/lead';
+import { UnifiedLead } from '../../models/unified/lead';
 import { PipedrivePagination, PipedriveLead, PipedriveContact, PipedriveCompany } from '../../constants/pipedrive';
+import { disunifyObject, unifyObject } from 'helpers/crm/transform';
+import { StandardObjects } from 'constants/common';
+
+const objType = StandardObjects.lead;
 
 const leadService = new LeadService(
     {
         async getLead(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const leadId = req.params.id;
                 const fields = req.query.fields;
                 const thirdPartyId = connection.tp_id;
@@ -50,7 +55,16 @@ const leadService = new LeadService(
                             },
                         });
                         lead = filterLeadsFromContactsForHubspot([lead.data] as any[])?.[0];
-                        res.send({ status: 'ok', result: unifyLead({ ...lead, ...lead?.properties }, thirdPartyId) });
+                        res.send({
+                            status: 'ok',
+                            result: await unifyObject<any, UnifiedLead>({
+                                obj: { ...lead, ...lead?.properties },
+                                tpId: thirdPartyId,
+                                objType,
+                                tenantSchemaMappingId: connection.schema_mapping_id,
+                                accountFieldMappingConfig: account.accountFieldMappingConfig,
+                            }),
+                        });
                         break;
                     }
                     case TP_ID.zohocrm: {
@@ -62,7 +76,16 @@ const leadService = new LeadService(
                             },
                         });
                         let lead = leads.data.data?.[0];
-                        res.send({ status: 'ok', result: unifyLead(lead, thirdPartyId) });
+                        res.send({
+                            status: 'ok',
+                            result: await unifyObject<any, UnifiedLead>({
+                                obj: lead,
+                                tpId: thirdPartyId,
+                                objType,
+                                tenantSchemaMappingId: connection.schema_mapping_id,
+                                accountFieldMappingConfig: account.accountFieldMappingConfig,
+                            }),
+                        });
                         break;
                     }
                     case TP_ID.sfdc: {
@@ -75,7 +98,16 @@ const leadService = new LeadService(
                             },
                         });
                         let lead = leads.data;
-                        res.send({ status: 'ok', result: unifyLead(lead, thirdPartyId) });
+                        res.send({
+                            status: 'ok',
+                            result: await unifyObject<any, UnifiedLead>({
+                                obj: lead,
+                                tpId: thirdPartyId,
+                                objType,
+                                tenantSchemaMappingId: connection.schema_mapping_id,
+                                accountFieldMappingConfig: account.accountFieldMappingConfig,
+                            }),
+                        });
                         break;
                     }
                     case TP_ID.pipedrive: {
@@ -93,7 +125,16 @@ const leadService = new LeadService(
                             account_url: connection.tp_account_url as string,
                             thirdPartyToken,
                         });
-                        res.send({ status: 'ok', result: unifyLead(populatedLead, thirdPartyId) });
+                        res.send({
+                            status: 'ok',
+                            result: await unifyObject<any, UnifiedLead>({
+                                obj: populatedLead,
+                                tpId: thirdPartyId,
+                                objType,
+                                tenantSchemaMappingId: connection.schema_mapping_id,
+                                accountFieldMappingConfig: account.accountFieldMappingConfig,
+                            }),
+                        });
                         break;
                     }
                     default: {
@@ -112,6 +153,7 @@ const leadService = new LeadService(
         async getLeads(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const fields = req.query.fields;
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
@@ -149,7 +191,18 @@ const leadService = new LeadService(
                         });
                         const nextCursor = leads.data?.paging?.next?.after || null;
                         leads = filterLeadsFromContactsForHubspot(leads.data.results as any[]);
-                        leads = leads?.map((l: any) => unifyLead({ ...l, ...l?.properties }, thirdPartyId));
+                        leads = await Promise.all(
+                            leads?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedLead>({
+                                        obj: { ...l, ...l?.properties },
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({
                             status: 'ok',
                             next: nextCursor,
@@ -172,7 +225,18 @@ const leadService = new LeadService(
                         const nextCursor = leads.data?.info?.next_page_token || null;
                         const prevCursor = leads.data?.info?.previous_page_token || null;
                         leads = leads.data.data;
-                        leads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
+                        leads = await Promise.all(
+                            leads?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedLead>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: leads });
                         break;
                     }
@@ -204,7 +268,18 @@ const leadService = new LeadService(
                                 ? String(parseInt(String(cursor)) - leads.data?.totalSize)
                                 : undefined;
                         leads = leads.data?.records;
-                        leads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
+                        leads = await Promise.all(
+                            leads?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedLead>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: leads });
                         break;
                     }
@@ -232,7 +307,18 @@ const leadService = new LeadService(
                                 });
                             })
                         );
-                        const unifiedLeads = populatedLeads?.map((l) => unifyLead(l, thirdPartyId));
+                        const unifiedLeads = await Promise.all(
+                            populatedLeads?.map(
+                                async (l) =>
+                                    await unifyObject<any, UnifiedLead>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedLeads });
                         break;
                     }
@@ -253,11 +339,18 @@ const leadService = new LeadService(
             try {
                 const leadData = req.body as UnifiedLead;
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const lead = disunifyLead(leadData, thirdPartyId);
-                logInfo('Revert::CREATE LEAD', connection.app?.env?.accountId, tenantId, lead);
+                const lead = await disunifyObject<UnifiedLead>({
+                    obj: leadData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+                console.log('Revert::CREATE LEAD', connection.app?.env?.accountId, tenantId, lead);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -344,13 +437,20 @@ const leadService = new LeadService(
         async updateLead(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const leadData = req.body as UnifiedLead;
                 const leadId = req.params.id;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const lead = disunifyLead(leadData, thirdPartyId);
-                logInfo('Revert::UPDATE LEAD', connection.app?.env?.accountId, tenantId, lead, leadId);
+                const lead = await disunifyObject<UnifiedLead>({
+                    obj: leadData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+                console.log('Revert::UPDATE LEAD', connection.app?.env?.accountId, tenantId, lead, leadId);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -431,6 +531,7 @@ const leadService = new LeadService(
         async searchLeads(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const fields = req.query.fields;
                 const searchCriteria: any = req.body.searchCriteria;
                 const formattedFields = (fields || '').split('').filter(Boolean);
@@ -462,7 +563,18 @@ const leadService = new LeadService(
                             }),
                         });
                         leads = filterLeadsFromContactsForHubspot(leads.data.results as any[]);
-                        leads = leads?.map((l: any) => unifyLead({ ...l, ...l?.properties }, thirdPartyId));
+                        leads = await Promise.all(
+                            leads?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedLead>({
+                                        obj: { ...l, ...l?.properties },
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({
                             status: 'ok',
                             results: leads,
@@ -478,7 +590,18 @@ const leadService = new LeadService(
                             },
                         });
                         leads = leads.data.data;
-                        leads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
+                        leads = await Promise.all(
+                            leads?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedLead>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', results: leads });
                         break;
                     }
@@ -492,7 +615,18 @@ const leadService = new LeadService(
                             },
                         });
                         leads = leads?.data?.searchRecords;
-                        leads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
+                        leads = await Promise.all(
+                            leads?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedLead>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', results: leads });
                         break;
                     }
@@ -514,7 +648,18 @@ const leadService = new LeadService(
                         );
                         // this api has person and organization auto populated
                         const leads = result.data.data.items.map((item) => item.item);
-                        const unifiedLeads = leads?.map((l: any) => unifyLead(l, thirdPartyId));
+                        const unifiedLeads = await Promise.all(
+                            leads?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedLead>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', results: unifiedLeads });
                         break;
                     }

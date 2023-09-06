@@ -514,6 +514,80 @@ async function main() {
                 target_field_name: 'updatedTimestamp',
             },
         ],
+        [StandardObjects.lead]: [
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'firstname',
+                    [TP_ID.pipedrive]: 'xxxx',
+                    [TP_ID.sfdc]: 'FirstName',
+                    [TP_ID.zohocrm]: 'First_Name',
+                },
+                target_field_name: 'firstName',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'lastName',
+                    [TP_ID.pipedrive]: 'xxxx',
+                    [TP_ID.sfdc]: 'LastName',
+                    [TP_ID.zohocrm]: 'Last_Name',
+                },
+                target_field_name: 'lastName',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'phone',
+                    [TP_ID.pipedrive]: 'xxxx',
+                    [TP_ID.sfdc]: 'Phone',
+                    [TP_ID.zohocrm]: 'Phone',
+                },
+                target_field_name: 'phone',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'email',
+                    [TP_ID.pipedrive]: 'xxxx',
+                    [TP_ID.sfdc]: 'Email',
+                    [TP_ID.zohocrm]: 'Email',
+                },
+                target_field_name: 'email',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'id',
+                    [TP_ID.pipedrive]: 'id',
+                    [TP_ID.sfdc]: 'Id',
+                    [TP_ID.zohocrm]: 'id',
+                },
+                target_field_name: 'id',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'id',
+                    [TP_ID.pipedrive]: 'id',
+                    [TP_ID.sfdc]: 'Id',
+                    [TP_ID.zohocrm]: 'id',
+                },
+                target_field_name: 'remoteId',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_createdate',
+                    [TP_ID.pipedrive]: 'add_time',
+                    [TP_ID.sfdc]: 'CreatedDate',
+                    [TP_ID.zohocrm]: 'Created_Time',
+                },
+                target_field_name: 'createdTimestamp',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_lastmodifieddate',
+                    [TP_ID.pipedrive]: 'update_time',
+                    [TP_ID.sfdc]: 'LastModifiedDate',
+                    [TP_ID.zohocrm]: 'Modified_Time',
+                },
+                target_field_name: 'updatedTimestamp',
+            },
+        ],
     };
     const allSchemas = Object.keys(allFields).map(obj => {
         return {
