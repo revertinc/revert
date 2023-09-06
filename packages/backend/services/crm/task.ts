@@ -8,14 +8,19 @@ import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import logError from '../../helpers/logError';
 import { isStandardError } from '../../helpers/error';
-import { UnifiedTask, disunifyTask, unifyTask } from '../../models/unified';
+import { disunifyObject, unifyObject } from '../../helpers/crm/transform';
+import { UnifiedTask } from '../../models/unified';
 import { PipedrivePagination, PipedriveTask } from '../../constants/pipedrive';
+import { StandardObjects } from '../../constants/common';
+
+const objType = StandardObjects.task;
 
 const taskService = new TaskService(
     {
         async getTask(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const taskId = req.params.id;
                 const fields = req.query.fields;
                 const thirdPartyId = connection.tp_id;
@@ -41,7 +46,13 @@ const taskService = new TaskService(
                             },
                         });
                         task = ([task.data] as any[])?.[0];
-                        task = unifyTask({ ...task, ...task?.properties });
+                        task = await unifyObject<any, UnifiedTask>({
+                            obj: { ...task, ...task?.properties },
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: task });
                         break;
                     }
@@ -53,7 +64,13 @@ const taskService = new TaskService(
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
-                        let task = unifyTask(tasks.data.data?.[0]);
+                        let task = await unifyObject<any, UnifiedTask>({
+                            obj: tasks.data.data?.[0],
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: task });
                         break;
                     }
@@ -66,7 +83,13 @@ const taskService = new TaskService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
-                        let task = unifyTask(tasks.data);
+                        let task = await unifyObject<any, UnifiedTask>({
+                            obj: tasks.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({ status: 'ok', result: task });
                         break;
                     }
@@ -80,7 +103,16 @@ const taskService = new TaskService(
                             }
                         );
                         const task = result.data;
-                        res.send({ status: 'ok', result: unifyTask(task) });
+                        res.send({
+                            status: 'ok',
+                            result: await unifyObject<any, UnifiedTask>({
+                                obj: task,
+                                tpId: thirdPartyId,
+                                objType,
+                                tenantSchemaMappingId: connection.schema_mapping_id,
+                                accountFieldMappingConfig: account.accountFieldMappingConfig,
+                            }),
+                        });
                         break;
                     }
                     default: {
@@ -99,6 +131,7 @@ const taskService = new TaskService(
         async getTasks(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const fields = req.query.fields;
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
@@ -129,7 +162,18 @@ const taskService = new TaskService(
                         });
                         const nextCursor = tasks.data?.paging?.next?.after || undefined;
                         tasks = tasks.data.results as any[];
-                        tasks = tasks?.map((l: any) => unifyTask({ ...l, ...l?.properties }));
+                        tasks = await Promise.all(
+                            tasks?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedTask>({
+                                        obj: { ...l, ...l?.properties },
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({
                             status: 'ok',
                             next: nextCursor,
@@ -152,7 +196,18 @@ const taskService = new TaskService(
                         const nextCursor = tasks.data?.info?.next_page_token || undefined;
                         const prevCursor = tasks.data?.info?.previous_page_token || undefined;
                         tasks = tasks.data.data;
-                        tasks = tasks?.map((l: any) => unifyTask(l));
+                        tasks = await Promise.all(
+                            tasks?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedTask>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: tasks });
                         break;
                     }
@@ -184,7 +239,18 @@ const taskService = new TaskService(
                                 ? String(parseInt(String(cursor)) - tasks.data?.totalSize)
                                 : undefined;
                         tasks = tasks.data?.records;
-                        tasks = tasks?.map((l: any) => unifyTask(l));
+                        tasks = await Promise.all(
+                            tasks?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedTask>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: tasks });
                         break;
                     }
@@ -203,7 +269,18 @@ const taskService = new TaskService(
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
                         const tasks = result.data.data;
-                        const unifiedTasks = tasks?.map((d) => unifyTask(d));
+                        const unifiedTasks = await Promise.all(
+                            tasks?.map(
+                                async (d) =>
+                                    await unifyObject<any, UnifiedTask>({
+                                        obj: d,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedTasks });
                         break;
                     }
@@ -224,10 +301,17 @@ const taskService = new TaskService(
             try {
                 const taskData = req.body as UnifiedTask;
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const task = disunifyTask(taskData, thirdPartyId);
+                const task = await disunifyObject<UnifiedTask>({
+                    obj: taskData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
                 console.log('Revert::CREATE TASK', tenantId, task);
 
                 switch (thirdPartyId) {
@@ -315,12 +399,19 @@ const taskService = new TaskService(
         async updateTask(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const taskData = req.body as UnifiedTask;
                 const taskId = req.params.id;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const task = disunifyTask(taskData, thirdPartyId);
+                const task = await disunifyObject<UnifiedTask>({
+                    obj: taskData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
                 console.log('Revert::UPDATE TASK', tenantId, task, taskId);
 
                 switch (thirdPartyId) {
@@ -402,6 +493,7 @@ const taskService = new TaskService(
         async searchTasks(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const fields = req.query.fields;
                 const searchCriteria: any = req.body.searchCriteria;
                 const formattedFields = (fields || '').split('').filter(Boolean);
@@ -432,7 +524,18 @@ const taskService = new TaskService(
                             }),
                         });
                         tasks = tasks.data.results as any[];
-                        tasks = tasks?.map((l: any) => unifyTask({ ...l, ...l?.properties }));
+                        tasks = await Promise.all(
+                            tasks?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedTask>({
+                                        obj: { ...l, ...l?.properties },
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({
                             status: 'ok',
                             results: tasks,
@@ -448,7 +551,18 @@ const taskService = new TaskService(
                             },
                         });
                         tasks = tasks.data.data;
-                        tasks = tasks?.map((l: any) => unifyTask(l));
+                        tasks = await Promise.all(
+                            tasks?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedTask>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', results: tasks });
                         break;
                     }
@@ -462,7 +576,18 @@ const taskService = new TaskService(
                             },
                         });
                         tasks = tasks?.data?.searchRecords;
-                        tasks = tasks?.map((l: any) => unifyTask(l));
+                        tasks = await Promise.all(
+                            tasks?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedTask>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
                         res.send({ status: 'ok', results: tasks });
                         break;
                     }

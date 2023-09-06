@@ -9,10 +9,10 @@ import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { filterLeadsFromContactsForHubspot } from '../../helpers/filterLeadsFromContacts';
 import { isStandardError } from '../../helpers/error';
+import { disunifyObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedLead } from '../../models/unified/lead';
 import { PipedrivePagination, PipedriveLead, PipedriveContact, PipedriveCompany } from '../../constants/pipedrive';
-import { disunifyObject, unifyObject } from 'helpers/crm/transform';
-import { StandardObjects } from 'constants/common';
+import { StandardObjects } from '../../constants/common';
 
 const objType = StandardObjects.lead;
 
