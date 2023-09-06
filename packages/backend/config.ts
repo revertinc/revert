@@ -22,7 +22,7 @@ const config = {
     SVIX_AUTH_TOKEN: process.env.SVIX_AUTH_TOKEN,
     SHORTLOOP_AUTH_KEY: process.env.SHORTLOOP_AUTH_KEY!,
     SVIX_ENDPOINT_SECRET: process.env.SVIX_ENDPOINT_SECRET!,
-    svix: new Svix(process.env.SVIX_AUTH_TOKEN!),
+    svix: process.env.SVIX_AUTH_TOKEN ? new Svix(process.env.SVIX_AUTH_TOKEN!) : undefined,
     WHITE_LISTED_DOMAINS: process.env.WHITE_LISTED_DOMAINS?.split(','),
     AES_ENCRYPTION_SECRET: process.env.AES_ENCRYPTION_SECRET!,
 };

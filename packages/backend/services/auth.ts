@@ -246,7 +246,7 @@ class AuthService {
                     })
                 );
                 // Create Svix application for this account if it doesn't exist.
-                await config.svix.application.getOrCreate({
+                await config.svix?.application.getOrCreate({
                     name: accountId,
                     uid: accountId,
                 });

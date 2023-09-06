@@ -1,7 +1,7 @@
 FROM node:alpine AS BUILD_IMAGE
 WORKDIR /app/
-COPY ./fern/ /app/fern/
 
+COPY ./fern/ /app/fern/
 COPY ./packages/backend /app/packages/backend
 COPY ./yarn.lock /app/yarn.lock
 COPY ./package.json /app/package.json

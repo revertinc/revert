@@ -80,7 +80,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         appId: account?.apps[0].id,
                     },
                 });
-                config.svix.message.create(svixAppId, {
+                config.svix?.message.create(svixAppId, {
                     eventType: 'connection.added',
                     payload: {
                         eventType: 'connection.added',
@@ -162,7 +162,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                             tp_refresh_token: result.data.refresh_token,
                         },
                     });
-                    config.svix.message.create(svixAppId, {
+                    config.svix?.message.create(svixAppId, {
                         eventType: 'connection.added',
                         payload: {
                             eventType: 'connection.added',
@@ -243,7 +243,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         app_client_secret: clientSecret || config.SFDC_CLIENT_SECRET,
                     },
                 });
-                config.svix.message.create(svixAppId, {
+                config.svix?.message.create(svixAppId, {
                     eventType: 'connection.added',
                     payload: {
                         eventType: 'connection.added',
@@ -321,7 +321,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         appId: account?.apps[0].id,
                     },
                 });
-                config.svix.message.create(svixAppId, {
+                config.svix?.message.create(svixAppId, {
                     eventType: 'connection.added',
                     payload: {
                         eventType: 'connection.added',

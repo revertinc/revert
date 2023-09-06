@@ -107,7 +107,7 @@ const connectionService = new ConnectionService({
             },
         });
         if (deleted) {
-            config.svix.message.create(svixAppId, {
+            config.svix?.message.create(svixAppId, {
                 eventType: 'connection.deleted',
                 payload: {
                     eventType: 'connection.deleted',
@@ -131,7 +131,7 @@ const connectionService = new ConnectionService({
             });
             const svixAppId = environment?.accountId!;
             const secret = `whsec_${Buffer.from(uuidv4()).toString('base64')}`;
-            const webhook = await config.svix.endpoint.create(svixAppId, {
+            const webhook = await config.svix!.endpoint.create(svixAppId, {
                 url: webhookUrl,
                 version: 1,
                 description: `Connection Webhook for tenant ${tenantId}`,
@@ -167,7 +167,7 @@ const connectionService = new ConnectionService({
                 },
             });
             const svixAppId = environment?.accountId!;
-            const webhook = await config.svix.endpoint.get(svixAppId, String(tenantId));
+            const webhook = await config.svix!.endpoint.get(svixAppId, String(tenantId));
             res.send({ status: 'ok', webhook: webhook });
         } catch (error: any) {
             logError(error);
@@ -190,7 +190,7 @@ const connectionService = new ConnectionService({
                 },
             });
             const svixAppId = environment?.accountId!;
-            await config.svix.endpoint.delete(svixAppId, webhookId);
+            await config.svix!.endpoint.delete(svixAppId, webhookId);
             res.send({ status: 'ok' });
         } catch (error: any) {
             logError(error);
