@@ -1,7 +1,4 @@
-import { AllAssociation } from '../../constants/common';
-import { Subtype } from '../../constants/typeHelpers';
-
-export type EventAssociation = Subtype<AllAssociation, 'dealId' | 'contactId'>;
+import { EventAssociation } from '../../constants/associations';
 
 export interface UnifiedEvent {
     type: string;

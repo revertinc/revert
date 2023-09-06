@@ -1,7 +1,4 @@
-import { Subtype } from '../../constants/typeHelpers';
-import { AllAssociation } from '../../constants/common';
-
-export type CompanyAssociation = Subtype<AllAssociation, 'dealId'>;
+import { CompanyAssociation } from "../../constants/associations";
 
 export interface UnifiedCompany {
     name: string;

@@ -8,10 +8,10 @@ import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import { logInfo, logError } from '../../helpers/logger';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { isStandardError } from '../../helpers/error';
+import { disunifyObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedEvent } from '../../models/unified';
 import { PipedriveEvent, PipedrivePagination } from '../../constants/pipedrive';
-import { disunifyObject, unifyObject } from 'helpers/crm/transform';
-import { StandardObjects } from 'constants/common';
+import { StandardObjects } from '../../constants/common';
 
 const objType = StandardObjects.event;
 

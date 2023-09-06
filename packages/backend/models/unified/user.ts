@@ -1,7 +1,4 @@
-import { AllAssociation } from '../../constants/common';
-import { Subtype } from '../../constants/typeHelpers';
-
-export type UserAssociation = Subtype<AllAssociation, 'dealId'>;
+import { UserAssociation } from '../../constants/associations';
 
 export interface UnifiedUser {
     firstName: string;

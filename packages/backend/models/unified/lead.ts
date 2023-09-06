@@ -1,7 +1,4 @@
-import { AllAssociation } from '../../constants/common';
-import { Subtype } from '../../constants/typeHelpers';
-
-export type LeadAssociation = Subtype<AllAssociation, 'contactId' | 'companyId' | 'dealId'>;
+import { LeadAssociation } from '../../constants/associations';
 
 export interface UnifiedLead {
     firstName: string;

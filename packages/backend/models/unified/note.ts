@@ -1,7 +1,4 @@
-import { Subtype } from '../../constants/typeHelpers';
-import { AllAssociation } from '../../constants/common';
-
-export type NoteAssociation = Subtype<AllAssociation, 'contactId' | 'companyId' | 'leadId' | 'dealId'>;
+import { NoteAssociation } from '../../constants/associations';
 
 export interface UnifiedNote {
     content: string;
