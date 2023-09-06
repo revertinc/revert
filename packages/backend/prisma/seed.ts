@@ -588,6 +588,89 @@ async function main() {
                 target_field_name: 'updatedTimestamp',
             },
         ],
+        [StandardObjects.task]: [
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_task_subject',
+                    [TP_ID.pipedrive]: 'subject',
+                    [TP_ID.sfdc]: 'Subject',
+                    [TP_ID.zohocrm]: 'Subject',
+                },
+                target_field_name: 'subject',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_task_body',
+                    [TP_ID.pipedrive]: 'public_description',
+                    [TP_ID.sfdc]: 'Description',
+                    [TP_ID.zohocrm]: 'Description',
+                },
+                target_field_name: 'body',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_task_priority',
+                    [TP_ID.pipedrive]: undefined,
+                    [TP_ID.sfdc]: 'Priority',
+                    [TP_ID.zohocrm]: 'Priority',
+                },
+                target_field_name: 'priority',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_task_status',
+                    [TP_ID.pipedrive]: 'status',
+                    [TP_ID.sfdc]: 'Status',
+                    [TP_ID.zohocrm]: 'Status',
+                },
+                target_field_name: 'status',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_timestamp',
+                    [TP_ID.pipedrive]: 'due_date',
+                    [TP_ID.sfdc]: 'ActivityDate',
+                    [TP_ID.zohocrm]: 'Due_Date',
+                },
+                target_field_name: 'dueDate',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'id',
+                    [TP_ID.pipedrive]: 'id',
+                    [TP_ID.sfdc]: 'Id',
+                    [TP_ID.zohocrm]: 'id',
+                },
+                target_field_name: 'id',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'id',
+                    [TP_ID.pipedrive]: 'id',
+                    [TP_ID.sfdc]: 'Id',
+                    [TP_ID.zohocrm]: 'id',
+                },
+                target_field_name: 'remoteId',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_createdate',
+                    [TP_ID.pipedrive]: 'add_time',
+                    [TP_ID.sfdc]: 'CreatedDate',
+                    [TP_ID.zohocrm]: 'Created_Time',
+                },
+                target_field_name: 'createdTimestamp',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.hubspot]: 'hs_lastmodifieddate',
+                    [TP_ID.pipedrive]: 'update_time',
+                    [TP_ID.sfdc]: 'LastModifiedDate',
+                    [TP_ID.zohocrm]: 'Modified_Time',
+                },
+                target_field_name: 'updatedTimestamp',
+            },
+        ],
     };
     const allSchemas = Object.keys(allFields).map(obj => {
         return {
