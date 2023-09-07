@@ -361,9 +361,9 @@ async function main() {
             {
                 source_field_name: {
                     [TP_ID.hubspot]: 'hs_is_closed_won',
-                    [TP_ID.pipedrive]: 'xxxx', // status === PipedriveDealStatus.won
+                    [TP_ID.pipedrive]: 'revert_isWon', // status === PipedriveDealStatus.won
                     [TP_ID.sfdc]: 'IsWon',
-                    [TP_ID.zohocrm]: 'xxxx', // Stage === 'Closed (Won)'
+                    [TP_ID.zohocrm]: 'revert_isWon', // Stage === 'Closed (Won)'
                 },
                 target_field_name: 'isWon',
             },

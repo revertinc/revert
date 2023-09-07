@@ -1,5 +1,6 @@
 import { TP_ID, accountFieldMappingConfig } from '@prisma/client';
 import { StandardObjects } from '../../../constants/common';
+import { PipedriveDealStatus } from '../../../constants/pipedrive';
 import { transformFieldMappingToModel } from '.';
 
 export async function unifyObject<T extends Record<string, any>, K>({
@@ -15,8 +16,9 @@ export async function unifyObject<T extends Record<string, any>, K>({
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }): Promise<K> {
+    const processedObj = preprocessObject({ obj, tpId, objType });
     const transformedObject = await transformFieldMappingToModel({
-        obj,
+        obj: processedObj,
         tpId,
         objType,
         tenantSchemaMappingId,
@@ -38,3 +40,34 @@ export async function unifyObject<T extends Record<string, any>, K>({
 
     return unifiedObject as K;
 }
+
+const preprocessObject = <T extends Record<string, any>>({
+    obj,
+    tpId,
+    objType,
+}: {
+    obj: T;
+    tpId: TP_ID;
+    objType: StandardObjects;
+}) => {
+    const preprocessMap: any = {
+        [TP_ID.pipedrive]: {
+            [StandardObjects.deal]: (obj: T) => {
+                return {
+                    ...obj,
+                    revert_isWon: obj.status === PipedriveDealStatus.won,
+                };
+            },
+        },
+        [TP_ID.zohocrm]: {
+            [StandardObjects.deal]: (obj: T) => {
+                return {
+                    ...obj,
+                    revert_isWon: obj.Stage === 'Closed (Won)',
+                };
+            },
+        },
+    };
+    const transformFn = (preprocessMap[tpId] || {})[objType];
+    return transformFn ? transformFn(obj) : obj;
+};
