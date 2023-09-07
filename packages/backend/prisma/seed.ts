@@ -326,7 +326,7 @@ async function main() {
                 source_field_name: {
                     [TP_ID.hubspot]: 'hs_priority',
                     [TP_ID.pipedrive]: undefined,
-                    [TP_ID.sfdc]: undefined,
+                    [TP_ID.sfdc]: 'Priority__c',
                     [TP_ID.zohocrm]: 'Priority',
                 },
                 target_field_name: 'priority',
@@ -360,10 +360,10 @@ async function main() {
             },
             {
                 source_field_name: {
-                    [TP_ID.hubspot]: undefined,
-                    [TP_ID.pipedrive]: 'xxxx',
+                    [TP_ID.hubspot]: 'hs_is_closed_won',
+                    [TP_ID.pipedrive]: 'xxxx', // status === PipedriveDealStatus.won
                     [TP_ID.sfdc]: 'IsWon',
-                    [TP_ID.zohocrm]: undefined,
+                    [TP_ID.zohocrm]: 'xxxx', // Stage === 'Closed (Won)'
                 },
                 target_field_name: 'isWon',
             },
@@ -371,8 +371,8 @@ async function main() {
                 source_field_name: {
                     [TP_ID.hubspot]: 'hs_deal_stage_probability',
                     [TP_ID.pipedrive]: 'probability',
-                    [TP_ID.sfdc]: 'xxxx',
-                    [TP_ID.zohocrm]: 'xxxx',
+                    [TP_ID.sfdc]: 'Probability',
+                    [TP_ID.zohocrm]: 'Probability',
                 },
                 target_field_name: 'probability',
             },
@@ -417,7 +417,7 @@ async function main() {
             {
                 source_field_name: {
                     [TP_ID.hubspot]: 'hs_activity_type',
-                    [TP_ID.pipedrive]: 'xxxx',
+                    [TP_ID.pipedrive]: undefined, // 'meeting' for disunify
                     [TP_ID.sfdc]: 'Type',
                     [TP_ID.zohocrm]: 'Type',
                 },
@@ -518,7 +518,7 @@ async function main() {
             {
                 source_field_name: {
                     [TP_ID.hubspot]: 'firstname',
-                    [TP_ID.pipedrive]: 'xxxx',
+                    [TP_ID.pipedrive]: 'title',
                     [TP_ID.sfdc]: 'FirstName',
                     [TP_ID.zohocrm]: 'First_Name',
                 },
@@ -527,7 +527,7 @@ async function main() {
             {
                 source_field_name: {
                     [TP_ID.hubspot]: 'lastName',
-                    [TP_ID.pipedrive]: 'xxxx',
+                    [TP_ID.pipedrive]: undefined, // firstName (title) includes full name
                     [TP_ID.sfdc]: 'LastName',
                     [TP_ID.zohocrm]: 'Last_Name',
                 },
@@ -536,7 +536,7 @@ async function main() {
             {
                 source_field_name: {
                     [TP_ID.hubspot]: 'phone',
-                    [TP_ID.pipedrive]: 'xxxx',
+                    [TP_ID.pipedrive]: 'person.phone.0.value',
                     [TP_ID.sfdc]: 'Phone',
                     [TP_ID.zohocrm]: 'Phone',
                 },
@@ -545,7 +545,7 @@ async function main() {
             {
                 source_field_name: {
                     [TP_ID.hubspot]: 'email',
-                    [TP_ID.pipedrive]: 'xxxx',
+                    [TP_ID.pipedrive]: 'person.email.0.value',
                     [TP_ID.sfdc]: 'Email',
                     [TP_ID.zohocrm]: 'Email',
                 },
