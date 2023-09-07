@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, merge } from 'lodash';
 import { PrismaClient, TP_ID, accountFieldMappingConfig } from '@prisma/client';
 import { StandardObjects, rootSchemaMappingId } from '../../../constants/common';
 import logger from '../../logger';
@@ -112,7 +112,7 @@ export const assignValueToObject = (obj: Record<string, any>, key: string, value
                 [keys[i]]: result,
             };
         }
-        return { ...obj, ...result };
+        return merge(obj, result);
     }
     return {
         ...obj,
