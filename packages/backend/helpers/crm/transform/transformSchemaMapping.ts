@@ -5,7 +5,9 @@ import logger from '../../logger';
 
 const prisma = new PrismaClient();
 
-// TODO: handle nested mapping, constants, expressions and additional mapping
+// TODO: handle constants
+// TODO: handle expressions
+// TODO: handle additional mapping
 export const transformFieldMappingToModel = async ({
     obj,
     tpId,
@@ -28,7 +30,7 @@ export const transformFieldMappingToModel = async ({
         where: { object: objType, schema_mapping_id: rootSchemaMappingId },
         include: { fieldMappings: { where: { source_tp_id: tpId } } },
     });
-    const transformedObj: Record<string, any> = {};
+    let transformedObj: Record<string, any> = {};
     (connectionSchema?.fields || rootSchema?.fields)?.forEach((field) => {
         const fieldMapping =
             connectionSchema?.fieldMappings?.find(
@@ -42,12 +44,12 @@ export const transformFieldMappingToModel = async ({
         const transformedKey = fieldMapping?.source_field_name;
         if (transformedKey) {
             if (fieldMapping.is_standard_field) {
-                transformedObj[field] = get(obj, transformedKey);
+                transformedObj = assignValueToObject(transformedObj, field, get(obj, transformedKey));
             } else {
                 // map custom fields under "additional"
                 transformedObj['additional'] = {
                     ...transformedObj.additional,
-                    [field]: obj[transformedKey],
+                    [field]: get(obj, transformedKey),
                 };
             }
         }
@@ -78,7 +80,7 @@ export const transformModelToFieldMapping = async ({
         where: { object: objType, schema_mapping_id: rootSchemaMappingId },
         include: { fieldMappings: { where: { source_tp_id: tpId } } },
     });
-    const crmObj: Record<string, string> = {};
+    let crmObj: Record<string, string> = {};
     Object.keys(unifiedObj).forEach((key) => {
         const tenantFieldMapping = connectionSchema?.fieldMappings?.find(
             (r) =>
@@ -91,9 +93,27 @@ export const transformModelToFieldMapping = async ({
         const rootFieldMapping = rootSchema?.fieldMappings?.find((r) => r?.target_field_name === key);
         const crmKey = tenantFieldMapping?.source_field_name || rootFieldMapping?.source_field_name;
         if (crmKey) {
-            crmObj[crmKey] = unifiedObj[key];
+            crmObj = assignValueToObject(crmObj, crmKey, get(unifiedObj, key));
         }
     });
     logger.debug('blah crmObj: %o', crmObj);
     return crmObj;
+};
+
+// TODO: use case for multi level nesting (lead -< pipedrive -> phone and email)
+export const assignValueToObject = (obj: Record<string, any>, key: string, value: any) => {
+    if (key.includes('.')) {
+        const keys = key.split('.');
+        // only handles one level nesting rn (no use case of multi nesting yet)
+        return {
+            ...obj,
+            [keys[0]]: {
+                [keys[1]]: value,
+            },
+        };
+    }
+    return {
+        ...obj,
+        key: value,
+    };
 };
