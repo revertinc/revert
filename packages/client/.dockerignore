@@ -3,6 +3,7 @@ examples
 public
 .gitignore
 README.md
+**/node_modules
 packages/react
 packages/js
 packages/vue
