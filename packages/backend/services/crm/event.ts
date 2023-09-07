@@ -108,7 +108,7 @@ const eventService = new EventService(
                         res.send({
                             status: 'ok',
                             result: await unifyObject<any, UnifiedEvent>({
-                                obj: event,
+                                obj: event.data,
                                 tpId: thirdPartyId,
                                 objType,
                                 tenantSchemaMappingId: connection.schema_mapping_id,

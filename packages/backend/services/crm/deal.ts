@@ -108,7 +108,7 @@ const dealService = new DealService(
                         res.send({
                             status: 'ok',
                             result: await unifyObject<any, UnifiedDeal>({
-                                obj: deal,
+                                obj: deal.data,
                                 tpId: thirdPartyId,
                                 objType,
                                 tenantSchemaMappingId: connection.schema_mapping_id,

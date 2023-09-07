@@ -106,7 +106,7 @@ const userService = new UserService(
                         res.send({
                             status: 'ok',
                             result: await unifyObject<any, UnifiedUser>({
-                                obj: user,
+                                obj: user.data,
                                 tpId: thirdPartyId,
                                 objType,
                                 tenantSchemaMappingId: connection.schema_mapping_id,

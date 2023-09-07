@@ -106,7 +106,7 @@ const taskService = new TaskService(
                         res.send({
                             status: 'ok',
                             result: await unifyObject<any, UnifiedTask>({
-                                obj: task,
+                                obj: task.data,
                                 tpId: thirdPartyId,
                                 objType,
                                 tenantSchemaMappingId: connection.schema_mapping_id,
