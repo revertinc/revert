@@ -12,8 +12,8 @@
 <br />
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=1aXXx66LKnY
 " target="_blank">
-<img src="http://img.youtube.com/vi/1aXXx66LKnY/0.jpg" 
-alt="Revert Quick demo" width="240" height="180" border="10" />
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1694089536/Revert/Screenshot_2023-09-07_at_5.54.26_PM_eimcy5.png" 
+alt="Revert Quick demo" />
 </a>
 </p>
 
