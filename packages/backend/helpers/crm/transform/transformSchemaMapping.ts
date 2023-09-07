@@ -100,17 +100,19 @@ export const transformModelToFieldMapping = async ({
     return crmObj;
 };
 
-// TODO: use case for multi level nesting (lead -< pipedrive -> phone and email)
 export const assignValueToObject = (obj: Record<string, any>, key: string, value: any) => {
     if (key.includes('.')) {
         const keys = key.split('.');
-        // only handles one level nesting rn (no use case of multi nesting yet)
-        return {
-            ...obj,
-            [keys[0]]: {
-                [keys[1]]: value,
-            },
-        };
+        let result;
+        for (let i = keys.length - 1; i >= 0; i--) {
+            if (i === keys.length - 1) {
+                result = value;
+            }
+            result = {
+                [keys[i]]: result,
+            };
+        }
+        return { ...obj, ...result };
     }
     return {
         ...obj,
