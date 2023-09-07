@@ -7,3 +7,5 @@ README.md
 packages/react
 packages/js
 packages/vue
+packages/backend
+packages/client/node_modules

@@ -12,9 +12,8 @@ COPY . .
 # Copy the .env file into the container
 COPY ./packages/client/.env ./app/packages/client/.env
 
-RUN ls -l
 # Install project dependencies using Yarn
-RUN yarn workspace @revertdotdev/revert-ui install
+RUN yarn install --check-cache
 # Build the React app
 RUN yarn workspace @revertdotdev/revert-ui build
 

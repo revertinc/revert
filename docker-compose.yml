@@ -1,6 +1,21 @@
 version: '3.8'
 
 services:
+  db:
+    image: postgres:15
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: on-failure
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   ui:
     build: 
       dockerfile: packages/client/Dockerfile
@@ -9,8 +24,6 @@ services:
       - packages/client/.env
     ports: 
       - 3000:3000
-    depends_on:
-      - api
   api: 
     build: 
       dockerfile: packages/backend/Dockerfile
@@ -23,17 +36,8 @@ services:
     ports:
       - 4001:4001
     depends_on:
-      - db
-  db:
-    image: postgres:15
-    ports:
-      - '5432:5432'
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    restart: on-failure
-    environment:
-      POSTGRES_DB: ${POSTGRES_DATABASE:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      db:
+        condition: service_healthy  # Wait for db service to be healthy
 
 volumes:
   pgdata:
