@@ -9,14 +9,19 @@
 [Get started](https://revert.dev) · [Docs](https://docs.revert.dev/) · [Issues](https://github.com/revertinc/revert/issues) · [Discord](https://discord.gg/q5K5cRhymW) · [Get in touch](mailto:team@revert.dev)
 
 </h2>
-<br />
-<img width="100%" style="border-radius:75px;" src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1689828148/Revert/github_o27jvk.png"/>
 
 </p>
 
 # About Revert
 
 Revert makes it easier to build integrations with go-to-market tools like CRM's.
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=1aXXx66LKnY
+" target="_blank">
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1694089822/Revert/Screenshot_2023-09-07_at_6.00.00_PM_xz7edr.png" 
+alt="Revert Quick demo"  border="2"/>
+<em>Revert Quick demo</em>
+</a>
 
 Visit: https://revert.dev to sign up for an account or read our docs [here](https://docs.revert.dev) !
 

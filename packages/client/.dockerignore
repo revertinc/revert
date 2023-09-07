@@ -1,9 +1,11 @@
-
 node_modules
 examples
 public
 .gitignore
 README.md
+**/node_modules
 packages/react
 packages/js
 packages/vue
+packages/backend
+packages/client/node_modules

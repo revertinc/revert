@@ -1,0 +1,31 @@
+name: Deploy prisma
+
+on:
+    push:
+        branches:
+            - main
+        # paths:
+        #     - packages/prisma/**
+
+jobs:
+    deploy-prisma:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v2
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: 17
+            - name: Install Fern
+              run: npm install -g fern-api
+
+            - name: Install Dependencies
+              run: yarn install
+
+            - name: Deploy prisma migrations
+              run: yarn workspace @revertdotdev/backend db-deploy
+              env:
+                  PGSQL_URL: ${{ secrets.PGSQL_URL }}
