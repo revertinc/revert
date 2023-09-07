@@ -104,7 +104,7 @@ model schemas {
 model fieldMappings {
   id                String  @id
   source_tp_id      TP_ID
-  source_field_name String
+  source_field_name String?
   target_field_name String
   is_standard_field Boolean
   schema_id         String
