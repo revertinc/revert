@@ -116,6 +116,6 @@ export const assignValueToObject = (obj: Record<string, any>, key: string, value
     }
     return {
         ...obj,
-        key: value,
+        [key]: value,
     };
 };
