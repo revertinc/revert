@@ -125,7 +125,7 @@ const companyService = new CompanyService(
                         res.send({
                             status: 'ok',
                             result: await unifyObject<any, UnifiedCompany>({
-                                obj: company,
+                                obj: company.data,
                                 tpId: thirdPartyId,
                                 objType,
                                 tenantSchemaMappingId: connection.schema_mapping_id,
