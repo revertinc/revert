@@ -417,7 +417,7 @@ async function main() {
             {
                 source_field_name: {
                     [TP_ID.hubspot]: 'hs_activity_type',
-                    [TP_ID.pipedrive]: undefined, // 'meeting' for disunify
+                    [TP_ID.pipedrive]: 'revert_type', // 'meeting' for disunify
                     [TP_ID.sfdc]: 'Type',
                     [TP_ID.zohocrm]: 'Type',
                 },
