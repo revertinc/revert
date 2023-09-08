@@ -1,7 +1,7 @@
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import React from 'react';
-import { SignedIn, SignedOut, SignUp, ClerkProvider, SignIn } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, SignUp, ClerkProvider, SignIn, RedirectToSignIn } from '@clerk/clerk-react';
 import { OAuthCallback } from '../common/oauth';
 import Home from '../home/index';
 
@@ -62,6 +62,28 @@ export function RouterComponent() {
                         <div className="mt-10">
                             <OAuthCallback />
                         </div>
+                    }
+                />
+                <Route
+                    path="/sign-in"
+                    element={
+                        <>
+                            <div className="flex items-center justify-center h-[100%]">
+                                <SignIn
+                                    redirectUrl={'/'}
+                                    afterSignInUrl={'/'}
+                                    appearance={{
+                                        variables: {
+                                            colorPrimary: '#343232',
+                                        },
+                                        elements: {
+                                            formButtonPrimary: 'bg-[#343232]',
+                                        },
+                                    }}
+                                    signUpUrl="/sign-up"
+                                />
+                            </div>
+                        </>
                     }
                 />
             </Routes>{' '}
