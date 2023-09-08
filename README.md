@@ -19,15 +19,6 @@ Revert makes it incredibly easy to build integrations with any third party API s
 -   Communication tools (Slack, MS Teams)
 -   Ticketing tools like (Jira, Asana)
 
-### Why use Revert?
-
-You might want to check us out if
-
--   You are developer building a B2B product
--   You have a ton of integrations on your roadmap
--   Your focus is building your core product
--   You want to move fast and not break things
-
 ### 📺 Demo
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=1aXXx66LKnY
@@ -36,6 +27,15 @@ You might want to check us out if
 alt="Revert Quick demo"  border="2"/>
 <em>Revert Quick demo</em>
 </a>
+
+### Why use Revert?
+
+You might want to check us out if
+
+-   You are developer building a B2B product
+-   You have a ton of integrations on your roadmap
+-   Your focus is building your core product
+-   You want to move fast and not break things
 
 Visit: https://revert.dev to sign up for an account or read our docs [here](https://docs.revert.dev) !
 
