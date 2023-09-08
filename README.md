@@ -2,9 +2,10 @@
 <img width="150" style="border-radius:75px;" src="./public/logo.png"/>
 <h1 align="center"><b>Revert.dev</b></h1>
 <p align="center">
- <h2 align="center">The fastest way to build product integrations
+ <h2 align="center">The Open-source product integrations platform
  
-![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=revert-client-git-main-revertdev)  [![](https://dcbadge.vercel.app/api/server/q5K5cRhymW?style=flat)](https://discord.gg/q5K5cRhymW) [![twitter](https://img.shields.io/twitter/follow/Revertdotdev?style=social)](https://twitter.com/intent/follow?screen_name=RevertdotDev)
+ [![Star us on GitHub](https://img.shields.io/github/stars/revertinc/revert?color=FFD700&label=Stars&logo=Github)](https://github.com/revertinc/revert)
+![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=revert-client-git-main-revertdev)  [![](https://dcbadge.vercel.app/api/server/q5K5cRhymW?style=flat)](https://discord.gg/q5K5cRhymW) [![twitter](https://img.shields.io/twitter/follow/Revertdotdev?style=social)](https://twitter.com/intent/follow?screen_name=RevertdotDev) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.poozle.dev/contributing)
 </h2>
 
 [Get started](https://revert.dev) · [Docs](https://docs.revert.dev/) · [Issues](https://github.com/revertinc/revert/issues) · [Discord](https://discord.gg/q5K5cRhymW) · [Get in touch](mailto:team@revert.dev)
@@ -28,7 +29,7 @@ alt="Revert Quick demo"  border="2"/>
 <em>Revert Quick demo</em>
 </a>
 
-### Why use Revert?
+### Why Revert?
 
 You might want to check us out if
 
@@ -37,7 +38,7 @@ You might want to check us out if
 -   Your focus is building your core product
 -   You want to move fast and not break things
 
-Visit: https://revert.dev to sign up for an account or read our docs [here](https://docs.revert.dev) !
+[Sign up](https://revert.dev) for an account or read our docs [here](https://docs.revert.dev) !
 
 ### 🚀 What makes us faster and reliable.
 
@@ -75,7 +76,7 @@ Accounting software:
 -   [ ] Ability to self-host Revert inside your own cloud
 -   [ ] SOC 2
 
-Feel free to create an issue if you'd like an integration we're misssing [here](https://github.com/revertinc/revert)
+Feel free to create an issue if you'd like an integration we're missing [here](https://github.com/revertinc/revert)
 
 ## Packages
 
@@ -86,6 +87,19 @@ This repo contains a set of packages under `@reverdotdev/` namespace such as:
 -   [`@revertdotdev/revert-vue`](./packages/vue): Official SDK for Vue.
 -   [`@revertdotdev/js`](./packages/js): Official SDK for Javascript.
 -   ...
+
+### Quickstart
+
+#### Spinning up Revert with docker-compose
+
+The easiest way to start Revert is to run it via docker-compose:
+
+```shell
+# In the root directory run
+docker-compose up
+```
+
+The UI is now available at http://localhost:3000 and the backend is available at http://localhost:4001.
 
 ## Examples
 
