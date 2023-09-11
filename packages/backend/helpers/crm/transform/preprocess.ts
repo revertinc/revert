@@ -57,6 +57,12 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
                     revert_isWon: undefined,
                 };
             },
+            [StandardObjects.contact]: (obj: T) => {
+                return {
+                    ...obj,
+                    name: `${obj.first_name} ${obj.last_name}`
+                };
+            },
         },
         [TP_ID.sfdc]: {
             [StandardObjects.deal]: (obj: T) => {
