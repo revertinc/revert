@@ -95,8 +95,16 @@ This repo contains a set of packages under `@reverdotdev/` namespace such as:
 The easiest way to start Revert is to run it via docker-compose:
 
 ```shell
-# In the root directory run
-docker-compose up
+# Get the code
+git clone --depth 1 https://github.com/revertinc/revert
+
+# Copy the example env file
+cp .env.example .env
+
+# Update this .env file with your own secrets
+
+# Then In the root directory run
+docker-compose up -d
 ```
 
 The UI is now available at http://localhost:3000 and the backend is available at http://localhost:4001.
