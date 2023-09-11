@@ -3,6 +3,7 @@ import { StandardObjects } from '../../../constants/common';
 import { transformModelToFieldMapping } from '.';
 import { handleHubspotDisunify, handlePipedriveDisunify, handleSfdcDisunify, handleZohoDisunify } from '..';
 import { postprocessDisUnifyObject } from './preprocess';
+import { flattenObj } from '../../../helpers/flattenObj';
 
 export async function disunifyObject<T extends Record<string, any>>({
     obj,
@@ -17,8 +18,9 @@ export async function disunifyObject<T extends Record<string, any>>({
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }) {
+    const flattenedObj = flattenObj(obj, ['additional', 'associations']);
     const transformedObj = await transformModelToFieldMapping({
-        unifiedObj: obj,
+        unifiedObj: flattenedObj,
         tpId,
         objType,
         tenantSchemaMappingId,
