@@ -33,7 +33,7 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
     return transformFn ? transformFn(obj) : obj;
 };
 
-export const preprocessDisUnifyObject = <T extends Record<string, any>>({
+export const postprocessDisUnifyObject = <T extends Record<string, any>>({
     obj,
     tpId,
     objType,
@@ -44,10 +44,59 @@ export const preprocessDisUnifyObject = <T extends Record<string, any>>({
 }) => {
     const preprocessMap: any = {
         [TP_ID.pipedrive]: {
+            // [StandardObjects.event]: (obj: T) => {
+            //     return {
+            //         ...obj,
+            //         revert_type: 'meeting',
+            //     };
+            // },
+            [StandardObjects.deal]: (obj: T) => {
+                return {
+                    ...obj,
+                    status: obj.revert_isWon ? PipedriveDealStatus.won : PipedriveDealStatus.open,
+                    revert_isWon: undefined
+                };
+            },
+        },
+        [TP_ID.sfdc]: {
+            [StandardObjects.deal]: (obj: T) => {
+                return {
+                    ...obj,
+                    Probability: Number(obj.Probability) * 100,
+                };
+            },
+            [StandardObjects.company]: (obj: T) => {
+                return {
+                    ...obj,
+                    Type: obj.additional?.type,
+                };
+            },
+        },
+        [TP_ID.zohocrm]: {
+            [StandardObjects.deal]: (obj: T) => {
+                return {
+                    ...obj,
+                    Probability: Number(obj.Probability) * 100,
+                };
+            },
+        },
+        [TP_ID.hubspot]: {
             [StandardObjects.event]: (obj: T) => {
                 return {
                     ...obj,
-                    revert_type: 'meeting',
+                    hs_timestamp: Date.now().toString()
+                };
+            },
+            [StandardObjects.note]: (obj: T) => {
+                return {
+                    ...obj,
+                    hs_timestamp: Date.now().toString()
+                };
+            },
+            [StandardObjects.task]: (obj: T) => {
+                return {
+                    ...obj,
+                    hs_timestamp: Date.now().toString()
                 };
             },
         },
