@@ -83,7 +83,6 @@ export function handleHubspotDisunify<T extends Record<string, any>, Association
 }) {
     const hubspotObj: any = {
         properties: {
-            hs_timestamp: Date.now().toString(),
             ...transformedObj,
             ...(obj.associations && {}),
         },
