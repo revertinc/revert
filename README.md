@@ -88,7 +88,7 @@ This repo contains a set of packages under `@reverdotdev/` namespace such as:
 -   [`@revertdotdev/js`](./packages/js): Official SDK for Javascript.
 -   ...
 
-### Quickstart
+## Quickstart
 
 #### Spinning up Revert with docker-compose
 
