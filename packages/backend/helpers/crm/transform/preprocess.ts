@@ -42,7 +42,7 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
     tpId: TP_ID;
     objType: StandardObjects;
 }) => {
-    const preprocessMap: any = {
+    const preprocessMap: Record<TP_ID, Record<any, Function>> = {
         [TP_ID.pipedrive]: {
             // [StandardObjects.event]: (obj: T) => {
             //     return {
@@ -54,7 +54,7 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
                 return {
                     ...obj,
                     status: obj.revert_isWon ? PipedriveDealStatus.won : PipedriveDealStatus.open,
-                    revert_isWon: undefined
+                    revert_isWon: undefined,
                 };
             },
         },
@@ -79,24 +79,30 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
                     Probability: Number(obj.Probability) * 100,
                 };
             },
+            [StandardObjects.company]: (obj: T) => {
+                return {
+                    ...obj,
+                    Account_Type: obj.additional?.type,
+                };
+            },
         },
         [TP_ID.hubspot]: {
             [StandardObjects.event]: (obj: T) => {
                 return {
                     ...obj,
-                    hs_timestamp: Date.now().toString()
+                    hs_timestamp: Date.now().toString(),
                 };
             },
             [StandardObjects.note]: (obj: T) => {
                 return {
                     ...obj,
-                    hs_timestamp: Date.now().toString()
+                    hs_timestamp: Date.now().toString(),
                 };
             },
             [StandardObjects.task]: (obj: T) => {
                 return {
                     ...obj,
-                    hs_timestamp: Date.now().toString()
+                    hs_timestamp: Date.now().toString(),
                 };
             },
         },
