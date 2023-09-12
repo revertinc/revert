@@ -27,7 +27,7 @@
     "react-loader-spinner": "^5.3.4",
     "react-router-dom": "^6.4.1",
     "react-scripts": "5.0.1",
-    "styled-components": "^6.0.2",
+    "styled-components": "^6.0.7",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

@@ -1,0 +1,5 @@
+{
+    "packages/**/*.{js,ts,tsx,json}": [
+        "prettier --ignore-path ./.prettierignore --write"
+    ]
+}

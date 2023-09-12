@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../prisma/client';
+import { xprisma } from '../prisma/client';
 import logError from './logError';
 
 const revertTenantMiddleware = () => async (req: Request, res: Response, next: () => any) => {
@@ -10,7 +10,7 @@ const revertTenantMiddleware = () => async (req: Request, res: Response, next: (
                 error: 'Tenant not found',
             });
         }
-        const connection: any = await prisma.connections.findMany({
+        const connection: any = await xprisma.connections.findMany({
             where: {
                 t_id: tenantId as string,
                 app: {

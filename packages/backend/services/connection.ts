@@ -1,5 +1,5 @@
 import { ConnectionService } from '../generated/typescript/api/resources/connection/service/ConnectionService';
-import prisma from '../prisma/client';
+import prisma, { xprisma } from '../prisma/client';
 import config from '../config';
 import logError from '../helpers/logError';
 import { v4 as uuidv4 } from 'uuid';
@@ -14,7 +14,7 @@ const connectionService = new ConnectionService({
         if (!tenantId) {
             throw new NotFoundError({ error: 'Tenant not found!' });
         }
-        const connection: any = await prisma.connections.findFirst({
+        const connection: any = await xprisma.connections.findFirst({
             where: {
                 AND: [
                     { t_id: tenantId as string },
@@ -43,7 +43,7 @@ const connectionService = new ConnectionService({
     },
     async getAllConnections(req, res) {
         const { 'x-revert-api-token': token } = req.headers;
-        const connections: any = await prisma.connections.findMany({
+        const connections: any = await xprisma.connections.findMany({
             where: {
                 app: {
                     env: {
@@ -85,6 +85,7 @@ const connectionService = new ConnectionService({
                 },
             },
             select: {
+                id: true,
                 tp_access_token: true,
                 tp_id: true,
                 t_id: true,
@@ -102,15 +103,11 @@ const connectionService = new ConnectionService({
         const deleted: any = await prisma.connections.delete({
             // TODO: Add environments to connections.
             where: {
-                uniqueCustomerPerTenantPerThirdParty: {
-                    tp_customer_id: connection.tp_customer_id,
-                    t_id: connection.t_id,
-                    tp_id: connection.tp_id,
-                },
+                id: connection.id,
             },
         });
         if (deleted) {
-            config.svix.message.create(svixAppId, {
+            config.svix?.message.create(svixAppId, {
                 eventType: 'connection.deleted',
                 payload: {
                     eventType: 'connection.deleted',
@@ -134,7 +131,7 @@ const connectionService = new ConnectionService({
             });
             const svixAppId = environment?.accountId!;
             const secret = `whsec_${Buffer.from(uuidv4()).toString('base64')}`;
-            const webhook = await config.svix.endpoint.create(svixAppId, {
+            const webhook = await config.svix!.endpoint.create(svixAppId, {
                 url: webhookUrl,
                 version: 1,
                 description: `Connection Webhook for tenant ${tenantId}`,
@@ -170,7 +167,7 @@ const connectionService = new ConnectionService({
                 },
             });
             const svixAppId = environment?.accountId!;
-            const webhook = await config.svix.endpoint.get(svixAppId, String(tenantId));
+            const webhook = await config.svix!.endpoint.get(svixAppId, String(tenantId));
             res.send({ status: 'ok', webhook: webhook });
         } catch (error: any) {
             logError(error);
@@ -193,7 +190,7 @@ const connectionService = new ConnectionService({
                 },
             });
             const svixAppId = environment?.accountId!;
-            await config.svix.endpoint.delete(svixAppId, webhookId);
+            await config.svix!.endpoint.delete(svixAppId, webhookId);
             res.send({ status: 'ok' });
         } catch (error: any) {
             logError(error);

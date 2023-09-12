@@ -4,7 +4,7 @@ import config from '../../../config';
 import qs from 'qs';
 import { TP_ID } from '@prisma/client';
 import AuthService from '../../../services/auth';
-import prisma, { Prisma } from '../../../prisma/client';
+import prisma, { Prisma, xprisma } from '../../../prisma/client';
 import logError from '../../../helpers/logError';
 
 const authRouter = express.Router({ mergeParams: true });
@@ -57,13 +57,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
             });
             console.log('Oauth token info', info.data);
             try {
-                await prisma.connections.upsert({
+                await xprisma.connections.upsert({
                     where: {
-                        uniqueCustomerPerTenantPerThirdParty: {
-                            tp_customer_id: info.data.user,
-                            t_id: String(req.query.t_id),
-                            tp_id: integrationId,
-                        },
+                        id: String(req.query.t_id),
                     },
                     update: {
                         tp_access_token: result.data.access_token,
@@ -72,6 +68,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         app_client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET,
                     },
                     create: {
+                        id: String(req.query.t_id),
                         t_id: req.query.t_id as string,
                         tp_id: integrationId,
                         tp_access_token: result.data.access_token,
@@ -83,7 +80,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         appId: account?.apps[0].id,
                     },
                 });
-                config.svix.message.create(svixAppId, {
+                config.svix?.message.create(svixAppId, {
                     eventType: 'connection.added',
                     payload: {
                         eventType: 'connection.added',
@@ -143,15 +140,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 });
                 console.log('Oauth token info', info.data);
                 try {
-                    await prisma.connections.upsert({
+                    await xprisma.connections.upsert({
                         where: {
-                            uniqueCustomerPerTenantPerThirdParty: {
-                                tp_customer_id: info.data.Email,
-                                t_id: String(req.query.t_id),
-                                tp_id: integrationId,
-                            },
+                            id: String(req.query.t_id),
                         },
                         create: {
+                            id: String(req.query.t_id),
                             t_id: req.query.t_id as string,
                             tp_id: integrationId,
                             tp_access_token: result.data.access_token,
@@ -168,7 +162,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                             tp_refresh_token: result.data.refresh_token,
                         },
                     });
-                    config.svix.message.create(svixAppId, {
+                    config.svix?.message.create(svixAppId, {
                         eventType: 'connection.added',
                         payload: {
                             eventType: 'connection.added',
@@ -225,15 +219,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
             });
             console.log('Oauth token info', info.data);
             try {
-                await prisma.connections.upsert({
+                await xprisma.connections.upsert({
                     where: {
-                        uniqueCustomerPerTenantPerThirdParty: {
-                            tp_customer_id: info.data.email,
-                            t_id: String(req.query.t_id),
-                            tp_id: integrationId,
-                        },
+                        id: String(req.query.t_id),
                     },
                     create: {
+                        id: String(req.query.t_id),
                         t_id: req.query.t_id as string,
                         tp_id: integrationId,
                         tp_access_token: result.data.access_token,
@@ -252,7 +243,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         app_client_secret: clientSecret || config.SFDC_CLIENT_SECRET,
                     },
                 });
-                config.svix.message.create(svixAppId, {
+                config.svix?.message.create(svixAppId, {
                     eventType: 'connection.added',
                     payload: {
                         eventType: 'connection.added',
@@ -310,19 +301,16 @@ authRouter.get('/oauth-callback', async (req, res) => {
             });
             console.log('Oauth token info', info.data);
             try {
-                await prisma.connections.upsert({
+                await xprisma.connections.upsert({
                     where: {
-                        uniqueCustomerPerTenantPerThirdParty: {
-                            tp_customer_id: info.data.data.email,
-                            t_id: String(req.query.t_id),
-                            tp_id: integrationId,
-                        },
+                        id: String(req.query.t_id),
                     },
                     update: {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
                     },
                     create: {
+                        id: String(req.query.t_id),
                         t_id: req.query.t_id as string,
                         tp_id: integrationId,
                         tp_access_token: result.data.access_token,
@@ -333,7 +321,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         appId: account?.apps[0].id,
                     },
                 });
-                config.svix.message.create(svixAppId, {
+                config.svix?.message.create(svixAppId, {
                     eventType: 'connection.added',
                     payload: {
                         eventType: 'connection.added',

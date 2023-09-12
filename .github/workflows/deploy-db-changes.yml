@@ -1,14 +1,14 @@
-name: Generate docs & postman collection
+name: Deploy prisma
 
 on:
     push:
         branches:
             - main
-        paths:
-            - fern/**
+        # paths:
+        #     - packages/prisma/**
 
 jobs:
-    deploy-fern-external:
+    deploy-prisma:
         runs-on: ubuntu-latest
 
         steps:
@@ -25,9 +25,7 @@ jobs:
             - name: Install Dependencies
               run: yarn install
 
-            - name: Generate docs & postman collection
-              run: fern generate --group external
+            - name: Deploy prisma migrations
+              run: yarn workspace @revertdotdev/backend db-deploy
               env:
-                  POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
-                  POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
-                  FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
+                  PGSQL_URL: ${{ secrets.PGSQL_URL }}
