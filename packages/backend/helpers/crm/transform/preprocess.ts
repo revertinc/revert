@@ -44,12 +44,18 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
 }) => {
     const preprocessMap: Record<TP_ID, Record<any, Function>> = {
         [TP_ID.pipedrive]: {
-            // [StandardObjects.event]: (obj: T) => {
-            //     return {
-            //         ...obj,
-            //         revert_type: 'meeting',
-            //     };
-            // },
+            [StandardObjects.event]: (obj: T) => {
+                return {
+                    ...obj,
+                    type: 'meeting',
+                };
+            },
+            [StandardObjects.task]: (obj: T) => {
+                return {
+                    ...obj,
+                    type: 'task',
+                };
+            },
             [StandardObjects.deal]: (obj: T) => {
                 return {
                     ...obj,
