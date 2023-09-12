@@ -82,10 +82,16 @@ export function handleHubspotDisunify<T extends Record<string, any>, Association
     transformedObj: any;
 }) {
     const hubspotObj: any = {
-        properties: {
-            ...transformedObj,
-            ...(obj.associations && {}),
-        },
+        ...(objType === StandardObjects.user
+            ? { ...transformedObj }
+            : {
+                  ...{
+                      properties: {
+                          ...transformedObj,
+                          ...(obj.associations && {}),
+                      },
+                  },
+              }),
     };
     // Map custom fields
     if (obj.additional) {

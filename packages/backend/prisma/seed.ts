@@ -526,7 +526,7 @@ async function main() {
             },
             {
                 source_field_name: {
-                    [TP_ID.hubspot]: 'lastName',
+                    [TP_ID.hubspot]: 'lastname',
                     [TP_ID.pipedrive]: undefined, // firstName (title) includes full name
                     [TP_ID.sfdc]: 'LastName',
                     [TP_ID.zohocrm]: 'Last_Name',
