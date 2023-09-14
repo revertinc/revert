@@ -87,7 +87,7 @@ const openInNewTab = function () {
     window.focus();
 };
 
-const createPoweredByBanner = function (self) {
+const createPoweredByBanner = function (self, darkMode = false) {
     var poweredByLogo = document.createElement('img');
     poweredByLogo.setAttribute(
         'src',
@@ -104,6 +104,7 @@ const createPoweredByBanner = function (self) {
             fontWeight: '400',
             lineHeight: '13px',
             letterSpacing: '0em',
+            color: darkMode ? '#fff' : '#343232',
         }),
         [],
         'Powered By'
@@ -120,7 +121,7 @@ const createPoweredByBanner = function (self) {
             alignItems: 'center',
             cursor: 'pointer',
             height: 35,
-            background: '#343232',
+            background: darkMode ? '#343232' : 'none',
             color: '#fff',
         }),
         [poweredBySpan1, poweredBySpan3],
@@ -129,6 +130,40 @@ const createPoweredByBanner = function (self) {
 
     poweredBy.addEventListener('click', openInNewTab.bind(self));
     return poweredBy;
+};
+
+const createLoader = function () {
+    const loader = document.createElement('span');
+    loader.setAttribute('class', 'loader');
+    addStyle(`
+        .loader {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            background: linear-gradient(0deg, #2047D033, #2047D0 100%);
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        .loader::after {
+            content: '';  
+            box-sizing: border-box;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #fff;
+        }
+        @keyframes rotation {
+            0% { transform: rotate(0deg) }
+            100% { transform: rotate(360deg)}
+        } 
+    `);
+    return loader;
 };
 
 const createIntegrationBlock = function (self, integration) {
@@ -261,6 +296,21 @@ const createIntegrationBlock = function (self, integration) {
         };
 
         open = function (integrationId) {
+            this.renderInitialStage(integrationId);
+        };
+
+        close = function () {
+            console.log('how tf is this triggered');
+            let rootElement = document.getElementById('revert-ui-root');
+
+            while (rootElement?.firstChild) {
+                rootElement.firstChild.remove();
+            }
+            this.state = 'close';
+            this.#onClose();
+        };
+
+        renderInitialStage = function (integrationId) {
             if (!integrationId) {
                 let selectedIntegrationId;
                 // show every integration possible
@@ -392,7 +442,7 @@ const createIntegrationBlock = function (self, integration) {
                     this.handleIntegrationRedirect(selectedIntegration, true);
                 });
                 signInElement.appendChild(button);
-                // let poweredByBanner = createPoweredByBanner(this);
+                // let poweredByBanner = createPoweredByBanner(this, true);
                 // signInElement.appendChild(poweredByBanner);
                 let signInElementWrapper = createViewElement(
                     'div',
@@ -417,7 +467,7 @@ const createIntegrationBlock = function (self, integration) {
                     if (!signInElement.contains(event.target)) {
                         signInElementWrapper.style.animation = 'fadeoout .8s forwards';
                         signInElementWrapper.style.transition = 'color 500ms ease-in-out';
-                        this.close();
+                        // this.close(); // TODO: Don't close if custom field mapping supported
                     }
                 });
                 rootElement.appendChild(signInElementWrapper);
@@ -430,14 +480,43 @@ const createIntegrationBlock = function (self, integration) {
             }
         };
 
-        close = function () {
-            let rootElement = document.getElementById('revert-ui-root');
-
-            while (rootElement?.firstChild) {
-                rootElement.firstChild.remove();
+        clearInitialStage = function () {
+            const container = document.getElementById('revert-signin-container');
+            while (container.firstChild) {
+                container.removeChild(container.lastChild);
             }
-            this.state = 'close';
-            this.#onClose();
+        };
+
+        renderProcessingStage = function () {
+            const el = document.createElement('div');
+            const processingText = createViewElement(
+                'span',
+                'processing-header',
+                transformStyle({
+                    fontWeight: 'bold',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    color: '#777',
+                }),
+                [],
+                'Integration setup in progress...'
+            );
+            el.appendChild(processingText);
+            const container = document.getElementById('revert-signin-container');
+            container.style.height = '534px';
+            const loadingArea = document.createElement('div');
+            loadingArea.style.display = 'flex';
+            loadingArea.style.flexDirection = 'column';
+            loadingArea.style.alignItems = 'center';
+            loadingArea.style.gap = '15px';
+            const loader = createLoader();
+            loadingArea.appendChild(loader);
+            loadingArea.appendChild(el);
+            container.appendChild(loadingArea);
+            const poweredByBanner = createPoweredByBanner(this);
+            poweredByBanner.style.position = 'absolute';
+            poweredByBanner.style.bottom = '10px';
+            container.appendChild(poweredByBanner);
         };
 
         handleIntegrationRedirect = function (selectedIntegration, closeWindow = false) {
@@ -482,8 +561,10 @@ const createIntegrationBlock = function (self, integration) {
                         }&redirect_uri=${this.#REDIRECT_URL_BASE}/pipedrive&state=${state}`
                     );
                 }
+                this.clearInitialStage();
+                this.renderProcessingStage();
                 if (closeWindow) {
-                    this.close();
+                    // this.close(); // TODO: Don't close if custom field mapping supported
                 }
             } else {
                 console.warn('Invalid integration ID provided.');
