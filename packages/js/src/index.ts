@@ -487,6 +487,13 @@ const createIntegrationBlock = function (self, integration) {
             }
         };
 
+        clearProcessingStage = function () {
+            const container = document.getElementById('revert-signin-container');
+            while (container.firstChild) {
+                container.removeChild(container.lastChild);
+            }
+        };
+
         renderProcessingStage = function () {
             const el = document.createElement('div');
             const processingText = createViewElement(
@@ -516,6 +523,30 @@ const createIntegrationBlock = function (self, integration) {
             const poweredByBanner = createPoweredByBanner(this);
             poweredByBanner.style.position = 'absolute';
             poweredByBanner.style.bottom = '10px';
+            container.appendChild(poweredByBanner);
+        };
+
+        renderFailedStage = function () {
+            const el = document.createElement('div');
+            const failedText = createViewElement(
+                'span',
+                'processing-header',
+                transformStyle({
+                    fontWeight: 'bold',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    color: '#777',
+                }),
+                [],
+                'Something went wrong...'
+            );
+            el.appendChild(failedText);
+            const container = document.getElementById('revert-signin-container');
+            container.style.height = '534px';
+            const poweredByBanner = createPoweredByBanner(this);
+            poweredByBanner.style.position = 'absolute';
+            poweredByBanner.style.bottom = '10px';
+            container.appendChild(el);
             container.appendChild(poweredByBanner);
         };
 
@@ -568,7 +599,16 @@ const createIntegrationBlock = function (self, integration) {
                 );
                 evtSource.onmessage = (event) => {
                     const data = JSON.parse(event.data);
-                    console.log('blah server sent message', data);
+                    const parsedData = JSON.parse(data);
+                    console.log(parsedData);
+                    if (parsedData.status === 'FAILED') {
+                        this.clearProcessingStage();
+                        this.renderFailedStage();
+                    }
+                    if (parsedData.status === 'SUCCESS') {
+                        this.clearProcessingStage();
+                        
+                    }
                 };
 
                 if (closeWindow) {

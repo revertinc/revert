@@ -20,3 +20,9 @@ export default pubsub;
 export const PUBSUB_CHANNELS = {
     INTEGRATION_STATUS: 'integrationStatus',
 };
+
+export interface IntegrationStatusSseMessage {
+    publicToken: string;
+    status: "SUCCESS" | "FAILED";
+    integrationName: string;
+}

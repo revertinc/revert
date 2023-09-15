@@ -6,6 +6,7 @@ import { TP_ID } from '@prisma/client';
 import AuthService from '../../../services/auth';
 import prisma, { Prisma, xprisma } from '../../../prisma/client';
 import logError from '../../../helpers/logError';
+import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../helpers/pubsub';
 
 const authRouter = express.Router({ mergeParams: true });
 
@@ -93,6 +94,11 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     channels: [req.query.t_id as string],
                 });
+                await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                    publicToken: revertPublicKey,
+                    status: 'SUCCESS',
+                    integrationName: integrationId,
+                } as IntegrationStatusSseMessage);
                 res.send({ status: 'ok', tp_customer_id: info.data.user });
             } catch (error: any) {
                 logError(error);
@@ -105,6 +111,11 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     }
                 }
                 console.error('Could not update db', error);
+                await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                    publicToken: revertPublicKey,
+                    status: 'FAILED',
+                    integrationName: integrationId,
+                } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
         } else if (integrationId === TP_ID.zohocrm && req.query.code && req.query.accountURL) {
@@ -128,6 +139,11 @@ authRouter.get('/oauth-callback', async (req, res) => {
             });
             console.log('OAuth creds for zohocrm', result.data);
             if (result.data.error) {
+                await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                    publicToken: revertPublicKey,
+                    status: 'FAILED',
+                    integrationName: integrationId,
+                } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: result.data.error });
                 return;
             } else {
@@ -176,6 +192,11 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         },
                         channels: [req.query.t_id as string],
                     });
+                    await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                        publicToken: revertPublicKey,
+                        status: 'SUCCESS',
+                        integrationName: integrationId,
+                    } as IntegrationStatusSseMessage);
                     res.send({ status: 'ok' });
                 } catch (error: any) {
                     logError(error);
@@ -188,6 +209,11 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         }
                     }
                     console.error('Could not update db', error);
+                    await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                        publicToken: revertPublicKey,
+                        status: 'FAILED',
+                        integrationName: integrationId,
+                    } as IntegrationStatusSseMessage);
                     res.send({ status: 'error', error: error });
                 }
             }
@@ -257,6 +283,11 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     channels: [req.query.t_id as string],
                 });
+                await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                    publicToken: revertPublicKey,
+                    status: 'SUCCESS',
+                    integrationName: integrationId,
+                } as IntegrationStatusSseMessage);
                 res.send({ status: 'ok', tp_customer_id: 'testSfdcUser' });
             } catch (error: any) {
                 logError(error);
@@ -269,6 +300,11 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     }
                 }
                 console.error('Could not update db', error);
+                await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                    publicToken: revertPublicKey,
+                    status: 'FAILED',
+                    integrationName: integrationId,
+                } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
         } else if (integrationId === TP_ID.pipedrive && req.query.code && req.query.t_id && revertPublicKey) {
@@ -334,6 +370,11 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     channels: [req.query.t_id as string],
                 });
+                await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                    publicToken: revertPublicKey,
+                    status: 'SUCCESS',
+                    integrationName: integrationId,
+                } as IntegrationStatusSseMessage);
                 res.send({ status: 'ok', tp_customer_id: info.data.data.email });
             } catch (error) {
                 if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -344,9 +385,19 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     }
                 }
                 console.error('Could not update db', error);
+                await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                    publicToken: revertPublicKey,
+                    status: 'FAILED',
+                    integrationName: integrationId,
+                } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
         } else {
+            await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                publicToken: revertPublicKey,
+                status: 'FAILED',
+                integrationName: integrationId,
+            } as IntegrationStatusSseMessage);
             res.send({
                 status: 'noop',
             });
@@ -354,6 +405,11 @@ authRouter.get('/oauth-callback', async (req, res) => {
     } catch (error: any) {
         logError(error);
         console.log('Error while getting oauth creds', error);
+        await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+            publicToken: revertPublicKey,
+            status: 'FAILED',
+            integrationName: integrationId,
+        } as IntegrationStatusSseMessage);
     }
 });
 
