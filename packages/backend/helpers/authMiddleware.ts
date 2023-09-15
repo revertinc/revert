@@ -4,7 +4,7 @@ import logError from './logError';
 
 const revertAuthMiddleware = () => async (req: Request, res: Response, next: () => any) => {
     const nonSecurePaths = ['/oauth-callback', '/oauth/refresh'];
-    if (nonSecurePaths.includes(req.path)) return next();
+    if (nonSecurePaths.includes(req.path) || req.path.includes('/integration-status')) return next();
     const { 'x-revert-api-token': token } = req.headers;
 
     if (!token) {

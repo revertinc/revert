@@ -563,6 +563,14 @@ const createIntegrationBlock = function (self, integration) {
                 }
                 this.clearInitialStage();
                 this.renderProcessingStage();
+                const evtSource = new EventSource(
+                    `${this.CORE_API_BASE_URL}crm/integration-status/${this.API_REVERT_PUBLIC_TOKEN}`
+                );
+                evtSource.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    console.log('blah server sent message', data);
+                };
+
                 if (closeWindow) {
                     // this.close(); // TODO: Don't close if custom field mapping supported
                 }
