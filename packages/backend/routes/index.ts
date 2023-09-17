@@ -25,6 +25,7 @@ import {
     userService,
 } from '../services/crm';
 import { connectionService } from '../services/connection';
+import chatRouter from './v1/chat';
 
 const router = express.Router();
 
@@ -105,6 +106,7 @@ router.post('/clerk/webhook', async (req, res) => {
 });
 
 router.use('/crm', cors(), revertAuthMiddleware(), crmRouter);
+router.use('/chat', chatRouter);
 
 register(router, {
     metadata: metadataService,

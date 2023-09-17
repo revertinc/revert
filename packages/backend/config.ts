@@ -25,6 +25,8 @@ const config = {
     svix: process.env.SVIX_AUTH_TOKEN ? new Svix(process.env.SVIX_AUTH_TOKEN!) : undefined,
     WHITE_LISTED_DOMAINS: process.env.WHITE_LISTED_DOMAINS?.split(','),
     AES_ENCRYPTION_SECRET: process.env.AES_ENCRYPTION_SECRET!,
+    SLACK_CLIENT_ID: process.env.SLACK_CLIENT_ID!,
+    SLACK_CLIENT_SECRET: process.env.SLACK_CLIENT_SECRET!,
 };
 
 export default config;
