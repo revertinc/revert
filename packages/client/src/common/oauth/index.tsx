@@ -35,6 +35,7 @@ export const OAuthCallback = (props) => {
                                     ? ': Already connected another CRM. Please disconnect first.'
                                     : '';
                             setStatus('Errored out' + errorMessage);
+                            window.close();
                         } else {
                             setStatus('Succeeded. Please feel free to close this window.');
                             window.close();
@@ -46,6 +47,7 @@ export const OAuthCallback = (props) => {
                         setIsLoading(false);
                         console.error(err);
                         setStatus('Errored out');
+                        window.close();
                     });
             } else if (integrationId === 'zohocrm') {
                 console.log('Post crm installation', integrationId, params);
@@ -68,6 +70,7 @@ export const OAuthCallback = (props) => {
                                     ? ': Already connected another CRM. Please disconnect first.'
                                     : '';
                             setStatus('Errored out' + errorMessage);
+                            window.close();
                         } else {
                             setStatus('Succeeded. Please feel free to close this window.');
                             window.close();
@@ -79,6 +82,7 @@ export const OAuthCallback = (props) => {
                         setIsLoading(false);
                         console.error(err);
                         setStatus('Errored out');
+                        window.close();
                     });
             } else if (integrationId === 'sfdc') {
                 console.log('Post crm installation', integrationId, params);
@@ -101,6 +105,7 @@ export const OAuthCallback = (props) => {
                                     ? ': Already connected another CRM. Please disconnect first.'
                                     : '';
                             setStatus('Errored out' + errorMessage);
+                            window.close();
                         } else {
                             setStatus('Succeeded. Please feel free to close this window.');
                             window.close();
@@ -112,6 +117,7 @@ export const OAuthCallback = (props) => {
                         setIsLoading(false);
                         console.error(err);
                         setStatus('Errored out');
+                        window.close();
                     });
             }
         }

@@ -98,6 +98,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     publicToken: revertPublicKey,
                     status: 'SUCCESS',
                     integrationName: integrationId,
+                    tenantId: req.query.t_id,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'ok', tp_customer_id: info.data.user });
             } catch (error: any) {
@@ -115,6 +116,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     publicToken: revertPublicKey,
                     status: 'FAILED',
                     integrationName: integrationId,
+                    tenantId: req.query.t_id,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
@@ -143,6 +145,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     publicToken: revertPublicKey,
                     status: 'FAILED',
                     integrationName: integrationId,
+                    tenantId: req.query.t_id,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: result.data.error });
                 return;
@@ -196,6 +199,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         publicToken: revertPublicKey,
                         status: 'SUCCESS',
                         integrationName: integrationId,
+                        tenantId: req.query.t_id,
                     } as IntegrationStatusSseMessage);
                     res.send({ status: 'ok' });
                 } catch (error: any) {
@@ -213,6 +217,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         publicToken: revertPublicKey,
                         status: 'FAILED',
                         integrationName: integrationId,
+                        tenantId: req.query.t_id,
                     } as IntegrationStatusSseMessage);
                     res.send({ status: 'error', error: error });
                 }
@@ -287,6 +292,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     publicToken: revertPublicKey,
                     status: 'SUCCESS',
                     integrationName: integrationId,
+                    tenantId: req.query.t_id,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'ok', tp_customer_id: 'testSfdcUser' });
             } catch (error: any) {
@@ -304,6 +310,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     publicToken: revertPublicKey,
                     status: 'FAILED',
                     integrationName: integrationId,
+                    tenantId: req.query.t_id,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
@@ -374,6 +381,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     publicToken: revertPublicKey,
                     status: 'SUCCESS',
                     integrationName: integrationId,
+                    tenantId: req.query.t_id,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'ok', tp_customer_id: info.data.data.email });
             } catch (error) {
@@ -389,6 +397,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     publicToken: revertPublicKey,
                     status: 'FAILED',
                     integrationName: integrationId,
+                    tenantId: req.query.t_id,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
@@ -397,6 +406,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 publicToken: revertPublicKey,
                 status: 'FAILED',
                 integrationName: integrationId,
+                tenantId: req.query.t_id,
             } as IntegrationStatusSseMessage);
             res.send({
                 status: 'noop',
@@ -409,7 +419,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
             publicToken: revertPublicKey,
             status: 'FAILED',
             integrationName: integrationId,
+            tenantId: req.query.t_id,
         } as IntegrationStatusSseMessage);
+        res.send({ status: 'error', error: error });
     }
 });
 

@@ -604,9 +604,11 @@ const createIntegrationBlock = function (self, integration) {
                     if (parsedData.status === 'FAILED') {
                         this.clearProcessingStage();
                         this.renderFailedStage();
+                        evtSource.close();
                     }
                     if (parsedData.status === 'SUCCESS') {
                         this.clearProcessingStage();
+                        evtSource.close();
                         
                     }
                 };

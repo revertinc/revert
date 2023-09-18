@@ -25,4 +25,5 @@ export interface IntegrationStatusSseMessage {
     publicToken: string;
     status: "SUCCESS" | "FAILED";
     integrationName: string;
+    tenantId: string;
 }
