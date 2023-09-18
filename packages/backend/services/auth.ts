@@ -164,7 +164,7 @@ class AuthService {
                                 client_secret: connection.app?.is_revert_app
                                     ? config.SLACK_CLIENT_SECRET
                                     : connection.app_client_secret || config.SLACK_CLIENT_SECRET,
-                                grant_type: 'authorization_code',
+                                grant_type: 'refresh_token',
                                 // redirect_uri: '' TODO
                                 refresh_token: connection.tp_refresh_token,
                             });
