@@ -1,33 +1,28 @@
 import express from 'express';
 import config from '../../../config';
-// import axios from 'axios';
-import prisma, { Prisma, xprisma } from '../../../prisma/client';
+import prisma, { xprisma } from '../../../prisma/client';
 import logError from '../../../helpers/logError';
 import { TP_ID } from '@prisma/client';
-// import qs from 'qs';
+
 import { WebClient } from '@slack/web-api';
+import AuthService from '../../../services/auth';
 
 const authRouter = express.Router();
-const slackClient = new WebClient();
 
 /**
  * OAuth API
  */
 
-authRouter.get('/slack-login', async (_, res) => {
-    // const scopes = 'identity.basic,identity.email';
-    // const redirect_url =
-    //     'https://localhost:4001/v1/chat/oauth-callback?integrationId=slack&x_revert_public_token=localPublicToken&t_id=testTenantId';
+// Below route is a quick test endpoint as client package was not working in my case
+authRouter.get('/chat-login', async (_, res) => {
     const slackButton = `<a href="https://slack.com/oauth/v2/authorize?client_id=5867207742087.5887133932997&scope=channels:read,groups:read,im:read,mpim:read,users:read,chat:write&user_scope=identity.basic,identity.email"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcSet="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>`;
 
     res.status(200).header('Content-Type', 'text/html; charset=utf-8').send(slackButton);
 });
 
-authRouter.get('/slack', async (_, res) => {
-    res.send('<h1>Welcome to Slack</h1>');
-});
-
 authRouter.get('/oauth-callback', async (req, res) => {
+    const slackClient = new WebClient();
+
     const integrationId = req.query.integrationId as TP_ID; // add TP_ID alias after
     const revertPublicKey = req.query.x_revert_public_token as string;
 
@@ -74,8 +69,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         id: String(req.query.t_id),
                     },
                     update: {
-                        tp_access_token: String(result.authed_user?.access_token),
-                        tp_refresh_token: String(result.authed_user?.refresh_token),
+                        tp_access_token: result.authed_user?.access_token,
+                        tp_refresh_token: result.authed_user?.refresh_token,
                         app_client_id: clientId || config.SLACK_CLIENT_ID,
                         app_client_secret: clientSecret || config.SLACK_CLIENT_SECRET,
                     },
@@ -103,6 +98,10 @@ authRouter.get('/oauth-callback', async (req, res) => {
         }
         res.status(200).json({ msg: 'yo', account });
     } catch (error: any) {}
+});
+
+authRouter.get('/oauth/refresh', async (_, res) => {
+    res.status(200).send(await AuthService.refreshOAuthTokensForThirdParty());
 });
 
 export default authRouter;

@@ -7,6 +7,7 @@ import isWorkEmail from '../helpers/isWorkEmail';
 import { ENV, TP_ID } from '@prisma/client';
 import logError from '../helpers/logError';
 import { DEFAULT_SCOPE } from '../constants/common';
+import { WebClient } from '@slack/web-api';
 
 class AuthService {
     async refreshOAuthTokensForThirdParty() {
@@ -151,6 +152,31 @@ class AuthService {
                                 data: {
                                     tp_access_token: result.data.access_token,
                                     tp_refresh_token: result.data.refresh_token,
+                                },
+                            });
+                        } else if (connection.tp_id === TP_ID.slack) {
+                            // Refresh slack token
+                            const slackClient = new WebClient();
+                            const result = await slackClient.oauth.v2.access({
+                                client_id: connection.app?.is_revert_app
+                                    ? config.SLACK_CLIENT_ID
+                                    : connection.app_client_id || config.SLACK_CLIENT_ID,
+                                client_secret: connection.app?.is_revert_app
+                                    ? config.SLACK_CLIENT_SECRET
+                                    : connection.app_client_secret || config.SLACK_CLIENT_SECRET,
+                                grant_type: 'authorization_code',
+                                // redirect_uri: '' TODO
+                                refresh_token: connection.tp_refresh_token,
+                            });
+                            console.log(result);
+
+                            await prisma.connections.update({
+                                where: {
+                                    id: connection.id,
+                                },
+                                data: {
+                                    tp_access_token: result.authed_user?.access_token,
+                                    tp_refresh_token: result.authed_user?.refresh_token,
                                 },
                             });
                         }
