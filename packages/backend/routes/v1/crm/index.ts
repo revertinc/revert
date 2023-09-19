@@ -1,9 +1,13 @@
 import express from 'express';
 import { createSession } from 'better-sse';
 import authRouter from './auth';
+import { getObjectPropertiesForConnection } from '../../../services/crm/properties';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../helpers/pubsub';
 import logger from '../../../helpers/logger';
 import logError from '../../../helpers/logError';
+import { isStandardError } from '../../../helpers/error';
+import revertTenantMiddleware from '../../../helpers/tenantIdMiddleware';
+import { InternalServerError } from '../../../generated/typescript/api/resources/common';
 
 const crmRouter = express.Router();
 
@@ -35,5 +39,52 @@ crmRouter.get('/integration-status/:publicToken', async (req, res) => {
         logError(err);
     }
 });
+
+crmRouter.get('/field-mapping', revertTenantMiddleware(), async (_req, res) => {
+    const { account, connection } = res.locals;
+    const { accountFieldMappingConfig } = account;
+    const {
+        allow_connection_override_custom_fields: canAddCustomMapping,
+        mappable_by_connection_field_list: mappableFields,
+    } = accountFieldMappingConfig || {};
+
+    const objects = mappableFields.map((f: any) => f.objectName);
+    const fieldList: Record<string, any> = {};
+    await Promise.all(
+        objects.map(async (obj: string) => {
+            fieldList[obj] = await getObjectPropertiesForConnection({ objectName: obj, connection });
+        })
+    );
+
+    res.status(200).send({
+        canAddCustomMapping,
+        mappableFields,
+        fieldList,
+    });
+});
+
+crmRouter.get('/:objectName/properties', revertTenantMiddleware(), async (req, res) => {
+    const { connection } = res.locals;
+    const objectName = req.params.objectName;
+
+    try {
+        const result = await getObjectPropertiesForConnection({ objectName, connection });
+        res.status(200).send(result);
+    } catch (error: any) {
+        logError(error);
+        console.error('Could not fetch lead', error);
+        if (isStandardError(error)) {
+            throw error;
+        }
+        throw new InternalServerError({ error: 'Internal server error' });
+    }
+});
+
+// crmRouter.post('/field-mapping', async (req, res) => {
+//     try {
+//     } catch (err: any) {
+//         logError(err);
+//     }
+// });
 
 export default crmRouter;

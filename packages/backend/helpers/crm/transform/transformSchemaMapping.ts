@@ -1,5 +1,5 @@
 import { get, merge } from 'lodash';
-import { PrismaClient, TP_ID, accountFieldMappingConfig } from '@prisma/client';
+import { Prisma, PrismaClient, TP_ID, accountFieldMappingConfig } from '@prisma/client';
 import { StandardObjects, rootSchemaMappingId } from '../../../constants/common';
 import logger from '../../logger';
 
@@ -38,7 +38,10 @@ export const transformFieldMappingToModel = async ({
                     r?.target_field_name === field &&
                     (!accountFieldMappingConfig?.id ||
                         (r?.is_standard_field
-                            ? (accountFieldMappingConfig?.mappable_by_connection_field_list || []).includes(field)
+                            ? ((accountFieldMappingConfig?.mappable_by_connection_field_list as Prisma.JsonArray) || [])
+                                  .filter((a: any) => a.objectName === objType)
+                                  .map((a: any) => a.fieldName)
+                                  .includes(field)
                             : accountFieldMappingConfig?.allow_connection_override_custom_fields))
             ) || rootSchema?.fieldMappings?.find((r) => r?.target_field_name === field);
         const transformedKey = fieldMapping?.source_field_name;
@@ -87,7 +90,10 @@ export const transformModelToFieldMapping = async ({
                 r?.target_field_name === key &&
                 (!accountFieldMappingConfig?.id ||
                     (r.is_standard_field
-                        ? (accountFieldMappingConfig?.mappable_by_connection_field_list || []).includes(key)
+                        ? ((accountFieldMappingConfig?.mappable_by_connection_field_list as Prisma.JsonArray) || [])
+                              .filter((a: any) => a.objectName === objType)
+                              .map((a: any) => a.fieldName)
+                              .includes(key)
                         : accountFieldMappingConfig?.allow_connection_override_custom_fields))
         );
         const rootFieldMapping = rootSchema?.fieldMappings?.find((r) => r?.target_field_name === key);

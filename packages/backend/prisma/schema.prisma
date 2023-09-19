@@ -64,7 +64,7 @@ model users {
 }
 
 model connections {
-  id                         String  @id @default(uuid())
+  id                         String          @id @default(uuid())
   tp_id                      TP_ID
   tp_access_token            String
   tp_refresh_token           String?
@@ -120,5 +120,5 @@ model accountFieldMappingConfig {
   account_id                              String   @unique
   account                                 accounts @relation(fields: [account_id], references: [id])
   allow_connection_override_custom_fields Boolean  @default(true)
-  mappable_by_connection_field_list       String[]
+  mappable_by_connection_field_list       Json? // [{ objectName, fieldName }]
 }
