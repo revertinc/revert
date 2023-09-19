@@ -49,52 +49,52 @@ export enum StandardObjects {
     user = 'user',
 }
 
-export const objectNameMapping: Record<string, Record<TP_ID, string>> = {
+export const objectNameMapping: Record<string, Record<TP_ID, string | undefined>> = {
     [StandardObjects.company]: {
         [TP_ID.hubspot]: 'companies',
-        [TP_ID.pipedrive]: 'organizations',
+        [TP_ID.pipedrive]: 'organization',
         [TP_ID.sfdc]: 'Account',
         [TP_ID.zohocrm]: 'Accounts',
     },
     [StandardObjects.contact]: {
         [TP_ID.hubspot]: 'contacts',
-        [TP_ID.pipedrive]: 'persons',
+        [TP_ID.pipedrive]: 'person',
         [TP_ID.sfdc]: 'Contact',
         [TP_ID.zohocrm]: 'Contacts',
     },
     [StandardObjects.deal]: {
         [TP_ID.hubspot]: 'deals',
-        [TP_ID.pipedrive]: 'deals',
+        [TP_ID.pipedrive]: 'deal',
         [TP_ID.sfdc]: 'Opportunity',
         [TP_ID.zohocrm]: 'Deals',
     },
     [StandardObjects.event]: {
         [TP_ID.hubspot]: 'meetings',
-        [TP_ID.pipedrive]: 'activities',
+        [TP_ID.pipedrive]: 'activity',
         [TP_ID.sfdc]: 'Event',
         [TP_ID.zohocrm]: 'Events',
     },
     [StandardObjects.lead]: {
         [TP_ID.hubspot]: 'contacts',
-        [TP_ID.pipedrive]: 'leads',
+        [TP_ID.pipedrive]: 'lead',
         [TP_ID.sfdc]: 'Lead',
         [TP_ID.zohocrm]: 'Leads',
     },
     [StandardObjects.note]: {
         [TP_ID.hubspot]: 'notes',
-        [TP_ID.pipedrive]: 'notes',
+        [TP_ID.pipedrive]: 'note',
         [TP_ID.sfdc]: 'Note',
         [TP_ID.zohocrm]: 'Notes',
     },
     [StandardObjects.task]: {
         [TP_ID.hubspot]: 'tasks',
-        [TP_ID.pipedrive]: 'activities',
+        [TP_ID.pipedrive]: 'activity',
         [TP_ID.sfdc]: 'Task',
         [TP_ID.zohocrm]: 'Tasks',
     },
     [StandardObjects.user]: {
         [TP_ID.hubspot]: 'users',
-        [TP_ID.pipedrive]: 'users',
+        [TP_ID.pipedrive]: undefined,
         [TP_ID.sfdc]: 'User',
         [TP_ID.zohocrm]: 'users',
     },
