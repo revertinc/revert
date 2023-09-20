@@ -105,9 +105,11 @@ crmRouter.post('/field-mapping', revertTenantMiddleware(), async (req, res) => {
 
         const connectionSchemaMappingId = randomUUID();
 
+        const customFields = customMappings.map((c) => c.targetFieldName);
+
         const schemas = objects.map((object) => ({
             id: randomUUID(),
-            fields: rootSchema.find((s) => s.object === object)?.fields,
+            fields: [...(rootSchema.find((s) => s.object === object)?.fields || []), ...customFields],
             object,
         }));
         await prisma.schema_mapping.create({
