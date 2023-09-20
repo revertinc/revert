@@ -641,12 +641,15 @@ const createIntegrationBlock = function (self, integration) {
             const poweredByBanner = createPoweredByBanner(this);
             poweredByBanner.style.position = 'absolute';
             poweredByBanner.style.bottom = '10px';
+            poweredByBanner.style.left = '0';
             container.appendChild(poweredByBanner);
 
             container.style.alignItems = null;
             container.style.justifyContent = null;
             container.style.gap = '5px';
             container.style.minHeight = '534px';
+            container.style.maxHeight = '70%';
+            container.style.paddingBottom = '48px';
             const header = createViewElement(
                 'div',
                 '',
@@ -675,9 +678,12 @@ const createIntegrationBlock = function (self, integration) {
             );
             container.appendChild(header);
             container.appendChild(subHeader);
+            const inputContainer = document.createElement('div');
+            inputContainer.style.overflowY = 'auto';
+            container.appendChild(inputContainer);
             fieldMappingData.mappableFields.forEach((field) => {
                 const p = this.getFieldMappingInputPair(field.fieldName, fieldMappingData.fieldList[field.objectName]);
-                container.appendChild(p);
+                inputContainer.appendChild(p);
             });
 
             if (fieldMappingData.canAddCustomMapping) {
@@ -690,14 +696,27 @@ const createIntegrationBlock = function (self, integration) {
                         borderRadius: '50%',
                         background: '#D9D9D9',
                         cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                     }),
                     [],
-                    ``
+                    `+`
                 );
-                container.appendChild(addBtn)
+                addBtn.classList.add('add-btn');
+                addStyle(`
+                    .add-btn:hover {
+                        background: #c9c9c9 !important;
+                    }
+                `);
+                inputContainer.appendChild(addBtn);
+                let customEntries = 0;
                 addBtn.addEventListener('click', () => {
-                    // const p = this.getFieldMappingInputPair('', fieldMappingData.fieldList[field.objectName]);
-                })
+                    const p = this.getCustomFieldMappingInputPair(fieldMappingData.fieldList, customEntries);
+                    customEntries++;
+                    inputContainer.appendChild(p);
+                });
             }
         };
 
@@ -768,6 +787,7 @@ const createIntegrationBlock = function (self, integration) {
                 [],
                 ''
             );
+            mappableInput.classList.add('mappableInput');
             mappableInput.setAttribute('disabled', true);
             mappableInput.setAttribute('value', fieldName);
 
@@ -791,12 +811,15 @@ const createIntegrationBlock = function (self, integration) {
                 options,
                 ''
             );
+            accountSpecificInput.classList.add('accountSpecificInput');
+
             const container = createViewElement(
                 'div',
                 '',
                 transformStyle({
                     display: 'flex',
                     flexDirection: 'column',
+                    marginBottom: '25px'
                 }),
                 [mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
                 ''
@@ -804,86 +827,103 @@ const createIntegrationBlock = function (self, integration) {
             return container;
         };
 
-        // getCustomFieldMappingInputPair = function (fieldList) {
-        //     const getOptions = obj => fieldList[obj].map((a) => {
-        //         const op = document.createElement('option');
-        //         op.setAttribute('value', a.fieldName);
-        //         op.innerHTML = a.fieldName;
-        //         return op;
-        //     });
-        //     const objectHeading = createViewElement(
-        //         'div',
-        //         '',
-        //         transformStyle({
-        //             fontWeight: '400',
-        //             fontSize: '12px',
-        //         }),
-        //         [],
-        //         'Object'
-        //     );
-        //     const objInput = createViewElement(
-        //         'select',
-        //         ``,
-        //         transformStyle({
-        //             fontWeight: '400',
-        //             fontSize: '12px',
-        //         }),
-        //         [],
-        //         ''
-        //     );
-        //     const mappableHeading = createViewElement(
-        //         'div',
-        //         '',
-        //         transformStyle({
-        //             fontWeight: '400',
-        //             fontSize: '12px',
-        //         }),
-        //         [],
-        //         'Mappable field name'
-        //     );
-        //     const mappableInput = createViewElement(
-        //         'input',
-        //         ``,
-        //         transformStyle({
-        //             fontWeight: '400',
-        //             fontSize: '12px',
-        //         }),
-        //         [],
-        //         ''
-        //     );
+        getCustomFieldMappingInputPair = function (fieldList, n) {
+            const getOptions = (obj) =>
+                (fieldList[obj] || []).map((a) => {
+                    const op = document.createElement('option');
+                    op.setAttribute('value', a.fieldName);
+                    op.innerHTML = a.fieldName;
+                    console.log(op);
+                    return op;
+                });
+            const objOptions = ['company', 'contact', 'deal', 'event', 'lead', 'note', 'task', 'user'].map((a) => {
+                const op = document.createElement('option');
+                op.setAttribute('value', a);
+                op.innerHTML = a;
+                return op;
+            });
+            const objectHeading = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                }),
+                [],
+                'Object'
+            );
+            const objInput = createViewElement(
+                'select',
+                ``,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                }),
+                objOptions,
+                ''
+            );
+            objInput.addEventListener('change', (ev) => {
+                let a = document.getElementById(`custom-accountSpecificInput-${n}`);
+                while (a.firstChild) {
+                    a.removeChild(a.lastChild);
+                }
+                getOptions(ev.target.value).map((b) => a.appendChild(b));
+            });
+            const mappableHeading = createViewElement(
+                'div',
+                `custom-mappableHeading-${n}`,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                }),
+                [],
+                'Mappable field name'
+            );
+            const mappableInput = createViewElement(
+                'input',
+                `custom-mappableInput-${n}`,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                }),
+                [],
+                ''
+            );
 
-        //     const accountSpecificHeading = createViewElement(
-        //         'div',
-        //         '',
-        //         transformStyle({
-        //             fontWeight: '400',
-        //             fontSize: '12px',
-        //         }),
-        //         [],
-        //         'Account specific field name'
-        //     );
-        //     const accountSpecificInput = createViewElement(
-        //         'select',
-        //         ``,
-        //         transformStyle({
-        //             fontWeight: '400',
-        //             fontSize: '12px',
-        //         }),
-        //         getOptions('note'), // change based on obj dropdown
-        //         ''
-        //     );
-        //     const container = createViewElement(
-        //         'div',
-        //         '',
-        //         transformStyle({
-        //             display: 'flex',
-        //             flexDirection: 'column',
-        //         }),
-        //         [mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
-        //         ''
-        //     );
-        //     return container;
-        // };
+            const accountSpecificHeading = createViewElement(
+                'div',
+                `custom-accountSpecificHeading-${n}`,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                }),
+                [],
+                'Account specific field name'
+            );
+            const accountSpecificInput = createViewElement(
+                'select',
+                `custom-accountSpecificInput-${n}`,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                }),
+                getOptions('company'),
+                ''
+            );
+
+            const container = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginBottom: '25px'
+                }),
+                [objectHeading, objInput, mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
+                ''
+            );
+            return container;
+        };
 
         handleIntegrationRedirect = function (selectedIntegration, closeWindow = false) {
             if (selectedIntegration) {
