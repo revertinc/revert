@@ -478,6 +478,88 @@ const createIntegrationBlock = function (self, integration) {
                 );
                 this.handleIntegrationRedirect(selectedIntegration);
             }
+            // todo: this is to test. delete everything below
+            setTimeout(() => {
+                this.clearInitialStage();
+                const fieldMappingDataStub = {
+                    canAddCustomMapping: true,
+                    mappableFields: [
+                        {
+                            fieldName: 'content',
+                            objectName: 'note',
+                        },
+                        {
+                            fieldName: 'createdTimestamp',
+                            objectName: 'note',
+                        },
+                    ],
+                    fieldList: {
+                        note: [
+                            {
+                                fieldName: 'Id',
+                                fieldType: 'id',
+                                fieldDescription: '',
+                            },
+                            {
+                                fieldName: 'IsDeleted',
+                                fieldType: 'boolean',
+                                fieldDescription: '',
+                            },
+                            {
+                                fieldName: 'ParentId',
+                                fieldType: 'reference',
+                                fieldDescription: '',
+                            },
+                            {
+                                fieldName: 'Title',
+                                fieldType: 'string',
+                                fieldDescription: '',
+                            },
+                            {
+                                fieldName: 'IsPrivate',
+                                fieldType: 'boolean',
+                                fieldDescription: '',
+                            },
+                            {
+                                fieldName: 'Body',
+                                fieldType: 'textarea',
+                                fieldDescription: '',
+                            },
+                            {
+                                fieldName: 'OwnerId',
+                                fieldType: 'reference',
+                                fieldDescription: '',
+                            },
+                            {
+                                fieldName: 'CreatedDate',
+                                fieldType: 'datetime',
+                                fieldDescription: '',
+                            },
+                            {
+                                fieldName: 'CreatedById',
+                                fieldType: 'reference',
+                                fieldDescription: '',
+                            },
+                            {
+                                fieldName: 'LastModifiedDate',
+                                fieldType: 'datetime',
+                                fieldDescription: '',
+                            },
+                            {
+                                fieldName: 'LastModifiedById',
+                                fieldType: 'reference',
+                                fieldDescription: '',
+                            },
+                            {
+                                fieldName: 'SystemModstamp',
+                                fieldType: 'datetime',
+                                fieldDescription: '',
+                            },
+                        ],
+                    },
+                };
+                this.renderSuccessStage(fieldMappingDataStub, 'Hubspot');
+            }, 1000);
         };
 
         clearInitialStage = function () {
@@ -550,6 +632,259 @@ const createIntegrationBlock = function (self, integration) {
             container.appendChild(poweredByBanner);
         };
 
+        renderSuccessStage = function (fieldMappingData, integrationName) {
+            console.log(fieldMappingData);
+            if (!fieldMappingData.canAddCustomMapping || !(fieldMappingData.mappableFields || []).length) {
+                return this.renderDoneStage(integrationName);
+            }
+            const container = document.getElementById('revert-signin-container');
+            const poweredByBanner = createPoweredByBanner(this);
+            poweredByBanner.style.position = 'absolute';
+            poweredByBanner.style.bottom = '10px';
+            container.appendChild(poweredByBanner);
+
+            container.style.alignItems = null;
+            container.style.justifyContent = null;
+            container.style.gap = '5px';
+            container.style.minHeight = '534px';
+            const header = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    fontFamily: 'Inter',
+                    fontSize: '20px',
+                    fontWeight: '500',
+                    lineHeight: '27px',
+                    color: '#656468',
+                }),
+                [],
+                'Field mappings'
+            );
+            const subHeader = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    fontFamily: 'Inter',
+                    fontSize: '14px',
+                    fontWeight: '400',
+                    lineHeight: '19px',
+                    color: '#656468',
+                }),
+                [],
+                `Map fields specific to your ${integrationName} Account`
+            );
+            container.appendChild(header);
+            container.appendChild(subHeader);
+            fieldMappingData.mappableFields.forEach((field) => {
+                const p = this.getFieldMappingInputPair(field.fieldName, fieldMappingData.fieldList[field.objectName]);
+                container.appendChild(p);
+            });
+
+            if (fieldMappingData.canAddCustomMapping) {
+                const addBtn = createViewElement(
+                    'div',
+                    '',
+                    transformStyle({
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        background: '#D9D9D9',
+                        cursor: 'pointer',
+                    }),
+                    [],
+                    ``
+                );
+                container.appendChild(addBtn)
+                addBtn.addEventListener('click', () => {
+                    // const p = this.getFieldMappingInputPair('', fieldMappingData.fieldList[field.objectName]);
+                })
+            }
+        };
+
+        renderDoneStage = function (integrationName) {
+            const el = document.createElement('div');
+            const connectedText = createViewElement(
+                'span',
+                'done-header',
+                transformStyle({
+                    fontWeight: 'bold',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    color: '#777',
+                }),
+                [],
+                `Connected to ${integrationName}`
+            );
+            const msgContainer = document.createElement('div');
+            msgContainer.style.display = 'flex';
+            msgContainer.style.flexDirection = 'column';
+            msgContainer.style.alignItems = 'center';
+            msgContainer.style.justifyContent = 'center';
+            msgContainer.style.gap = '15px';
+            const tick = this.getDoneTick();
+            msgContainer.appendChild(tick);
+            msgContainer.appendChild(connectedText);
+            el.appendChild(msgContainer);
+
+            const container = document.getElementById('revert-signin-container');
+            container.style.height = '534px';
+            const poweredByBanner = createPoweredByBanner(this);
+            poweredByBanner.style.position = 'absolute';
+            poweredByBanner.style.bottom = '10px';
+            container.appendChild(el);
+            container.appendChild(poweredByBanner);
+        };
+
+        getDoneTick = function () {
+            const el = document.createElement('span');
+            el.innerHTML = `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32 2C15.431 2 2 15.432 2 32C2 48.568 15.432 62 32 62C48.568 62 62 48.568 62 32C62 15.432 48.568 2 32 2ZM25.025 50L25.005 49.98L24.988 50L11 35.6L18.029 28.436L25.006 35.62L46.006 14.001L53 21.199L25.025 50Z" fill="#43A047"/></svg>`;
+            return el;
+        };
+
+        getFieldMappingInputPair = function (fieldName, data) {
+            const options = data.map((a) => {
+                const op = document.createElement('option');
+                op.setAttribute('value', a.fieldName);
+                op.innerHTML = a.fieldName;
+                return op;
+            });
+            const mappableHeading = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                }),
+                [],
+                'Mappable field name'
+            );
+            const mappableInput = createViewElement(
+                'input',
+                `mappable-input-${fieldName}`,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                }),
+                [],
+                ''
+            );
+            mappableInput.setAttribute('disabled', true);
+            mappableInput.setAttribute('value', fieldName);
+
+            const accountSpecificHeading = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                }),
+                [],
+                'Account specific field name'
+            );
+            const accountSpecificInput = createViewElement(
+                'select',
+                `account-input-${fieldName}`,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                }),
+                options,
+                ''
+            );
+            const container = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    display: 'flex',
+                    flexDirection: 'column',
+                }),
+                [mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
+                ''
+            );
+            return container;
+        };
+
+        // getCustomFieldMappingInputPair = function (fieldList) {
+        //     const getOptions = obj => fieldList[obj].map((a) => {
+        //         const op = document.createElement('option');
+        //         op.setAttribute('value', a.fieldName);
+        //         op.innerHTML = a.fieldName;
+        //         return op;
+        //     });
+        //     const objectHeading = createViewElement(
+        //         'div',
+        //         '',
+        //         transformStyle({
+        //             fontWeight: '400',
+        //             fontSize: '12px',
+        //         }),
+        //         [],
+        //         'Object'
+        //     );
+        //     const objInput = createViewElement(
+        //         'select',
+        //         ``,
+        //         transformStyle({
+        //             fontWeight: '400',
+        //             fontSize: '12px',
+        //         }),
+        //         [],
+        //         ''
+        //     );
+        //     const mappableHeading = createViewElement(
+        //         'div',
+        //         '',
+        //         transformStyle({
+        //             fontWeight: '400',
+        //             fontSize: '12px',
+        //         }),
+        //         [],
+        //         'Mappable field name'
+        //     );
+        //     const mappableInput = createViewElement(
+        //         'input',
+        //         ``,
+        //         transformStyle({
+        //             fontWeight: '400',
+        //             fontSize: '12px',
+        //         }),
+        //         [],
+        //         ''
+        //     );
+
+        //     const accountSpecificHeading = createViewElement(
+        //         'div',
+        //         '',
+        //         transformStyle({
+        //             fontWeight: '400',
+        //             fontSize: '12px',
+        //         }),
+        //         [],
+        //         'Account specific field name'
+        //     );
+        //     const accountSpecificInput = createViewElement(
+        //         'select',
+        //         ``,
+        //         transformStyle({
+        //             fontWeight: '400',
+        //             fontSize: '12px',
+        //         }),
+        //         getOptions('note'), // change based on obj dropdown
+        //         ''
+        //     );
+        //     const container = createViewElement(
+        //         'div',
+        //         '',
+        //         transformStyle({
+        //             display: 'flex',
+        //             flexDirection: 'column',
+        //         }),
+        //         [mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
+        //         ''
+        //     );
+        //     return container;
+        // };
+
         handleIntegrationRedirect = function (selectedIntegration, closeWindow = false) {
             if (selectedIntegration) {
                 const scopes = selectedIntegration.scopes;
@@ -601,15 +936,30 @@ const createIntegrationBlock = function (self, integration) {
                     const data = JSON.parse(event.data);
                     const parsedData = JSON.parse(data);
                     console.log(parsedData);
-                    if (parsedData.status === 'FAILED') {
+                    // TODO: uncomment this
+                    // if (parsedData.status === 'FAILED') {
+                    //     this.clearProcessingStage();
+                    //     this.renderFailedStage();
+                    //     evtSource.close();
+                    // }
+                    if (parsedData.status === 'FAILED' || parsedData.status === 'SUCCESS') {
                         this.clearProcessingStage();
-                        this.renderFailedStage();
                         evtSource.close();
-                    }
-                    if (parsedData.status === 'SUCCESS') {
-                        this.clearProcessingStage();
-                        evtSource.close();
-                        
+                        // fetch field mapping
+                        fetch(`${this.CORE_API_BASE_URL}crm/field-mapping`, {
+                            mode: 'cors' as RequestMode,
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'x-revert-api-token': 'localPrivateToken', // TODO: get it on frontend somehow. sse maybe?
+                                'x-revert-t-id': this.tenantId,
+                            },
+                        })
+                            .then((data) => data.json)
+                            .then((data) => {
+                                console.log('blah field mapping config', data);
+                                this.renderSuccessStage(data, parsedData.integrationName);
+                            });
                     }
                 };
 
