@@ -300,7 +300,6 @@ const createIntegrationBlock = function (self, integration) {
         };
 
         close = function () {
-            console.log('how tf is this triggered');
             let rootElement = document.getElementById('revert-ui-root');
 
             while (rootElement?.firstChild) {
@@ -467,7 +466,6 @@ const createIntegrationBlock = function (self, integration) {
                     if (!signInElement.contains(event.target)) {
                         signInElementWrapper.style.animation = 'fadeoout .8s forwards';
                         signInElementWrapper.style.transition = 'color 500ms ease-in-out';
-                        this.close();
                     }
                 });
                 rootElement.appendChild(signInElementWrapper);
@@ -478,9 +476,9 @@ const createIntegrationBlock = function (self, integration) {
                 );
                 this.handleIntegrationRedirect(selectedIntegration);
             }
-            // todo: this is to test. delete everything below
+            // // todo: this is to test. delete everything below
             setTimeout(() => {
-                this.clearInitialStage();
+                // this.clearInitialStage();
                 const fieldMappingDataStub = {
                     canAddCustomMapping: true,
                     mappableFields: [
@@ -558,7 +556,7 @@ const createIntegrationBlock = function (self, integration) {
                         ],
                     },
                 };
-                this.renderSuccessStage(fieldMappingDataStub, 'Hubspot');
+                // this.renderSuccessStage(fieldMappingDataStub, 'Hubspot', 'localPrivateToken');
             }, 1000);
         };
 
@@ -571,7 +569,7 @@ const createIntegrationBlock = function (self, integration) {
 
         clearProcessingStage = function () {
             const container = document.getElementById('revert-signin-container');
-            while (container.firstChild) {
+            while (container?.firstChild) {
                 container.removeChild(container.lastChild);
             }
         };
@@ -625,6 +623,12 @@ const createIntegrationBlock = function (self, integration) {
             el.appendChild(failedText);
             const container = document.getElementById('revert-signin-container');
             container.style.height = '534px';
+            let closeButton = createCloseButton();
+            closeButton.addEventListener('click', this.close.bind(this));
+            closeButton.style.position = 'absolute';
+            closeButton.style.right = '20px';
+            closeButton.style.top = '20px';
+            container.appendChild(closeButton);
             const poweredByBanner = createPoweredByBanner(this);
             poweredByBanner.style.position = 'absolute';
             poweredByBanner.style.bottom = '10px';
@@ -632,7 +636,7 @@ const createIntegrationBlock = function (self, integration) {
             container.appendChild(poweredByBanner);
         };
 
-        renderSuccessStage = function (fieldMappingData, integrationName) {
+        renderSuccessStage = function (fieldMappingData, integrationName, privateToken) {
             console.log(fieldMappingData);
             if (!fieldMappingData.canAddCustomMapping || !(fieldMappingData.mappableFields || []).length) {
                 return this.renderDoneStage(integrationName);
@@ -650,6 +654,15 @@ const createIntegrationBlock = function (self, integration) {
             container.style.minHeight = '534px';
             container.style.maxHeight = '80%';
             container.style.paddingBottom = '48px';
+            container.style.height = null;
+
+            let closeButton = createCloseButton();
+            closeButton.addEventListener('click', this.close.bind(this));
+            closeButton.style.position = 'absolute';
+            closeButton.style.right = '20px';
+            closeButton.style.top = '20px';
+            container.appendChild(closeButton);
+
             const header = createViewElement(
                 'div',
                 '',
@@ -789,7 +802,7 @@ const createIntegrationBlock = function (self, integration) {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-revert-api-token': 'localPrivateToken', // TODO: get it on frontend somehow. sse maybe?
+                        'x-revert-api-token': privateToken,
                         'x-revert-t-id': this.tenantId,
                     },
                     body: JSON.stringify({ standardMappings, customMappings }),
@@ -797,7 +810,7 @@ const createIntegrationBlock = function (self, integration) {
                     .then((data) => data.json())
                     .then((data) => {
                         console.log(data);
-                        console.log("saved!");
+                        console.log('saved!');
                     });
             });
             container.appendChild(saveButton);
@@ -813,6 +826,7 @@ const createIntegrationBlock = function (self, integration) {
                     width: '100%',
                     boxSizing: 'border-box',
                     color: '#777',
+                    textAlign: 'center',
                 }),
                 [],
                 `Connected to ${integrationName}`
@@ -823,6 +837,10 @@ const createIntegrationBlock = function (self, integration) {
             msgContainer.style.alignItems = 'center';
             msgContainer.style.justifyContent = 'center';
             msgContainer.style.gap = '15px';
+            msgContainer.style.position = 'absolute';
+            msgContainer.style.top = '75px';
+            msgContainer.style.left = '0';
+            msgContainer.style.right = '0';
             const tick = this.getDoneTick();
             msgContainer.appendChild(tick);
             msgContainer.appendChild(connectedText);
@@ -835,6 +853,33 @@ const createIntegrationBlock = function (self, integration) {
             poweredByBanner.style.bottom = '10px';
             container.appendChild(el);
             container.appendChild(poweredByBanner);
+
+            const doneButton = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    cursor: 'pointer',
+                    padding: '8px 20px',
+                    color: '#fff',
+                    textAlign: 'center',
+                    alignSelf: 'center',
+                    background: '#272DC0',
+                    borderRadius: 8,
+                    fontSize: 20,
+                    height: '72px',
+                    boxSizing: 'border-box',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'absolute',
+                    width: '80%',
+                    bottom: '75px',
+                }),
+                [],
+                'Close'
+            );
+            doneButton.addEventListener('click', () => this.close());
+            container.appendChild(doneButton);
         };
 
         getDoneTick = function () {
@@ -1090,22 +1135,23 @@ const createIntegrationBlock = function (self, integration) {
                     //     evtSource.close();
                     // }
                     if (parsedData.status === 'FAILED' || parsedData.status === 'SUCCESS') {
-                        this.clearProcessingStage();
                         evtSource.close();
+                        // TODO: remove the default token
+                        const privateToken = parsedData.privateToken || 'localPrivateToken';
                         // fetch field mapping
                         fetch(`${this.CORE_API_BASE_URL}crm/field-mapping`, {
                             mode: 'cors' as RequestMode,
                             method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'x-revert-api-token': 'localPrivateToken', // TODO: get it on frontend somehow. sse maybe?
+                                'x-revert-api-token': privateToken,
                                 'x-revert-t-id': this.tenantId,
                             },
                         })
-                            .then((data) => data.json)
+                            .then((data) => data.json())
                             .then((data) => {
-                                console.log('blah field mapping config', data);
-                                this.renderSuccessStage(data, parsedData.integrationName);
+                                this.clearProcessingStage();
+                                this.renderSuccessStage(data, parsedData.integrationName, privateToken);
                             });
                     }
                 };
