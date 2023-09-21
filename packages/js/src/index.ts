@@ -439,7 +439,7 @@ const createIntegrationBlock = function (self, integration) {
                     const selectedIntegration = this.#integrations.find(
                         (int) => int.integrationId === selectedIntegrationId
                     );
-                    this.handleIntegrationRedirect(selectedIntegration, true);
+                    this.handleIntegrationRedirect(selectedIntegration);
                 });
                 signInElement.appendChild(button);
                 // let poweredByBanner = createPoweredByBanner(this, true);
@@ -467,7 +467,7 @@ const createIntegrationBlock = function (self, integration) {
                     if (!signInElement.contains(event.target)) {
                         signInElementWrapper.style.animation = 'fadeoout .8s forwards';
                         signInElementWrapper.style.transition = 'color 500ms ease-in-out';
-                        // this.close(); // TODO: Don't close if custom field mapping supported
+                        this.close();
                     }
                 });
                 rootElement.appendChild(signInElementWrapper);
@@ -564,7 +564,7 @@ const createIntegrationBlock = function (self, integration) {
 
         clearInitialStage = function () {
             const container = document.getElementById('revert-signin-container');
-            while (container.firstChild) {
+            while (container?.firstChild) {
                 container.removeChild(container.lastChild);
             }
         };
@@ -648,7 +648,7 @@ const createIntegrationBlock = function (self, integration) {
             container.style.justifyContent = null;
             container.style.gap = '5px';
             container.style.minHeight = '534px';
-            container.style.maxHeight = '70%';
+            container.style.maxHeight = '80%';
             container.style.paddingBottom = '48px';
             const header = createViewElement(
                 'div',
@@ -672,7 +672,7 @@ const createIntegrationBlock = function (self, integration) {
                     fontWeight: '400',
                     lineHeight: '19px',
                     color: '#656468',
-                    marginBottom: '5px'
+                    marginBottom: '5px',
                 }),
                 [],
                 `Map fields specific to your ${integrationName} Account`
@@ -685,7 +685,11 @@ const createIntegrationBlock = function (self, integration) {
             inputContainer.style.height = '400px'; // fix this hack
             container.appendChild(inputContainer);
             fieldMappingData.mappableFields.forEach((field) => {
-                const p = this.getFieldMappingInputPair(field.fieldName, fieldMappingData.fieldList[field.objectName]);
+                const p = this.getFieldMappingInputPair(
+                    field.fieldName,
+                    fieldMappingData.fieldList[field.objectName],
+                    field.objectName
+                );
                 inputContainer.appendChild(p);
             });
 
@@ -728,6 +732,75 @@ const createIntegrationBlock = function (self, integration) {
                     inputContainer.appendChild(p);
                 });
             }
+            const saveButton = createViewElement(
+                'div',
+                `save-mapping`,
+                transformStyle({
+                    cursor: 'pointer',
+                    padding: '8px 20px',
+                    color: '#fff',
+                    textAlign: 'center',
+                    alignSelf: 'center',
+                    background: '#272DC0',
+                    borderRadius: 8,
+                    fontSize: 20,
+                    width: '100%',
+                    height: '72px',
+                    boxSizing: 'border-box',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginTop: '50px',
+                    marginBottom: '20px',
+                }),
+                [],
+                'Save Mappings'
+            );
+            saveButton.addEventListener('click', () => {
+                const objectsEl = document.getElementsByClassName('stdHiddenObj');
+                const objects = Array.from(objectsEl).map((el: any) => el.textContent);
+                const lablesEl = document.getElementsByClassName('mappableInput');
+                const lables = Array.from(lablesEl).map((el: any) => el.value);
+                const valuesEl = document.getElementsByClassName('accountSpecificInput');
+                const values = Array.from(valuesEl).map((el: any) => el.value);
+                const standardMappings = lables.map((l, i) => ({
+                    sourceFieldName: values[i],
+                    targetFieldName: l,
+                    object: objects[i],
+                }));
+                console.log('standardMappings', standardMappings);
+
+                const customObjectsEl = document.querySelectorAll('[id^="custom-object-"]');
+                const customObjects = Array.from(customObjectsEl).map((el: any) => el.value);
+                const customLablesEl = document.querySelectorAll('[id^="custom-mappableInput-"]');
+                const customLables = Array.from(customLablesEl).map((el: any) => el.value);
+                const customValuesEl = document.querySelectorAll('[id^="custom-accountSpecificInput-"]');
+                const customValues = Array.from(customValuesEl).map((el: any) => el.value);
+                const customMappings = customLables.map((l, i) => ({
+                    sourceFieldName: customValues[i],
+                    targetFieldName: l,
+                    object: customObjects[i],
+                }));
+                console.log('customMappings', customMappings);
+
+                // save field mapping
+                fetch(`${this.CORE_API_BASE_URL}crm/field-mapping`, {
+                    mode: 'cors' as RequestMode,
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-revert-api-token': 'localPrivateToken', // TODO: get it on frontend somehow. sse maybe?
+                        'x-revert-t-id': this.tenantId,
+                    },
+                    body: JSON.stringify({ standardMappings, customMappings }),
+                })
+                    .then((data) => data.json())
+                    .then((data) => {
+                        console.log(data);
+                        console.log("saved!");
+                    });
+            });
+            container.appendChild(saveButton);
         };
 
         renderDoneStage = function (integrationName) {
@@ -770,20 +843,31 @@ const createIntegrationBlock = function (self, integration) {
             return el;
         };
 
-        getFieldMappingInputPair = function (fieldName, data) {
+        getFieldMappingInputPair = function (fieldName, data, objectName) {
             const options = data.map((a) => {
                 const op = document.createElement('option');
                 op.setAttribute('value', a.fieldName);
                 op.innerHTML = a.fieldName;
                 return op;
             });
+            const hiddenObject = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    visibility: 'hidden',
+                    height: '1px',
+                }),
+                [],
+                objectName
+            );
+            hiddenObject.classList.add('stdHiddenObj');
             const mappableHeading = createViewElement(
                 'div',
                 '',
                 transformStyle({
                     fontWeight: '400',
                     fontSize: '12px',
-                    color: '#4C505B'
+                    color: '#4C505B',
                 }),
                 [],
                 'Mappable field name'
@@ -810,7 +894,7 @@ const createIntegrationBlock = function (self, integration) {
                 transformStyle({
                     fontWeight: '400',
                     fontSize: '12px',
-                    color: '#4C505B'
+                    color: '#4C505B',
                 }),
                 [],
                 'Account specific field name'
@@ -836,9 +920,9 @@ const createIntegrationBlock = function (self, integration) {
                     display: 'flex',
                     flexDirection: 'column',
                     marginBottom: '25px',
-                    gap: '10px'
+                    gap: '10px',
                 }),
-                [mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
+                [hiddenObject, mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
                 ''
             );
             return container;
@@ -850,7 +934,6 @@ const createIntegrationBlock = function (self, integration) {
                     const op = document.createElement('option');
                     op.setAttribute('value', a.fieldName);
                     op.innerHTML = a.fieldName;
-                    console.log(op);
                     return op;
                 });
             const objOptions = ['company', 'contact', 'deal', 'event', 'lead', 'note', 'task', 'user'].map((a) => {
@@ -865,14 +948,14 @@ const createIntegrationBlock = function (self, integration) {
                 transformStyle({
                     fontWeight: '400',
                     fontSize: '12px',
-                    color: '#4C505B'
+                    color: '#4C505B',
                 }),
                 [],
                 'Object'
             );
             const objInput = createViewElement(
                 'select',
-                ``,
+                `custom-object-${n}`,
                 transformStyle({
                     fontWeight: '400',
                     fontSize: '12px',
@@ -894,7 +977,7 @@ const createIntegrationBlock = function (self, integration) {
                 transformStyle({
                     fontWeight: '400',
                     fontSize: '12px',
-                    color: '#4C505B'
+                    color: '#4C505B',
                 }),
                 [],
                 'Mappable field name'
@@ -917,7 +1000,7 @@ const createIntegrationBlock = function (self, integration) {
                 transformStyle({
                     fontWeight: '400',
                     fontSize: '12px',
-                    color: '#4C505B'
+                    color: '#4C505B',
                 }),
                 [],
                 'Account specific field name'
@@ -941,7 +1024,7 @@ const createIntegrationBlock = function (self, integration) {
                     display: 'flex',
                     flexDirection: 'column',
                     marginBottom: '25px',
-                    gap: '10px'
+                    gap: '10px',
                 }),
                 [objectHeading, objInput, mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
                 ''
@@ -949,7 +1032,7 @@ const createIntegrationBlock = function (self, integration) {
             return container;
         };
 
-        handleIntegrationRedirect = function (selectedIntegration, closeWindow = false) {
+        handleIntegrationRedirect = function (selectedIntegration) {
             if (selectedIntegration) {
                 const scopes = selectedIntegration.scopes;
                 const state = JSON.stringify({
@@ -994,7 +1077,7 @@ const createIntegrationBlock = function (self, integration) {
                 this.clearInitialStage();
                 this.renderProcessingStage();
                 const evtSource = new EventSource(
-                    `${this.CORE_API_BASE_URL}crm/integration-status/${this.API_REVERT_PUBLIC_TOKEN}`
+                    `${this.CORE_API_BASE_URL}crm/integration-status/${this.API_REVERT_PUBLIC_TOKEN}?tenantId=${this.tenantId}`
                 );
                 evtSource.onmessage = (event) => {
                     const data = JSON.parse(event.data);
@@ -1026,10 +1109,6 @@ const createIntegrationBlock = function (self, integration) {
                             });
                     }
                 };
-
-                if (closeWindow) {
-                    // this.close(); // TODO: Don't close if custom field mapping supported
-                }
             } else {
                 console.warn('Invalid integration ID provided.');
             }
