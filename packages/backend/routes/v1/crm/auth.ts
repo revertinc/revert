@@ -5,7 +5,7 @@ import qs from 'qs';
 import { TP_ID } from '@prisma/client';
 import AuthService from '../../../services/auth';
 import prisma, { Prisma, xprisma } from '../../../prisma/client';
-import logError from '../../../helpers/logError';
+import logError from '../../../helpers/logger';
 
 const authRouter = express.Router({ mergeParams: true });
 

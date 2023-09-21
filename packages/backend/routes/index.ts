@@ -11,7 +11,7 @@ import { metadataService } from '../services/metadata';
 import { accountService } from '../services/Internal/account';
 
 import AuthService from '../services/auth';
-import logError from '../helpers/logError';
+import logError from '../helpers/logger';
 import verifyRevertWebhook from '../helpers/verifyRevertWebhook';
 import {
     companyService,
