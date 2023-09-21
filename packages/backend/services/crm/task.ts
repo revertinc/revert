@@ -6,7 +6,7 @@ import { InternalServerError } from '../../generated/typescript/api/resources/co
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
-import logError from '../../helpers/logError';
+import logError, { logInfo } from '../../helpers/logger';
 import { isStandardError } from '../../helpers/error';
 import { UnifiedTask, disunifyTask, unifyTask } from '../../models/unified';
 import { PipedrivePagination, PipedriveTask } from '../../constants/pipedrive';
@@ -21,7 +21,14 @@ const taskService = new TaskService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET TASK', tenantId, thirdPartyId, thirdPartyToken, taskId);
+                logInfo(
+                    'Revert::GET TASK',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    taskId
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -105,7 +112,13 @@ const taskService = new TaskService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET ALL TASK', tenantId, thirdPartyId, thirdPartyToken);
+                logInfo(
+                    'Revert::GET ALL TASK',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -228,7 +241,7 @@ const taskService = new TaskService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const task = disunifyTask(taskData, thirdPartyId);
-                console.log('Revert::CREATE TASK', tenantId, task);
+                logInfo('Revert::CREATE TASK', connection.app?.env?.accountId, tenantId, task);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -321,7 +334,7 @@ const taskService = new TaskService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const task = disunifyTask(taskData, thirdPartyId);
-                console.log('Revert::UPDATE TASK', tenantId, task, taskId);
+                logInfo('Revert::UPDATE TASK', connection.app?.env?.accountId, tenantId, task, taskId);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -408,7 +421,7 @@ const taskService = new TaskService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::SEARCH TASK', tenantId, searchCriteria, fields);
+                logInfo('Revert::SEARCH TASK', connection.app?.env?.accountId, tenantId, searchCriteria, fields);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {

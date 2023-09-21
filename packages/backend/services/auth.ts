@@ -5,7 +5,7 @@ import prisma from '../prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import isWorkEmail from '../helpers/isWorkEmail';
 import { ENV, TP_ID } from '@prisma/client';
-import logError from '../helpers/logError';
+import logError from '../helpers/logger';
 import { DEFAULT_SCOPE } from '../constants/common';
 
 class AuthService {
@@ -172,7 +172,7 @@ class AuthService {
         if (webhookData && ['user.created'].includes(webhookEventType)) {
             try {
                 const userEmail = webhookData.email_addresses[0].email_address;
-                let skipWaitlist = false;
+                let skipWaitlist = true;
                 let userDomain = userEmail.split('@').pop();
                 let workspaceName = userDomain.charAt(0).toUpperCase() + userDomain.slice(1) + "'s Workspace";
                 if (!isWorkEmail(userEmail)) {

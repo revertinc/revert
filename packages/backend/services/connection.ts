@@ -1,7 +1,7 @@
 import { ConnectionService } from '../generated/typescript/api/resources/connection/service/ConnectionService';
 import prisma, { xprisma } from '../prisma/client';
 import config from '../config';
-import logError from '../helpers/logError';
+import logError from '../helpers/logger';
 import { v4 as uuidv4 } from 'uuid';
 import { NotFoundError, UnAuthorizedError } from '../generated/typescript/api/resources/common/resources';
 

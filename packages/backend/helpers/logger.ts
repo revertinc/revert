@@ -5,4 +5,10 @@ const logError = (error: Error) => {
     Sentry.captureException(error);
 };
 
+const logInfo = (...args: any[]) => {
+    // TODO: replace with winston or something else very soon.
+    console.log(...args);
+};
+export { logError, logInfo };
+
 export default logError;
