@@ -32,11 +32,12 @@ crmRouter.use('/', authRouter);
 crmRouter.get('/integration-status/:publicToken', async (req, res) => {
     try {
         const publicToken = req.params.publicToken;
+        const { tenantId } = req.query;
         const session = await createSession(req, res);
         await pubsub.subscribe(PUBSUB_CHANNELS.INTEGRATION_STATUS, (message: any) => {
             logger.debug('pubsub message', message);
             const parsedMessage = JSON.parse(message) as IntegrationStatusSseMessage;
-            if (parsedMessage.publicToken === publicToken) {
+            if (parsedMessage.publicToken === publicToken && parsedMessage.tenantId === tenantId) {
                 session.push(message);
             }
         });

@@ -23,6 +23,7 @@ export const PUBSUB_CHANNELS = {
 
 export interface IntegrationStatusSseMessage {
     publicToken: string;
+    privateToken?: string;
     status: "SUCCESS" | "FAILED";
     integrationName: string;
     tenantId: string;
