@@ -98,7 +98,7 @@ const metadataService = new MetadataService({
             });
         } catch (error: any) {
             logError(error);
-            console.error('Could not get metadata', error);
+            console.error('Could not get metadata', token, error);
             throw new InternalServerError({ error: 'Internal server error' });
         }
     },
