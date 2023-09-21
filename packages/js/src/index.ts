@@ -682,6 +682,7 @@ const createIntegrationBlock = function (self, integration) {
             const inputContainer = document.createElement('div');
             inputContainer.style.overflowY = 'auto';
             inputContainer.style.padding = '5px';
+            inputContainer.style.height = '400px'; // fix this hack
             container.appendChild(inputContainer);
             fieldMappingData.mappableFields.forEach((field) => {
                 const p = this.getFieldMappingInputPair(field.fieldName, fieldMappingData.fieldList[field.objectName]);
@@ -719,7 +720,7 @@ const createIntegrationBlock = function (self, integration) {
                         border: 1px solid transparent;
                     }
                 `);
-                inputContainer.appendChild(addBtn);
+                container.appendChild(addBtn);
                 let customEntries = 0;
                 addBtn.addEventListener('click', () => {
                     const p = this.getCustomFieldMappingInputPair(fieldMappingData.fieldList, customEntries);
