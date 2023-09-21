@@ -672,6 +672,7 @@ const createIntegrationBlock = function (self, integration) {
                     fontWeight: '400',
                     lineHeight: '19px',
                     color: '#656468',
+                    marginBottom: '5px'
                 }),
                 [],
                 `Map fields specific to your ${integrationName} Account`
@@ -680,6 +681,7 @@ const createIntegrationBlock = function (self, integration) {
             container.appendChild(subHeader);
             const inputContainer = document.createElement('div');
             inputContainer.style.overflowY = 'auto';
+            inputContainer.style.padding = '5px';
             container.appendChild(inputContainer);
             fieldMappingData.mappableFields.forEach((field) => {
                 const p = this.getFieldMappingInputPair(field.fieldName, fieldMappingData.fieldList[field.objectName]);
@@ -708,6 +710,13 @@ const createIntegrationBlock = function (self, integration) {
                 addStyle(`
                     .add-btn:hover {
                         background: #c9c9c9 !important;
+                    }
+                    .input-style {
+                        box-shadow: 0px 4px 10px 0px #1A1E301A;
+                        padding: 10px;
+                        border-radius: 5px;
+                        outline: none;
+                        border: 1px solid transparent;
                     }
                 `);
                 inputContainer.appendChild(addBtn);
@@ -773,6 +782,7 @@ const createIntegrationBlock = function (self, integration) {
                 transformStyle({
                     fontWeight: '400',
                     fontSize: '12px',
+                    color: '#4C505B'
                 }),
                 [],
                 'Mappable field name'
@@ -783,11 +793,13 @@ const createIntegrationBlock = function (self, integration) {
                 transformStyle({
                     fontWeight: '400',
                     fontSize: '12px',
+                    background: 'transparent',
                 }),
                 [],
                 ''
             );
             mappableInput.classList.add('mappableInput');
+            mappableInput.classList.add('input-style');
             mappableInput.setAttribute('disabled', true);
             mappableInput.setAttribute('value', fieldName);
 
@@ -797,6 +809,7 @@ const createIntegrationBlock = function (self, integration) {
                 transformStyle({
                     fontWeight: '400',
                     fontSize: '12px',
+                    color: '#4C505B'
                 }),
                 [],
                 'Account specific field name'
@@ -807,11 +820,13 @@ const createIntegrationBlock = function (self, integration) {
                 transformStyle({
                     fontWeight: '400',
                     fontSize: '12px',
+                    background: 'transparent',
                 }),
                 options,
                 ''
             );
             accountSpecificInput.classList.add('accountSpecificInput');
+            accountSpecificInput.classList.add('input-style');
 
             const container = createViewElement(
                 'div',
@@ -819,7 +834,8 @@ const createIntegrationBlock = function (self, integration) {
                 transformStyle({
                     display: 'flex',
                     flexDirection: 'column',
-                    marginBottom: '25px'
+                    marginBottom: '25px',
+                    gap: '10px'
                 }),
                 [mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
                 ''
@@ -848,6 +864,7 @@ const createIntegrationBlock = function (self, integration) {
                 transformStyle({
                     fontWeight: '400',
                     fontSize: '12px',
+                    color: '#4C505B'
                 }),
                 [],
                 'Object'
@@ -862,6 +879,7 @@ const createIntegrationBlock = function (self, integration) {
                 objOptions,
                 ''
             );
+            objInput.classList.add('input-style');
             objInput.addEventListener('change', (ev) => {
                 let a = document.getElementById(`custom-accountSpecificInput-${n}`);
                 while (a.firstChild) {
@@ -875,6 +893,7 @@ const createIntegrationBlock = function (self, integration) {
                 transformStyle({
                     fontWeight: '400',
                     fontSize: '12px',
+                    color: '#4C505B'
                 }),
                 [],
                 'Mappable field name'
@@ -889,6 +908,7 @@ const createIntegrationBlock = function (self, integration) {
                 [],
                 ''
             );
+            mappableInput.classList.add('input-style');
 
             const accountSpecificHeading = createViewElement(
                 'div',
@@ -896,6 +916,7 @@ const createIntegrationBlock = function (self, integration) {
                 transformStyle({
                     fontWeight: '400',
                     fontSize: '12px',
+                    color: '#4C505B'
                 }),
                 [],
                 'Account specific field name'
@@ -910,6 +931,7 @@ const createIntegrationBlock = function (self, integration) {
                 getOptions('company'),
                 ''
             );
+            accountSpecificInput.classList.add('input-style');
 
             const container = createViewElement(
                 'div',
@@ -917,7 +939,8 @@ const createIntegrationBlock = function (self, integration) {
                 transformStyle({
                     display: 'flex',
                     flexDirection: 'column',
-                    marginBottom: '25px'
+                    marginBottom: '25px',
+                    gap: '10px'
                 }),
                 [objectHeading, objInput, mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
                 ''
