@@ -478,7 +478,7 @@ const createIntegrationBlock = function (self, integration) {
             }
             // // todo: this is to test. delete everything below
             setTimeout(() => {
-                // this.clearInitialStage();
+                // this.clearInitialOrProcessingOrSuccessStage();
                 const fieldMappingDataStub = {
                     canAddCustomMapping: true,
                     mappableFields: [
@@ -560,14 +560,7 @@ const createIntegrationBlock = function (self, integration) {
             }, 1000);
         };
 
-        clearInitialStage = function () {
-            const container = document.getElementById('revert-signin-container');
-            while (container?.firstChild) {
-                container.removeChild(container.lastChild);
-            }
-        };
-
-        clearProcessingStage = function () {
+        clearInitialOrProcessingOrSuccessStage = function () {
             const container = document.getElementById('revert-signin-container');
             while (container?.firstChild) {
                 container.removeChild(container.lastChild);
@@ -603,6 +596,7 @@ const createIntegrationBlock = function (self, integration) {
             const poweredByBanner = createPoweredByBanner(this);
             poweredByBanner.style.position = 'absolute';
             poweredByBanner.style.bottom = '10px';
+            poweredByBanner.style.left = '0';
             container.appendChild(poweredByBanner);
         };
 
@@ -632,6 +626,7 @@ const createIntegrationBlock = function (self, integration) {
             const poweredByBanner = createPoweredByBanner(this);
             poweredByBanner.style.position = 'absolute';
             poweredByBanner.style.bottom = '10px';
+            poweredByBanner.style.left = '0';
             container.appendChild(el);
             container.appendChild(poweredByBanner);
         };
@@ -809,8 +804,8 @@ const createIntegrationBlock = function (self, integration) {
                 })
                     .then((data) => data.json())
                     .then((data) => {
-                        console.log(data);
-                        console.log('saved!');
+                        this.clearInitialOrProcessingOrSuccessStage();
+                        this.renderDoneStage(integrationName);
                     });
             });
             container.appendChild(saveButton);
@@ -851,6 +846,7 @@ const createIntegrationBlock = function (self, integration) {
             const poweredByBanner = createPoweredByBanner(this);
             poweredByBanner.style.position = 'absolute';
             poweredByBanner.style.bottom = '10px';
+            poweredByBanner.style.bottom = '0';
             container.appendChild(el);
             container.appendChild(poweredByBanner);
 
@@ -1119,7 +1115,7 @@ const createIntegrationBlock = function (self, integration) {
                         }&redirect_uri=${this.#REDIRECT_URL_BASE}/pipedrive&state=${state}`
                     );
                 }
-                this.clearInitialStage();
+                this.clearInitialOrProcessingOrSuccessStage();
                 this.renderProcessingStage();
                 const evtSource = new EventSource(
                     `${this.CORE_API_BASE_URL}crm/integration-status/${this.API_REVERT_PUBLIC_TOKEN}?tenantId=${this.tenantId}`
@@ -1130,7 +1126,7 @@ const createIntegrationBlock = function (self, integration) {
                     console.log(parsedData);
                     // TODO: uncomment this
                     // if (parsedData.status === 'FAILED') {
-                    //     this.clearProcessingStage();
+                    //     this.clearInitialOrProcessingOrSuccessStage();
                     //     this.renderFailedStage();
                     //     evtSource.close();
                     // }
@@ -1150,7 +1146,7 @@ const createIntegrationBlock = function (self, integration) {
                         })
                             .then((data) => data.json())
                             .then((data) => {
-                                this.clearProcessingStage();
+                                this.clearInitialOrProcessingOrSuccessStage();
                                 this.renderSuccessStage(data, parsedData.integrationName, privateToken);
                             });
                     }
