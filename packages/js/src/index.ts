@@ -476,88 +476,6 @@ const createIntegrationBlock = function (self, integration) {
                 );
                 this.handleIntegrationRedirect(selectedIntegration);
             }
-            // // todo: this is to test. delete everything below
-            setTimeout(() => {
-                this.clearInitialOrProcessingOrSuccessStage();
-                const fieldMappingDataStub = {
-                    canAddCustomMapping: true,
-                    mappableFields: [
-                        {
-                            fieldName: 'content',
-                            objectName: 'note',
-                        },
-                        {
-                            fieldName: 'createdTimestamp',
-                            objectName: 'note',
-                        },
-                    ],
-                    fieldList: {
-                        note: [
-                            {
-                                fieldName: 'Id',
-                                fieldType: 'id',
-                                fieldDescription: '',
-                            },
-                            {
-                                fieldName: 'IsDeleted',
-                                fieldType: 'boolean',
-                                fieldDescription: '',
-                            },
-                            {
-                                fieldName: 'ParentId',
-                                fieldType: 'reference',
-                                fieldDescription: '',
-                            },
-                            {
-                                fieldName: 'Title',
-                                fieldType: 'string',
-                                fieldDescription: '',
-                            },
-                            {
-                                fieldName: 'IsPrivate',
-                                fieldType: 'boolean',
-                                fieldDescription: '',
-                            },
-                            {
-                                fieldName: 'Body',
-                                fieldType: 'textarea',
-                                fieldDescription: '',
-                            },
-                            {
-                                fieldName: 'OwnerId',
-                                fieldType: 'reference',
-                                fieldDescription: '',
-                            },
-                            {
-                                fieldName: 'CreatedDate',
-                                fieldType: 'datetime',
-                                fieldDescription: '',
-                            },
-                            {
-                                fieldName: 'CreatedById',
-                                fieldType: 'reference',
-                                fieldDescription: '',
-                            },
-                            {
-                                fieldName: 'LastModifiedDate',
-                                fieldType: 'datetime',
-                                fieldDescription: '',
-                            },
-                            {
-                                fieldName: 'LastModifiedById',
-                                fieldType: 'reference',
-                                fieldDescription: '',
-                            },
-                            {
-                                fieldName: 'SystemModstamp',
-                                fieldType: 'datetime',
-                                fieldDescription: '',
-                            },
-                        ],
-                    },
-                };
-                this.renderSuccessStage(fieldMappingDataStub, 'Hubspot', 'localPrivateToken');
-            }, 1000);
         };
 
         clearInitialOrProcessingOrSuccessStage = function () {
@@ -1151,12 +1069,12 @@ const createIntegrationBlock = function (self, integration) {
                     const parsedData = JSON.parse(data);
                     console.log(parsedData);
                     // TODO: uncomment this
-                    // if (parsedData.status === 'FAILED') {
-                    //     this.clearInitialOrProcessingOrSuccessStage();
-                    //     this.renderFailedStage();
-                    //     evtSource.close();
-                    // }
-                    if (parsedData.status === 'FAILED' || parsedData.status === 'SUCCESS') {
+                    if (parsedData.status === 'FAILED') {
+                        this.clearInitialOrProcessingOrSuccessStage();
+                        this.renderFailedStage();
+                        evtSource.close();
+                    }
+                    if (parsedData.status === 'SUCCESS') {
                         evtSource.close();
                         // TODO: remove the default token
                         const privateToken = parsedData.privateToken || 'localPrivateToken';
