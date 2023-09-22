@@ -478,7 +478,7 @@ const createIntegrationBlock = function (self, integration) {
             }
             // // todo: this is to test. delete everything below
             setTimeout(() => {
-                // this.clearInitialOrProcessingOrSuccessStage();
+                this.clearInitialOrProcessingOrSuccessStage();
                 const fieldMappingDataStub = {
                     canAddCustomMapping: true,
                     mappableFields: [
@@ -556,7 +556,7 @@ const createIntegrationBlock = function (self, integration) {
                         ],
                     },
                 };
-                // this.renderSuccessStage(fieldMappingDataStub, 'Hubspot', 'localPrivateToken');
+                this.renderSuccessStage(fieldMappingDataStub, 'Hubspot', 'localPrivateToken');
             }, 1000);
         };
 
@@ -731,6 +731,9 @@ const createIntegrationBlock = function (self, integration) {
                         outline: none;
                         border: 1px solid transparent;
                     }
+                    .invalid-form-field {
+                        border-color: red;
+                    }
                 `);
                 container.appendChild(addBtn);
                 let customEntries = 0;
@@ -765,12 +768,28 @@ const createIntegrationBlock = function (self, integration) {
                 'Save Mappings'
             );
             saveButton.addEventListener('click', () => {
+                const getElTextContent = (el: any) => {
+                    if (!el.textContent) {
+                        el.classList.add('invalid-form-field');
+                    } else {
+                        el.classList.remove('invalid-form-field');
+                    }
+                    return el.textContent;
+                };
+                const getElValue = (el: any) => {
+                    if (!el.value) {
+                        el.classList.add('invalid-form-field');
+                    } else {
+                        el.classList.remove('invalid-form-field');
+                    }
+                    return el.value;
+                };
                 const objectsEl = document.getElementsByClassName('stdHiddenObj');
-                const objects = Array.from(objectsEl).map((el: any) => el.textContent);
+                const objects = Array.from(objectsEl).map(getElTextContent);
                 const lablesEl = document.getElementsByClassName('mappableInput');
-                const lables = Array.from(lablesEl).map((el: any) => el.value);
+                const lables = Array.from(lablesEl).map(getElValue);
                 const valuesEl = document.getElementsByClassName('accountSpecificInput');
-                const values = Array.from(valuesEl).map((el: any) => el.value);
+                const values = Array.from(valuesEl).map(getElValue);
                 const standardMappings = lables.map((l, i) => ({
                     sourceFieldName: values[i],
                     targetFieldName: l,
@@ -779,17 +798,24 @@ const createIntegrationBlock = function (self, integration) {
                 console.log('standardMappings', standardMappings);
 
                 const customObjectsEl = document.querySelectorAll('[id^="custom-object-"]');
-                const customObjects = Array.from(customObjectsEl).map((el: any) => el.value);
+                const customObjects = Array.from(customObjectsEl).map(getElValue);
                 const customLablesEl = document.querySelectorAll('[id^="custom-mappableInput-"]');
-                const customLables = Array.from(customLablesEl).map((el: any) => el.value);
+                const customLables = Array.from(customLablesEl).map(getElValue);
                 const customValuesEl = document.querySelectorAll('[id^="custom-accountSpecificInput-"]');
-                const customValues = Array.from(customValuesEl).map((el: any) => el.value);
+                const customValues = Array.from(customValuesEl).map(getElValue);
                 const customMappings = customLables.map((l, i) => ({
                     sourceFieldName: customValues[i],
                     targetFieldName: l,
                     object: customObjects[i],
                 }));
                 console.log('customMappings', customMappings);
+
+                const isEmptyField = [...standardMappings, ...customMappings].some(
+                    (mapping) => !mapping.object || !mapping.sourceFieldName || !mapping.targetFieldName
+                );
+                if (isEmptyField) {
+                    return;
+                }
 
                 // save field mapping
                 fetch(`${this.CORE_API_BASE_URL}crm/field-mapping`, {
