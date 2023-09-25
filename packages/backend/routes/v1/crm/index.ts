@@ -41,7 +41,7 @@ crmRouter.get('/integration-status/:publicToken', async (req, res) => {
             let parsedMessage = JSON.parse(message) as IntegrationStatusSseMessage;
             // generate a token for connection auth and save in redis for 5 mins
             const tenantSecretToken = randomUUID();
-            await redis.set(`tenantSecretToken_${tenantId}`, tenantSecretToken, { EX: 5 * 60 });
+            await redis.setEx(`tenantSecretToken_${tenantId}`, 5 * 60, tenantSecretToken);
             parsedMessage = { ...parsedMessage, tenantSecretToken };
             if (parsedMessage.publicToken === publicToken && parsedMessage.tenantId === tenantId) {
                 session.push(JSON.stringify(parsedMessage));

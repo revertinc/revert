@@ -652,6 +652,7 @@ const createIntegrationBlock = function (self, integration) {
                         border-radius: 5px;
                         outline: none;
                         border: 1px solid transparent;
+                        border-right: 10px solid transparent;
                     }
                     .invalid-form-field {
                         border-color: red;
