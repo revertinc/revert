@@ -9,8 +9,10 @@ import logger from '../../../helpers/logger';
 import logError from '../../../helpers/logError';
 import { isStandardError } from '../../../helpers/error';
 import revertTenantMiddleware from '../../../helpers/tenantIdMiddleware';
+import revertTenantAuthMiddleware from '../../../helpers/tenantAuthMiddleware';
 import { InternalServerError } from '../../../generated/typescript/api/resources/common';
 import { StandardObjects, rootSchemaMappingId } from '../../../constants/common';
+import redis from '../../../redis/client';
 
 const prisma = new PrismaClient();
 
@@ -34,11 +36,15 @@ crmRouter.get('/integration-status/:publicToken', async (req, res) => {
         const publicToken = req.params.publicToken;
         const { tenantId } = req.query;
         const session = await createSession(req, res);
-        await pubsub.subscribe(PUBSUB_CHANNELS.INTEGRATION_STATUS, (message: any) => {
+        await pubsub.subscribe(PUBSUB_CHANNELS.INTEGRATION_STATUS, async (message: any) => {
             logger.debug('pubsub message', message);
-            const parsedMessage = JSON.parse(message) as IntegrationStatusSseMessage;
+            let parsedMessage = JSON.parse(message) as IntegrationStatusSseMessage;
+            // generate a token for connection auth and save in redis for 5 mins
+            const tenantSecretToken = randomUUID();
+            await redis.set(`tenantSecretToken_${tenantId}`, tenantSecretToken, { EX: 5 * 60 });
+            parsedMessage = { ...parsedMessage, tenantSecretToken };
             if (parsedMessage.publicToken === publicToken && parsedMessage.tenantId === tenantId) {
-                session.push(message);
+                session.push(JSON.stringify(parsedMessage));
             }
         });
     } catch (err: any) {
@@ -46,7 +52,7 @@ crmRouter.get('/integration-status/:publicToken', async (req, res) => {
     }
 });
 
-crmRouter.get('/field-mapping', revertTenantMiddleware(), async (_req, res) => {
+crmRouter.get('/field-mapping', revertTenantAuthMiddleware(), revertTenantMiddleware(), async (_req, res) => {
     const { account, connection } = res.locals;
     const { accountFieldMappingConfig } = account;
 
@@ -60,7 +66,6 @@ crmRouter.get('/field-mapping', revertTenantMiddleware(), async (_req, res) => {
         const fieldList: Record<string, any> = {};
         await Promise.allSettled(
             (canAddCustomMapping ? Object.values(StandardObjects) : objects).map(async (obj: string) => {
-                // Can this be cached?
                 fieldList[obj] = await getObjectPropertiesForConnection({ objectName: obj, connection });
             })
         );
@@ -97,7 +102,7 @@ crmRouter.get('/:objectName/properties', revertTenantMiddleware(), async (req, r
     }
 });
 
-crmRouter.post('/field-mapping', revertTenantMiddleware(), async (req, res) => {
+crmRouter.post('/field-mapping', revertTenantAuthMiddleware(), revertTenantMiddleware(), async (req, res) => {
     const { connection } = res.locals;
     const tpId = connection.tp_id as TP_ID;
 

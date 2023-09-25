@@ -100,7 +100,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     status: 'SUCCESS',
                     integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
-                    privateToken: account?.accounts?.private_token
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'ok', tp_customer_id: info.data.user });
             } catch (error: any) {
@@ -202,7 +201,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         status: 'SUCCESS',
                         integrationName: mapIntegrationIdToIntegrationName[integrationId],
                         tenantId: req.query.t_id,
-                        privateToken: account?.accounts?.private_token
                     } as IntegrationStatusSseMessage);
                     res.send({ status: 'ok' });
                 } catch (error: any) {
@@ -296,7 +294,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     status: 'SUCCESS',
                     integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
-                    privateToken: account?.accounts?.private_token
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'ok', tp_customer_id: 'testSfdcUser' });
             } catch (error: any) {
@@ -386,7 +383,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     status: 'SUCCESS',
                     integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
-                    privateToken: account?.accounts?.private_token
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'ok', tp_customer_id: info.data.data.email });
             } catch (error) {

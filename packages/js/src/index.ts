@@ -258,6 +258,7 @@ const createIntegrationBlock = function (self, integration) {
 
         init = function (config) {
             this.API_REVERT_PUBLIC_TOKEN = config.revertToken;
+            this.closeAfterOAuthFlow = config.closeAfterOAuthFlow || true;
             this.tenantId = config.tenantId;
             this.#onClose = config.onClose;
             addStyle(`
@@ -549,9 +550,12 @@ const createIntegrationBlock = function (self, integration) {
             container.appendChild(poweredByBanner);
         };
 
-        renderSuccessStage = function (fieldMappingData, integrationName, privateToken) {
+        renderSuccessStage = function (fieldMappingData, integrationName, tenantToken) {
             console.log(fieldMappingData);
             if (!fieldMappingData.canAddCustomMapping || !(fieldMappingData.mappableFields || []).length) {
+                if (this.closeAfterOAuthFlow) {
+                    return this.close();
+                }
                 return this.renderDoneStage(integrationName);
             }
             const container = document.getElementById('revert-signin-container');
@@ -741,8 +745,8 @@ const createIntegrationBlock = function (self, integration) {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'x-revert-api-token': privateToken,
                         'x-revert-t-id': this.tenantId,
+                        'x-revert-t-token': tenantToken,
                     },
                     body: JSON.stringify({ standardMappings, customMappings }),
                 })
@@ -790,7 +794,7 @@ const createIntegrationBlock = function (self, integration) {
             const poweredByBanner = createPoweredByBanner(this);
             poweredByBanner.style.position = 'absolute';
             poweredByBanner.style.bottom = '10px';
-            poweredByBanner.style.bottom = '0';
+            poweredByBanner.style.left = '0';
             container.appendChild(el);
             container.appendChild(poweredByBanner);
 
@@ -1068,30 +1072,35 @@ const createIntegrationBlock = function (self, integration) {
                     const data = JSON.parse(event.data);
                     const parsedData = JSON.parse(data);
                     console.log(parsedData);
-                    // TODO: uncomment this
-                    if (parsedData.status === 'FAILED') {
-                        this.clearInitialOrProcessingOrSuccessStage();
-                        this.renderFailedStage();
+                    // if (parsedData.status === 'FAILED') {
+                    //     this.clearInitialOrProcessingOrSuccessStage();
+                    //     evtSource.close();
+                    //     if (this.closeAfterOAuthFlow) {
+                    //         return this.close();
+                    //     }
+                    //     this.renderFailedStage();
+                    // }
+                    if (parsedData.status === 'FAILED' || parsedData.status === 'SUCCESS') {
+                        const processingMsg = document.getElementById('processing-header');
+                        if (processingMsg) {
+                            processingMsg.innerHTML = 'fetching account properties..';
+                        }
                         evtSource.close();
-                    }
-                    if (parsedData.status === 'SUCCESS') {
-                        evtSource.close();
-                        // TODO: remove the default token
-                        const privateToken = parsedData.privateToken || 'localPrivateToken';
+                        const tenantToken = parsedData.tenantSecretToken;
                         // fetch field mapping
                         fetch(`${this.CORE_API_BASE_URL}crm/field-mapping`, {
                             mode: 'cors' as RequestMode,
                             method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'x-revert-api-token': privateToken,
                                 'x-revert-t-id': this.tenantId,
+                                'x-revert-t-token': tenantToken,
                             },
                         })
                             .then((data) => data.json())
                             .then((data) => {
                                 this.clearInitialOrProcessingOrSuccessStage();
-                                this.renderSuccessStage(data, parsedData.integrationName, privateToken);
+                                this.renderSuccessStage(data, parsedData.integrationName, tenantToken);
                             });
                     }
                 };
