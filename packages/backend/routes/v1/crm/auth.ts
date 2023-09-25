@@ -1,5 +1,6 @@
 import axios from 'axios';
 import express from 'express';
+import { randomUUID } from 'crypto';
 import config from '../../../config';
 import qs from 'qs';
 import { TP_ID } from '@prisma/client';
@@ -7,6 +8,7 @@ import AuthService from '../../../services/auth';
 import prisma, { Prisma, xprisma } from '../../../prisma/client';
 import logError from '../../../helpers/logError';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../redis/client/pubsub';
+import redis from '../../../redis/client';
 import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
 
 const authRouter = express.Router({ mergeParams: true });
@@ -18,6 +20,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
     console.log('OAuth callback', req.query);
     const integrationId = req.query.integrationId as TP_ID;
     const revertPublicKey = req.query.x_revert_public_token as string;
+
+    // generate a token for connection auth and save in redis for 5 mins
+    const tenantSecretToken = randomUUID();
+    console.log('blah tenantSecretToken', tenantSecretToken);
+    await redis.setEx(`tenantSecretToken_${req.query.t_id}`, 5 * 60, tenantSecretToken);
+
     try {
         const account = await prisma.environments.findFirst({
             where: {
@@ -34,6 +42,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
         const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
         const svixAppId = account!.accounts!.id;
+
         if (integrationId === TP_ID.hubspot && req.query.code && req.query.t_id && revertPublicKey) {
             // Handle the received code
             const url = 'https://api.hubapi.com/oauth/v1/token';
@@ -95,11 +104,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     channels: [req.query.t_id as string],
                 });
-                await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                     publicToken: revertPublicKey,
                     status: 'SUCCESS',
                     integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
+                    tenantSecretToken,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'ok', tp_customer_id: info.data.user });
             } catch (error: any) {
@@ -113,11 +123,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     }
                 }
                 console.error('Could not update db', error);
-                await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                     publicToken: revertPublicKey,
                     status: 'FAILED',
                     integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
+                    tenantSecretToken,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
@@ -142,11 +153,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
             });
             console.log('OAuth creds for zohocrm', result.data);
             if (result.data.error) {
-                await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                     publicToken: revertPublicKey,
                     status: 'FAILED',
                     integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
+                    tenantSecretToken,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: result.data.error });
                 return;
@@ -196,11 +208,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         },
                         channels: [req.query.t_id as string],
                     });
-                    await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                    await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                         publicToken: revertPublicKey,
                         status: 'SUCCESS',
                         integrationName: mapIntegrationIdToIntegrationName[integrationId],
                         tenantId: req.query.t_id,
+                        tenantSecretToken,
                     } as IntegrationStatusSseMessage);
                     res.send({ status: 'ok' });
                 } catch (error: any) {
@@ -214,11 +227,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         }
                     }
                     console.error('Could not update db', error);
-                    await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                    await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                         publicToken: revertPublicKey,
                         status: 'FAILED',
                         integrationName: mapIntegrationIdToIntegrationName[integrationId],
                         tenantId: req.query.t_id,
+                        tenantSecretToken,
                     } as IntegrationStatusSseMessage);
                     res.send({ status: 'error', error: error });
                 }
@@ -289,11 +303,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     channels: [req.query.t_id as string],
                 });
-                await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                     publicToken: revertPublicKey,
                     status: 'SUCCESS',
                     integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
+                    tenantSecretToken,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'ok', tp_customer_id: 'testSfdcUser' });
             } catch (error: any) {
@@ -307,11 +322,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     }
                 }
                 console.error('Could not update db', error);
-                await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                     publicToken: revertPublicKey,
                     status: 'FAILED',
                     integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
+                    tenantSecretToken,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
@@ -378,11 +394,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     channels: [req.query.t_id as string],
                 });
-                await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                     publicToken: revertPublicKey,
                     status: 'SUCCESS',
                     integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
+                    tenantSecretToken,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'ok', tp_customer_id: info.data.data.email });
             } catch (error) {
@@ -394,20 +411,22 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     }
                 }
                 console.error('Could not update db', error);
-                await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                     publicToken: revertPublicKey,
                     status: 'FAILED',
                     integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
+                    tenantSecretToken,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
         } else {
-            await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+            await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                 publicToken: revertPublicKey,
                 status: 'FAILED',
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tenantId: req.query.t_id,
+                tenantSecretToken,
             } as IntegrationStatusSseMessage);
             res.send({
                 status: 'noop',
@@ -416,11 +435,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
     } catch (error: any) {
         logError(error);
         console.log('Error while getting oauth creds', error);
-        await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
+        await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
             publicToken: revertPublicKey,
             status: 'FAILED',
             integrationName: mapIntegrationIdToIntegrationName[integrationId],
             tenantId: req.query.t_id,
+            tenantSecretToken,
         } as IntegrationStatusSseMessage);
         res.send({ status: 'error', error: error });
     }

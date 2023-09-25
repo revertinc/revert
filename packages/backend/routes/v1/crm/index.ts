@@ -12,7 +12,6 @@ import revertTenantMiddleware from '../../../helpers/tenantIdMiddleware';
 import revertTenantAuthMiddleware from '../../../helpers/tenantAuthMiddleware';
 import { InternalServerError } from '../../../generated/typescript/api/resources/common';
 import { StandardObjects, rootSchemaMappingId } from '../../../constants/common';
-import redis from '../../../redis/client';
 
 const prisma = new PrismaClient();
 
@@ -36,14 +35,10 @@ crmRouter.get('/integration-status/:publicToken', async (req, res) => {
         const publicToken = req.params.publicToken;
         const { tenantId } = req.query;
         const session = await createSession(req, res);
-        await pubsub.subscribe(PUBSUB_CHANNELS.INTEGRATION_STATUS, async (message: any) => {
+        await pubsub.subscribe(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${tenantId}`, async (message: any) => {
             logger.debug('pubsub message', message);
             let parsedMessage = JSON.parse(message) as IntegrationStatusSseMessage;
-            // generate a token for connection auth and save in redis for 5 mins
-            const tenantSecretToken = randomUUID();
-            await redis.setEx(`tenantSecretToken_${tenantId}`, 5 * 60, tenantSecretToken);
-            parsedMessage = { ...parsedMessage, tenantSecretToken };
-            if (parsedMessage.publicToken === publicToken && parsedMessage.tenantId === tenantId) {
+            if (parsedMessage.publicToken === publicToken) {
                 session.push(JSON.stringify(parsedMessage));
             }
         });
