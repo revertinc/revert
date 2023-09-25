@@ -1,5 +1,5 @@
 import { createClient } from 'redis';
-import config from '../config';
+import config from '../../config';
 
 const subscribe = async (channelName: string, callback: any) => {
     const subscriber = createClient({ url: config.REDIS_URL });

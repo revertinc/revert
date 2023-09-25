@@ -4,7 +4,7 @@ import { createSession } from 'better-sse';
 import { PrismaClient, TP_ID } from '@prisma/client';
 import authRouter from './auth';
 import { getObjectPropertiesForConnection } from '../../../services/crm/properties';
-import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../helpers/pubsub';
+import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../redis/client/pubsub';
 import logger from '../../../helpers/logger';
 import logError from '../../../helpers/logError';
 import { isStandardError } from '../../../helpers/error';
@@ -49,25 +49,35 @@ crmRouter.get('/integration-status/:publicToken', async (req, res) => {
 crmRouter.get('/field-mapping', revertTenantMiddleware(), async (_req, res) => {
     const { account, connection } = res.locals;
     const { accountFieldMappingConfig } = account;
-    const {
-        allow_connection_override_custom_fields: canAddCustomMapping = false,
-        mappable_by_connection_field_list: mappableFields = [],
-    } = accountFieldMappingConfig || {};
 
-    const objects = mappableFields.map((f: any) => f.objectName);
-    const fieldList: Record<string, any> = {};
-    await Promise.all(
-        (canAddCustomMapping ? Object.values(StandardObjects) : objects).map(async (obj: string) => {
-            // Can this be cached?
-            fieldList[obj] = await getObjectPropertiesForConnection({ objectName: obj, connection });
-        })
-    );
+    try {
+        const {
+            allow_connection_override_custom_fields: canAddCustomMapping = false,
+            mappable_by_connection_field_list: mappableFields = [],
+        } = accountFieldMappingConfig || {};
 
-    res.status(200).send({
-        canAddCustomMapping,
-        mappableFields,
-        fieldList,
-    });
+        const objects = mappableFields.map((f: any) => f.objectName);
+        const fieldList: Record<string, any> = {};
+        await Promise.allSettled(
+            (canAddCustomMapping ? Object.values(StandardObjects) : objects).map(async (obj: string) => {
+                // Can this be cached?
+                fieldList[obj] = await getObjectPropertiesForConnection({ objectName: obj, connection });
+            })
+        );
+
+        res.status(200).send({
+            canAddCustomMapping,
+            mappableFields,
+            fieldList,
+        });
+    } catch (error: any) {
+        logError(error);
+        console.error('Could not get field mapping', error);
+        if (isStandardError(error)) {
+            throw error;
+        }
+        throw new InternalServerError({ error: 'Internal server error' });
+    }
 });
 
 crmRouter.get('/:objectName/properties', revertTenantMiddleware(), async (req, res) => {

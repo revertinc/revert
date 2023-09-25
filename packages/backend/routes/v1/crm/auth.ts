@@ -6,7 +6,8 @@ import { TP_ID } from '@prisma/client';
 import AuthService from '../../../services/auth';
 import prisma, { Prisma, xprisma } from '../../../prisma/client';
 import logError from '../../../helpers/logError';
-import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../helpers/pubsub';
+import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../redis/client/pubsub';
+import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
 
 const authRouter = express.Router({ mergeParams: true });
 
@@ -97,7 +98,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
                     publicToken: revertPublicKey,
                     status: 'SUCCESS',
-                    integrationName: integrationId,
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
                     privateToken: account?.accounts?.private_token
                 } as IntegrationStatusSseMessage);
@@ -116,7 +117,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
                     publicToken: revertPublicKey,
                     status: 'FAILED',
-                    integrationName: integrationId,
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
@@ -145,7 +146,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
                     publicToken: revertPublicKey,
                     status: 'FAILED',
-                    integrationName: integrationId,
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: result.data.error });
@@ -199,7 +200,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
                         publicToken: revertPublicKey,
                         status: 'SUCCESS',
-                        integrationName: integrationId,
+                        integrationName: mapIntegrationIdToIntegrationName[integrationId],
                         tenantId: req.query.t_id,
                         privateToken: account?.accounts?.private_token
                     } as IntegrationStatusSseMessage);
@@ -218,7 +219,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
                         publicToken: revertPublicKey,
                         status: 'FAILED',
-                        integrationName: integrationId,
+                        integrationName: mapIntegrationIdToIntegrationName[integrationId],
                         tenantId: req.query.t_id,
                     } as IntegrationStatusSseMessage);
                     res.send({ status: 'error', error: error });
@@ -293,7 +294,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
                     publicToken: revertPublicKey,
                     status: 'SUCCESS',
-                    integrationName: integrationId,
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
                     privateToken: account?.accounts?.private_token
                 } as IntegrationStatusSseMessage);
@@ -312,7 +313,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
                     publicToken: revertPublicKey,
                     status: 'FAILED',
-                    integrationName: integrationId,
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
@@ -383,7 +384,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
                     publicToken: revertPublicKey,
                     status: 'SUCCESS',
-                    integrationName: integrationId,
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
                     privateToken: account?.accounts?.private_token
                 } as IntegrationStatusSseMessage);
@@ -400,7 +401,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
                     publicToken: revertPublicKey,
                     status: 'FAILED',
-                    integrationName: integrationId,
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tenantId: req.query.t_id,
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
@@ -409,7 +410,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
                 publicToken: revertPublicKey,
                 status: 'FAILED',
-                integrationName: integrationId,
+                integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tenantId: req.query.t_id,
             } as IntegrationStatusSseMessage);
             res.send({
@@ -422,7 +423,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
         await pubsub.publish(PUBSUB_CHANNELS.INTEGRATION_STATUS, {
             publicToken: revertPublicKey,
             status: 'FAILED',
-            integrationName: integrationId,
+            integrationName: mapIntegrationIdToIntegrationName[integrationId],
             tenantId: req.query.t_id,
         } as IntegrationStatusSseMessage);
         res.send({ status: 'error', error: error });

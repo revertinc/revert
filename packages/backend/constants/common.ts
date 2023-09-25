@@ -36,6 +36,13 @@ export const DEFAULT_SCOPE = {
     [TP_ID.pipedrive]: [],
 };
 
+export const mapIntegrationIdToIntegrationName = {
+    [TP_ID.hubspot]: "Hubspot",
+    [TP_ID.pipedrive]: "Pipedrive",
+    [TP_ID.sfdc]: "Salesforce",
+    [TP_ID.zohocrm]: "Zoho",
+}
+
 export const rootSchemaMappingId = 'revertRootSchemaMapping';
 
 export enum StandardObjects {
