@@ -1,10 +1,14 @@
 import { Request, Response } from 'express';
 import prisma from '../prisma/client';
-import logError from './logError';
+import { logError } from './logger';
 import redis from '../redis/client';
 
 const revertTenantAuthMiddleware = () => async (req: Request, res: Response, next: () => any) => {
-    const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId, 'x-revert-t-token': tenantSecretToken } = req.headers;
+    const {
+        'x-revert-api-token': token,
+        'x-revert-t-id': tenantId,
+        'x-revert-t-token': tenantSecretToken,
+    } = req.headers;
 
     if (token) {
         return next();
