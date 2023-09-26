@@ -6732,7 +6732,7 @@ __metadata:
     nanoid: ^4.0.0
     postcss: ^8.4.16
     react: ^18.2.0
-    react-devtools: ^4.27.8
+    react-devtools: ^4.28.0
     react-dom: ^18.2.0
     react-flow-renderer: ^10.3.16
     react-hot-toast: ^2.4.0
@@ -26869,29 +26869,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-devtools-core@npm:4.27.8":
-  version: 4.27.8
-  resolution: "react-devtools-core@npm:4.27.8"
+"react-devtools-core@npm:4.28.0":
+  version: 4.28.0
+  resolution: "react-devtools-core@npm:4.28.0"
   dependencies:
     shell-quote: ^1.6.1
     ws: ^7
-  checksum: 83213d5f620e95cf9e60d21a186949f1a523253ea5cca3371d61cf74102efd5074e2e9431cebe4cd9be45a77db647af9c2cdb44c69907ed07441a3334ca19c8b
+  checksum: a5be506a35ca027ba283f0efa7c0c9a818bd8b9b38b77081960423cc038b9f3ab3014970ed9cdd451b72a949bc279399daedb65931e8a44def0fb49c0a69f0a7
   languageName: node
   linkType: hard
 
-"react-devtools@npm:^4.27.8":
-  version: 4.27.8
-  resolution: "react-devtools@npm:4.27.8"
+"react-devtools@npm:^4.28.0":
+  version: 4.28.0
+  resolution: "react-devtools@npm:4.28.0"
   dependencies:
     cross-spawn: ^5.0.1
     electron: ^23.1.2
     ip: ^1.1.4
     minimist: ^1.2.3
-    react-devtools-core: 4.27.8
+    react-devtools-core: 4.28.0
     update-notifier: ^2.1.0
   bin:
     react-devtools: bin.js
-  checksum: 221b6b225e2c2c3dd5c5b654fa82bc98ed506b814c1c568de894ac1a845811aa264ef969d9ad6c463386caf64b9e790071d31402508eb4eaec42755ab120f9ea
+  checksum: aa5748e7f7d359bb754b4ee38505ce1855e8bb8217532b905d80d7ee107e2661a861a9c862b27b8a13cc495cb930951ab9cdf7da625c13e608667c345c6aa46d
   languageName: node
   linkType: hard
 
