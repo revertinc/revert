@@ -4,7 +4,7 @@ import { TP_ID } from '@prisma/client';
 import { DealService } from '../../generated/typescript/api/resources/crm/resources/deal/service/DealService';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
-import logError from '../../helpers/logError';
+import logError, { logInfo } from '../../helpers/logger';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { isStandardError } from '../../helpers/error';
@@ -26,7 +26,14 @@ const dealService = new DealService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET DEAL', tenantId, thirdPartyId, thirdPartyToken, dealId);
+                logInfo(
+                    'Revert::GET DEAL',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    dealId
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -140,7 +147,13 @@ const dealService = new DealService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET ALL DEAL', tenantId, thirdPartyId, thirdPartyToken);
+                logInfo(
+                    'Revert::GET ALL DEAL',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -318,7 +331,7 @@ const dealService = new DealService(
                     tenantSchemaMappingId: connection.schema_mapping_id,
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
-                console.log('Revert::CREATE DEAL', tenantId, deal);
+                logInfo('Revert::CREATE DEAL', connection.app?.env?.accountId, tenantId, deal);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -418,7 +431,7 @@ const dealService = new DealService(
                     tenantSchemaMappingId: connection.schema_mapping_id,
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
-                console.log('Revert::UPDATE DEAL', tenantId, deal, dealId);
+                logInfo('Revert::UPDATE DEAL', connection.app?.env?.accountId, tenantId, deal, dealId);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -506,7 +519,14 @@ const dealService = new DealService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::SEARCH DEAL', tenantId, thirdPartyId, searchCriteria, fields);
+                logInfo(
+                    'Revert::SEARCH DEAL',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    searchCriteria,
+                    fields
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {

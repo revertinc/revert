@@ -4,7 +4,7 @@ import { TP_ID } from '@prisma/client';
 import { CompanyService } from '../../generated/typescript/api/resources/crm/resources/company/service/CompanyService';
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
-import logError from '../../helpers/logError';
+import logError, { logInfo } from '../../helpers/logger';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { isStandardError } from '../../helpers/error';
@@ -26,7 +26,14 @@ const companyService = new CompanyService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET COMPANY', tenantId, thirdPartyId, thirdPartyToken, companyId);
+                logInfo(
+                    'Revert::GET COMPANY',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    companyId
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -150,7 +157,13 @@ const companyService = new CompanyService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET ALL COMPANIES', tenantId, thirdPartyId, thirdPartyToken);
+                logInfo(
+                    'Revert::GET ALL COMPANIES',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -329,7 +342,7 @@ const companyService = new CompanyService(
                     tenantSchemaMappingId: connection.schema_mapping_id,
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
-                console.log('Revert::CREATE COMPANY', tenantId, company);
+                logInfo('Revert::CREATE COMPANY', connection.app?.env?.accountId, tenantId, company);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -453,7 +466,7 @@ const companyService = new CompanyService(
                     tenantSchemaMappingId: connection.schema_mapping_id,
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
-                console.log('Revert::UPDATE COMPANY', tenantId, company, companyId);
+                logInfo('Revert::UPDATE COMPANY', connection.app?.env?.accountId, tenantId, company, companyId);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -541,7 +554,7 @@ const companyService = new CompanyService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::SEARCH COMPANY', tenantId, searchCriteria, fields);
+                logInfo('Revert::SEARCH COMPANY', connection.app?.env?.accountId, tenantId, searchCriteria, fields);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {

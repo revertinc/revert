@@ -4,7 +4,7 @@ import { TP_ID } from '@prisma/client';
 import { LeadService } from '../../generated/typescript/api/resources/crm/resources/lead/service/LeadService';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
-import logError from '../../helpers/logError';
+import logError, { logInfo } from '../../helpers/logger';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { filterLeadsFromContactsForHubspot } from '../../helpers/filterLeadsFromContacts';
@@ -27,7 +27,14 @@ const leadService = new LeadService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET LEAD', tenantId, thirdPartyId, thirdPartyToken, leadId);
+                logInfo(
+                    'Revert::GET LEAD',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    leadId
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -153,7 +160,13 @@ const leadService = new LeadService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET ALL LEADS', tenantId, thirdPartyId, thirdPartyToken);
+                logInfo(
+                    'Revert::GET ALL LEADS',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -337,7 +350,7 @@ const leadService = new LeadService(
                     tenantSchemaMappingId: connection.schema_mapping_id,
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
-                console.log('Revert::CREATE LEAD', tenantId, lead);
+                logInfo('Revert::CREATE LEAD', connection.app?.env?.accountId, tenantId, lead);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -437,7 +450,7 @@ const leadService = new LeadService(
                     tenantSchemaMappingId: connection.schema_mapping_id,
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
-                console.log('Revert::UPDATE LEAD', tenantId, lead, leadId);
+                logInfo('Revert::UPDATE LEAD', connection.app?.env?.accountId, tenantId, lead, leadId);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -525,7 +538,7 @@ const leadService = new LeadService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::SEARCH LEAD', tenantId, searchCriteria, fields);
+                logInfo('Revert::SEARCH LEAD', connection.app?.env?.accountId, tenantId, searchCriteria, fields);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {

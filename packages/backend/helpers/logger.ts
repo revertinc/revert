@@ -1,4 +1,5 @@
 import winston from 'winston';
+import * as Sentry from '@sentry/node';
 
 const enumerateErrorFormat = winston.format((info) => {
     if (info instanceof Error) {
@@ -22,5 +23,16 @@ const logger = winston.createLogger({
         }),
     ],
 });
+
+const logError = (error: Error) => {
+    Sentry.captureException(error);
+    logger.error(error);
+};
+
+const logInfo = (...args: any[]) => {
+    // TODO: replace with winston or something else very soon.
+    console.log(...args);
+};
+export { logError, logInfo };
 
 export default logger;
