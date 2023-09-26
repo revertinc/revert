@@ -1,17 +1,6 @@
 import * as Sentry from '@sentry/node';
 import winston from 'winston';
 
-const logError = (error: Error) => {
-    console.error('error', error);
-    Sentry.captureException(error);
-};
-
-const logInfo = (...args: any[]) => {
-    // TODO: replace with winston or something else very soon.
-    console.log(...args);
-};
-export { logError, logInfo };
-
 const enumerateErrorFormat = winston.format((info) => {
     if (info instanceof Error) {
         Object.assign(info, { message: info.stack });
@@ -34,5 +23,15 @@ const logger = winston.createLogger({
         }),
     ],
 });
+
+const logError = (error: Error) => {
+    Sentry.captureException(error);
+    logger.error(error);
+};
+
+const logInfo = (...args: any[]) => {
+    logger.info({ ...args });
+};
+export { logError, logInfo };
 
 export default logger;
