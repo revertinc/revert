@@ -4,7 +4,7 @@ import { TP_ID } from '@prisma/client';
 import { LeadService } from '../../generated/typescript/api/resources/crm/resources/lead/service/LeadService';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
-import logError, { logInfo } from '../../helpers/logger';
+import { logInfo, logError } from '../../helpers/logger';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { filterLeadsFromContactsForHubspot } from '../../helpers/filterLeadsFromContacts';

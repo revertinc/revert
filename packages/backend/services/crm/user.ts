@@ -6,7 +6,7 @@ import { InternalServerError } from '../../generated/typescript/api/resources/co
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
-import logError, { logInfo } from '../../helpers/logger';
+import { logInfo, logError } from '../../helpers/logger';
 import { isStandardError } from '../../helpers/error';
 import { disunifyObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedUser } from '../../models/unified/user';

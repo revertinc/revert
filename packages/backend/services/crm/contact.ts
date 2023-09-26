@@ -6,7 +6,7 @@ import { BadRequestError, InternalServerError } from '../../generated/typescript
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import { PipedriveContact, PipedrivePagination } from '../../constants/pipedrive';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
-import logError, { logInfo } from '../../helpers/logger';
+import { logInfo, logError } from '../../helpers/logger';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { isStandardError } from '../../helpers/error';
 import { mapPipedriveObjectCustomFields } from '../../helpers/crm';

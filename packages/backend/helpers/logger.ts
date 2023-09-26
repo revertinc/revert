@@ -30,8 +30,7 @@ const logError = (error: Error) => {
 };
 
 const logInfo = (...args: any[]) => {
-    // TODO: replace with winston or something else very soon.
-    console.log(...args);
+    logger.info({ ...args });
 };
 export { logError, logInfo };
 

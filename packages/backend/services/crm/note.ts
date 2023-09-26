@@ -4,7 +4,7 @@ import { TP_ID } from '@prisma/client';
 import { NoteService } from '../../generated/typescript/api/resources/crm/resources/note/service/NoteService';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
-import logError, { logInfo } from '../../helpers/logger';
+import { logInfo, logError } from '../../helpers/logger';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import { isStandardError } from '../../helpers/error';
