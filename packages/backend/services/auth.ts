@@ -5,7 +5,7 @@ import prisma from '../prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import isWorkEmail from '../helpers/isWorkEmail';
 import { ENV, TP_ID } from '@prisma/client';
-import logError from '../helpers/logError';
+import { logInfo, logError } from '../helpers/logger';
 import { DEFAULT_SCOPE } from '../constants/common';
 
 class AuthService {
@@ -81,7 +81,7 @@ class AuthService {
                                     },
                                 });
                             } else {
-                                console.log('Zoho connection could not be refreshed', result);
+                                logInfo('Zoho connection could not be refreshed', result);
                             }
                         } else if (connection.tp_id === TP_ID.sfdc) {
                             // Refresh the sfdc token.
@@ -115,7 +115,7 @@ class AuthService {
                                     },
                                 });
                             } else {
-                                console.log('SFDC connection could not be refreshed', result);
+                                logInfo('SFDC connection could not be refreshed', result);
                             }
                         } else if (connection.tp_id === TP_ID.pipedrive) {
                             // Refresh the pipedrive token.
@@ -168,11 +168,11 @@ class AuthService {
     }
     async createAccountOnClerkUserCreation(webhookData: any, webhookEventType: string) {
         let response;
-        console.log('webhookData', webhookData, webhookEventType);
+        logInfo('webhookData', webhookData, webhookEventType);
         if (webhookData && ['user.created'].includes(webhookEventType)) {
             try {
                 const userEmail = webhookData.email_addresses[0].email_address;
-                let skipWaitlist = false;
+                let skipWaitlist = true;
                 let userDomain = userEmail.split('@').pop();
                 let workspaceName = userDomain.charAt(0).toUpperCase() + userDomain.slice(1) + "'s Workspace";
                 if (!isWorkEmail(userEmail)) {

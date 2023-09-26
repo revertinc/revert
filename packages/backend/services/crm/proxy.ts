@@ -4,6 +4,7 @@ import { ProxyService } from '../../generated/typescript/api/resources/crm/resou
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
+import { logInfo } from '../../helpers/logger';
 
 const proxyService = new ProxyService(
     {
@@ -18,7 +19,7 @@ const proxyService = new ProxyService(
             const method = request.method;
             const queryParams = request.queryParams;
 
-            console.log('Revert::POST PROXY', tenantId, thirdPartyId, thirdPartyToken);
+            logInfo('Revert::POST PROXY', connection.app?.env?.accountId, tenantId, thirdPartyId, thirdPartyToken);
             if (thirdPartyId === TP_ID.hubspot) {
                 const result = await axios({
                     method: method,

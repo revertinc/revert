@@ -6,7 +6,7 @@ import { InternalServerError } from '../../generated/typescript/api/resources/co
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
-import logError from '../../helpers/logError';
+import { logInfo, logError } from '../../helpers/logger';
 import { isStandardError } from '../../helpers/error';
 import { disunifyObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedUser } from '../../models/unified/user';
@@ -26,7 +26,14 @@ const userService = new UserService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET USER', tenantId, thirdPartyId, thirdPartyToken, userId);
+                logInfo(
+                    'Revert::GET USER',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    userId
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -138,7 +145,13 @@ const userService = new UserService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET ALL USER', tenantId, thirdPartyId, thirdPartyToken);
+                logInfo(
+                    'Revert::GET ALL USER',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -312,7 +325,7 @@ const userService = new UserService(
                     tenantSchemaMappingId: connection.schema_mapping_id,
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
-                console.log('Revert::CREATE USER', tenantId, user);
+                logInfo('Revert::CREATE USER', connection.app?.env?.accountId, tenantId, user);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {

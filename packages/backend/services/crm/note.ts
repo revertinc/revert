@@ -4,7 +4,7 @@ import { TP_ID } from '@prisma/client';
 import { NoteService } from '../../generated/typescript/api/resources/crm/resources/note/service/NoteService';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
-import logError from '../../helpers/logError';
+import { logInfo, logError } from '../../helpers/logger';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import { isStandardError } from '../../helpers/error';
@@ -26,7 +26,14 @@ const noteService = new NoteService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET NOTE', tenantId, thirdPartyId, thirdPartyToken, noteId);
+                logInfo(
+                    'Revert::GET NOTE',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    noteId
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -131,7 +138,13 @@ const noteService = new NoteService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET ALL NOTE', tenantId, thirdPartyId, thirdPartyToken);
+                logInfo(
+                    'Revert::GET ALL NOTE',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -298,7 +311,7 @@ const noteService = new NoteService(
                     tenantSchemaMappingId: connection.schema_mapping_id,
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
-                console.log('Revert::CREATE NOTE', tenantId, note);
+                logInfo('Revert::CREATE NOTE', connection.app?.env?.accountId, tenantId, note);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -389,7 +402,7 @@ const noteService = new NoteService(
                     tenantSchemaMappingId: connection.schema_mapping_id,
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
-                console.log('Revert::UPDATE NOTE', tenantId, note, noteId);
+                logInfo('Revert::UPDATE NOTE', connection.app?.env?.accountId, tenantId, note, noteId);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -473,7 +486,7 @@ const noteService = new NoteService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::SEARCH NOTE', tenantId, searchCriteria, fields);
+                logInfo('Revert::SEARCH NOTE', connection.app?.env?.accountId, tenantId, searchCriteria, fields);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {

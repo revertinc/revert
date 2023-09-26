@@ -6,7 +6,7 @@ import qs from 'qs';
 import { TP_ID } from '@prisma/client';
 import AuthService from '../../../services/auth';
 import prisma, { Prisma, xprisma } from '../../../prisma/client';
-import logError from '../../../helpers/logError';
+import { logInfo, logError } from '../../../helpers/logger';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../redis/client/pubsub';
 import redis from '../../../redis/client';
 import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
@@ -17,7 +17,7 @@ const authRouter = express.Router({ mergeParams: true });
  * OAuth API
  */
 authRouter.get('/oauth-callback', async (req, res) => {
-    console.log('OAuth callback', req.query);
+    logInfo('OAuth callback', req.query);
     const integrationId = req.query.integrationId as TP_ID;
     const revertPublicKey = req.query.x_revert_public_token as string;
 
@@ -61,12 +61,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
                 },
             });
-            console.log('OAuth creds for hubspot', result.data);
+            logInfo('OAuth creds for hubspot', result.data);
             const info = await axios({
                 method: 'get',
                 url: 'https://api.hubapi.com/oauth/v1/access-tokens/' + result.data.access_token,
             });
-            console.log('Oauth token info', info.data);
+            logInfo('Oauth token info', info.data);
             try {
                 await xprisma.connections.upsert({
                     where: {
@@ -142,7 +142,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 redirect_uri: `${config.OAUTH_REDIRECT_BASE}/zohocrm`,
                 code: req.query.code,
             };
-            console.log('Zoho', req.query, formData);
+            logInfo('Zoho', req.query, formData);
             const result = await axios({
                 method: 'post',
                 url: url,
@@ -151,7 +151,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
                 },
             });
-            console.log('OAuth creds for zohocrm', result.data);
+            logInfo('OAuth creds for zohocrm', result.data);
             if (result.data.error) {
                 await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                     publicToken: revertPublicKey,
@@ -170,7 +170,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         authorization: `Zoho-oauthtoken ${result.data.access_token}`,
                     },
                 });
-                console.log('Oauth token info', info.data);
+                logInfo('Oauth token info', info.data);
                 try {
                     await xprisma.connections.upsert({
                         where: {
@@ -255,7 +255,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
                 },
             });
-            console.log('OAuth creds for sfdc', result.data);
+            logInfo('OAuth creds for sfdc', result.data);
             const info = await axios({
                 method: 'get',
                 url: 'https://login.salesforce.com/services/oauth2/userinfo',
@@ -263,7 +263,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     authorization: `Bearer ${result.data.access_token}`,
                 },
             });
-            console.log('Oauth token info', info.data);
+            logInfo('Oauth token info', info.data);
             try {
                 await xprisma.connections.upsert({
                     where: {
@@ -351,7 +351,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     ).toString('base64')}`,
                 },
             });
-            console.log('OAuth creds for pipedrive', result.data);
+            logInfo('OAuth creds for pipedrive', result.data);
             const info = await axios({
                 method: 'get',
                 url: `${result.data.api_domain}/users/me`,
@@ -359,7 +359,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     Authorization: `Bearer ${result.data.access_token}`,
                 },
             });
-            console.log('Oauth token info', info.data);
+            logInfo('Oauth token info', info.data);
             try {
                 await xprisma.connections.upsert({
                     where: {
@@ -434,7 +434,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
         }
     } catch (error: any) {
         logError(error);
-        console.log('Error while getting oauth creds', error);
+        logInfo('Error while getting oauth creds', error);
         await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
             publicToken: revertPublicKey,
             status: 'FAILED',

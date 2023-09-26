@@ -68,7 +68,10 @@ app.use(cors());
 morgan.token('tenant-id', (req: any) => {
     return req.headers['x-revert-t-id'];
 });
-app.use(morgan('[:date[iso]] :method :url :status :response-time ms tenant - :tenant-id'));
+morgan.token('account-id', (_req, res: any) => {
+    return res.locals?.account?.id;
+});
+app.use(morgan('[:date[iso]] :method :url :status :response-time ms tenant - :tenant-id | account - :account-id'));
 
 app.use(limiter);
 app.use(versionMiddleware());

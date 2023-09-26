@@ -2,7 +2,7 @@ import prisma from '../prisma/client';
 import { MetadataService } from '../generated/typescript/api/resources/metadata/service/MetadataService';
 import { CrmMetadata } from '../generated/typescript/api';
 import { InternalServerError, UnAuthorizedError } from '../generated/typescript/api/resources/common';
-import logError from '../helpers/logError';
+import { logError } from '../helpers/logger';
 import config from '../config';
 import { TP_ID, apps } from '@prisma/client';
 import { DEFAULT_SCOPE } from '../constants/common';
@@ -68,8 +68,7 @@ const metadataService = new MetadataService({
                 {
                     integrationId: TP_ID.pipedrive,
                     name: 'Pipedrive',
-                    imageSrc:
-                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1691141825/Revert/pngegg_mhbvfc.png',
+                    imageSrc: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1691141825/Revert/pngegg_mhbvfc.png',
                     status: 'active',
                     scopes: getScope(apps, TP_ID.pipedrive),
                     clientId: getClientId(apps, TP_ID.pipedrive) || config.PIPEDRIVE_CLIENT_ID,
@@ -99,7 +98,7 @@ const metadataService = new MetadataService({
             });
         } catch (error: any) {
             logError(error);
-            console.error('Could not get metadata', error);
+            console.error('Could not get metadata', token, error);
             throw new InternalServerError({ error: 'Internal server error' });
         }
     },

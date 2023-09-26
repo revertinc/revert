@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../prisma/client';
-import logError from './logError';
+import { logError } from './logger';
 
 const revertAuthMiddleware = () => async (req: Request, res: Response, next: () => any) => {
     const nonSecurePaths = ['/oauth-callback', '/oauth/refresh'];
