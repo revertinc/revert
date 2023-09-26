@@ -1,4 +1,4 @@
-import logError from '../../helpers/logger';
+import { logError } from '../../helpers/logger';
 import { AccountService } from '../../generated/typescript/api/resources/internal/resources/account/service/AccountService';
 import { InternalServerError, NotFoundError, UnAuthorizedError } from '../../generated/typescript/api/resources/common';
 import AuthService from '../auth';
