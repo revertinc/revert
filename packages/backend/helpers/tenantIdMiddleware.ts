@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { xprisma } from '../prisma/client';
-// import prisma from '../prisma/client';
 import logError from './logError';
 
 const revertTenantMiddleware = () => async (req: Request, res: Response, next: () => any) => {
