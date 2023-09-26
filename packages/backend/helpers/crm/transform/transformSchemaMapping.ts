@@ -5,9 +5,6 @@ import logger from '../../logger';
 
 const prisma = new PrismaClient();
 
-// TODO: handle constants
-// TODO: handle expressions
-// TODO: handle additional mapping
 export const transformFieldMappingToModel = async ({
     obj,
     tpId,
