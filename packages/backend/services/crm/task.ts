@@ -245,7 +245,7 @@ const taskService = new TaskService(
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
-                        await axios({
+                        const response = await axios({
                             method: 'post',
                             url: `https://api.hubapi.com/crm/v3/objects/tasks/`,
                             headers: {
@@ -257,7 +257,7 @@ const taskService = new TaskService(
                         res.send({
                             status: 'ok',
                             message: 'Hubspot task created',
-                            result: task,
+                            result: { id: response.data?.id, ...task },
                         });
                         break;
                     }
