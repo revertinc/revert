@@ -249,7 +249,7 @@ const eventService = new EventService(
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
-                        await axios({
+                        const response = await axios({
                             method: 'post',
                             url: `https://api.hubapi.com/crm/v3/objects/meetings/`,
                             headers: {
@@ -258,7 +258,11 @@ const eventService = new EventService(
                             },
                             data: JSON.stringify(event),
                         });
-                        res.send({ status: 'ok', message: 'Hubspot event created', result: event });
+                        res.send({
+                            status: 'ok',
+                            message: 'Hubspot event created',
+                            result: { id: response.data?.id, ...event },
+                        });
                         break;
                     }
                     case TP_ID.zohocrm: {

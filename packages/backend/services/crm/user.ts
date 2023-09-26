@@ -245,7 +245,7 @@ const userService = new UserService(
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
-                        await axios({
+                        const response = await axios({
                             method: 'post',
                             url: `https://api.hubapi.com/settings/v3/users`,
                             headers: {
@@ -257,7 +257,7 @@ const userService = new UserService(
                         res.send({
                             status: 'ok',
                             message: 'Hubspot user created',
-                            result: user,
+                            result: { id: response.data?.id, ...user },
                         });
                         break;
                     }

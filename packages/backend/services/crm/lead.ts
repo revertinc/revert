@@ -261,7 +261,7 @@ const leadService = new LeadService(
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
-                        await axios({
+                        const response = await axios({
                             method: 'post',
                             url: `https://api.hubapi.com/crm/v3/objects/contacts/`,
                             headers: {
@@ -273,7 +273,7 @@ const leadService = new LeadService(
                         res.send({
                             status: 'ok',
                             message: 'Hubspot lead created',
-                            result: lead,
+                            result: { id: response.data?.id, ...lead },
                         });
                         break;
                     }

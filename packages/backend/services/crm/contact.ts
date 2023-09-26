@@ -249,7 +249,7 @@ const contactService = new ContactService(
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
-                        await axios({
+                        const response = await axios({
                             method: 'post',
                             url: `https://api.hubapi.com/crm/v3/objects/contacts/`,
                             headers: {
@@ -261,7 +261,7 @@ const contactService = new ContactService(
                         res.send({
                             status: 'ok',
                             message: 'Hubspot contact created',
-                            result: contact,
+                            result: { id: response.data?.id, ...contact },
                         });
                         break;
                     }

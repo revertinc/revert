@@ -251,7 +251,7 @@ const dealService = new DealService(
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
-                        await axios({
+                        const response = await axios({
                             method: 'post',
                             url: `https://api.hubapi.com/crm/v3/objects/deals/`,
                             headers: {
@@ -263,7 +263,7 @@ const dealService = new DealService(
                         res.send({
                             status: 'ok',
                             message: 'Hubspot deal created',
-                            result: deal,
+                            result: { id: response.data?.id, ...deal },
                         });
                         break;
                     }

@@ -256,7 +256,7 @@ const companyService = new CompanyService(
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
-                        await axios({
+                        const response = await axios({
                             method: 'post',
                             url: `https://api.hubapi.com/crm/v3/objects/companies/`,
                             headers: {
@@ -268,7 +268,7 @@ const companyService = new CompanyService(
                         res.send({
                             status: 'ok',
                             message: 'Hubspot company created',
-                            result: company,
+                            result: { id: response.data?.id, ...company },
                         });
                         break;
                     }
