@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { xprisma } from '../prisma/client';
-import logError, { logInfo } from './logger';
+import { logInfo, logError } from './logger';
 
 const revertTenantMiddleware = () => async (req: Request, res: Response, next: () => any) => {
     const { 'x-revert-t-id': tenantId, 'x-revert-api-token': token } = req.headers;

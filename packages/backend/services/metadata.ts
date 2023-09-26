@@ -2,7 +2,7 @@ import prisma from '../prisma/client';
 import { MetadataService } from '../generated/typescript/api/resources/metadata/service/MetadataService';
 import { CrmMetadata } from '../generated/typescript/api';
 import { InternalServerError, UnAuthorizedError } from '../generated/typescript/api/resources/common';
-import logError from '../helpers/logger';
+import { logError } from '../helpers/logger';
 import config from '../config';
 import { TP_ID, apps } from '@prisma/client';
 import { DEFAULT_SCOPE } from '../constants/common';
