@@ -87,7 +87,7 @@ const openInNewTab = function () {
     window.focus();
 };
 
-const createPoweredByBanner = function (self, darkMode = false) {
+const createPoweredByBanner = function (self) {
     var poweredByLogo = document.createElement('img');
     poweredByLogo.setAttribute(
         'src',
@@ -104,7 +104,7 @@ const createPoweredByBanner = function (self, darkMode = false) {
             fontWeight: '400',
             lineHeight: '13px',
             letterSpacing: '0em',
-            color: darkMode ? '#fff' : '#343232',
+            color: '#343232',
         }),
         [],
         'Powered By'
@@ -121,7 +121,7 @@ const createPoweredByBanner = function (self, darkMode = false) {
             alignItems: 'center',
             cursor: 'pointer',
             height: 35,
-            background: darkMode ? '#343232' : 'none',
+            background: 'none',
             color: '#fff',
         }),
         [poweredBySpan1, poweredBySpan3],
@@ -442,8 +442,6 @@ const createIntegrationBlock = function (self, integration) {
                     this.handleIntegrationRedirect(selectedIntegration);
                 });
                 signInElement.appendChild(button);
-                // let poweredByBanner = createPoweredByBanner(this, true);
-                // signInElement.appendChild(poweredByBanner);
                 let signInElementWrapper = createViewElement(
                     'div',
                     'revert-signin-container-wrapper',
@@ -612,7 +610,7 @@ const createIntegrationBlock = function (self, integration) {
             const inputContainer = document.createElement('div');
             inputContainer.style.overflowY = 'auto';
             inputContainer.style.padding = '5px';
-            inputContainer.style.height = '400px'; // fix this hack
+            inputContainer.style.height = '400px';
             container.appendChild(inputContainer);
             fieldMappingData.mappableFields.forEach((field) => {
                 const p = this.getFieldMappingInputPair(
@@ -1073,15 +1071,15 @@ const createIntegrationBlock = function (self, integration) {
                     const data = JSON.parse(event.data);
                     const parsedData = JSON.parse(data);
                     console.log(parsedData);
-                    // if (parsedData.status === 'FAILED') {
-                    //     this.clearInitialOrProcessingOrSuccessStage();
-                    //     evtSource.close();
-                    //     if (this.closeAfterOAuthFlow) {
-                    //         return this.close();
-                    //     }
-                    //     this.renderFailedStage();
-                    // }
-                    if (parsedData.status === 'FAILED' || parsedData.status === 'SUCCESS') {
+                    if (parsedData.status === 'FAILED') {
+                        this.clearInitialOrProcessingOrSuccessStage();
+                        evtSource.close();
+                        if (this.closeAfterOAuthFlow) {
+                            return this.close();
+                        }
+                        this.renderFailedStage();
+                    }
+                    if (parsedData.status === 'SUCCESS') {
                         const processingMsg = document.getElementById('processing-header');
                         if (processingMsg) {
                             processingMsg.innerHTML = 'fetching account properties..';
