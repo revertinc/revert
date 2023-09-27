@@ -3,16 +3,16 @@ types:
         properties:
             id:
                 type: string
-                docs: The unique `id` of this object in Revert.
+                docs: The unique `id` of this object in Revert. (not required in a create request)
             remoteId:
                 type: string
-                docs: The unique `id` of this object in the downstream CRM.
+                docs: The unique `id` of this object in the downstream CRM.  (not required in a create request)
             createdTimestamp:
                 type: unknown
-                docs: Creation timestamp of the object.
+                docs: Creation timestamp of the object.  (not required in a create request)
             updatedTimestamp:
                 type: unknown
-                docs: The last updated timestamp of the object.
+                docs: The last updated timestamp of the object.  (not required in a create request)
             additional:
                 type: unknown
                 docs: Any fields that are not unified yet/non-unifiable come inside this `json` object.
