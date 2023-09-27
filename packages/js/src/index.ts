@@ -917,6 +917,54 @@ const createIntegrationBlock = function (self, integration) {
         };
 
         getCustomFieldMappingInputPair = function (fieldList, n) {
+            const dividerContainer = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '10px 0',
+                }),
+                [],
+                ''
+            );
+            const divider = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    width: '100%',
+                    height: '2px',
+                    borderRadius: '10px',
+                    background: '#272DC0',
+                }),
+                [],
+                ''
+            );
+            divider.classList.add('section-divider');
+            dividerContainer.appendChild(divider);
+            const removeBtn = createViewElement(
+                'div',
+                `remove-btn-custom-${n}`,
+                transformStyle({
+                    width: '15px',
+                    height: '15px',
+                    cursor: 'pointer',
+                    position: 'absolute',
+                    top: '30px',
+                    right: '0',
+                    borderRadius: '10px',
+                    color: 'white',
+                    fontSize: '12px',
+                    background: 'rgba(183, 156, 155, 0.33)',
+                    textAlign: 'center',
+                }),
+                [],
+                'x'
+            );
+            removeBtn.addEventListener('click', () => {
+                document.getElementById(`custom-pair-container-${n}`)?.remove();
+            });
             const getOptions = (obj) =>
                 (fieldList[obj] || []).map((a) => {
                     const op = document.createElement('option');
@@ -924,7 +972,7 @@ const createIntegrationBlock = function (self, integration) {
                     op.innerHTML = a.fieldName;
                     return op;
                 });
-            const objOptions = ['company', 'contact', 'deal', 'event', 'lead', 'note', 'task', 'user'].map((a) => {
+            const objOptions = Object.keys(fieldList).map((a) => {
                 const op = document.createElement('option');
                 op.setAttribute('value', a);
                 op.innerHTML = a;
@@ -1007,14 +1055,24 @@ const createIntegrationBlock = function (self, integration) {
 
             const container = createViewElement(
                 'div',
-                '',
+                `custom-pair-container-${n}`,
                 transformStyle({
                     display: 'flex',
                     flexDirection: 'column',
                     marginBottom: '25px',
                     gap: '10px',
+                    position: 'relative',
                 }),
-                [objectHeading, objInput, mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
+                [
+                    dividerContainer,
+                    objectHeading,
+                    removeBtn,
+                    objInput,
+                    mappableHeading,
+                    mappableInput,
+                    accountSpecificHeading,
+                    accountSpecificInput,
+                ],
                 ''
             );
             return container;
