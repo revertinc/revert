@@ -1,49 +1,48 @@
 import { randomUUID } from 'crypto';
-import { PrismaClient, TP_ID, fieldMappings } from '@prisma/client';
+import { ENV, PrismaClient, TP_ID, fieldMappings } from '@prisma/client';
 import { StandardObjects, rootSchemaMappingId } from '../constants/common';
 const prisma = new PrismaClient();
 
 async function main() {
-    // const localAccount = await prisma.accounts.upsert({
-    //     where: { id: 'localAccount' },
-    //     update: {},
-    //     create: {
-    //         id: 'localAccount',
-    //         private_token: 'localPrivateToken',
-    //         public_token: 'localPublicToken',
-    //         tenant_count: 0,
-    //         environments: {
-    //             createMany: {
-    //                 data: [
-    //                     {
-    //                         id: 'localEnv',
-    //                         env: ENV.development,
-    //                         private_token: 'localPrivateToken',
-    //                         public_token: 'localPublicToken',
-    //                     },
-    //                 ],
-    //             },
-    //         },
-    //     },
-    // });
-    // await Promise.all(
-    //     Object.keys(TP_ID).map(async (tp) => {
-    //         const localRevertApp = await prisma.apps.create({
-    //             data: {
-    //                 id: `${tp}_${localAccount.id}`,
-    //                 tp_id: tp as TP_ID,
-    //                 scope: [],
-    //                 owner_account_public_token: localAccount.public_token,
-    //                 is_revert_app: true,
-    //                 environmentId: 'localEnv',
-    //             },
-    //         });
-    //         console.log({ localAccount, localRevertApp });
-    //     })
-    // );
+    const localAccount = await prisma.accounts.upsert({
+        where: { id: 'localAccount' },
+        update: {},
+        create: {
+            id: 'localAccount',
+            private_token: 'localPrivateToken',
+            public_token: 'localPublicToken',
+            tenant_count: 0,
+            environments: {
+                createMany: {
+                    data: [
+                        {
+                            id: 'localEnv',
+                            env: ENV.development,
+                            private_token: 'localPrivateToken',
+                            public_token: 'localPublicToken',
+                        },
+                    ],
+                },
+            },
+        },
+    });
+    await Promise.all(
+        Object.keys(TP_ID).map(async (tp) => {
+            const localRevertApp = await prisma.apps.create({
+                data: {
+                    id: `${tp}_${localAccount.id}`,
+                    tp_id: tp as TP_ID,
+                    scope: [],
+                    owner_account_public_token: localAccount.public_token,
+                    is_revert_app: true,
+                    environmentId: 'localEnv',
+                },
+            });
+            console.log({ localAccount, localRevertApp });
+        })
+    );
 
-    // root schema mapping for note starts --------------------------------------------------
-    // TODO: map additional fields (check mapping in models for disunify)
+    // root schema mapping
     const allFields = {
         [StandardObjects.note]: [
             {
@@ -786,7 +785,6 @@ async function main() {
     await prisma.fieldMappings.createMany({
         data: fieldMappingForAll,
     });
-    // root schema mapping for note ends --------------------------------------------------
 }
 main()
     .then(async () => {
