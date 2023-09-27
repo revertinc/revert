@@ -3,6 +3,7 @@ import { CSSProperties, ReactNode } from 'react';
 type RevertConfig = {
     revertToken: string;
     tenantId: string;
+    closeAfterOAuthFlow?: boolean;
     onLoad?: () => void;
     onClose?: () => void;
     onError?: () => void;
