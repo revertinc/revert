@@ -6,7 +6,7 @@ import qs from 'qs';
 import { TP_ID } from '@prisma/client';
 import AuthService from '../../../services/auth';
 import prisma, { Prisma, xprisma } from '../../../prisma/client';
-import { logInfo, logError } from '../../../helpers/logger';
+import { logInfo, logError, logDebug } from '../../../helpers/logger';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../redis/client/pubsub';
 import redis from '../../../redis/client';
 import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
@@ -23,7 +23,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
 
     // generate a token for connection auth and save in redis for 5 mins
     const tenantSecretToken = randomUUID();
-    console.log('blah tenantSecretToken', tenantSecretToken);
+    logDebug('blah tenantSecretToken', tenantSecretToken);
     await redis.setEx(`tenantSecretToken_${req.query.t_id}`, 5 * 60, tenantSecretToken);
 
     try {

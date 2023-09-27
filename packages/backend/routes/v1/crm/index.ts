@@ -5,7 +5,7 @@ import { PrismaClient, TP_ID } from '@prisma/client';
 import authRouter from './auth';
 import { getObjectPropertiesForConnection } from '../../../services/crm/properties';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../redis/client/pubsub';
-import logger, { logError } from '../../../helpers/logger';
+import { logDebug, logError } from '../../../helpers/logger';
 import { isStandardError } from '../../../helpers/error';
 import revertTenantMiddleware from '../../../helpers/tenantIdMiddleware';
 import revertTenantAuthMiddleware from '../../../helpers/tenantAuthMiddleware';
@@ -35,7 +35,7 @@ crmRouter.get('/integration-status/:publicToken', async (req, res) => {
         const { tenantId } = req.query;
         const session = await createSession(req, res);
         await pubsub.subscribe(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${tenantId}`, async (message: any) => {
-            logger.debug('pubsub message', message);
+            logDebug('pubsub message', message);
             let parsedMessage = JSON.parse(message) as IntegrationStatusSseMessage;
             if (parsedMessage.publicToken === publicToken) {
                 session.push(JSON.stringify(parsedMessage));

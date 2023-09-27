@@ -29,9 +29,26 @@ const logError = (error: Error) => {
     logger.error(error);
 };
 
-const logInfo = (...args: any[]) => {
-    logger.info({ ...args });
+const logInfo = (message: string, ...args: any[]) => {
+    if (!args || !args.length) {
+        logger.info(message);
+        return;
+    }
+    logger.info(`${message} %o`, args);
 };
-export { logError, logInfo };
+
+const logDebug = (message: string, arg: any) => {
+    if (!arg) {
+        logger.debug(message);
+        return;
+    }
+    if (typeof arg !== 'object') {
+        logger.debug(message, arg);
+        return;
+    }
+    logger.debug(`${message} %o`, arg);
+};
+
+export { logError, logInfo, logDebug };
 
 export default logger;

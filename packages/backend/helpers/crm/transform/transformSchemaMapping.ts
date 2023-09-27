@@ -1,7 +1,7 @@
 import { get, merge } from 'lodash';
 import { Prisma, PrismaClient, TP_ID, accountFieldMappingConfig } from '@prisma/client';
 import { StandardObjects, rootSchemaMappingId } from '../../../constants/common';
-import logger from '../../logger';
+import { logDebug } from '../../logger';
 
 const prisma = new PrismaClient();
 
@@ -18,7 +18,7 @@ export const transformFieldMappingToModel = async ({
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }) => {
-    logger.debug('blah obj: %o', obj);
+    logDebug('transformFieldMappingToModel obj:', obj);
     const connectionSchema = await prisma.schemas.findFirst({
         where: { object: objType, schema_mapping_id: !!tenantSchemaMappingId ? tenantSchemaMappingId : undefined },
         include: { fieldMappings: { where: { source_tp_id: tpId } } },
@@ -54,7 +54,7 @@ export const transformFieldMappingToModel = async ({
             }
         }
     });
-    logger.debug('blah transformedObj: %o', transformedObj);
+    logDebug('transformFieldMappingToModel transformedObj:', transformedObj);
     return transformedObj;
 };
 
@@ -71,7 +71,7 @@ export const transformModelToFieldMapping = async ({
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }) => {
-    logger.debug('blah unifiedObj: %o', unifiedObj);
+    logDebug('transformModelToFieldMapping unifiedObj:', unifiedObj);
     const connectionSchema = await prisma.schemas.findFirst({
         where: { object: objType, schema_mapping_id: !!tenantSchemaMappingId ? tenantSchemaMappingId : undefined },
         include: { fieldMappings: { where: { source_tp_id: tpId } } },
@@ -99,7 +99,7 @@ export const transformModelToFieldMapping = async ({
             crmObj = assignValueToObject(crmObj, crmKey, get(unifiedObj, key));
         }
     });
-    logger.debug('blah crmObj: %o', crmObj);
+    logDebug('transformModelToFieldMapping crmObj:', crmObj);
     return crmObj;
 };
 
