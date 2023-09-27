@@ -4,7 +4,6 @@ imports:
     errors: ../common/errors.yml
     types: ../common/types.yml
     unified: ../common/unified.yml
-    associations: ../common/associations.yml
 
 types:
     GetUserResponse:
@@ -18,9 +17,7 @@ types:
             previous: optional<string>
             results: list<unified.User>
     CreateOrUpdateUserRequest:
-        extends: unified.User
-        properties:
-            associations: optional<associations.UserAssociation>
+        extends: unified.UserWrite
     CreateOrUpdateUserResponse:
         properties:
             status: types.ResponseStatus

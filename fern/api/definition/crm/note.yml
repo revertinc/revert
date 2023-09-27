@@ -4,7 +4,6 @@ imports:
     errors: ../common/errors.yml
     types: ../common/types.yml
     unified: ../common/unified.yml
-    associations: ../common/associations.yml
 
 types:
     GetNoteResponse:
@@ -18,9 +17,7 @@ types:
             previous: optional<string>
             results: list<unified.Note>
     CreateOrUpdateNoteRequest:
-        extends: unified.Note
-        properties:
-            associations: optional<associations.NoteAssociation>
+        extends: unified.NoteWrite
     CreateOrUpdateNoteResponse:
         properties:
             status: types.ResponseStatus
@@ -97,7 +94,7 @@ service:
                 id: string
             request:
                 name: UpdateNoteRequest
-                body: unified.Note
+                body: CreateOrUpdateNoteRequest
             response: CreateOrUpdateNoteResponse
             errors:
                 - errors.UnAuthorizedError
