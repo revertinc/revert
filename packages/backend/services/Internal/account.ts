@@ -16,7 +16,7 @@ const accountService = new AccountService({
             }
         } catch (error: any) {
             logError(error);
-            console.error('Could not get account for user', error);
+            console.error('Could not get account for user', req.body, error);
             throw new InternalServerError({ error: 'Internal server error' });
         }
     },
