@@ -53,7 +53,7 @@ RUN echo "SERVER_PORT=$SERVER_PORT" > .env \
     && echo "PORT=$PORT" >> .env \
     && echo "FERN_TOKEN=$FERN_TOKEN" >> .env
 
-RUN yarn install --check-cache 
+RUN yarn install 
 RUN npm install -g fern-api@0.6.12 && fern -v && fern generate --log-level debug
 RUN mkdir -p /app/packages/backend/dist/generated && cp -r /app/packages/backend/generated/typescript /app/packages/backend/dist/generated
 RUN yarn workspace @revertdotdev/backend build
