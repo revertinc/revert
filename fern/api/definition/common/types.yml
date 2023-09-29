@@ -49,6 +49,7 @@ types:
             - zohocrm
             - sfdc
             - pipedrive
+            - slack
     ResponseStatus:
         enum:
             - ok
