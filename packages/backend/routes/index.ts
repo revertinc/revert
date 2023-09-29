@@ -25,6 +25,8 @@ import {
     userService,
 } from '../services/crm';
 import { connectionService } from '../services/connection';
+import { fieldMappingService } from './v1/crm/fieldMapping';
+import { propertiesService } from './properties';
 
 const router = express.Router();
 
@@ -121,8 +123,12 @@ register(router, {
         task: taskService,
         user: userService,
         proxy: proxyService,
+        fieldMapping: {
+            fieldMapping: fieldMappingService
+        }
     },
     connection: connectionService,
+    properties: propertiesService
 });
 
 export default router;
