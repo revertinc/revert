@@ -1,4 +1,4 @@
-import logError from '../../helpers/logError';
+import logError from '../../helpers/logger';
 import { AccountService } from '../../generated/typescript/api/resources/internal/resources/account/service/AccountService';
 import { InternalServerError, NotFoundError, UnAuthorizedError } from '../../generated/typescript/api/resources/common';
 import AuthService from '../auth';
@@ -16,7 +16,7 @@ const accountService = new AccountService({
             }
         } catch (error: any) {
             logError(error);
-            console.error('Could not get account for user', error);
+            console.error('Could not get account for user', req.body, error);
             throw new InternalServerError({ error: 'Internal server error' });
         }
     },

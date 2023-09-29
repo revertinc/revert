@@ -4,7 +4,7 @@ import { TP_ID } from '@prisma/client';
 import { DealService } from '../../generated/typescript/api/resources/crm/resources/deal/service/DealService';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
-import logError from '../../helpers/logError';
+import logError, { logInfo } from '../../helpers/logger';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { isStandardError } from '../../helpers/error';
@@ -21,7 +21,14 @@ const dealService = new DealService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET DEAL', tenantId, thirdPartyId, thirdPartyToken, dealId);
+                logInfo(
+                    'Revert::GET DEAL',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    dealId
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -50,7 +57,7 @@ const dealService = new DealService(
                     case TP_ID.zohocrm: {
                         const deals = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/Deals/${dealId}${ fields ? `?fields=${fields}` : ''}`,
+                            url: `https://www.zohoapis.com/crm/v3/Deals/${dealId}${fields ? `?fields=${fields}` : ''}`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
@@ -107,7 +114,13 @@ const dealService = new DealService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET ALL DEAL', tenantId, thirdPartyId, thirdPartyToken);
+                logInfo(
+                    'Revert::GET ALL DEAL',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -234,11 +247,11 @@ const dealService = new DealService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const deal = disunifyDeal(dealData, thirdPartyId);
-                console.log('Revert::CREATE DEAL', tenantId, deal);
+                logInfo('Revert::CREATE DEAL', connection.app?.env?.accountId, tenantId, deal);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
-                        await axios({
+                        const response = await axios({
                             method: 'post',
                             url: `https://api.hubapi.com/crm/v3/objects/deals/`,
                             headers: {
@@ -250,7 +263,7 @@ const dealService = new DealService(
                         res.send({
                             status: 'ok',
                             message: 'Hubspot deal created',
-                            result: deal,
+                            result: { id: response.data?.id, ...deal },
                         });
                         break;
                     }
@@ -327,7 +340,7 @@ const dealService = new DealService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const deal = disunifyDeal(dealData, thirdPartyId);
-                console.log('Revert::UPDATE DEAL', tenantId, deal, dealId);
+                logInfo('Revert::UPDATE DEAL', connection.app?.env?.accountId, tenantId, deal, dealId);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -414,7 +427,14 @@ const dealService = new DealService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::SEARCH DEAL', tenantId, thirdPartyId, searchCriteria, fields);
+                logInfo(
+                    'Revert::SEARCH DEAL',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    searchCriteria,
+                    fields
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {

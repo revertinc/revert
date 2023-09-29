@@ -4,7 +4,6 @@ imports:
     errors: ../common/errors.yml
     types: ../common/types.yml
     unified: ../common/unified.yml
-    associations: ../common/associations.yml
 
 types:
     GetDealResponse:
@@ -18,9 +17,7 @@ types:
             previous: optional<string>
             results: list<unified.Deal>
     CreateOrUpdateDealRequest:
-        extends: unified.Deal
-        properties:
-            associations: optional<associations.DealAssociation>
+        extends: unified.DealWrite
     CreateOrUpdateDealResponse:
         properties:
             status: types.ResponseStatus
@@ -97,7 +94,7 @@ service:
                 id: string
             request:
                 name: UpdateDealRequest
-                body: unified.Deal
+                body: CreateOrUpdateDealRequest
             response: CreateOrUpdateDealResponse
             errors:
                 - errors.UnAuthorizedError

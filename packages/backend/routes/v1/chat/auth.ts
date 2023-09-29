@@ -1,7 +1,7 @@
 import express from 'express';
 import config from '../../../config';
 import prisma, { xprisma } from '../../../prisma/client';
-import logError from '../../../helpers/logError';
+import logError from '../../../helpers/logger';
 import { TP_ID } from '@prisma/client';
 import AuthService from '../../../services/auth';
 import axios from 'axios';

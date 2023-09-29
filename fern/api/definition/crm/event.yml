@@ -18,9 +18,7 @@ types:
             previous: optional<string>
             results: list<unified.Event>
     CreateOrUpdateEventRequest:
-        extends: unified.Event
-        properties:
-            associations: optional<associations.EventAssociation>
+        extends: unified.EventWrite
     CreateOrUpdateEventResponse:
         properties:
             status: types.ResponseStatus
@@ -97,7 +95,7 @@ service:
                 id: string
             request:
                 name: UpdateEventRequest
-                body: unified.Event
+                body: CreateOrUpdateEventRequest
             response: CreateOrUpdateEventResponse
             errors:
                 - errors.UnAuthorizedError

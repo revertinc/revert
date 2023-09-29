@@ -2,7 +2,7 @@ import { TP_ID } from '@prisma/client';
 import { UsersService } from '../../generated/typescript/api/resources/chat/resources/users/service/UsersService';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { isStandardError } from '../../helpers/error';
-import logError from '../../helpers/logError';
+import logError from '../../helpers/logger';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import axios from 'axios';
 import { unifyChatUser } from '../../models/unified/chatUsers';

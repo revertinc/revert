@@ -1,9 +1,12 @@
+imports:
+    associations: ./associations.yml
+
 types:
     CommonUnifiedFields:
         properties:
             id:
                 type: string
-                docs: The unique `id` of this object in Revert.
+                docs: The unique `id` of this object in Revert
             remoteId:
                 type: string
                 docs: The unique `id` of this object in the downstream CRM.
@@ -16,8 +19,7 @@ types:
             additional:
                 type: unknown
                 docs: Any fields that are not unified yet/non-unifiable come inside this `json` object.
-    Lead:
-        extends: CommonUnifiedFields
+    LeadWrite:
         properties:
             firstName:
                 type: string
@@ -31,8 +33,12 @@ types:
             email:
                 type: string
                 docs: The email of the lead in a CRM.
-    Deal:
-        extends: CommonUnifiedFields
+            associations: optional<associations.LeadAssociation>
+    Lead:
+        extends:
+            - CommonUnifiedFields
+            - LeadWrite
+    DealWrite:
         properties:
             amount:
                 type: integer
@@ -55,12 +61,21 @@ types:
             probability:
                 type: integer
                 docs: Probability of the deal getting closed, a decimal number between 0 to 1 (inclusive).
-    Note:
-        extends: CommonUnifiedFields
+            associations: optional<associations.DealAssociation>
+    Deal:
+        extends:
+            - CommonUnifiedFields
+            - DealWrite
+    NoteWrite:
         properties:
             content:
                 type: string
                 docs: The contents of the note in plain text or HTML.
+            associations: optional<associations.DealAssociation>
+    Note:
+        extends:
+            - CommonUnifiedFields
+            - NoteWrite
     Company:
         extends: CommonUnifiedFields
         properties:
@@ -93,8 +108,7 @@ types:
             country: string
             zip: string
             postalCode: string
-    Contact:
-        extends: CommonUnifiedFields
+    ContactWrite:
         properties:
             firstName:
                 type: string
@@ -108,8 +122,12 @@ types:
             email:
                 type: string
                 docs: The email of the contact in a CRM.
-    Event:
-        extends: CommonUnifiedFields
+            associations: optional<associations.ContactAssociation>
+    Contact:
+        extends:
+            - CommonUnifiedFields
+            - ContactWrite
+    EventWrite:
         properties:
             type:
                 type: string
@@ -132,8 +150,12 @@ types:
             location:
                 type: string
                 docs: The location of the event/meeting.
-    Task:
-        extends: CommonUnifiedFields
+            associations: optional<associations.EventAssociation>
+    Event:
+        extends:
+            - CommonUnifiedFields
+            - EventWrite
+    TaskWrite:
         properties:
             subject:
                 type: string
@@ -150,8 +172,12 @@ types:
             dueDate:
                 type: unknown
                 docs: The date when this task is due.
-    User:
-        extends: CommonUnifiedFields
+            associations: optional<associations.TaskAssociation>
+    Task:
+        extends:
+            - CommonUnifiedFields
+            - TaskWrite
+    UserWrite:
         properties:
             firstName:
                 type: string
@@ -165,6 +191,7 @@ types:
             email:
                 type: string
                 docs: The email of a user in a CRM.
+<<<<<<< HEAD
     UserChat:
         properties:
             id:
@@ -195,3 +222,9 @@ types:
             channelId:
                 type: string
                 docs: Id of channel to which message was sent
+=======
+    User:
+        extends:
+            - CommonUnifiedFields
+            - UserWrite
+>>>>>>> main

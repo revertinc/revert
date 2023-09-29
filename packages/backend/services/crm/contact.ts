@@ -6,7 +6,7 @@ import { BadRequestError, InternalServerError } from '../../generated/typescript
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import { PipedriveContact, PipedrivePagination } from '../../constants/pipedrive';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
-import logError from '../../helpers/logError';
+import logError, { logInfo } from '../../helpers/logger';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { isStandardError } from '../../helpers/error';
 import { UnifiedContact, disunifyContact, unifyContact } from '../../models/unified/contact';
@@ -21,7 +21,14 @@ const contactService = new ContactService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET CONTACT', tenantId, thirdPartyId, thirdPartyToken, contactId);
+                logInfo(
+                    'Revert::GET CONTACT',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    contactId
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -108,7 +115,13 @@ const contactService = new ContactService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET ALL CONTACTS', tenantId, thirdPartyId, thirdPartyToken);
+                logInfo(
+                    'Revert::GET ALL CONTACTS',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -232,11 +245,11 @@ const contactService = new ContactService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const contact = disunifyContact(contactData, thirdPartyId);
-                console.log('Revert::CREATE CONTACT', tenantId, contact, thirdPartyId);
+                logInfo('Revert::CREATE CONTACT', connection.app?.env?.accountId, tenantId, contact, thirdPartyId);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
-                        await axios({
+                        const response = await axios({
                             method: 'post',
                             url: `https://api.hubapi.com/crm/v3/objects/contacts/`,
                             headers: {
@@ -248,7 +261,7 @@ const contactService = new ContactService(
                         res.send({
                             status: 'ok',
                             message: 'Hubspot contact created',
-                            result: contact,
+                            result: { id: response.data?.id, ...contact },
                         });
                         break;
                     }
@@ -362,7 +375,7 @@ const contactService = new ContactService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const contact = disunifyContact(contactData, thirdPartyId);
-                console.log('Revert::UPDATE CONTACT', tenantId, contact, contactId);
+                logInfo('Revert::UPDATE CONTACT', connection.app?.env?.accountId, tenantId, contact, contactId);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -449,7 +462,7 @@ const contactService = new ContactService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::SEARCH CONTACT', tenantId, searchCriteria);
+                logInfo('Revert::SEARCH CONTACT', connection.app?.env?.accountId, tenantId, searchCriteria);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {

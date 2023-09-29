@@ -5,7 +5,7 @@ import { EventService } from '../../generated/typescript/api/resources/crm/resou
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
-import logError from '../../helpers/logError';
+import logError, { logInfo } from '../../helpers/logger';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { isStandardError } from '../../helpers/error';
 import { UnifiedEvent, disunifyEvent, unifyEvent } from '../../models/unified';
@@ -21,7 +21,14 @@ const eventService = new EventService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET EVENT', tenantId, thirdPartyId, thirdPartyToken, eventId);
+                logInfo(
+                    'Revert::GET EVENT',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    eventId
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -107,7 +114,13 @@ const eventService = new EventService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET ALL EVENT', tenantId, thirdPartyId, thirdPartyToken);
+                logInfo(
+                    'Revert::GET ALL EVENT',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -232,11 +245,11 @@ const eventService = new EventService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const event = disunifyEvent(eventData, thirdPartyId);
-                console.log('Revert::CREATE EVENT', tenantId, event);
+                logInfo('Revert::CREATE EVENT', connection.app?.env?.accountId, tenantId, event);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
-                        await axios({
+                        const response = await axios({
                             method: 'post',
                             url: `https://api.hubapi.com/crm/v3/objects/meetings/`,
                             headers: {
@@ -245,7 +258,11 @@ const eventService = new EventService(
                             },
                             data: JSON.stringify(event),
                         });
-                        res.send({ status: 'ok', message: 'Hubspot event created', result: event });
+                        res.send({
+                            status: 'ok',
+                            message: 'Hubspot event created',
+                            result: { id: response.data?.id, ...event },
+                        });
                         break;
                     }
                     case TP_ID.zohocrm: {
@@ -317,7 +334,7 @@ const eventService = new EventService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const event = disunifyEvent(eventData, thirdPartyId);
-                console.log('Revert::UPDATE EVENT', tenantId, event, eventId);
+                logInfo('Revert::UPDATE EVENT', connection.app?.env?.accountId, tenantId, event, eventId);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -399,7 +416,7 @@ const eventService = new EventService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::SEARCH EVENT', tenantId, searchCriteria, fields);
+                logInfo('Revert::SEARCH EVENT', connection.app?.env?.accountId, tenantId, searchCriteria, fields);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {

@@ -4,7 +4,6 @@ imports:
     errors: ../common/errors.yml
     types: ../common/types.yml
     unified: ../common/unified.yml
-    associations: ../common/associations.yml
 
 types:
     GetTaskResponse:
@@ -18,9 +17,7 @@ types:
             previous: optional<string>
             results: list<unified.Task>
     CreateOrUpdateTaskRequest:
-        extends: unified.Task
-        properties:
-            associations: optional<associations.TaskAssociation>
+        extends: unified.TaskWrite
     CreateOrUpdateTaskResponse:
         properties:
             status: types.ResponseStatus
@@ -97,7 +94,7 @@ service:
                 id: string
             request:
                 name: UpdateTaskRequest
-                body: unified.Task
+                body: CreateOrUpdateTaskRequest
             response: CreateOrUpdateTaskResponse
             errors:
                 - errors.UnAuthorizedError
