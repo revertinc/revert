@@ -41,6 +41,8 @@ const config = {
     SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN!,
     LOOPS_ONBOARDING_TXN_ID: process.env.LOOPS_ONBOARDING_TXN_ID,
     LOOPS_API_KEY: process.env.LOOPS_API_KEY,
+    DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID!,
+    DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET!,
 };
 
 export default config;
