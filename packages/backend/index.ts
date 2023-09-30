@@ -9,7 +9,7 @@ import AuthService from './services/auth';
 import versionMiddleware, { manageRouterVersioning } from './helpers/versionMiddleware';
 import { ShortloopSDK } from '@shortloop/node';
 import https from 'node:https';
-// import fs from 'node:fs';
+import fs from 'node:fs';
 
 
 const rateLimit = require('express-rate-limit');
@@ -117,13 +117,13 @@ app.use((_err: any, _req: any, res: any, _next: any) => {
 //     });
 // }).setTimeout(600000);
 
-// const credentials = {
-//     key: fs.readFileSync('./key.pem'),
-//     cert: fs.readFileSync('./cert.pem'),
-// };
+const credentials = {
+    key: fs.readFileSync('./key.pem'),
+    cert: fs.readFileSync('./cert.pem'),
+};
 
 https
-    .createServer(app)
+    .createServer(credentials,app)
     .listen(config.PORT, () => {
         console.log(`⚡️[server]: Revert server is running at http://localhost:${config.PORT}`);
         // Refresh tokens on a schedule.
