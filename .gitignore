@@ -85,4 +85,3 @@ npm-debug.log*
 !.github/**/*.yml
 !fern/**/*.yml
 revert-dev.js
-.yarn/install-state.gz
