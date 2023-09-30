@@ -49,6 +49,7 @@ types:
             - zohocrm
             - sfdc
             - pipedrive
+            - discord
     ResponseStatus:
         enum:
             - ok
