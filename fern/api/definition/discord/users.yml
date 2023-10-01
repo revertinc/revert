@@ -30,7 +30,7 @@ service:
     endpoints:
         getUsers:
             docs: Get all the users
-            method: Get
+            method: GET
             path: ''
             request:
                 name: GetUsersRequest
