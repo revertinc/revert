@@ -1,4 +1,5 @@
 name: revert-api
+auth: fail
 error-discrimination:
     strategy: status-code
 environments:
