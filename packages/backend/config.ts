@@ -27,6 +27,7 @@ const config = {
     AES_ENCRYPTION_SECRET: process.env.AES_ENCRYPTION_SECRET!,
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID!,
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET!,
+    DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN!
 };
 
 export default config;

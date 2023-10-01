@@ -2,7 +2,7 @@
   "name": "@revertdotdev/revert-ui",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:4001",
+  "proxy": "https://localhost:4001",
   "dependencies": {
     "@clerk/clerk-react": "4.11.2",
     "@codemirror/lang-javascript": "^6.0.2",
