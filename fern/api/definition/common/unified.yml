@@ -191,7 +191,7 @@ types:
             email:
                 type: string
                 docs: The email of a user in a CRM.
-     UserChat:
+    UserChat:
         properties:
             id:
                 type: string
