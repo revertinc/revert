@@ -8,7 +8,7 @@ import express from 'express';
 const authRouter = express.Router();
 
 authRouter.get('/discord', async (req, res) => {
-   
+   console.log(req)
     res.send("hello")
 });
 
