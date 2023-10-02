@@ -1,6 +1,7 @@
 import axios from 'axios';
 import express from 'express';
 import { randomUUID } from 'crypto';
+import { randomUUID } from 'crypto';
 import config from '../../../config';
 import qs from 'qs';
 import { TP_ID } from '@prisma/client';
@@ -9,7 +10,7 @@ import prisma, { Prisma, xprisma } from '../../../prisma/client';
 import { logInfo, logError, logDebug } from '../../../helpers/logger';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../redis/client/pubsub';
 import redis from '../../../redis/client';
-import { CRM_TP_ID, mapIntegrationIdToIntegrationName } from '../../../constants/common';
+import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
 
 const authRouter = express.Router({ mergeParams: true });
 
@@ -310,7 +311,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     tenantId: req.query.t_id,
                     tenantSecretToken,
                 } as IntegrationStatusSseMessage);
-                res.send({ status: 'ok', tp_customer_id: info.data.email });
+                res.send({ status: 'ok', tp_customer_id: 'testSfdcUser' });
             } catch (error: any) {
                 logError(error);
                 if (error instanceof Prisma.PrismaClientKnownRequestError) {

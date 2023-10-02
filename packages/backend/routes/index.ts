@@ -29,8 +29,9 @@ import { fieldMappingService } from './v1/crm/fieldMapping';
 import { propertiesService } from './properties';
 import chatRouter from './v1/chat';
 import { usersService } from '../services/chat/users';
-import { channelsService } from '../services/chat/channels';
-import { messageService } from '../services/chat/message';
+import { channelService} from '../services/chat/channel';
+import { messageService } from '../services/chat/messages';
+
 
 const router = express.Router();
 

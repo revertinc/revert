@@ -7,6 +7,7 @@ import indexRouter from './routes/index';
 import cors from 'cors';
 import cron from 'node-cron';
 import morgan from 'morgan';
+import morgan from 'morgan';
 import AuthService from './services/auth';
 import versionMiddleware, { manageRouterVersioning } from './helpers/versionMiddleware';
 import { ShortloopSDK } from '@shortloop/node';
@@ -75,13 +76,7 @@ morgan.token('tenant-id', (req: any) => {
 morgan.token('account-id', (_req, res: any) => {
     return res.locals?.account?.id;
 });
-app.use(
-    morgan('[:date[iso]] :method :url :status :response-time ms tenant - :tenant-id | account - :account-id', {
-        skip: (req, _) => {
-            return req.originalUrl.startsWith('/health-check');
-        },
-    })
-);
+app.use(morgan('[:date[iso]] :method :url :status :response-time ms tenant - :tenant-id | account - :account-id'));
 
 app.use(limiter);
 app.use(versionMiddleware());

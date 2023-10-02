@@ -105,6 +105,7 @@ export const OAuthCallback = (props) => {
                                     ? ': Already connected another CRM. Please disconnect first.'
                                     : '';
                             setStatus('Errored out' + errorMessage);
+                            window.close();
                         } else {
                             setStatus('Succeeded. Please feel free to close this window.');
                             window.close();
@@ -116,6 +117,7 @@ export const OAuthCallback = (props) => {
                         setIsLoading(false);
                         console.error(err);
                         setStatus('Errored out');
+                        window.close();
                     });
             }else if (integrationId === 'discord') {
                 console.log('Post communication app installation', integrationId, params);
