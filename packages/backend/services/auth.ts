@@ -5,7 +5,7 @@ import prisma from '../prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import isWorkEmail from '../helpers/isWorkEmail';
 import { ENV, TP_ID } from '@prisma/client';
-import logError, { logInfo } from '../helpers/logger';
+import { logInfo, logError } from '../helpers/logger';
 import { DEFAULT_SCOPE } from '../constants/common';
 
 class AuthService {

@@ -5,6 +5,7 @@ import config from './config';
 import indexRouter from './routes/index';
 import cors from 'cors';
 import cron from 'node-cron';
+import morgan from 'morgan';
 import AuthService from './services/auth';
 import versionMiddleware, { manageRouterVersioning } from './helpers/versionMiddleware';
 import { ShortloopSDK } from '@shortloop/node';
@@ -62,6 +63,16 @@ app.use(Sentry.Handlers.tracingHandler());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+
+// add morgan route logging
+morgan.token('tenant-id', (req: any) => {
+    return req.headers['x-revert-t-id'];
+});
+morgan.token('account-id', (_req, res: any) => {
+    return res.locals?.account?.id;
+});
+app.use(morgan('[:date[iso]] :method :url :status :response-time ms tenant - :tenant-id | account - :account-id'));
+
 app.use(limiter);
 app.use(versionMiddleware());
 

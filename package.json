@@ -5,6 +5,7 @@
         "packages/*"
     ],
     "devDependencies": {
+        "concurrently": "^8.2.1",
         "fern-api": "0.12.0",
         "husky": "^8.0.3",
         "lint-staged": "^14.0.1",
@@ -17,7 +18,8 @@
         "fern-docs": "fern generate --group external",
         "build": "yarn workspaces foreach run build",
         "prepare": "husky install",
-        "lint": "lint-staged"
+        "lint": "lint-staged",
+        "dev:all": "concurrently --kill-others \"yarn workspace @revertdotdev/js dev\" \"yarn workspace @revertdotdev/backend dev\" \"yarn workspace @revertdotdev/revert-ui start\" "
     },
     "prisma": {
         "schema": "packages/backend/prisma/schema.prisma",
