@@ -258,7 +258,7 @@ const createIntegrationBlock = function (self, integration) {
 
         init = function (config) {
             this.API_REVERT_PUBLIC_TOKEN = config.revertToken;
-            this.closeAfterOAuthFlow = config.closeAfterOAuthFlow || true;
+            this.closeAfterOAuthFlow = config.closeAfterOAuthFlow !== undefined ? config.closeAfterOAuthFlow : true; // TODO: Make this backend controlled.
             this.tenantId = config.tenantId;
             this.#onClose = config.onClose;
             addStyle(`
@@ -1121,7 +1121,11 @@ const createIntegrationBlock = function (self, integration) {
                     );
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
-                this.renderProcessingStage();
+                if (!this.closeAfterOAuthFlow) {
+                    this.renderProcessingStage();
+                } else {
+                    this.close();
+                }
                 const evtSource = new EventSource(
                     `${this.CORE_API_BASE_URL}crm/integration-status/${this.API_REVERT_PUBLIC_TOKEN}?tenantId=${this.tenantId}`
                 );
