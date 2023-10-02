@@ -8892,6 +8892,7 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
 "@types/lodash@npm:^4.14.92":
   version: 4.14.200
   resolution: "@types/lodash@npm:4.14.200"
@@ -8900,6 +8901,8 @@ __metadata:
   languageName: node
   linkType: hard
 
+=======
+>>>>>>> 2221657 (chore: add lodash types (#276))
 "@types/mdast@npm:^3.0.0":
   version: 3.0.10
   resolution: "@types/mdast@npm:3.0.10"
