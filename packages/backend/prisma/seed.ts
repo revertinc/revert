@@ -1,6 +1,9 @@
 import { randomUUID } from 'crypto';
 import { ENV, PrismaClient, TP_ID, fieldMappings } from '@prisma/client';
 import { StandardObjects, rootSchemaMappingId } from '../constants/common';
+import { randomUUID } from 'crypto';
+import { ENV, PrismaClient, TP_ID, fieldMappings } from '@prisma/client';
+import { StandardObjects, rootSchemaMappingId } from '../constants/common';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -749,8 +752,7 @@ async function main() {
             },
         ],
     };
-    const allSchemas = Object.keys(allFields).map((obj) => {
-    const allSchemas = Object.keys(allFields).map((obj) => {
+    const allSchemas = Object.keys(allFields).map(obj => {
         return {
             id: randomUUID(),
             fields: allFields[obj as keyof typeof allFields].map((n) => n.target_field_name),
@@ -765,29 +767,28 @@ async function main() {
                     data: allSchemas,
                 },
             },
-            object_schema_ids: allSchemas.map((s) => s.id),
+            object_schema_ids: allSchemas.map(s => s.id)
         },
     });
 
     const fieldMappingForAll: fieldMappings[] = [];
-    Object.values(StandardObjects).forEach((obj) => {
-        Object.values(TP_ID).forEach(async (tpId) => {
-            if (tpId === 'slack') return;
-            const objSchema = allSchemas.find((s) => s.object === obj);
-            const fieldMappings = objSchema?.fields.map((field) => ({
-                id: randomUUID(),
-                source_tp_id: tpId,
-                schema_id: objSchema.id,
-                source_field_name: allFields[obj as 'note' | 'contact'].find((a) => a.target_field_name === field)
-                    ?.source_field_name[tpId]!,
-                target_field_name: field,
-                is_standard_field: true,
-            }));
-            if (fieldMappings) {
-                fieldMappingForAll.push(...fieldMappings);
-            }
-        });
-    });
+        Object.values(StandardObjects).forEach(obj => {
+            Object.values(TP_ID).forEach(async (tpId) => {
+                const objSchema = allSchemas.find(s => s.object === obj);
+                const fieldMappings = objSchema?.fields.map((field) => ({
+                    id: randomUUID(),
+                    source_tp_id: tpId,
+                    schema_id: objSchema.id,
+                    source_field_name: allFields[obj as "note" | "contact"].find(a => a.target_field_name === field)?.source_field_name[tpId]!,
+                    target_field_name: field,
+                    is_standard_field: true,
+                }));
+                if (fieldMappings) {
+                    fieldMappingForAll.push(...fieldMappings);
+                }
+            })
+
+        }) 
     await prisma.fieldMappings.createMany({
         data: fieldMappingForAll,
     });

@@ -190,6 +190,7 @@ export const OAuthCallback = (props) => {
                         setIsLoading(false);
                         console.error(err);
                         setStatus('Errored out');
+                        window.close();
                     });
             }
         }

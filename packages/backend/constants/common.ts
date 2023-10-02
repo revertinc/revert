@@ -43,12 +43,11 @@ export const DEFAULT_SCOPE = {
 };
 
 export const mapIntegrationIdToIntegrationName = {
-    [TP_ID.hubspot]: 'Hubspot',
-    [TP_ID.pipedrive]: 'Pipedrive',
-    [TP_ID.sfdc]: 'Salesforce',
-    [TP_ID.zohocrm]: 'Zoho',
-    [TP_ID.slack]: 'Slack',
-};
+    [TP_ID.hubspot]: "Hubspot",
+    [TP_ID.pipedrive]: "Pipedrive",
+    [TP_ID.sfdc]: "Salesforce",
+    [TP_ID.zohocrm]: "Zoho",
+}
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';
 
@@ -63,7 +62,7 @@ export enum StandardObjects {
     user = 'user',
 }
 
-export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefined>> = {
+export const objectNameMapping: Record<string, Record<TP_ID, string | undefined>> = {
     [StandardObjects.company]: {
         [TP_ID.hubspot]: 'companies',
         [TP_ID.pipedrive]: 'organization',
