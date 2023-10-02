@@ -6674,6 +6674,7 @@ __metadata:
     "@types/cors": ^2.8.14
     "@types/express": ^4.17.13
     "@types/jest": ^29.5.4
+    "@types/lodash": ^4.14.199
     "@types/morgan": ^1.9.5
     "@types/node": "*"
     "@types/node-cron": ^3.0.8
@@ -9910,6 +9911,13 @@ __metadata:
   version: 4.14.191
   resolution: "@types/lodash@npm:4.14.191"
   checksum: ba0d5434e10690869f32d5ea49095250157cae502f10d57de0a723fd72229ce6c6a4979576f0f13e0aa9fbe3ce2457bfb9fa7d4ec3d6daba56730a51906d1491
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:^4.14.199":
+  version: 4.14.199
+  resolution: "@types/lodash@npm:4.14.199"
+  checksum: e68d1fcbbfce953ed87b296a628573f62939227bcda0c934954e862b421e8a34c5e71cad6fea27b9980567909e6a4698f09025692958e36d64ea9ed99ec6fb2e
   languageName: node
   linkType: hard
 
