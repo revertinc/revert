@@ -57,7 +57,7 @@
   "devDependencies": {
     "@types/d3": "^7.4.0",
     "@types/jest": "^29.5.4",
-    "@types/node": "^18.7.13",
+    "@types/node": "^20.8.0",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "autoprefixer": "^10.4.8",

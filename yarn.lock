@@ -6758,7 +6758,7 @@ __metadata:
     "@storybook/addon-essentials": 6.5.0-alpha.50
     "@storybook/addon-links": 7.4.5
     "@storybook/react": 6.5.0-alpha.49
-    "@types/node": 17.0.23
+    "@types/node": 20.8.0
     "@types/react": 17.0.43
     "@types/react-dom": 17.0.14
     "@types/styled-components": 5.1.24
@@ -6798,7 +6798,7 @@ __metadata:
     "@testing-library/user-event": ^13.5.0
     "@types/d3": ^7.4.0
     "@types/jest": ^29.5.4
-    "@types/node": ^18.7.13
+    "@types/node": ^20.8.0
     "@types/react": ^18.0.17
     "@types/react-dom": ^18.0.6
     autoprefixer: ^10.4.8
@@ -9984,17 +9984,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^18.7.13":
+"@types/node@npm:*":
   version: 18.14.2
   resolution: "@types/node@npm:18.14.2"
   checksum: 53c07e721f6ae33de71306f6a0b75dae6066a4f55bd5484c93bd59ff25f0c5f004ceafeef509a4d0cb9e24a247efc34d50489bcc1b05a53ecc68e2fc088e65cb
   languageName: node
   linkType: hard
 
-"@types/node@npm:17.0.23":
-  version: 17.0.23
-  resolution: "@types/node@npm:17.0.23"
-  checksum: a3517554737cbb042e76c30d0e5482192ac4d9bea0eeb086e2622d9cabf460a0eb52a696b99fcd18e7fcc93c96db6cc7ae507f6608f256ef0b5c1d8c87a5a470
+"@types/node@npm:20.8.0, @types/node@npm:^20.8.0":
+  version: 20.8.0
+  resolution: "@types/node@npm:20.8.0"
+  checksum: ebad6342d54238a24bf980d7750117a5d67749c9b72cbb7a974a1e932c39034aa3a810d669e007e8a5071782a253aa069a187b614407a382403c9826e837c849
   languageName: node
   linkType: hard
 
