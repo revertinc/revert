@@ -124,11 +124,11 @@ register(router, {
         user: userService,
         proxy: proxyService,
         fieldMapping: {
-            fieldMapping: fieldMappingService
-        }
+            fieldMapping: fieldMappingService,
+        },
+        properties: propertiesService,
     },
     connection: connectionService,
-    properties: propertiesService
 });
 
 export default router;

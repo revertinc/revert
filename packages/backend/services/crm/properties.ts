@@ -1,7 +1,10 @@
 import axios from 'axios';
 import { TP_ID, connections } from '@prisma/client';
 import { objectNameMapping } from '../../constants/common';
-import { NotFoundError } from '../../generated/typescript/api/resources/common';
+import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
+import { FieldDetailsTypeRequest } from '../../generated/typescript/api/resources/crm';
+import { logError } from '../../helpers/logger';
+import { isStandardError } from '../../helpers/error';
 
 export const getObjectPropertiesForConnection = async ({
     objectName,
@@ -22,7 +25,7 @@ export const getObjectPropertiesForConnection = async ({
             return (response.data.results || []).map((f: any) => ({
                 fieldName: f.name,
                 fieldType: f.fieldType,
-                fieldDescription: f.description,
+                fieldDescription: f.label,
             }));
         }
         case TP_ID.zohocrm: {
@@ -63,5 +66,61 @@ export const getObjectPropertiesForConnection = async ({
         default: {
             throw new NotFoundError({ error: 'Unrecognised CRM' });
         }
+    }
+};
+
+export const setObjectPropertiesForConnection = async ({
+    objectName,
+    objectProperties,
+    connection,
+}: {
+    objectName: string;
+    objectProperties: FieldDetailsTypeRequest;
+    connection: connections;
+}) => {
+    const thirdPartyToken = connection.tp_access_token;
+    const tpId = connection.tp_id as TP_ID;
+    const crmObjectName = (objectNameMapping[objectName] || {})[tpId] || objectName;
+
+    try {
+        switch (tpId) {
+            case TP_ID.hubspot: {
+                const response = await axios({
+                    method: 'POST',
+                    url: `https://api.hubapi.com/crm/v3/properties/${crmObjectName}`,
+                    headers: {
+                        'content-type': 'application/json',
+                        authorization: `Bearer ${thirdPartyToken}`,
+                    },
+                    data: JSON.stringify({
+                        type: objectProperties.type,
+                        fieldType: objectProperties.fieldType,
+                        name: objectProperties.fieldName,
+                        label: objectProperties.fieldDescription,
+                        groupName: objectProperties.groupName,
+                    }),
+                });
+                return { status: 'ok', data: response.data };
+            }
+            case TP_ID.zohocrm: {
+                // TODO: add zoho
+            }
+            case TP_ID.sfdc: {
+                // TODO: add Salesforce
+            }
+            case TP_ID.pipedrive: {
+                // TODO: add pipedrive
+            }
+            default: {
+                throw new NotFoundError({ error: 'Unrecognised CRM' });
+            }
+        }
+    } catch (error: any) {
+        logError(error);
+        console.error('Could not create contact property', error.response);
+        if (isStandardError(error)) {
+            throw error;
+        }
+        throw new InternalServerError({ error: 'Could not create contact property ' });
     }
 };

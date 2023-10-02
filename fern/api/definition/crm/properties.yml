@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
 
 imports:
-    errors: ./common/errors.yml
-    types: ./common/types.yml
+    errors: ../common/errors.yml
+    types: ../common/types.yml
 
 types:
     FieldDetailsType:
@@ -10,10 +10,17 @@ types:
             fieldName: string
             fieldType: string
             fieldDescription: string
+    FieldDetailsTypeRequest:
+        extends: FieldDetailsType
+        properties:
+            groupName: string
+            type: string
+    SetObjectPropertiesRequest: FieldDetailsTypeRequest
     GetObjectPropertiesResponse: unknown
+    SetObjectPropertiesResponse: unknown
 
 service:
-    base-path: /properties
+    base-path: /crm/properties
     auth: false
     headers:
         x-revert-api-token:
@@ -37,6 +44,20 @@ service:
             request:
                 name: GetObjectPropertiesRequest
             response: GetObjectPropertiesResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        setCustomProperties:
+            docs: Set custom properties on an object for a given connection
+            method: POST
+            path: /{objectName}
+            path-parameters:
+                objectName: types.StandardObject
+            request:
+                name: SetObjectCustomPropertiesRequest
+                body: SetObjectPropertiesRequest
+            response: SetObjectPropertiesResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
