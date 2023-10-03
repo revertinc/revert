@@ -8,7 +8,7 @@
     "@codemirror/lang-javascript": "^6.0.2",
     "@codemirror/lang-sql": "^6.3.0",
     "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.10.4",
+    "@emotion/styled": "^11.11.0",
     "@material-ui/icons": "^4.11.3",
     "@mui/icons-material": "^5.10.3",
     "@mui/lab": "^5.0.0-alpha.135",
