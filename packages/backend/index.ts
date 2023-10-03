@@ -71,7 +71,13 @@ morgan.token('tenant-id', (req: any) => {
 morgan.token('account-id', (_req, res: any) => {
     return res.locals?.account?.id;
 });
-app.use(morgan('[:date[iso]] :method :url :status :response-time ms tenant - :tenant-id | account - :account-id'));
+app.use(
+    morgan('[:date[iso]] :method :url :status :response-time ms tenant - :tenant-id | account - :account-id', {
+        skip: (req, _) => {
+            return req.originalUrl.startsWith('/health-check');
+        },
+    })
+);
 
 app.use(limiter);
 app.use(versionMiddleware());
