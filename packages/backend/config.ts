@@ -6,7 +6,7 @@ dotenv.config();
 const config = {
     PORT: process.env.SERVER_PORT || 4001,
     DATABASE: process.env.MONGO_DATABASE,
-    REDIS_URL: process.env.REDIS_SERVER_URL,
+    REDIS_URL: process.env.REDIS_SERVER_URL!,
     HUBSPOT_CLIENT_ID: process.env.HUBSPOT_CLIENT_ID,
     HUBSPOT_CLIENT_SECRET: process.env.HUBSPOT_CLIENT_SECRET,
     ZOHOCRM_CLIENT_ID: process.env.ZOHOCRM_CLIENT_ID,

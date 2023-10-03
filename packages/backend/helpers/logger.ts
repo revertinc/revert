@@ -37,6 +37,14 @@ const logInfo = (message: string, ...args: any[]) => {
     logger.info(`${message} %o`, args);
 };
 
+const logWarn = (message: string, ...args: any[]) => {
+    if (!args || !args.length) {
+        logger.warn(message);
+        return;
+    }
+    logger.warn(`${message} %o`, args);
+};
+
 const logDebug = (message: string, arg: any) => {
     if (!arg) {
         logger.debug(message);
@@ -49,6 +57,6 @@ const logDebug = (message: string, arg: any) => {
     logger.debug(`${message} %o`, arg);
 };
 
-export { logError, logInfo, logDebug };
+export { logError, logInfo, logDebug, logWarn };
 
 export default logger;
