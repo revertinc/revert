@@ -23,9 +23,9 @@ export const getObjectPropertiesForConnection = async ({
                 headers: { authorization: `Bearer ${thirdPartyToken}` },
             });
             return (response.data.results || []).map((f: any) => ({
-                fieldName: f.name,
-                fieldType: f.fieldType,
-                fieldDescription: f.label,
+                name: f.name,
+                type: f.type,
+                description: f.label,
             }));
         }
         case TP_ID.zohocrm: {
@@ -36,9 +36,9 @@ export const getObjectPropertiesForConnection = async ({
                 }
             );
             return (response.data.fields || []).map((f: any) => ({
-                fieldName: f.api_name,
-                fieldType: f.json_type,
-                fieldDescription: '',
+                name: f.api_name,
+                type: f.json_type,
+                description: '',
             }));
         }
         case TP_ID.sfdc: {
@@ -47,9 +47,9 @@ export const getObjectPropertiesForConnection = async ({
                 headers: { authorization: `Bearer ${thirdPartyToken}` },
             });
             return (response.data.fields || []).map((f: any) => ({
-                fieldName: f.name,
-                fieldType: f.type,
-                fieldDescription: '',
+                name: f.name,
+                type: f.type,
+                description: '',
             }));
         }
         case TP_ID.pipedrive: {
@@ -58,9 +58,9 @@ export const getObjectPropertiesForConnection = async ({
                 headers: { authorization: `Bearer ${thirdPartyToken}` },
             });
             return (response.data.data || []).map((f: any) => ({
-                fieldName: f.key,
-                fieldType: f.field_type,
-                fieldDescription: '',
+                name: f.key,
+                type: f.field_type,
+                description: '',
             }));
         }
         default: {
@@ -94,22 +94,32 @@ export const setObjectPropertiesForConnection = async ({
                     },
                     data: JSON.stringify({
                         type: objectProperties.type,
-                        fieldType: objectProperties.fieldType,
-                        name: objectProperties.fieldName,
-                        label: objectProperties.fieldDescription,
-                        groupName: objectProperties.groupName,
+                        name: objectProperties.name,
+                        label: (objectProperties.additional as any)?.fieldDescription,
+                        ...(!!objectProperties.additional ? (objectProperties.additional as any) : {}),
                     }),
                 });
                 return { status: 'ok', data: response.data };
             }
             case TP_ID.zohocrm: {
-                // TODO: add zoho
+                // NOTE: The zoho api does not support custom field creation via an api.
             }
             case TP_ID.sfdc: {
                 // TODO: add Salesforce
             }
             case TP_ID.pipedrive: {
-                // TODO: add pipedrive
+                const instanceUrl = connection.tp_account_url;
+                const response = await axios.post(
+                    `${instanceUrl}/v1/${crmObjectName}Fields`,
+                    {
+                        field_type: objectProperties.type,
+                        name: objectProperties.name,
+                    },
+                    {
+                        headers: { authorization: `Bearer ${thirdPartyToken}` },
+                    }
+                );
+                return { status: 'ok', data: response.data };
             }
             default: {
                 throw new NotFoundError({ error: 'Unrecognised CRM' });
