@@ -12,6 +12,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aashutoshrathi/word-wrap@npm:^1.2.3":
+  version: 1.2.6
+  resolution: "@aashutoshrathi/word-wrap@npm:1.2.6"
+  checksum: ada901b9e7c680d190f1d012c84217ce0063d8f5c5a7725bb91ec3c5ed99bb7572680eb2d2938a531ccbaec39a95422fcd8a6b4a13110c7d98dd75402f66a0cd
+  languageName: node
+  linkType: hard
+
 "@achrinza/node-ipc@npm:^9.2.5":
   version: 9.2.6
   resolution: "@achrinza/node-ipc@npm:9.2.6"
