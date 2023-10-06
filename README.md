@@ -14,11 +14,6 @@
 <img src="https://img.shields.io/static/v1?label=license&message=AGPL-3.0&color=white" alt="License">
 </a>
 
-<center>
-<h5 align="center">Revert.dev: The open-source product integrations platform
- </h5>
-
-</center>
 </p>
 
 ### ⭐ About Revert
