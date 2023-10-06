@@ -171,6 +171,14 @@ We take security seriously.
 
 Email `security@revert.dev` if you believe you have uncovered a vulnerability. In the message, try to provide a description of the issue and a way of reproducing it.
 
+## 🔒 Security
+
+We take security seriously.
+
+**Please do not file GitHub issues or post on our public forum for security vulnerabilities**.
+
+Email `security@revert.dev` if you believe you have uncovered a vulnerability. In the message, try to provide a description of the issue and a way of reproducing it.
+
 ## 💪 Contributors
 
 Thankful to the community for making Revert better every day ❤️
