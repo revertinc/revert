@@ -1,14 +1,18 @@
 <p align="center">
-<img width="150" style="border-radius:75px;" src="./public/logo.png"/>
-<h1 align="center"><b>Revert.dev</b></h1>
 <p align="center">
- <h2 align="center">The open-source product integrations platform
- 
- [![Star us on GitHub](https://img.shields.io/github/stars/revertinc/revert?color=FFD700&label=Stars&logo=Github)](https://github.com/revertinc/revert)
-![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=revert-client-git-main-revertdev)  [![](https://dcbadge.vercel.app/api/server/q5K5cRhymW?style=flat)](https://discord.gg/q5K5cRhymW) [![twitter](https://img.shields.io/twitter/follow/Revertdotdev?style=social)](https://twitter.com/intent/follow?screen_name=RevertdotDev) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.revert.dev/) <a href="https://github.com/revertinc/revert/pulse"><img src="https://img.shields.io/github/commit-activity/m/revertinc/revert" alt="Commits-per-month"></a>
-</h2>
+<img width="100%" src="./public/github_readme.jpg"/>
+
+<center>
 
 [Get started](https://revert.dev) · [Docs](https://docs.revert.dev/) · [Issues](https://github.com/revertinc/revert/issues) · [Discord](https://discord.gg/q5K5cRhymW) · [Get in touch](mailto:team@revert.dev)
+
+</center>
+
+[![Star us on GitHub](https://img.shields.io/github/stars/revertinc/revert?color=FFD700&label=Stars&logo=Github)](https://github.com/revertinc/revert)
+![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=revert-client-git-main-revertdev) [![](https://dcbadge.vercel.app/api/server/q5K5cRhymW?style=flat)](https://discord.gg/q5K5cRhymW) [![twitter](https://img.shields.io/twitter/follow/Revertdotdev?style=social)](https://twitter.com/intent/follow?screen_name=RevertdotDev) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.revert.dev/) <a href="https://github.com/revertinc/revert/pulse"><img src="https://img.shields.io/github/commit-activity/m/revertinc/revert" alt="Commits-per-month"></a>
+<a href="https://github.com/revertinc/revert/tree/main/LICENSE.txt" target="_blank">
+<img src="https://img.shields.io/static/v1?label=license&message=AGPL-3.0&color=white" alt="License">
+</a>
 
 </p>
 
@@ -19,6 +23,8 @@ Revert makes it incredibly easy to build integrations with any third party API s
 -   Go-to-market tools like CRMs (Salesforce, Hubspot).
 -   Communication tools (Slack, MS Teams)
 -   Ticketing tools like (Jira, Asana)
+
+> We believe an **open source unified API** enables us to cover the long tail of third party APIs while empowering engineers to customise the integration code we offer out of the box. This way engineers can use us over building everything from scratch.
 
 ### 📺 Demo
 
@@ -35,7 +41,7 @@ You might want to check us out if
 
 -   You are developer building a B2B product
 -   You have a ton of integrations on your roadmap
--   Your focus is building your core product
+-   Your focus is building your core product vs maintaining integration code
 -   You want to move fast and not break things
 
 [Sign up](https://revert.dev) for an account or read our docs [here](https://docs.revert.dev) !
@@ -49,7 +55,7 @@ You might want to check us out if
 -   **SDKs for Popular Frameworks**: Ready-to-use SDKs available for React, Vue, and Angular, enabling quick and easy integration.
 -   **Self-Hosted**: Provides the flexibility to self-host the integration solution, giving you full control over deployment and data.
 
-## Roadmap
+## 🗺️ Roadmap
 
 CRMs:
 
@@ -123,6 +129,14 @@ In case of questions/feedback, you can get in touch in the following ways
 -   If you'd like you can book a call with our team below
 
 <a href="https://cal.com/jatinsandilya/chat-with-jatin-from-revert?utm_source=banner&utm_campaign=oss"><img alt="Book us with Cal.com" src="https://cal.com/book-with-cal-dark.svg" /></a>
+
+## 🔒 Security
+
+We take security seriously.
+
+**Please do not file GitHub issues or post on our public forum for security vulnerabilities**.
+
+Email `security@revert.dev` if you believe you have uncovered a vulnerability. In the message, try to provide a description of the issue and a way of reproducing it.
 
 ## 💪 Contributors
 
