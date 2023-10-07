@@ -128,7 +128,7 @@ In case of questions/feedback, you can get in touch in the following ways
 -   Ask a question in our [discord](https://discord.gg/q5K5cRhymW)
 -   If you'd like you can book a call with our team below
 
-<a href="https://cal.com/jatinsandilya/chat-with-jatin-from-revert?utm_source=banner&utm_campaign=oss"><img alt="Book us with Cal.com" src="https://cal.com/book-with-cal-dark.svg" /></a>
+<a href="https://cal.com/allenrevert/30min?utm_source=banner&utm_campaign=oss"><img alt="Book us with Cal.com" src="https://cal.com/book-with-cal-dark.svg" /></a>
 
 ## 🔒 Security
 
