@@ -348,6 +348,62 @@ class AuthService {
             account: { ...account.account, environments: appsWithScope },
         };
     }
+    async refreshOAuthTokensForThirdPartyChatServices() {
+        try {
+            const connections = await prisma.connections.findMany({
+                include: { app: true },
+            });
+    
+            for (let i = 0; i < connections.length; i++) {
+                const connection = connections[i];
+                if (connection.tp_refresh_token) {
+                    try {
+                        if (connection.tp_id === TP_ID.discord) {
+                            
+                            const url = 'https://discord.com/api/oauth.v2.access';
+                            const formData = {
+                                grant_type: 'refresh_token',
+                                client_id: connection.app?.is_revert_app
+                                    ? config.DISCORD_CLIENT_ID
+                                    : connection.app_client_id || config.DISCORD_CLIENT_SECRET,
+                                client_secret: connection.app?.is_revert_app
+                                    ? config.DISCORD_CLIENT_SECRET
+                                    : connection.app_client_secret || config.DISCORD_CLIENT_SECRET,
+                                // redirect_uri: '' TODO
+                                refresh_token: connection.tp_refresh_token,
+                            };
+                            const result = await axios({
+                                method: 'post',
+                                url: url,
+                                data: qs.stringify(formData),
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                            });
+    
+                            await prisma.connections.update({
+                                where: {
+                                    id: connection.id,
+                                },
+                                data: {
+                                    tp_access_token: result.data.access_token,
+                                    tp_refresh_token: result.data.refresh_token,
+                                },
+                            });
+                        }
+                    } catch (error: any) {
+                        logError(error.response?.data);
+                        console.error('Could not refresh token', connection.t_id, error.response?.data);
+                    }
+                }
+            }
+        } catch (error: any) {
+            logError(error);
+            console.error('Could not update db', error.response?.data);
+        }
+        return { status: 'ok', message: 'Chat services tokens refreshed' };
+    }
+
     async setAppCredentialsForUser({
         appId,
         publicToken,
@@ -386,5 +442,9 @@ class AuthService {
         return account;
     }
 }
+
+
+
+
 
 export default new AuthService();

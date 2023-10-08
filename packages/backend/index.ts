@@ -119,13 +119,13 @@ app.use((_err: any, _req: any, res: any, _next: any) => {
 
 const credentials = {
     key: fs.readFileSync('./key.pem'),
-    cert: fs.readFileSync('./cert.pem'),
+    cert: fs.readFileSync('./certificate.pem'),
 };
 
 https
     .createServer(credentials,app)
     .listen(config.PORT, () => {
-        console.log(`⚡️[server]: Revert server is running at http://localhost:${config.PORT}`);
+        console.log(`⚡️[server]: Revert server is running at https://localhost:${config.PORT}`);
         // Refresh tokens on a schedule.
         // TODO: do this optimistically.
         cron.schedule(`*/2 * * * *`, async () => {

@@ -14,7 +14,7 @@ types:
 
 service:
     base-path: /discord/users
-    auth: true
+    auth: false
     headers:
         x-revert-api-token:
             type: string
