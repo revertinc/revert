@@ -33,7 +33,8 @@ const config = {
     LOOPS_API_KEY: process.env.LOOPS_API_KEY,
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID!,
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET!,
-    DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN!
+    DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN!,
+    DISCORD_HOOK_URL: process.env.DISCORD_HOOK_URL!
 };
 
 export default config;

@@ -67,16 +67,20 @@ router.post('/debug-svix', (req, res) => {
     }
 });
 
-router.post('/slack-alert', async (req, res) => {
+router.post('/discord-alert', async (req, res) => {
     try {
         const email = req.body.email;
         const name = req.body.name;
         const message = req.body.message;
+        
         await axios({
             method: 'post',
-            url: config.SLACK_URL,
+            url: config.DISCORD_HOOK_URL,
+            headers: {
+                "Content-Type": "application/json",
+            },
             data: JSON.stringify({
-                text: `Woot! :zap: ${name} @ ${email} signed up for Revert!\n\n*Additional message*: \n\n ${message}`,
+                content: `Woot! :zap: ${name} @ ${email} signed up for Revert!\n\n*Additional message*: \n\n ${message}`,
             }),
         });
         await prisma.waitlist.upsert({
@@ -141,5 +145,7 @@ register(router, {
         messages: messageService,
     },
 });
+
+
 
 export default router;
