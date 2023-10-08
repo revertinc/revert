@@ -37,8 +37,10 @@ import chatRouter from './v1/chat';
 import { usersService } from '../services/chat/users';
 import { channelsService } from '../services/chat/channels';
 import { messageService } from '../services/chat/message';
-import { fieldMappingService } from './v1/crm/fieldMapping';
-import { propertiesService } from './properties';
+import discordChatRouter from './v1/discord';
+import { usersService } from '../services/discord/users';
+import { serversService } from '../services/discord/servers';
+import { messageService } from '../services/discord/messages';
 
 const router = express.Router();
 
