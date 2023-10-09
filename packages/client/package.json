@@ -23,6 +23,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-flow-renderer": "^10.3.16",
+    "react-github-btn": "^1.4.0",
     "react-hot-toast": "^2.4.0",
     "react-loader-spinner": "^5.3.4",
     "react-router-dom": "^6.4.1",
