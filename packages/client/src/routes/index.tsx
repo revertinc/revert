@@ -13,13 +13,13 @@ export function RouterComponent() {
             <Toaster position="bottom-right" reverseOrder={false} />
             <Routes>
                 <Route
-                    path="/"
+                    path="/home"
                     element={
                         <>
                             <SignedOut>
                                 <div className="flex items-center justify-center h-[100%]">
                                     <SignIn
-                                        afterSignUpUrl={'/'}
+                                        afterSignUpUrl={'/home'}
                                         appearance={{
                                             variables: {
                                                 colorPrimary: '#343232',
@@ -43,7 +43,7 @@ export function RouterComponent() {
                     element={
                         <div className="flex items-center justify-center h-[100%]">
                             <SignUp
-                                afterSignUpUrl={'/'}
+                                afterSignUpUrl={'/home'}
                                 appearance={{
                                     variables: {
                                         colorPrimary: '#343232',
@@ -70,8 +70,8 @@ export function RouterComponent() {
                         <>
                             <div className="flex items-center justify-center h-[100%]">
                                 <SignIn
-                                    redirectUrl={'/'}
-                                    afterSignInUrl={'/'}
+                                    redirectUrl={'/home'}
+                                    afterSignInUrl={'/home'}
                                     appearance={{
                                         variables: {
                                             colorPrimary: '#343232',

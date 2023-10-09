@@ -4,6 +4,7 @@ import { SignedIn, UserButton } from '@clerk/clerk-react';
 import { Link } from 'react-router-dom';
 import QuizIcon from '@mui/icons-material/Quiz';
 import EnvironmentSelector from './environmentSelector';
+import GitHubButton from 'react-github-btn';
 
 const Navbar = ({ workspaceName, environment, setEnvironment, environmentList }) => {
     return (
@@ -32,9 +33,19 @@ const Navbar = ({ workspaceName, environment, setEnvironment, environmentList })
                         <QuizIcon /> Docs
                     </span>
                 </a>
+                <div className="mr-6 mt-1 ml-3">
+                    <GitHubButton
+                        href="https://github.com/revertinc/revert"
+                        data-size="large"
+                        data-icon="octicon-star"
+                        aria-label="Star revertinc/revert on GitHub"
+                    >
+                        Star us
+                    </GitHubButton>
+                </div>
                 <SignedIn>
                     <div className="mr-4">
-                        <UserButton afterSignOutUrl="/" />
+                        <UserButton afterSignOutUrl="/home" />
                     </div>
                 </SignedIn>
             </div>

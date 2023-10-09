@@ -6838,6 +6838,7 @@ __metadata:
     react-devtools: ^4.28.0
     react-dom: ^18.2.0
     react-flow-renderer: ^10.3.16
+    react-github-btn: ^1.4.0
     react-hot-toast: ^2.4.0
     react-loader-spinner: ^5.3.4
     react-router-dom: ^6.4.1
@@ -19102,6 +19103,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"github-buttons@npm:^2.22.0":
+  version: 2.27.0
+  resolution: "github-buttons@npm:2.27.0"
+  checksum: 1954e04fc7e65a5c14b9c0726b486015deee648c9de62f7f0d4267bbd548090f57137d33e1755490736b10578c4fc7bf149fe64c296d7634a1bfc3707e25e96b
+  languageName: node
+  linkType: hard
+
 "github-slugger@npm:^1.0.0":
   version: 1.5.0
   resolution: "github-slugger@npm:1.5.0"
@@ -27262,6 +27270,17 @@ __metadata:
     react: 16 || 17 || 18
     react-dom: 16 || 17 || 18
   checksum: caf7c67952ec846a10d55f2f6b3881ca2096a35e86e958693f8cc0cb22449ed17abc3aff9b6c43ccc23cdbdeed27d4e99e9671e0a873fb42eddf36caf450eaee
+  languageName: node
+  linkType: hard
+
+"react-github-btn@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "react-github-btn@npm:1.4.0"
+  dependencies:
+    github-buttons: ^2.22.0
+  peerDependencies:
+    react: ">=16.3.0"
+  checksum: 33a416ad76ab4cc9238ac5cf5cfcab636bb2127c48fb30805385350fd3a3c2aa0aaeb78f6c726c52a0d3d133ca469be35d4b3d188c8e40c735c7ff458d2c8c3c
   languageName: node
   linkType: hard
 
