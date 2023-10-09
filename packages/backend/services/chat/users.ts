@@ -2,7 +2,7 @@ import { TP_ID } from '@prisma/client';
 import { UsersService } from '../../generated/typescript/api/resources/chat/resources/users/service/UsersService';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { isStandardError } from '../../helpers/error';
-import logError from '../../helpers/logError';
+import logError, { logInfo } from '../../helpers/logError';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import axios from 'axios';
 import { unifyChatUser } from '../../models/unified/chatUsers';
@@ -18,7 +18,14 @@ const usersService = new UsersService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET USERS', tenantId, thirdPartyId, thirdPartyToken);
+
+                logInfo(
+                    'Revert::GET ALL USERS',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.slack: {

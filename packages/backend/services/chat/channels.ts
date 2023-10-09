@@ -1,6 +1,6 @@
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import { ChannelsService } from '../../generated/typescript/api/resources/chat/resources/channels/service/ChannelsService';
-import logError from '../../helpers/logError';
+import logError, { logInfo } from '../../helpers/logger';
 import { isStandardError } from '../../helpers/error';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
@@ -18,7 +18,13 @@ const channelsService = new ChannelsService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                console.log('Revert::GET CHANNELS', tenantId, thirdPartyId);
+                logInfo(
+                    'Revert::GET ALL CHANNELS',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.slack: {
@@ -47,7 +53,7 @@ const channelsService = new ChannelsService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not fetch users', error);
+                console.error('Could not fetch channels', error);
                 if (isStandardError(error)) {
                     throw error;
                 }

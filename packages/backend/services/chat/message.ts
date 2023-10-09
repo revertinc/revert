@@ -1,4 +1,4 @@
-import logError from '../../helpers/logError';
+import logError, { logInfo } from '../../helpers/logger';
 import { MessagesService } from '../../generated/typescript/api/resources/chat/resources/messages/service/MessagesService';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import { UnifiedMessage, disunifyMessage, unifyMessage } from '../../models/unified/message';
@@ -18,7 +18,13 @@ const messageService = new MessagesService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const message = disunifyMessage(messageData, thirdPartyId);
-                console.log('Revert::CREATE MESSAGE', tenantId, message, thirdPartyId);
+                logInfo(
+                    'Revert::CREATE/SEND MESSAGE',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken
+                );
 
                 switch (thirdPartyId) {
                     case TP_ID.slack: {
@@ -31,8 +37,6 @@ const messageService = new MessagesService(
                             },
                             data: JSON.stringify(message),
                         });
-                        console.log('Below is slack post response');
-                        console.log(slackRes);
                         slackRes = unifyMessage(slackRes.data);
                         res.send({
                             status: 'ok',
@@ -43,7 +47,7 @@ const messageService = new MessagesService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not create contact', error.response);
+                console.error('Could not create/send message', error.response);
                 if (isStandardError(error)) {
                     throw error;
                 }

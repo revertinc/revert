@@ -32,17 +32,18 @@ const Integrations = ({ environment }) => {
         const payload = {
             userId: user.user?.id,
         };
-        await fetch({
+        const res = await fetch({
             url: '/internal/account',
             method: 'POST',
             payload,
         });
+        console.log(payload);
     }, [fetch, user.user?.id]);
 
     useEffect(() => {
         if (open) return;
         fetchAccount();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open]);
 
     React.useEffect(() => {
@@ -232,6 +233,48 @@ const Integrations = ({ environment }) => {
                                     <span>Configure your Pipedrive App from here.</span>
                                     <IconButton
                                         onClick={() => handleOpen('pipedrive')}
+                                        style={{
+                                            color: '#6e6e6e',
+                                            fontSize: 12,
+                                            position: 'absolute',
+                                            top: 10,
+                                            right: 10,
+                                        }}
+                                    >
+                                        <SettingsIcon />
+                                    </IconButton>
+                                </div>
+                            </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '2rem 0rem',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        padding: 30,
+                                        border: '2px #00000029 solid',
+                                        borderRadius: 10,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        minHeight: 200,
+                                        justifyContent: 'flex-end',
+                                        position: 'relative',
+                                    }}
+                                >
+                                    <img
+                                        width={100}
+                                        alt="Slack logo"
+                                        src="https://previews.us-east-1.widencdn.net/preview/48045879/assets/asset-view/d613a6c7-697e-4bb8-9bc0-0cdb1ada66da/thumbnail/eyJ3IjoyMDQ4LCJoIjoyMDQ4LCJzY29wZSI6ImFwcCJ9?Expires=1696230000&Signature=sDH1XOT0vqZCA55wEy9JSOtzHTfH~-PgNui8R37rO34ashv~FPHV1icoXN9NnFIMK1EnFjTYPHF7AcBCvWAUtQ1Px8IGlhdOfIkQlF6LKRJ7qUOlRTll44WRNybbnls1~z4tU321u0axAgbnf3KIkW5SEpxMMfbdatoAoQ9T0hZRSOlPFdeJyzReSTv1hxD7B1bJ9x5PrCq9oTUC9tsp22P2YZdsH4JEs4XlHGec3eWN2vV5D0C54smHyJbbjfqpxVy11rmXmCdArj52j~tNq7ak6V1AZ5GozSbsJHPHwU2FDtq1wFP4F7KT~~FgNVUSzfuTD4J9abxoQDKKbvgx4g__&Key-Pair-Id=APKAJM7FVRD2EPOYUXBQ"
+                                    />
+                                    <p className="font-bold mt-4">Slack Chat</p>
+                                    <span>Configure your Slack Chat App from here.</span>
+                                    <IconButton
+                                        onClick={() => handleOpen('slack')}
                                         style={{
                                             color: '#6e6e6e',
                                             fontSize: 12,
