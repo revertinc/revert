@@ -5688,10 +5688,7 @@ __metadata:
     axios: ^0.27.2
     babel-jest: ^29.2.2
     better-sse: ^0.9.0
-<<<<<<< HEAD
-=======
     bull: ^4.8.5
->>>>>>> 26ec7ca (feat: field mapping and custom schema (#207))
     concurrently: ^8.2.1
     cors: ^2.8.5
     dotenv: ^16.3.1
@@ -5701,14 +5698,9 @@ __metadata:
     fern-api: ^0.0.184
     jest: ^29.6.4
     lodash: ^4.17.21
-<<<<<<< HEAD
-    moesif-nodejs: ^3.5.3
-    morgan: ^1.10.0
-=======
     mongoose: ^6.6.5
     morgan: ^1.10.0
     nanoid: ^3.0.0
->>>>>>> 26ec7ca (feat: field mapping and custom schema (#207))
     node-cron: ^3.0.2
     prisma: ^4.16.0
     redis: ^4.6.8
@@ -5798,7 +5790,6 @@ __metadata:
     "@testing-library/jest-dom": ^6.1.3
     "@testing-library/react": ^13.3.0
     "@types/jest": ^29.5.4
-    "@types/node": ^20.8.2
     "@types/react": ^18.0.17
     "@types/react-dom": ^18.0.6
     autoprefixer: ^10.4.16
@@ -9357,6 +9348,15 @@ __metadata:
 "@types/ws@npm:^8.5.1":
   version: 8.5.4
   resolution: "@types/ws@npm:8.5.4"
+  dependencies:
+    "@types/node": "*"
+  checksum: fefbad20d211929bb996285c4e6f699b12192548afedbe4930ab4384f8a94577c9cd421acaad163cacd36b88649509970a05a0b8f20615b30c501ed5269038d1
+  languageName: node
+  linkType: hard
+
+"@types/ws@npm:^8.5.4":
+  version: 8.5.7
+  resolution: "@types/ws@npm:8.5.7"
   dependencies:
     "@types/node": "*"
   checksum: 4502085c0f7ae6b36d5419c0fc6ce4b9002ee5e997a8708d6ed10b393e97091e1b986e8038ec604945c194f14aac150e74d6596629a2775628d122f552009c35
@@ -12948,12 +12948,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"card-validator@npm:^8.1.1":
-  version: 8.1.1
-  resolution: "card-validator@npm:8.1.1"
-  dependencies:
-    credit-card-type: ^9.1.0
-  checksum: 8bb1c8f00821028fa29703f39d2c39791cfa409358282db84a9a479f34c1c8867fb914761a5fe529b25de626692de53935a39a5bd912a45d31a910bf8f3549f1
+"capture-stack-trace@npm:^1.0.0":
+  version: 1.0.2
+  resolution: "capture-stack-trace@npm:1.0.2"
+  checksum: 13295e8176e8de74bcbe0e4fd938bed9eb4204b4cc200210ff46df91cb20b69e86f6ef42f408a59454f8b62e567ef0ee6ee5b5e7e16e686668bc77f2741542b4
   languageName: node
   linkType: hard
 
@@ -13359,11 +13357,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"cluster-key-slot@npm:1.1.2":
-=======
 "cluster-key-slot@npm:1.1.2, cluster-key-slot@npm:^1.1.0":
->>>>>>> 26ec7ca (feat: field mapping and custom schema (#207))
   version: 1.1.2
   resolution: "cluster-key-slot@npm:1.1.2"
   checksum: be0ad2d262502adc998597e83f9ded1b80f827f0452127c5a37b22dfca36bab8edf393f7b25bb626006fb9fb2436106939ede6d2d6ecf4229b96a47f27edd681
@@ -14029,10 +14023,39 @@ __metadata:
   languageName: node
   linkType: hard
 
-"credit-card-type@npm:^9.1.0":
-  version: 9.1.0
-  resolution: "credit-card-type@npm:9.1.0"
-  checksum: 2bdadf3a0b93cd740447020fea8d397c633ee2b292fcc498971c540e7ca97473c4decf23604f93a1aedd59bb8d9249da8cf0b8fbfb1a464bd63610ae814c77aa
+"crelt@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "crelt@npm:1.0.5"
+  checksum: 04a618c5878e12a14a9a328a49ff6e37bed76abb88b72e661c56b5f161d8a9aca133650da6bcbc5224ad1f7f43a69325627f209e92a21002986d52a8f844b367
+  languageName: node
+  linkType: hard
+
+"cron-parser@npm:^4.2.1":
+  version: 4.7.1
+  resolution: "cron-parser@npm:4.7.1"
+  dependencies:
+    luxon: ^3.2.1
+  checksum: 60642d4710c6ba202b781be6c905d68a47ac69fe1b9eaba06a3f7e9950ba58adbb21ae260452b2801d80b2a1f04f142bb847157c5a707fa4b01a5d2c8842828e
+  languageName: node
+  linkType: hard
+
+"cronstrue@npm:^2.11.0":
+  version: 2.23.0
+  resolution: "cronstrue@npm:2.23.0"
+  bin:
+    cronstrue: bin/cli.js
+  checksum: 050140ac6452468d6f9032f18038f41b16968502d411a996efd5d42243cfd882271ff20ed4a3cdb25c45bf8f88beeb0579e45e974a11987401e9d383af2641a8
+  languageName: node
+  linkType: hard
+
+"cross-spawn@npm:7.0.3, cross-spawn@npm:^7.0.0, cross-spawn@npm:^7.0.2, cross-spawn@npm:^7.0.3":
+  version: 7.0.3
+  resolution: "cross-spawn@npm:7.0.3"
+  dependencies:
+    path-key: ^3.1.0
+    shebang-command: ^2.0.0
+    which: ^2.0.1
+  checksum: 671cc7c7288c3a8406f3c69a3ae2fc85555c04169e9d611def9a675635472614f1c0ed0ef80955d5b6d4e724f6ced67f0ad1bb006c2ea643488fcfef994d7f52
   languageName: node
   linkType: hard
 
@@ -14097,10 +14120,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-js@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "crypto-js@npm:4.1.1"
-  checksum: b3747c12ee3a7632fab3b3e171ea50f78b182545f0714f6d3e7e2858385f0f4101a15f2517e033802ce9d12ba50a391575ff4638c9de3dd9b2c4bc47768d5425
+"crypto-random-string@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "crypto-random-string@npm:1.0.0"
+  checksum: 6fc61a46c18547b49a93da24f4559c4a1c859f4ee730ecc9533c1ba89fa2a9e9d81f390c2789467afbbd0d1c55a6e96a71e4716b6cd3e77736ed5fced7a2df9a
   languageName: node
   linkType: hard
 
@@ -14796,8 +14819,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-=======
 "denque@npm:^2.1.0":
   version: 2.1.0
   resolution: "denque@npm:2.1.0"
@@ -14805,7 +14826,6 @@ __metadata:
   languageName: node
   linkType: hard
 
->>>>>>> 26ec7ca (feat: field mapping and custom schema (#207))
 "depd@npm:2.0.0, depd@npm:~2.0.0":
   version: 2.0.0
   resolution: "depd@npm:2.0.0"
@@ -15301,6 +15321,13 @@ __metadata:
   bin:
     electron: cli.js
   checksum: bed09b499f0ba172291222d71c35e27c5b7d9b22ff43cc5c47c57691d804c0ff33e228064abafa59bf495163a24d0fa162ae9e740b9a17c0d6f92461bec90718
+  languageName: node
+  linkType: hard
+
+"electron-to-chromium@npm:^1.4.535":
+  version: 1.4.540
+  resolution: "electron-to-chromium@npm:1.4.540"
+  checksum: 78a48690a5cca3f89544d4e33a11e3101adb0b220da64078f67e167b396cbcd85044853cb88a9453444796599fe157c190ca5ebd00e9daf668ed5a9df3d0bba8
   languageName: node
   linkType: hard
 
@@ -16864,10 +16891,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fecha@npm:^4.2.0":
-  version: 4.2.3
-  resolution: "fecha@npm:4.2.3"
-  checksum: f94e2fb3acf5a7754165d04549460d3ae6c34830394d20c552197e3e000035d69732d74af04b9bed3283bf29fe2a9ebdcc0085e640b0be3cc3658b9726265e31
+"fd-slicer@npm:~1.1.0":
+  version: 1.1.0
+  resolution: "fd-slicer@npm:1.1.0"
+  dependencies:
+    pend: ~1.2.0
+  checksum: c8585fd5713f4476eb8261150900d2cb7f6ff2d87f8feb306ccc8a1122efd152f1783bdb2b8dc891395744583436bfd8081d8e63ece0ec8687eeefea394d4ff2
   languageName: node
   linkType: hard
 
@@ -17489,10 +17518,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"generic-pool@npm:3.9.0":
-  version: 3.9.0
-  resolution: "generic-pool@npm:3.9.0"
-  checksum: 3d89e9b2018d2e3bbf44fec78c76b2b7d56d6a484237aa9daf6ff6eedb14b0899dadd703b5d810219baab2eb28e5128fb18b29e91e602deb2eccac14492d8ca8
+"gaxios@npm:^4.0.0":
+  version: 4.3.3
+  resolution: "gaxios@npm:4.3.3"
+  dependencies:
+    abort-controller: ^3.0.0
+    extend: ^3.0.2
+    https-proxy-agent: ^5.0.0
+    is-stream: ^2.0.0
+    node-fetch: ^2.6.7
+  checksum: 0b72a00875404e2c3d7aca9f32535e931d7b0ebb850dc92fafc1685b99a109b04205c63e4637a2d0d9a261ac50adf83f7d33435f73e256dcca32564ef9358fee
+  languageName: node
+  linkType: hard
+
+"gcp-metadata@npm:^4.2.0":
+  version: 4.3.1
+  resolution: "gcp-metadata@npm:4.3.1"
+  dependencies:
+    gaxios: ^4.0.0
+    json-bigint: ^1.0.0
+  checksum: b0b1b85ea2efee1d640a1d4ead0937fdcceffd43ab4cacfdd66fd086fcfe5c3d09ad850ee14f43f2dc73244b2617b166adfa09a2a85e0652a8c56bed194f01fe
   languageName: node
   linkType: hard
 
@@ -19286,10 +19331,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-retry-allowed@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "is-retry-allowed@npm:2.2.0"
-  checksum: 3d1103a9290b5d03626756a41054844633eac78bc5d3e3a95b13afeae94fa3cfbcf7f0b5520d83f75f48a25ce7b142fdbac4217dc4b0630f3ea55e866ec3a029
+"is-retry-allowed@npm:^1.0.0":
+  version: 1.2.0
+  resolution: "is-retry-allowed@npm:1.2.0"
+  checksum: 50d700a89ae31926b1c91b3eb0104dbceeac8790d8b80d02f5c76d9a75c2056f1bb24b5268a8a018dead606bddf116b2262e5ac07401eb8b8783b266ed22558d
   languageName: node
   linkType: hard
 
@@ -22273,59 +22318,46 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moesif-nodejs@npm:^3.5.3":
-  version: 3.5.3
-  resolution: "moesif-nodejs@npm:3.5.3"
+"mongodb-connection-string-url@npm:^2.5.4":
+  version: 2.6.0
+  resolution: "mongodb-connection-string-url@npm:2.6.0"
   dependencies:
-    bytes: ^3.1.1
-    card-validator: ^8.1.1
-    content-type: ^1.0.4
-    crypto-js: ^4.1.1
-    http-errors: ^2.0.0
-    iconv-lite: ^0.6.3
-    koa-body: ^4.2.0
-    lodash: ^4.17.19
-    moesifapi: ^2.1.3
-    raw-body: ^2.4.2
-    request-ip: ^3.3.0
-    uuid4: ^2.0.2
-  checksum: 129a9e5431f75c5eb4f58113f9164a3cd7d0b1eed1c924c6d3b5d84c68c8e7143f6fba234f73de314712f6eb9dd20999367e979a297e42be9504fa86834a933d
+    "@types/whatwg-url": ^8.2.1
+    whatwg-url: ^11.0.0
+  checksum: 1d662f0ecfe96f7a400f625c244b2e52914c98f3562ee7d19941127578b5f8237624433bdcea285a654041b945b518803512989690c74548aec5860c5541c605
   languageName: node
   linkType: hard
 
-"moesifapi@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "moesifapi@npm:2.1.3"
+"mongodb@npm:4.14.0":
+  version: 4.14.0
+  resolution: "mongodb@npm:4.14.0"
   dependencies:
-    axios: ^1.4.0
-    axios-retry: ^3.5.1
-  checksum: a9aa0f2534cb026534ef169748753f7887b64627bc8f068846181d4d31bc4ab56b086e25a753c390fe9727680fe0a99e0963bb1bf55987c640540a53274bf8b6
+    "@aws-sdk/credential-providers": ^3.186.0
+    bson: ^4.7.0
+    mongodb-connection-string-url: ^2.5.4
+    saslprep: ^1.0.3
+    socks: ^2.7.1
+  dependenciesMeta:
+    "@aws-sdk/credential-providers":
+      optional: true
+    saslprep:
+      optional: true
+  checksum: ab3b8f27e99fab4ea0c163067158ad360a161edf9ebf74368b9b561da7b75d23c09282d530cb4e2fac32ea30eae29620e861d837d334ddbdfa50d57240c1bd8e
   languageName: node
   linkType: hard
 
-"morgan@npm:^1.10.0":
-  version: 1.10.0
-  resolution: "morgan@npm:1.10.0"
+"mongoose@npm:^6.6.5":
+  version: 6.10.0
+  resolution: "mongoose@npm:6.10.0"
   dependencies:
-    basic-auth: ~2.0.1
-    debug: 2.6.9
-    depd: ~2.0.0
-    on-finished: ~2.3.0
-    on-headers: ~1.0.2
-  checksum: fb41e226ab5a1abf7e8909e486b387076534716d60207e361acfb5df78b84d703a7b7ea58f3046a9fd0b83d3c94bfabde32323341a1f1b26ce50680abd2ea5dd
-  languageName: node
-  linkType: hard
-
-"morgan@npm:^1.10.0":
-  version: 1.10.0
-  resolution: "morgan@npm:1.10.0"
-  dependencies:
-    basic-auth: ~2.0.1
-    debug: 2.6.9
-    depd: ~2.0.0
-    on-finished: ~2.3.0
-    on-headers: ~1.0.2
-  checksum: fb41e226ab5a1abf7e8909e486b387076534716d60207e361acfb5df78b84d703a7b7ea58f3046a9fd0b83d3c94bfabde32323341a1f1b26ce50680abd2ea5dd
+    bson: ^4.7.0
+    kareem: 2.5.1
+    mongodb: 4.14.0
+    mpath: 0.9.0
+    mquery: 4.0.3
+    ms: 2.1.3
+    sift: 16.0.1
+  checksum: b6aa9c51d367112d534c54db09c43cd661da52d9b2e9488caba082c771844f84962b7da74564bbfc2e6e6a0b29ed35d75619973f3e1f1d917fbd0a8a3be6a9cd
   languageName: node
   linkType: hard
 
@@ -25738,31 +25770,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redis@npm:^4.6.8":
-  version: 4.6.8
-  resolution: "redis@npm:4.6.8"
-  dependencies:
-    "@redis/bloom": 1.2.0
-    "@redis/client": 1.5.9
-    "@redis/graph": 1.1.0
-    "@redis/json": 1.0.4
-    "@redis/search": 1.1.3
-    "@redis/time-series": 1.0.5
-  checksum: 1626d0d739e5f2047824b77b472967af5938fba488a039bd0a5ad90814eb81cb29b7939e16adf0bc39b133165ec1bf147e4f944d0c54a2f9c32c8f004b015940
+"redis-errors@npm:^1.0.0, redis-errors@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "redis-errors@npm:1.2.0"
+  checksum: f28ac2692113f6f9c222670735aa58aeae413464fd58ccf3fce3f700cae7262606300840c802c64f2b53f19f65993da24dc918afc277e9e33ac1ff09edb394f4
   languageName: node
   linkType: hard
 
-"redis@npm:^4.6.8":
-  version: 4.6.8
-  resolution: "redis@npm:4.6.8"
+"redis-parser@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "redis-parser@npm:3.0.0"
   dependencies:
-    "@redis/bloom": 1.2.0
-    "@redis/client": 1.5.9
-    "@redis/graph": 1.1.0
-    "@redis/json": 1.0.4
-    "@redis/search": 1.1.3
-    "@redis/time-series": 1.0.5
-  checksum: 1626d0d739e5f2047824b77b472967af5938fba488a039bd0a5ad90814eb81cb29b7939e16adf0bc39b133165ec1bf147e4f944d0c54a2f9c32c8f004b015940
+    redis-errors: ^1.0.0
+  checksum: 89290ae530332f2ae37577647fa18208d10308a1a6ba750b9d9a093e7398f5e5253f19855b64c98757f7129cccce958e4af2573fdc33bad41405f87f1943459a
   languageName: node
   linkType: hard
 
@@ -29382,17 +29402,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"update-browserslist-db@npm:^1.0.13":
-  version: 1.0.13
-  resolution: "update-browserslist-db@npm:1.0.13"
+"update-notifier@npm:^2.1.0":
+  version: 2.5.0
+  resolution: "update-notifier@npm:2.5.0"
   dependencies:
-    escalade: ^3.1.1
-    picocolors: ^1.0.0
-  peerDependencies:
-    browserslist: ">= 4.21.0"
-  bin:
-    update-browserslist-db: cli.js
-  checksum: 1e47d80182ab6e4ad35396ad8b61008ae2a1330221175d0abd37689658bdb61af9b705bfc41057fd16682474d79944fb2d86767c5ed5ae34b6276b9bed353322
+    boxen: ^1.2.1
+    chalk: ^2.0.1
+    configstore: ^3.0.0
+    import-lazy: ^2.1.0
+    is-ci: ^1.0.10
+    is-installed-globally: ^0.1.0
+    is-npm: ^1.0.0
+    latest-version: ^3.0.0
+    semver-diff: ^2.0.0
+    xdg-basedir: ^3.0.0
+  checksum: a9ba50396b7f66ae32897be76165a3b344a15e8605efebf1e0c7bd82a27e3f69b5372c54c2c5e35685ea3918212246fba5faf942f341258d4f4590f7f80a2ce7
   languageName: node
   linkType: hard
 
@@ -29537,14 +29561,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid4@npm:^2.0.2":
-  version: 2.0.3
-  resolution: "uuid4@npm:2.0.3"
-  checksum: e1d135a6a0fe11390d69b3fca62156f96e1976a549ab8f6380a2ab706b41b5d0c765aefcf6a9cd6882961cafad7793dc1091ae2187b50d21256e926dbced97a2
-  languageName: node
-  linkType: hard
-
-"uuid@npm:8.3.2, uuid@npm:^8.3.2":
+"uuid@npm:8.3.2, uuid@npm:^8.0.0, uuid@npm:^8.3.0, uuid@npm:^8.3.2":
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"
   bin:
