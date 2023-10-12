@@ -100,6 +100,10 @@ This repo contains a set of packages under `@reverdotdev/` namespace such as:
 
 <img src="./public/connection_flow.png"/>
 
+### Architecture Overview
+
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1697107526/Revert/how4gj3vp2wch4kw2akb.png" />
+
 ## Quickstart
 
 #### Spinning up Revert with docker-compose
