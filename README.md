@@ -94,6 +94,12 @@ This repo contains a set of packages under `@reverdotdev/` namespace such as:
 -   [`@revertdotdev/js`](./packages/js): Official SDK for Javascript.
 -   ...
 
+## Architecture
+
+### Connection flow for your app's users with Revert
+
+<img src="./public/connection_flow.png"/>
+
 ## Quickstart
 
 #### Spinning up Revert with docker-compose
