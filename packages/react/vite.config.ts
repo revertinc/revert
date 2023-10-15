@@ -2,15 +2,10 @@ import react from '@vitejs/plugin-react';
 import path from 'node:path';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
-// import mkcert from 'vite-plugin-mkcert';
 
 export default defineConfig({
     server: {
         port: 3001,
-        https: {
-            key: './key.pem',
-            cert: './cert.pem',
-        },
     },
     plugins: [
         react(),

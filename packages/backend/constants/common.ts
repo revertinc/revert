@@ -38,11 +38,11 @@ export const DEFAULT_SCOPE = {
 };
 
 export const mapIntegrationIdToIntegrationName = {
-    [TP_ID.hubspot]: "Hubspot",
-    [TP_ID.pipedrive]: "Pipedrive",
-    [TP_ID.sfdc]: "Salesforce",
-    [TP_ID.zohocrm]: "Zoho",
-}
+    [TP_ID.hubspot]: 'Hubspot',
+    [TP_ID.pipedrive]: 'Pipedrive',
+    [TP_ID.sfdc]: 'Salesforce',
+    [TP_ID.zohocrm]: 'Zoho',
+};
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';
 
