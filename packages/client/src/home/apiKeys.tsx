@@ -122,6 +122,7 @@ const ApiKeys = ({ environment }) => {
                                             >
                                                 <pre>
                                                     <code
+                                                        className="public_token"
                                                         title="Click to Copy"
                                                         style={{
                                                             display: 'block',
@@ -193,6 +194,7 @@ const ApiKeys = ({ environment }) => {
                                                     }}
                                                 >
                                                     <code
+                                                        className="private_token"
                                                         title="Click to Copy"
                                                         style={{
                                                             display: 'block',

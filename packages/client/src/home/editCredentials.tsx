@@ -123,6 +123,7 @@ const EditCredentials: React.FC<{
                     <Row>
                         <span className="font-bold">Client ID: </span>
                         <Input
+                            className="app_client_id"
                             value={clientId}
                             onChange={(ev) => setClientId((ev.target.value || '').trim())}
                             error={!clientId}
@@ -131,6 +132,7 @@ const EditCredentials: React.FC<{
                     <Row>
                         <span className="font-bold">Client Secret: </span>
                         <Input
+                            className="app_client_secret"
                             value={clientSecret}
                             onChange={(ev) => setClientSecret((ev.target.value || '').trim())}
                             error={!clientSecret}

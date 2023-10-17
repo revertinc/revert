@@ -1,7 +1,7 @@
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import React from 'react';
-import { SignedIn, SignedOut, SignUp, ClerkProvider, SignIn, RedirectToSignIn } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, SignUp, ClerkProvider, SignIn } from '@clerk/clerk-react';
 import { OAuthCallback } from '../common/oauth';
 import Home from '../home/index';
 
@@ -86,6 +86,7 @@ export function RouterComponent() {
                         </>
                     }
                 />
+                <Route path="*" element={<Navigate to="/home" />} />
             </Routes>{' '}
         </ClerkProvider>
     );
