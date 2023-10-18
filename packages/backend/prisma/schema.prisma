@@ -30,6 +30,8 @@ model accounts {
   users                     users[]
   environments              environments[]
   accountFieldMappingConfig accountFieldMappingConfig?
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @default(now()) @updatedAt
 }
 
 model environments {
@@ -40,6 +42,8 @@ model environments {
   accounts      accounts? @relation(fields: [accountId], references: [id])
   accountId     String
   apps          apps[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
 }
 
 model apps {
@@ -53,6 +57,8 @@ model apps {
   env                        environments  @relation(fields: [environmentId], references: [id])
   connections                connections[]
   is_revert_app              Boolean       @default(false)
+  createdAt                  DateTime      @default(now())
+  updatedAt                  DateTime      @default(now()) @updatedAt
 }
 
 model users {
@@ -61,6 +67,8 @@ model users {
   email     String
   accountId String
   account   accounts @relation(fields: [accountId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model connections {
@@ -78,6 +86,8 @@ model connections {
   appId                      String?
   schema_mapping_id          String?
   schema_mapping             schema_mapping? @relation(fields: [schema_mapping_id], references: [id])
+  createdAt                  DateTime        @default(now())
+  updatedAt                  DateTime        @default(now()) @updatedAt
 
   @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")
   @@unique([tp_id, t_id], name: "uniqueThirdPartyPerTenant")
