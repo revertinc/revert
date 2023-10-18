@@ -25,6 +25,7 @@ const config = {
     svix: process.env.SVIX_AUTH_TOKEN ? new Svix(process.env.SVIX_AUTH_TOKEN!) : undefined,
     WHITE_LISTED_DOMAINS: process.env.WHITE_LISTED_DOMAINS?.split(','),
     AES_ENCRYPTION_SECRET: process.env.AES_ENCRYPTION_SECRET!,
+    MOESIF_APPLICATION_ID: process.env.MOESIF_APPLICATION_ID,
 };
 
 export default config;

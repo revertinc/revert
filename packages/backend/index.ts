@@ -1,33 +1,34 @@
 import express, { Express, Request, Response } from 'express';
 // Note: Sentry should be initialized as early in your app as possible.
 import * as Sentry from '@sentry/node';
+import moesif from 'moesif-nodejs';
 import config from './config';
 import indexRouter from './routes/index';
 import cors from 'cors';
 import cron from 'node-cron';
 import morgan from 'morgan';
 import AuthService from './services/auth';
-import versionMiddleware, { manageRouterVersioning } from './helpers/versionMiddleware';
-import { ShortloopSDK } from '@shortloop/node';
+import _, { manageRouterVersioning } from './helpers/versionMiddleware';
+// import { ShortloopSDK } from '@shortloop/node';
 
-const rateLimit = require('express-rate-limit');
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 60, // Limit each IP to 60 requests per `window` (here, per 15 minutes)
-    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    message: async () => {
-        return JSON.stringify({ message: 'Rate limit reached.' });
-    },
-    skip: (req: Request, _res: Response) => {
-        const basePath = req.baseUrl + req.path;
-        const allowedRoutes = ['/health-check'];
-        if (allowedRoutes.includes(basePath)) {
-            return true;
-        }
-        return false;
-    },
-});
+// const rateLimit = require('express-rate-limit');
+// const limiter = rateLimit({
+//     windowMs: 15 * 60 * 1000, // 15 minutes
+//     max: 60, // Limit each IP to 60 requests per `window` (here, per 15 minutes)
+//     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+//     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+//     message: async () => {
+//         return JSON.stringify({ message: 'Rate limit reached.' });
+//     },
+//     skip: (req: Request, _res: Response) => {
+//         const basePath = req.baseUrl + req.path;
+//         const allowedRoutes = ['/health-check'];
+//         if (allowedRoutes.includes(basePath)) {
+//             return true;
+//         }
+//         return false;
+//     },
+// });
 
 const app: Express = express();
 
@@ -56,9 +57,9 @@ Sentry.init({
 
 // RequestHandler creates a separate execution context, so that all
 // transactions/spans/breadcrumbs are isolated across requests
-app.use(Sentry.Handlers.requestHandler());
-// TracingHandler creates a trace for every incoming request
-app.use(Sentry.Handlers.tracingHandler());
+// app.use(Sentry.Handlers.requestHandler());
+// // TracingHandler creates a trace for every incoming request
+// app.use(Sentry.Handlers.tracingHandler());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -71,25 +72,25 @@ morgan.token('tenant-id', (req: any) => {
 morgan.token('account-id', (_req, res: any) => {
     return res.locals?.account?.id;
 });
-app.use(
-    morgan('[:date[iso]] :method :url :status :response-time ms tenant - :tenant-id | account - :account-id', {
-        skip: (req, _) => {
-            return req.originalUrl.startsWith('/health-check');
-        },
-    })
-);
+// app.use(
+//     morgan('[:date[iso]] :method :url :status :response-time ms tenant - :tenant-id | account - :account-id', {
+//         skip: (req, _) => {
+//             return req.originalUrl.startsWith('/health-check');
+//         },
+//     })
+// );
 
-app.use(limiter);
-app.use(versionMiddleware());
+// app.use(limiter);
+// app.use(versionMiddleware());
 
-ShortloopSDK.init({
-    url: 'https://revert.shortloop.dev', // ShortLoop URL. (Provided by ShortLoop team.)
-    applicationName: 'revert-api', // your application name here
-    authKey: config.SHORTLOOP_AUTH_KEY, // ShortLoop Auth Key. (Provided by ShortLoop team.)
-    environment: process.env.NODE_ENV || 'staging', // for e.g stage or prod
-    maskHeaders: ['x-revert-t-id', 'x-revert-api-token'],
-});
-app.use(ShortloopSDK.capture());
+// ShortloopSDK.init({
+//     url: 'https://revert.shortloop.dev', // ShortLoop URL. (Provided by ShortLoop team.)
+//     applicationName: 'revert-api', // your application name here
+//     authKey: config.SHORTLOOP_AUTH_KEY, // ShortLoop Auth Key. (Provided by ShortLoop team.)
+//     environment: process.env.NODE_ENV || 'staging', // for e.g stage or prod
+//     maskHeaders: ['x-revert-t-id', 'x-revert-api-token'],
+// });
+// app.use(ShortloopSDK.capture());
 
 // TODO: Just to test versions. Remove later
 const testv2Router = (_req: Request, res: Response) => {
@@ -111,16 +112,31 @@ app.use(
     })
 );
 
-// The error handler must be before any other error middleware and after all controllers
-app.use(Sentry.Handlers.errorHandler());
+// // The error handler must be before any other error middleware and after all controllers
+// app.use(Sentry.Handlers.errorHandler());
 
-// Optional fallthrough error handler
-app.use((_err: any, _req: any, res: any, _next: any) => {
-    // The error id is attached to `res.sentry` to be returned
-    // and optionally displayed to the user for support.
-    res.statusCode = 500;
-    res.end(res.sentry + '\n');
+// // Optional fallthrough error handler
+// app.use((_err: any, _req: any, res: any, _next: any) => {
+//     // The error id is attached to `res.sentry` to be returned
+//     // and optionally displayed to the user for support.
+//     res.statusCode = 500;
+//     res.end(res.sentry + '\n');
+// });
+
+console.log('config.MOESIF_APPLICATION_ID', config.MOESIF_APPLICATION_ID);
+// 2. Set the options, the only required field is applicationId
+const moesifMiddleware = moesif({
+    applicationId: config.MOESIF_APPLICATION_ID!,
+    debug: true, // enable debug mode.
+    logBody: true,
+
+    // Optional hook to link API calls to users
+    identifyUser: function (req: any, _: any) {
+        return req.headers['x-revert-t-id'] ? req.headers['x-revert-t-id'] : undefined;
+    },
 });
+
+app.use(moesifMiddleware);
 
 app.listen(config.PORT, () => {
     console.log(`⚡️[server]: Revert server is running at http://localhost:${config.PORT}`);
