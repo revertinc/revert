@@ -45,6 +45,7 @@ const config = {
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET!,
     DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN!,
     DISCORD_HOOK_URL: process.env.DISCORD_HOOK_URL!
+    MOESIF_APPLICATION_ID: process.env.MOESIF_APPLICATION_ID,
 };
 
 export default config;
