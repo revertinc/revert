@@ -16,7 +16,7 @@ const metadataService = new MetadataService({
 
         try {
             const apps = await prisma.apps.findMany({
-                select: { scope: true, app_client_id: true, tp_id: true },
+                select: { scope: true, app_client_id: true, tp_id: true, env: { include: { accounts: true } } },
                 where: {
                     env: {
                         public_token: token as string,
@@ -28,6 +28,7 @@ const metadataService = new MetadataService({
                     error: 'Api token unauthorized',
                 });
             }
+            res.locals.account = apps?.[0].env.accounts;
             const getScope = (apps: Partial<apps>[], integration: TP_ID) => {
                 const app = apps.find((app) => app.tp_id === integration);
                 const scopes = app?.is_revert_app ? [] : app?.scope;

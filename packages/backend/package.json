@@ -63,6 +63,7 @@
         "express": "^4.18.1",
         "express-rate-limit": "^6.7.0",
         "lodash": "^4.17.21",
+        "moesif-nodejs": "^3.5.3",
         "morgan": "^1.10.0",
         "node-cron": "^3.0.2",
         "prisma": "^4.16.0",

@@ -4,8 +4,8 @@ on:
     push:
         branches:
             - main
-        # paths:
-        #     - packages/prisma/**
+        paths:
+            - packages/prisma/**
 
 jobs:
     deploy-prisma:
