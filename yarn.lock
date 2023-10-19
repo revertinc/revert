@@ -5698,7 +5698,11 @@ __metadata:
     fern-api: ^0.0.184
     jest: ^29.6.4
     lodash: ^4.17.21
+<<<<<<< HEAD
     mongoose: ^6.6.5
+=======
+    moesif-nodejs: ^3.5.3
+>>>>>>> 9301afb (feat: add api analytics (#320))
     morgan: ^1.10.0
     nanoid: ^3.0.0
     node-cron: ^3.0.2
@@ -12948,10 +12952,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
 "capture-stack-trace@npm:^1.0.0":
   version: 1.0.2
   resolution: "capture-stack-trace@npm:1.0.2"
   checksum: 13295e8176e8de74bcbe0e4fd938bed9eb4204b4cc200210ff46df91cb20b69e86f6ef42f408a59454f8b62e567ef0ee6ee5b5e7e16e686668bc77f2741542b4
+=======
+"card-validator@npm:^8.1.1":
+  version: 8.1.1
+  resolution: "card-validator@npm:8.1.1"
+  dependencies:
+    credit-card-type: ^9.1.0
+  checksum: 8bb1c8f00821028fa29703f39d2c39791cfa409358282db84a9a479f34c1c8867fb914761a5fe529b25de626692de53935a39a5bd912a45d31a910bf8f3549f1
+>>>>>>> 9301afb (feat: add api analytics (#320))
   languageName: node
   linkType: hard
 
@@ -14023,6 +14036,7 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
 "crelt@npm:^1.0.5":
   version: 1.0.5
   resolution: "crelt@npm:1.0.5"
@@ -14056,6 +14070,12 @@ __metadata:
     shebang-command: ^2.0.0
     which: ^2.0.1
   checksum: 671cc7c7288c3a8406f3c69a3ae2fc85555c04169e9d611def9a675635472614f1c0ed0ef80955d5b6d4e724f6ced67f0ad1bb006c2ea643488fcfef994d7f52
+=======
+"credit-card-type@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "credit-card-type@npm:9.1.0"
+  checksum: 2bdadf3a0b93cd740447020fea8d397c633ee2b292fcc498971c540e7ca97473c4decf23604f93a1aedd59bb8d9249da8cf0b8fbfb1a464bd63610ae814c77aa
+>>>>>>> 9301afb (feat: add api analytics (#320))
   languageName: node
   linkType: hard
 
@@ -14120,10 +14140,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
 "crypto-random-string@npm:^1.0.0":
   version: 1.0.0
   resolution: "crypto-random-string@npm:1.0.0"
   checksum: 6fc61a46c18547b49a93da24f4559c4a1c859f4ee730ecc9533c1ba89fa2a9e9d81f390c2789467afbbd0d1c55a6e96a71e4716b6cd3e77736ed5fced7a2df9a
+=======
+"crypto-js@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "crypto-js@npm:4.1.1"
+  checksum: b3747c12ee3a7632fab3b3e171ea50f78b182545f0714f6d3e7e2858385f0f4101a15f2517e033802ce9d12ba50a391575ff4638c9de3dd9b2c4bc47768d5425
+>>>>>>> 9301afb (feat: add api analytics (#320))
   languageName: node
   linkType: hard
 
@@ -19331,10 +19358,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
 "is-retry-allowed@npm:^1.0.0":
   version: 1.2.0
   resolution: "is-retry-allowed@npm:1.2.0"
   checksum: 50d700a89ae31926b1c91b3eb0104dbceeac8790d8b80d02f5c76d9a75c2056f1bb24b5268a8a018dead606bddf116b2262e5ac07401eb8b8783b266ed22558d
+=======
+"is-retry-allowed@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "is-retry-allowed@npm:2.2.0"
+  checksum: 3d1103a9290b5d03626756a41054844633eac78bc5d3e3a95b13afeae94fa3cfbcf7f0b5520d83f75f48a25ce7b142fdbac4217dc4b0630f3ea55e866ec3a029
+>>>>>>> 9301afb (feat: add api analytics (#320))
   languageName: node
   linkType: hard
 
@@ -22318,6 +22352,7 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
 "mongodb-connection-string-url@npm:^2.5.4":
   version: 2.6.0
   resolution: "mongodb-connection-string-url@npm:2.6.0"
@@ -22358,6 +22393,35 @@ __metadata:
     ms: 2.1.3
     sift: 16.0.1
   checksum: b6aa9c51d367112d534c54db09c43cd661da52d9b2e9488caba082c771844f84962b7da74564bbfc2e6e6a0b29ed35d75619973f3e1f1d917fbd0a8a3be6a9cd
+=======
+"moesif-nodejs@npm:^3.5.3":
+  version: 3.5.3
+  resolution: "moesif-nodejs@npm:3.5.3"
+  dependencies:
+    bytes: ^3.1.1
+    card-validator: ^8.1.1
+    content-type: ^1.0.4
+    crypto-js: ^4.1.1
+    http-errors: ^2.0.0
+    iconv-lite: ^0.6.3
+    koa-body: ^4.2.0
+    lodash: ^4.17.19
+    moesifapi: ^2.1.3
+    raw-body: ^2.4.2
+    request-ip: ^3.3.0
+    uuid4: ^2.0.2
+  checksum: 129a9e5431f75c5eb4f58113f9164a3cd7d0b1eed1c924c6d3b5d84c68c8e7143f6fba234f73de314712f6eb9dd20999367e979a297e42be9504fa86834a933d
+  languageName: node
+  linkType: hard
+
+"moesifapi@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "moesifapi@npm:2.1.3"
+  dependencies:
+    axios: ^1.4.0
+    axios-retry: ^3.5.1
+  checksum: a9aa0f2534cb026534ef169748753f7887b64627bc8f068846181d4d31bc4ab56b086e25a753c390fe9727680fe0a99e0963bb1bf55987c640540a53274bf8b6
+>>>>>>> 9301afb (feat: add api analytics (#320))
   languageName: node
   linkType: hard
 
@@ -29561,7 +29625,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
 "uuid@npm:8.3.2, uuid@npm:^8.0.0, uuid@npm:^8.3.0, uuid@npm:^8.3.2":
+=======
+"uuid4@npm:^2.0.2":
+  version: 2.0.3
+  resolution: "uuid4@npm:2.0.3"
+  checksum: e1d135a6a0fe11390d69b3fca62156f96e1976a549ab8f6380a2ab706b41b5d0c765aefcf6a9cd6882961cafad7793dc1091ae2187b50d21256e926dbced97a2
+  languageName: node
+  linkType: hard
+
+"uuid@npm:8.3.2, uuid@npm:^8.3.2":
+>>>>>>> 9301afb (feat: add api analytics (#320))
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"
   bin:
