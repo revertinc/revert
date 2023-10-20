@@ -360,7 +360,7 @@ const createIntegrationBlock = function (self, integration) {
                         color: '#777',
                     }),
                     [],
-                    'Select CRM'
+                    'Select tool to integrate'
                 );
                 headerDiv.appendChild(headerText);
                 headerDiv.appendChild(closeButton);
