@@ -10,7 +10,7 @@ types:
             status: types.ResponseStatus
             next: optional<string>
             previous: optional<string>
-            results: list<unified.User>
+            results: list<unified.UserChat>
 
 service:
     base-path: /chat/users

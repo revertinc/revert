@@ -750,18 +750,15 @@ async function main() {
         ],
     };
     const allSchemas = Object.keys(allFields).map((obj) => {
+    const allSchemas = Object.keys(allFields).map((obj) => {
         return {
             id: randomUUID(),
             fields: allFields[obj as keyof typeof allFields].map((n) => n.target_field_name),
             object: obj as StandardObjects,
         };
     });
-    await prisma.schema_mapping.upsert({
-        where: {
-            id: rootSchemaMappingId,
-        },
-        update: {},
-        create: {
+    await prisma.schema_mapping.create({
+        data: {
             id: rootSchemaMappingId,
             object_schemas: {
                 createMany: {

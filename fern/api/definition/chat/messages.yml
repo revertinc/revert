@@ -13,7 +13,7 @@ types:
             result: unified.Message
 
 service:
-    base-path: /chat/messages
+    base-path: /chat/message
     auth: false
     headers:
         x-revert-api-token:

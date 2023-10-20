@@ -10,7 +10,7 @@ import prisma, { Prisma, xprisma } from '../../../prisma/client';
 import { logInfo, logError, logDebug } from '../../../helpers/logger';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../redis/client/pubsub';
 import redis from '../../../redis/client';
-import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
+import { CRM_TP_ID, mapIntegrationIdToIntegrationName } from '../../../constants/common';
 
 const authRouter = express.Router({ mergeParams: true });
 

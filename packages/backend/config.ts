@@ -36,6 +36,9 @@ const config = {
     DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN!,
     DISCORD_HOOK_URL: process.env.DISCORD_HOOK_URL!
     MOESIF_APPLICATION_ID: process.env.MOESIF_APPLICATION_ID,
+    SLACK_CLIENT_ID: process.env.SLACK_CLIENT_ID!,
+    SLACK_CLIENT_SECRET: process.env.SLACK_CLIENT_SECRET!,
+    SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN!,
 };
 
 export default config;

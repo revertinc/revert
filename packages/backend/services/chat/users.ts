@@ -1,21 +1,20 @@
 import { TP_ID } from '@prisma/client';
 import { UsersService } from '../../generated/typescript/api/resources/chat/resources/users/service/UsersService';
-// import { InternalServerError } from '../../generated/typescript/api/resources/common';
-import { InternalServerError } from '../../generated/typescript/api/resources/common/resources';
+import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { isStandardError } from '../../helpers/error';
 import { logError, logInfo } from '../../helpers/logger';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import axios from 'axios';
 import { unifyChatUser } from '../../models/unified/chatUsers';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
-import config from '../../config';
+
 const usersService = new UsersService(
     {
-        async getUsers(req: any, res: any) {
+        async getUsers(req, res) {
             try {
-                console.log(req)
                 const connection = res.locals.connection;
-
+                const pageSize = parseInt(String(req.query.pageSize));
+                const cursor = req.query.cursor;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
@@ -38,9 +37,10 @@ const usersService = new UsersService(
 
                         let users: any = await axios({
                             method: 'get',
-                            url: `https://discord.com/api/guilds/${thirdPartyToken}/members`,
+                            url: url,
                             headers: {
-                                Authorization: `Bot ${config.DISCORD_BOT_TOKEN}`,
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                Authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
                         const nextCursor = users.data?.response_metadata?.next_cursor || undefined;
