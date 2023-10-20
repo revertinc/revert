@@ -1,7 +1,7 @@
 import express from 'express';
 import config from '../../../config';
 import prisma, { xprisma } from '../../../prisma/client';
-import logError, { logInfo } from '../../../helpers/logError';
+import { logError, logInfo } from '../../../helpers/logger';
 import { Prisma, TP_ID } from '@prisma/client';
 import AuthService from '../../../services/auth';
 import axios from 'axios';
@@ -69,6 +69,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
             logInfo('OAuth token info', info.data);
 
             try {
+                console.log('*********************************************************');
+                console.log(String(req.query.t_id));
                 await xprisma.connections.upsert({
                     where: {
                         id: String(req.query.t_id),

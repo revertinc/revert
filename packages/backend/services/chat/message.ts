@@ -1,4 +1,4 @@
-import logError, { logInfo } from '../../helpers/logger';
+import { logError, logInfo } from '../../helpers/logger';
 import { MessagesService } from '../../generated/typescript/api/resources/chat/resources/messages/service/MessagesService';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import { UnifiedMessage, disunifyMessage, unifyMessage } from '../../models/unified/message';

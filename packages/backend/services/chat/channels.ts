@@ -1,6 +1,6 @@
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import { ChannelsService } from '../../generated/typescript/api/resources/chat/resources/channels/service/ChannelsService';
-import logError, { logInfo } from '../../helpers/logger';
+import { logError, logInfo } from '../../helpers/logger';
 import { isStandardError } from '../../helpers/error';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';

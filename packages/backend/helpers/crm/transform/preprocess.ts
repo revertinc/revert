@@ -1,5 +1,5 @@
 import { TP_ID } from '@prisma/client';
-import { StandardObjects } from '../../../constants/common';
+import { CRM_TP_ID, StandardObjects } from '../../../constants/common';
 import { PipedriveDealStatus } from '../../../constants/pipedrive';
 
 export const preprocessUnifyObject = <T extends Record<string, any>>({
@@ -8,7 +8,7 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
     objType,
 }: {
     obj: T;
-    tpId: TP_ID;
+    tpId: CRM_TP_ID;
     objType: StandardObjects;
 }) => {
     const preprocessMap: any = {
@@ -39,10 +39,10 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
     objType,
 }: {
     obj: T;
-    tpId: TP_ID;
+    tpId: CRM_TP_ID;
     objType: StandardObjects;
 }) => {
-    const preprocessMap: Record<TP_ID, Record<any, Function>> = {
+    const preprocessMap: Record<CRM_TP_ID, Record<any, Function>> = {
         [TP_ID.pipedrive]: {
             [StandardObjects.event]: (obj: T) => {
                 return {
@@ -66,13 +66,13 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
             [StandardObjects.contact]: (obj: T) => {
                 return {
                     ...obj,
-                    name: `${obj.first_name} ${obj.last_name}`
+                    name: `${obj.first_name} ${obj.last_name}`,
                 };
             },
             [StandardObjects.lead]: (obj: T) => {
                 return {
                     ...obj,
-                    person: undefined
+                    person: undefined,
                 };
             },
         },

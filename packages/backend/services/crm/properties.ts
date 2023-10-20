@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { TP_ID, connections } from '@prisma/client';
-import { objectNameMapping } from '../../constants/common';
+import { CRM_TP_ID, objectNameMapping } from '../../constants/common';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { FieldDetailsTypeRequest } from '../../generated/typescript/api/resources/crm';
 import { logError } from '../../helpers/logger';
@@ -14,7 +14,7 @@ export const getObjectPropertiesForConnection = async ({
     connection: connections;
 }) => {
     const thirdPartyToken = connection.tp_access_token;
-    const tpId = connection.tp_id as TP_ID;
+    const tpId = connection.tp_id as CRM_TP_ID;
     const crmObjectName = (objectNameMapping[objectName] || {})[tpId] || objectName;
 
     switch (tpId) {
@@ -79,7 +79,7 @@ export const setObjectPropertiesForConnection = async ({
     connection: connections;
 }) => {
     const thirdPartyToken = connection.tp_access_token;
-    const tpId = connection.tp_id as TP_ID;
+    const tpId = connection.tp_id as CRM_TP_ID;
     const crmObjectName = (objectNameMapping[objectName] || {})[tpId] || objectName;
 
     try {

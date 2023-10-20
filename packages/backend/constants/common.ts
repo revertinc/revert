@@ -1,5 +1,8 @@
 import { TP_ID } from '@prisma/client';
 
+export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot';
+// export type CHAT_TP_ID = 'slack';
+
 export const DEFAULT_SCOPE = {
     [TP_ID.hubspot]: [
         'crm.objects.contacts.read',
@@ -42,6 +45,7 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.pipedrive]: 'Pipedrive',
     [TP_ID.sfdc]: 'Salesforce',
     [TP_ID.zohocrm]: 'Zoho',
+    [TP_ID.slack]: 'Slack',
 };
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';
@@ -57,7 +61,7 @@ export enum StandardObjects {
     user = 'user',
 }
 
-export const objectNameMapping: Record<string, Record<TP_ID, string | undefined>> = {
+export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefined>> = {
     [StandardObjects.company]: {
         [TP_ID.hubspot]: 'companies',
         [TP_ID.pipedrive]: 'organization',
