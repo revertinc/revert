@@ -9,7 +9,7 @@ import prisma, { Prisma, xprisma } from '../../../prisma/client';
 import { logInfo, logError, logDebug } from '../../../helpers/logger';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../redis/client/pubsub';
 import redis from '../../../redis/client';
-import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
+import { CRM_TP_ID, mapIntegrationIdToIntegrationName } from '../../../constants/common';
 
 const authRouter = express.Router({ mergeParams: true });
 
@@ -18,7 +18,7 @@ const authRouter = express.Router({ mergeParams: true });
  */
 authRouter.get('/oauth-callback', async (req, res) => {
     logInfo('OAuth callback', req.query);
-    const integrationId = req.query.integrationId as TP_ID;
+    const integrationId = req.query.integrationId as CRM_TP_ID;
     const revertPublicKey = req.query.x_revert_public_token as string;
 
     // generate a token for connection auth and save in redis for 5 mins

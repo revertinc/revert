@@ -26,6 +26,9 @@ const config = {
     WHITE_LISTED_DOMAINS: process.env.WHITE_LISTED_DOMAINS?.split(','),
     AES_ENCRYPTION_SECRET: process.env.AES_ENCRYPTION_SECRET!,
     MOESIF_APPLICATION_ID: process.env.MOESIF_APPLICATION_ID,
+    SLACK_CLIENT_ID: process.env.SLACK_CLIENT_ID!,
+    SLACK_CLIENT_SECRET: process.env.SLACK_CLIENT_SECRET!,
+    SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN!,
 };
 
 export default config;

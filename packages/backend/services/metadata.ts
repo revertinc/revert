@@ -75,6 +75,15 @@ const metadataService = new MetadataService({
                     clientId: getClientId(apps, TP_ID.pipedrive) || config.PIPEDRIVE_CLIENT_ID,
                 },
                 {
+                    integrationId: 'slack',
+                    name: 'slack',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1697800999/Revert/sr7ikiijgzsmednoeil0.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.slack),
+                    clientId: getClientId(apps, TP_ID.slack) || config.SLACK_CLIENT_ID,
+                },
+                {
                     integrationId: 'microsoft_dynamics',
                     name: 'microsoft dynamics 365',
                     imageSrc:

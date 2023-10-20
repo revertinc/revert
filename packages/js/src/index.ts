@@ -189,8 +189,9 @@ const createIntegrationBlock = function (self, integration) {
 
     const image = document.createElement('img');
     image.src = integration.imageSrc;
-    image.height = 62;
+    image.style.height = '62px';
     image.style.pointerEvents = 'none';
+    image.style.objectFit = 'scale-down';
     integrationConnect.appendChild(image);
     if (isInActive) {
         image.style.filter = 'gray';
@@ -359,7 +360,7 @@ const createIntegrationBlock = function (self, integration) {
                         color: '#777',
                     }),
                     [],
-                    'Select CRM'
+                    'Select tool to integrate'
                 );
                 headerDiv.appendChild(headerText);
                 headerDiv.appendChild(closeButton);
@@ -1118,6 +1119,12 @@ const createIntegrationBlock = function (self, integration) {
                         `https://oauth.pipedrive.com/oauth/authorize?client_id=${
                             selectedIntegration.clientId
                         }&redirect_uri=${this.#REDIRECT_URL_BASE}/pipedrive&state=${state}`
+                    );
+                } else if (selectedIntegration.integrationId === 'slack') {
+                    window.open(
+                        `https://slack.com/oauth/v2/authorize?client_id=${selectedIntegration.clientId}&redirect_uri=${
+                            this.#REDIRECT_URL_BASE
+                        }/slack&scope=${scopes.join(',')}&user_scope=identity.basic,identity.email&state=${state}`
                     );
                 }
                 this.clearInitialOrProcessingOrSuccessStage();

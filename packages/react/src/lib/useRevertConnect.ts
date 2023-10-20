@@ -67,6 +67,5 @@ export default function useRevertConnect(props: useRevertConnectProps) {
         }
         window.Revert.open(integrationId);
     };
-
     return { open, error, loading: loading || !integrationsLoaded };
 }

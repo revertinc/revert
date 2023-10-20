@@ -1,5 +1,5 @@
 import { TP_ID, accountFieldMappingConfig } from '@prisma/client';
-import { StandardObjects } from '../../../constants/common';
+import { CRM_TP_ID, StandardObjects } from '../../../constants/common';
 import { transformModelToFieldMapping } from '.';
 import { handleHubspotDisunify, handlePipedriveDisunify, handleSfdcDisunify, handleZohoDisunify } from '..';
 import { postprocessDisUnifyObject } from './preprocess';
@@ -13,7 +13,7 @@ export async function disunifyObject<T extends Record<string, any>>({
     accountFieldMappingConfig,
 }: {
     obj: T;
-    tpId: TP_ID;
+    tpId: CRM_TP_ID;
     objType: StandardObjects;
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;

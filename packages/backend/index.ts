@@ -145,5 +145,6 @@ app.listen(config.PORT, () => {
     // TODO: do this optimistically.
     cron.schedule(`*/2 * * * *`, async () => {
         await AuthService.refreshOAuthTokensForThirdParty();
+        await AuthService.refreshOAuthTokensForThirdPartyChatServices();
     });
 }).setTimeout(600000);
