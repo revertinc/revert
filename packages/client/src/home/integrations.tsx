@@ -269,7 +269,7 @@ const Integrations = ({ environment }) => {
                                     <img
                                         width={100}
                                         alt="Slack logo"
-                                        src="https://previews.us-east-1.widencdn.net/preview/48045879/assets/asset-view/d613a6c7-697e-4bb8-9bc0-0cdb1ada66da/thumbnail/eyJ3IjoyMDQ4LCJoIjoyMDQ4LCJzY29wZSI6ImFwcCJ9?Expires=1696230000&Signature=sDH1XOT0vqZCA55wEy9JSOtzHTfH~-PgNui8R37rO34ashv~FPHV1icoXN9NnFIMK1EnFjTYPHF7AcBCvWAUtQ1Px8IGlhdOfIkQlF6LKRJ7qUOlRTll44WRNybbnls1~z4tU321u0axAgbnf3KIkW5SEpxMMfbdatoAoQ9T0hZRSOlPFdeJyzReSTv1hxD7B1bJ9x5PrCq9oTUC9tsp22P2YZdsH4JEs4XlHGec3eWN2vV5D0C54smHyJbbjfqpxVy11rmXmCdArj52j~tNq7ak6V1AZ5GozSbsJHPHwU2FDtq1wFP4F7KT~~FgNVUSzfuTD4J9abxoQDKKbvgx4g__&Key-Pair-Id=APKAJM7FVRD2EPOYUXBQ"
+                                        src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1697800654/Revert/txfq0qixzprqniuc0wry.png"
                                     />
                                     <p className="font-bold mt-4">Slack Chat</p>
                                     <span>Configure your Slack Chat App from here.</span>

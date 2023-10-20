@@ -8,8 +8,8 @@ import axios from 'axios';
 import qs from 'qs';
 import { randomUUID } from 'crypto';
 import redis from '../../../redis/client';
-import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from 'redis/client/pubsub';
-import { mapIntegrationIdToIntegrationName } from 'constants/common';
+import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../redis/client/pubsub';
+import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
 
 const authRouter = express.Router();
 
@@ -51,6 +51,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 grant_type: 'authorization_code',
                 client_id: clientId || config.SLACK_CLIENT_ID,
                 client_secret: clientSecret || config.SLACK_CLIENT_SECRET,
+                redirect_uri: `${config.OAUTH_REDIRECT_BASE}/slack`,
                 code: req.query.code,
             };
 

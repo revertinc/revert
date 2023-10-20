@@ -5,7 +5,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    position: absolute;
+    position: fixed;
     z-index: 3;
     width: 100%;
 }

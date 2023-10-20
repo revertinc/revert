@@ -22,23 +22,6 @@ const RevertConnect = (props: RevertConnectProps) => {
             >
                 {props.children || 'Connect your CRM'}
             </button>
-            <button
-                disabled={loading || Boolean(error)}
-                id="revert-connect-button-slack"
-                onClick={() => open('slack')}
-                style={{
-                    margin: 10,
-                    padding: 10,
-                    outline: 'none',
-                    background: 'rgb(22, 22, 22)',
-                    borderColor: 'rgb(22, 22, 22)',
-                    borderRadius: 5,
-                    cursor: 'pointer',
-                    color: '#fff',
-                }}
-            >
-                Connect to Slack
-            </button>
         </>
     );
 };
