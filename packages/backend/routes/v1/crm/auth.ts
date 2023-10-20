@@ -68,8 +68,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
             });
             logInfo('Oauth token info', info.data);
             try {
-                console.log('*********************************************************');
-                console.log(String(req.query.t_id));
                 await xprisma.connections.upsert({
                     where: {
                         id: String(req.query.t_id),
