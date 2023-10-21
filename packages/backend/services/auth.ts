@@ -154,7 +154,7 @@ class AuthService {
                                 },
                             });
                         } else if (connection.tp_id === TP_ID.discord ){
-                            const url = 'http://discord.com/api/oauth2/token';
+                            const url = 'https://discord.com/api/oauth2/token';
                             const formData = {
                                 grant_type: 'refresh_token',
                                 client_id: connection.app?.is_revert_app

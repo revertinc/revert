@@ -3640,6 +3640,7 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
 "@dabh/diagnostics@npm:^2.0.2":
   version: 2.0.3
   resolution: "@dabh/diagnostics@npm:2.0.3"
@@ -3684,10 +3685,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+=======
+>>>>>>> e89f44c (discord oauth added)
 "@discoveryjs/json-ext@npm:0.5.7, @discoveryjs/json-ext@npm:^0.5.3":
   version: 0.5.7
   resolution: "@discoveryjs/json-ext@npm:0.5.7"
   checksum: 2176d301cc258ea5c2324402997cf8134ebb212469c0d397591636cea8d3c02f2b3cf9fd58dcb748c7a0dade77ebdc1b10284fa63e608c033a1db52fddc69918
+<<<<<<< HEAD
   languageName: node
   linkType: hard
 
@@ -3708,6 +3712,8 @@ __metadata:
     global-agent:
       optional: true
   checksum: 900845cc0b31b54761fc9b0ada2dea1e999e59aacc48999d53903bcb7c9a0a7356b5fe736cf610b2a56c5a21f5a3c0e083b2ed2b7e52c36a4d0f420d4b5ec268
+=======
+>>>>>>> e89f44c (discord oauth added)
   languageName: node
   linkType: hard
 
@@ -9382,6 +9388,16 @@ __metadata:
     anymatch: ^3.0.0
     source-map: ^0.6.0
   checksum: 5f64818128c94026be0e43e77d687e2d90f0da526a3a7c308c6a0bb12e93a35c9243be427bbf6865f64fd71dc5b32715af9b9da0cd6ae8335081b6db995bad2b
+  languageName: node
+  linkType: hard
+
+"@types/whatwg-url@npm:^8.2.1":
+  version: 8.2.2
+  resolution: "@types/whatwg-url@npm:8.2.2"
+  dependencies:
+    "@types/node": "*"
+    "@types/webidl-conversions": "*"
+  checksum: 5dc5afe078dfa1a8a266745586fa3db9baa8ce7cc904789211d1dca1d34d7f3dd17d0b7423c36bc9beab9d98aa99338f1fc60798c0af6cbb8356f20e20d9f243
   languageName: node
   linkType: hard
 
