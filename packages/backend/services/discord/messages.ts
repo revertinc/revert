@@ -25,9 +25,10 @@ const messageService = new MessagesService(
 
                 switch (thirdPartyId) {
                     case TP_ID.discord: {
+                        console.log(thirdPartyId,"third")
                         let disocrdRes: any = await axios({
                             method: 'post',
-                            url: 'https://disocrd.com/api/chat.postMessage',
+                            url: 'https://discord.com/api/channels/1160776534618034189/messages',
                             headers: {
                                 'content-type': 'application/json',
                                 authorization: `Bearer ${thirdPartyToken}`,
