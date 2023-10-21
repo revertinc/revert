@@ -6,7 +6,7 @@ environments:
     Staging:
         docs: This staging environment is helpful for testing!
         url: https://api-staging.revert.dev
-    Local: http://localhost:4001
+    Local: https://localhost:4001
 default-environment: Production
 audiences:
     - internal
