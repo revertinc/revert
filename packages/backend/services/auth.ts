@@ -280,14 +280,18 @@ class AuthService {
                     },
                     include: { environments: true },
                 });
-                // Create default apps.
+                // Create default apps that don't yet exist.
                 await Promise.all(
                     Object.keys(ENV).map((env) => {
                         Object.keys(TP_ID).map(async (tp) => {
                             try {
                                 const environment = account.environments?.find((e) => e.env === env)!;
-                                await prisma.apps.create({
-                                    data: {
+                                await prisma.apps.upsert({
+                                    where: {
+                                        id: `${tp}_${account.id}_${env}`,
+                                    },
+                                    update: {},
+                                    create: {
                                         id: `${tp}_${account.id}_${env}`,
                                         tp_id: tp as TP_ID,
                                         scope: [],
