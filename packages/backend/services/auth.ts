@@ -316,6 +316,24 @@ class AuthService {
                         accountId: account.id,
                     },
                 });
+                // Send onboarding campaign email
+                try {
+                    const res = await axios({
+                        method: 'post',
+                        url: 'https://app.loops.so/api/v1/transactional',
+                        data: JSON.stringify({
+                            transactionalId: config.LOOPS_ONBOARDING_TXN_ID,
+                            email: userEmail,
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${config.LOOPS_API_KEY}`,
+                        },
+                    });
+                    logInfo('Sent onboarding email', res);
+                } catch (error: any) {
+                    logError(error);
+                }
                 response = { status: 'ok' };
             } catch (e: any) {
                 logError(e);
