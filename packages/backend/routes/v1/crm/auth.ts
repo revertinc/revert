@@ -311,7 +311,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     tenantId: req.query.t_id,
                     tenantSecretToken,
                 } as IntegrationStatusSseMessage);
-                res.send({ status: 'ok', tp_customer_id: 'testSfdcUser' });
+                res.send({ status: 'ok', tp_customer_id: info.data.email });
             } catch (error: any) {
                 logError(error);
                 if (error instanceof Prisma.PrismaClientKnownRequestError) {
