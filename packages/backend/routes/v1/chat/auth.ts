@@ -42,7 +42,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
 
         const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
-        // const svixAppId = account!.accounts!.id;
+        const svixAppId = account!.accounts!.id;
 
         if (integrationId === TP_ID.slack && req.query.code && req.query.t_id && revertPublicKey) {
             // handling the slack received code
@@ -103,6 +103,19 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                 });
                 // Svix stuff goes here ****
+                config.svix?.message.create(svixAppId, {
+                    eventType: 'connection.added',
+                    payload: {
+                        eventType: 'connection.added',
+                        connection: {
+                            t_id: req.query.t_id as string,
+                            tp_id: TP_ID.sfdc,
+                            tp_access_token: String(result.data?.access_token),
+                            tp_customer_id: String(info.data.user?.id),
+                        },
+                    },
+                    channels: [req.query.t_id as string],
+                });
 
                 await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                     publicToken: revertPublicKey,
