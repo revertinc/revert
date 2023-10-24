@@ -163,9 +163,9 @@ class AuthService {
                                 client_secret: connection.app?.is_revert_app
                                     ? config.DISCORD_CLIENT_SECRET
                                     : connection.app_client_secret || config.DISCORD_CLIENT_SECRET,
-                                // redirect_uri: '' TODO
+                                redirect_uri: 'https://localhost:4001/auth/discord/callback' ,
                                 refresh_token: connection.tp_refresh_token,
-                            };
+                            }
 
                             const result = await axios({
                                 method: 'post',
@@ -185,8 +185,7 @@ class AuthService {
                                     tp_refresh_token: result.data.refresh_token,
                                 },
                             });
-
-                            
+                        
 
                         }
                     } catch (error: any) {
@@ -353,7 +352,6 @@ class AuthService {
             const connections = await prisma.connections.findMany({
                 include: { app: true },
             });
-    
             for (let i = 0; i < connections.length; i++) {
                 const connection = connections[i];
                 if (connection.tp_refresh_token) {
@@ -361,21 +359,23 @@ class AuthService {
                         if (connection.tp_id === TP_ID.discord) {
                             
                             const url = 'https://discord.com/api/oauth2/token';
-                            const formData = {
-                                grant_type: 'refresh_token',
-                                client_id: connection.app?.is_revert_app
-                                    ? config.DISCORD_CLIENT_ID
-                                    : connection.app_client_id || config.DISCORD_CLIENT_SECRET,
-                                client_secret: connection.app?.is_revert_app
-                                    ? config.DISCORD_CLIENT_SECRET
-                                    : connection.app_client_secret || config.DISCORD_CLIENT_SECRET,
-                                redirect_uri: 'https://localhost:4001/auth/discord/callback' ,
-                                refresh_token: connection.tp_refresh_token,
-                            };
+                            const formData = new URLSearchParams(
+                                {
+                                    grant_type: 'refresh_token',
+                                    client_id: connection.app?.is_revert_app
+                                        ? config.DISCORD_CLIENT_ID
+                                        : connection.app_client_id || config.DISCORD_CLIENT_SECRET,
+                                    client_secret: connection.app?.is_revert_app
+                                        ? config.DISCORD_CLIENT_SECRET
+                                        : connection.app_client_secret || config.DISCORD_CLIENT_SECRET,
+                                    redirect_uri: 'https://localhost:4001/auth/discord/callback' ,
+                                    refresh_token: connection.tp_refresh_token,
+                                }
+                            )
                             const result = await axios({
                                 method: 'post',
                                 url: url,
-                                data: qs.stringify(formData),
+                                data: formData,
                                 headers: {
                                     'Content-Type': 'application/x-www-form-urlencoded',
                                 },
@@ -390,6 +390,7 @@ class AuthService {
                                     tp_refresh_token: result.data.refresh_token,
                                 },
                             });
+                        
                         }
                     } catch (error: any) {
                         logError(error.response?.data);

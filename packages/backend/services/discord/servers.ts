@@ -3,7 +3,7 @@ import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import logError from '../../helpers/logger';
 import { ServersService } from '../../generated/typescript/api/resources/discord/resources/servers/service/ServersService';
 import { isStandardError } from '../../helpers/error';
-import { InternalServerError } from '../../generated/typescript/api/resources/common';
+// import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 // import { unifyChannel } from '../../models/unified/channel';
@@ -12,38 +12,48 @@ import revertAuthMiddleware from '../../helpers/authMiddleware';
 
 const serversService = new ServersService(
     {
-        async getChannels(req, res) {
+        async getChannels(req : any, res : any) {
+            console.log(req.query);
             try {
+                console.log(
+                    res.locals.connection,
+                    '00000000000000000000000000000000000000000000000---------------------------------llllllllllllllll'
+                );
                 const connection = res.locals.connection;
-                const pageSize = parseInt(String(req.query.pageSize));
-                const cursor = req.query.cursor;
+                // const pageSize = parseInt(String(req.query.pageSize));
+                // const cursor = req.query.cursor;
+
+           
                 const thirdPartyId = connection.tp_id;
-                const thirdPartyToken = connection.tp_access_token;
+                // const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const customorId = connection.tp_customer_id;
                 console.log('Revert::GET CHANNELS', tenantId, thirdPartyId);
 
                 switch (thirdPartyId) {
                     case TP_ID.discord: {
-                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
-                            cursor ? `&after=${cursor}` : ''
-                        }`;
+                        // const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                        //     cursor ? `&after=${cursor}` : ''
+                        // }`;
 
-                        const url = `https://slack.com/api/conversations.list?${pagingString}`;
+                        const url = `https://discord.com/api/guilds/${customorId}/channels`;
 
                         let channels: any = await axios({
                             method: 'get',
                             url: url,
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded',
-                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Authorization: `Bot MTE2Mzc3NjE3OTAwMjY4MzQwMg.GgQf73.G9FEkS9qKCERtwofTEpxQnY-LRw2H8dLFWzYZA`,
                             },
                         });
 
-                        const nextCursor = channels.data?.response_metadata?.next_cursor || undefined;
-                        channels = channels.data.channels;
-                        channels = channels?.map((l: any) => unifyServer(l));
-
-                        res.send({ status: 'ok', next: nextCursor, results: channels });
+                        // const nextCursor = channels.data?.response_metadata?.next_cursor || undefined;
+                       
+                        channels = channels.data;
+                      
+                        channels = channels.map((l: any) => unifyServer(l));
+                        console.log(channels, 'ppppppppppppp');
+                        res.send({ status: 'ok', results: channels });
                         break;
                     }
                 }
@@ -53,7 +63,7 @@ const serversService = new ServersService(
                 if (isStandardError(error)) {
                     throw error;
                 }
-                throw new InternalServerError({ error: 'Internal server error' });
+                throw new error({ error: 'Internal server' });
             }
         },
     },
