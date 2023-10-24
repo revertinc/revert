@@ -22,7 +22,7 @@ authRouter.get('/discord-login', async (_, res) => {
       
       // Replace 'YOUR_BOT_TOKEN' with your bot's token
       
-    const discordButton = `<a href="https://discord.com/api/oauth2/authorize?client_id=1163776179002683402&permissions=8&redirect_uri=https%3A%2F%2Flocalhost%3A4001%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify%20bot" /></a>`;
+    const discordButton = `<a href="https://discord.com/api/oauth2/authorize?client_id=1163776179002683402&permissions=274895748096&redirect_uri=https%3A%2F%2Flocalhost%3A4001%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify%20bot" /></a>`;
 
     res.status(200).header('Content-Type', 'text/html; charset=utf-8').send(discordButton);
 });
@@ -115,7 +115,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 });
                 // Svix stuff goes here ****
 
-                res.send({ status: 'ok', tp_customer_id: "1160776534618034186"});
+                res.send({ status: 'ok', tp_customer_id: info.data.user?.id});
             } catch (error: any) {
                 logError(error);
 

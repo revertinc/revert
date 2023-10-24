@@ -52,7 +52,7 @@ const usersService = new UsersService(
                 if (isStandardError(error)) {
                     throw error;
                 }
-                throw new InternalServerError({ error: 'Internal server error' });
+                throw new InternalServerError({ error: 'Internal server' });
             }
         },
     },
