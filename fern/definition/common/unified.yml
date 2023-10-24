@@ -215,7 +215,7 @@ types:
                 docs: Date at which channel has been created
     Message:
         properties:
-            text:
+            content:
                 type: string
                 docs: Message sent by user
             channelId:

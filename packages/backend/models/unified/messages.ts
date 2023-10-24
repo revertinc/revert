@@ -1,14 +1,14 @@
 import { TP_ID } from '@prisma/client';
 
 export interface UnifiedMessage {
-    text: string;
+    content: string;
     channelId: string;
     additional?: any;
 }
 
 export function unifyMessage(message: any) {
-    const unifiedMessage: UnifiedMessage = {
-        text: message.message.text,
+   const unifiedMessage: UnifiedMessage = {
+        content: message.content,
         channelId: message.channel,
         additional: {},
     };
@@ -32,7 +32,7 @@ export function disunifyMessage(message: UnifiedMessage, integrationId: string):
 function todiscordMessage(message: UnifiedMessage): any {
     const discordMessage: any = {
         channel: message.channelId,
-        text: message.text,
+        content: message.content,
     };
 
     // Map custom fields, if any
