@@ -20,6 +20,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
     logInfo('OAuth callback', req.query);
     const integrationId = req.query.integrationId as CRM_TP_ID;
     const revertPublicKey = req.query.x_revert_public_token as string;
+    console.log(req.query);
+    console.log(`IntegrationID: ${integrationId}, revertPublicKey: ${revertPublicKey}`);
 
     // generate a token for connection auth and save in redis for 5 mins
     const tenantSecretToken = randomUUID();
@@ -404,6 +406,102 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 res.send({ status: 'ok', tp_customer_id: info.data.data.email });
             } catch (error) {
                 if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                    if (error?.code === 'P2002') {
+                        console.error(
+                            'There is a unique constraint violation, a new user cannot be created with this email'
+                        );
+                    }
+                }
+                console.error('Could not update db', error);
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
+                    publicToken: revertPublicKey,
+                    status: 'FAILED',
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                    tenantId: req.query.t_id,
+                    tenantSecretToken,
+                } as IntegrationStatusSseMessage);
+                res.send({ status: 'error', error: error });
+            }
+        } else if (integrationId === TP_ID.closecrm && req.query.code && revertPublicKey) {
+            const formData = {
+                client_id: clientId || config.CLOSECRM_CLIENT_ID,
+                client_secret: clientSecret || config.CLOSECRM_CLIENT_SECRET,
+                grant_type: 'authorization_code',
+                code: req.query.code,
+            };
+
+            const result = await axios({
+                method: 'post',
+                url: 'https://api.close.com/oauth2/token/',
+                data: qs.stringify(formData),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            });
+
+            logInfo('OAuth creds for close crm', result.data);
+
+            const info = await axios({
+                method: 'get',
+                url: 'https://api.close.com/api/v1/me/',
+                headers: {
+                    Authorization: `Bearer ${result.data.access_token}`,
+                    Accept: 'application/json',
+                },
+            });
+
+            logInfo('Oauth token info', info.data);
+
+            try {
+                await xprisma.connections.upsert({
+                    where: {
+                        id: String(req.query.t_id),
+                    },
+                    update: {
+                        tp_access_token: result.data.access_token,
+                        tp_refresh_token: result.data.refresh_token,
+                        app_client_id: clientId || config.HUBSPOT_CLIENT_ID,
+                        app_client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET,
+                    },
+                    create: {
+                        id: String(req.query.t_id),
+                        t_id: req.query.t_id as string,
+                        tp_id: integrationId,
+                        tp_access_token: result.data.access_token,
+                        tp_refresh_token: result.data.refresh_token,
+                        app_client_id: clientId || config.HUBSPOT_CLIENT_ID,
+                        app_client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET, // TODO: Fix in other platforms.
+                        tp_customer_id: info.data.email,
+                        owner_account_public_token: revertPublicKey,
+                        appId: account?.apps[0].id,
+                    },
+                });
+
+                // SVIX webhook
+                config.svix?.message.create(svixAppId, {
+                    eventType: 'connection.added',
+                    payload: {
+                        eventType: 'connection.added',
+                        connection: {
+                            t_id: req.query.t_id as string,
+                            tp_id: TP_ID.closecrm,
+                            tp_access_token: result.data.access_token,
+                            tp_customer_id: info.data.email,
+                        },
+                    },
+                    channels: [req.query.t_id as string],
+                });
+
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
+                    publicToken: revertPublicKey,
+                    status: 'SUCCESS',
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                    tenantId: req.query.t_id,
+                    tenantSecretToken,
+                } as IntegrationStatusSseMessage);
+                res.send({ status: 'ok', tp_customer_id: info.data.email });
+            } catch (error: any) {
+                logError(error);
+                if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                    // The .code property can be accessed in a type-safe manner
                     if (error?.code === 'P2002') {
                         console.error(
                             'There is a unique constraint violation, a new user cannot be created with this email'

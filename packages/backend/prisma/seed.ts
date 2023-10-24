@@ -767,7 +767,7 @@ async function main() {
     const fieldMappingForAll: fieldMappings[] = [];
     Object.values(StandardObjects).forEach((obj) => {
         Object.values(TP_ID).forEach(async (tpId) => {
-            if (tpId === 'slack') return;
+            if (tpId === 'slack' || tpId === 'closecrm') return;
             const objSchema = allSchemas.find((s) => s.object === obj);
             const fieldMappings = objSchema?.fields.map((field) => ({
                 id: randomUUID(),

@@ -29,6 +29,8 @@ const config = {
     SLACK_CLIENT_ID: process.env.SLACK_CLIENT_ID!,
     SLACK_CLIENT_SECRET: process.env.SLACK_CLIENT_SECRET!,
     SLACK_BOT_TOKEN: process.env.SLACK_BOT_TOKEN!,
+    CLOSECRM_CLIENT_ID: process.env.CLOSECRM_CLIENT_ID!,
+    CLOSECRM_CLIENT_SECRET: process.env.CLOSECRM_CLIENT_SECRET!,
 };
 
 export default config;

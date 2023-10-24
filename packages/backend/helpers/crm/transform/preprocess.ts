@@ -124,6 +124,7 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.closecrm]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
