@@ -2,7 +2,7 @@
 <img width="150" style="border-radius:75px;" src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1673932396/Revert/Revert_logo_x5ysgh.png"/>
 <h1 align="center"><b>Revert</b></h1>
 <p align="center">
-Universal API for CRMs
+Open-source unified API for product integrations 
 <br />
 </p>
 
@@ -10,7 +10,7 @@ Universal API for CRMs
 
 ## Overview
 
-Revert is the fastest way to integrate with your customer's CRMs with a single set of APIs & SDKs.
+Revert is the fastest way to integrate with your customer's tools with a single set of APIs & SDKs.
 
 This package contains the React sdk with the following:
 
@@ -27,7 +27,7 @@ yarn add @revertdotdev/revert-react
 
 ### Usage
 
-1. Adding the `<RevertConnect>` component will instantly give your app a way for your users to connect their CRMs by opening our Modal on clicking where they will be a able to choose & connect their CRM.
+1. Adding the `<RevertConnect>` component will instantly give your app a way for your users to connect their tools by opening our Modal on clicking where they will be a able to choose & connect their 3rd party tool.
 
 ```javascript
 function App() {
@@ -64,15 +64,16 @@ return (
             ...props.style,
         }}
     >
-        {props.children || 'Connect your CRM'}
+        {props.children || 'Connect your tool'}
     </button>
 );
 ```
 
 You can also pass in the `integrationId` inside the `open()` method above to directly open the integration you are interested in. These are the integration IDs that are currently supported:
-- `open('hubspot')`
-- `open('zohocrm')`
-- `open('sfdc')`
+
+-   `open('hubspot')`
+-   `open('zohocrm')`
+-   `open('sfdc')`
 
 ### Support
 
