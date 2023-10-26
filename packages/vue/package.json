@@ -1,12 +1,12 @@
 {
     "name": "@revertdotdev/revert-vue",
-    "version": "0.0.8",
+    "version": "0.0.8-rc",
     "publishConfig": {
         "access": "public"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/revertinc/Revert.git"
+        "url": "https://github.com/revertinc/revert.git"
     },
     "scripts": {
         "dev": "vite --host",
