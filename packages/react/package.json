@@ -1,9 +1,9 @@
 {
     "name": "@revertdotdev/revert-react",
-    "version": "0.0.17",
+    "version": "0.0.17-rc2",
     "repository": {
         "type": "git",
-        "url": "https://github.com/revertinc/Revert.git"
+        "url": "https://github.com/revertinc/revert.git"
     },
     "scripts": {
         "dev": "vite",

@@ -4,7 +4,7 @@
     "description": "Client side javascript sdk",
     "scripts": {
         "dev": "concurrently --kill-others \"yarn run watch:ts\" \"yarn workspace @revertdotdev/revert-react dev\"",
-        "watch:ts": "nodemon -w src/index.ts --exec \"yarn run build && cp dist/revert.js ../react/src/lib/build/revert-dev.js\"",
+        "watch:ts": "nodemon -w src/index.ts --exec \"yarn run build && cp dist/revert.js ../react/src/lib/build/revert-dev.js && cp dist/revert.js ../vue/src/lib/build/revert-dev.js\"",
         "test": "npm test",
         "build": "npm run prebuild && vite build",
         "prebuild": "tsc && babel src -d lib && browserify lib/index.js -o lib/bundle.js",
