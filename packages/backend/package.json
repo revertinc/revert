@@ -13,6 +13,7 @@
         "dev": "NODE_ENV=development ts-node-dev --inspect --exit-child --ignore-watch node_modules --respawn index.ts",
         "db-deploy": "prisma migrate deploy",
         "db-seed": "prisma db seed",
+        "db-seed:docker": "ts-node prisma/seed.ts",
         "db-pull": "prisma db pull",
         "migration:resolve": "prisma migrate resolve --applied $MIGRATION_ID",
         "migration:dev": "prisma migrate dev",
