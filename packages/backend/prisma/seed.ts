@@ -28,8 +28,12 @@ async function main() {
     });
     await Promise.all(
         Object.keys(TP_ID).map(async (tp) => {
-            const localRevertApp = await prisma.apps.create({
-                data: {
+            const localRevertApp = await prisma.apps.upsert({
+                where: {
+                    id: `${tp}_${localAccount.id}`,
+                },
+                update: {},
+                create: {
                     id: `${tp}_${localAccount.id}`,
                     tp_id: tp as TP_ID,
                     scope: [],
@@ -752,8 +756,12 @@ async function main() {
             object: obj as StandardObjects,
         };
     });
-    await prisma.schema_mapping.create({
-        data: {
+    await prisma.schema_mapping.upsert({
+        where: {
+            id: rootSchemaMappingId,
+        },
+        update: {},
+        create: {
             id: rootSchemaMappingId,
             object_schemas: {
                 createMany: {

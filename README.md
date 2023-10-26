@@ -120,7 +120,13 @@ cp .env.example .env
 # Update this .env file with your own secrets
 
 # Then In the root directory run
+
+# When running for the first time to seed the database.
+docker-compose run db-seed
+
+# For subsequent runs
 docker-compose up -d
+
 ```
 
 The UI is now available at http://localhost:3000 and the backend is available at http://localhost:4001.
