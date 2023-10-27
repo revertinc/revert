@@ -9,7 +9,7 @@ import { UnifiedMessage,disunifyMessage,unifyMessage } from '../../models/unifie
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { isStandardError } from '../../helpers/error';
-
+import config from 'config';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 
 const messageService = new MessagesService(
@@ -32,7 +32,7 @@ const messageService = new MessagesService(
                             url: `https://discord.com/api/channels/${message.channel}/messages`,
                             headers: {
                                 'Content-Type': 'application/json',
-                                Authorization: `Bot MTE2Mzc3NjE3OTAwMjY4MzQwMg.GgQf73.G9FEkS9qKCERtwofTEpxQnY-LRw2H8dLFWzYZA`,
+                                Authorization: `Bot ${config.DISCORD_BOT_TOKEN}`,
                             },
                             data: JSON.stringify(message),
                         });
