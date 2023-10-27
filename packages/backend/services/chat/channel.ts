@@ -10,7 +10,7 @@ import axios from 'axios';
 // import { unifyChannel } from '../../models/unified/channel';
 import { unifyServer } from '../../models/unified/channel';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
-
+import config from 'config';
 const channelService = new ChannelsService(
     {
         async getChannels(req : any, res : any) {
@@ -44,7 +44,7 @@ const channelService = new ChannelsService(
                             url: url,
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded',
-                                Authorization: `Bot MTE2Mzc3NjE3OTAwMjY4MzQwMg.GgQf73.G9FEkS9qKCERtwofTEpxQnY-LRw2H8dLFWzYZA`,
+                                Authorization: `Bot ${config.DISCORD_BOT_TOKEN}`,
                             },
                         });
 
