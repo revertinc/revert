@@ -13,7 +13,7 @@ Thanks for taking the interest in contributing ♥. We really appreciate any sup
 -   The development branch is <code>main</code>. All pull request should be made against this branch.
 -   If you need help getting started, [join us on Discord](https://discord.gg/q5K5cRhymW).
 -   Use [Conventional Commits](https://www.conventionalcommits.org/) to keep everything nice and clean.
--   Choose your branch name using the issue you are working on and a coventional commit type.
+-   Choose your branch name using the issue you are working on and a conventional commit type.
 
 1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your
    own GitHub account and then
