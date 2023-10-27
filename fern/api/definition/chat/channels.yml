@@ -5,15 +5,15 @@ imports:
     associations: ../common/associations.yml
 
 types:
-    CreateorUpdateMessageRequest:
-        extends: unified.Message
-    CreateorUpdateMessageResponse:
+    GetChannelsResponse:
         properties:
             status: types.ResponseStatus
-            result: unified.Message
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.Channel>
 
 service:
-    base-path: /discord/messages
+    base-path: /chat/channels
     auth: false
     headers:
         x-revert-api-token:
@@ -28,16 +28,18 @@ service:
     audiences:
         - external
     endpoints:
-        createMessage:
-            docs: Create a new message
-            method: POST
+        getChannels:
+            docs: Get all the channels
+            method: GET
             path: ''
             request:
-                name: CreateMessageRequest
-                body: CreateorUpdateMessageRequest
-            response: CreateorUpdateMessageResponse
+                name: GetChannelsRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetChannelsResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
-                - errors.BadRequestError

@@ -1,16 +1,17 @@
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 
 import logError from '../../helpers/logger';
-import { ServersService } from '../../generated/typescript/api/resources/discord/resources/servers/service/ServersService';
+// import { ServersService } from '../../generated/typescript/api/resources/discord/resources/servers/service/ServersService';
+import { ChannelsService } from '../../generated/typescript/api/resources/chat/resources/channels/service/ChannelsService';
 import { isStandardError } from '../../helpers/error';
 // import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 // import { unifyChannel } from '../../models/unified/channel';
-import { unifyServer } from '../../models/unified/servers';
+import { unifyServer } from '../../models/unified/channel';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 
-const serversService = new ServersService(
+const channelService = new ChannelsService(
     {
         async getChannels(req : any, res : any) {
             console.log(req.query);
@@ -70,4 +71,4 @@ const serversService = new ServersService(
     [revertAuthMiddleware(), revertTenantMiddleware()]
 );
 
-export { serversService };
+export { channelService };

@@ -1,7 +1,8 @@
 // import logError from '../../helpers/logError';
 import logError from '../../helpers/logger';
-import { MessagesService } from '../../generated/typescript/api/resources/discord/resources/messages/service/MessagesService';
+// import { MessagesService } from '../../generated/typescript/api/resources/discord/resources/messages/service/MessagesService';
 // import { MessagesService } from '../../generated/typescript/api/resources/chat/resources/messages/service/MessagesService';
+import { MessagesService } from '../../generated/typescript/api/resources/chat/resources/messages/service/MessagesService';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import { UnifiedMessage,disunifyMessage,unifyMessage } from '../../models/unified/messages';
 // import { UnifiedMessage, disunifyMessage, unifyMessage } from '../../models/unified/message';

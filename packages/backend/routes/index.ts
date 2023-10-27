@@ -25,10 +25,10 @@ import {
     userService,
 } from '../services/crm';
 import { connectionService } from '../services/connection';
-import discordChatRouter from './v1/discord';
-import { usersService } from '../services/discord/users';
-import { serversService } from '../services/discord/servers';
-import { messageService } from '../services/discord/messages';
+import discordChatRouter from './v1/chat';
+import { usersService } from '../services/chat/users';
+import { channelService} from '../services/chat/channel';
+import { messageService } from '../services/chat/messages';
 
 const router = express.Router();
 
@@ -113,7 +113,7 @@ router.post('/clerk/webhook', async (req, res) => {
 });
 
 router.use('/crm', cors(), revertAuthMiddleware(), crmRouter);
-router.use('/discord',cors(),revertAuthMiddleware(),discordChatRouter)
+router.use('/chat',cors(),revertAuthMiddleware(),discordChatRouter)
 
 register(router, {
     metadata: metadataService,
@@ -132,9 +132,9 @@ register(router, {
         proxy: proxyService,
     },
     connection: connectionService,
-    discord: {
+    chat: {
         users: usersService,
-        servers: serversService,
+        channels: channelService,
         messages: messageService,
     },
 });

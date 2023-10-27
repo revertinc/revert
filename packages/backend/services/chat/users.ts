@@ -1,16 +1,18 @@
 import { TP_ID } from '@prisma/client';
-import { UsersService } from '../../generated/typescript/api/resources/discord/resources/users/service/UsersService';
+// import { UsersService } from '../../generated/typescript/api/resources/discord/resources/users/service/UsersService';
+// import { UserService } from 'generated/typescript/api/resources/chat/resources/user/service/UserService';
+import { UsersService } from '../../generated/typescript/api/resources/chat/resources/users/service/UsersService';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { isStandardError } from '../../helpers/error';
 import logError from '../../helpers/logger';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import axios from 'axios';
-import { unifyDiscordUser } from '../../models/unified/discordUsers';
+import { unifyDiscordUser } from '../../models/unified/chatUsers';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 
 const usersService = new UsersService(
     {
-        async getUsers(req, res) {
+        async getUsers(req:any , res : any) {
             try {
                 const connection = res.locals.connection;
                 const pageSize = parseInt(String(req.query.pageSize));
