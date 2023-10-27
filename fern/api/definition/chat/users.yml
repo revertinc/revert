@@ -13,7 +13,7 @@ types:
             results: list<unified.User>
 
 service:
-    base-path: /discord/users
+    base-path: /chat/users
     auth: false
     headers:
         x-revert-api-token:
