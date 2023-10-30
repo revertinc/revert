@@ -1,6 +1,6 @@
 {
     "name": "@revertdotdev/revert-vue",
-    "version": "0.0.8-rc",
+    "version": "0.0.9",
     "publishConfig": {
         "access": "public"
     },
