@@ -6,14 +6,14 @@
 
 # @revertdotdev/backend
 
-### Running locally
-
--   Run `yarn workspace @revertdotdev/backend dev` to the run service locally at `:4001`
-
 ### Fern setup
 
--   Login with Fern if necessary with `fern login`.
+-   Login with Fern with `fern login`.
 -   To generate Fern drive code locally, run `yarn fern` in the root folder of this repo. This will create the `packages/backend/generated` folder with the generated code.
+
+### Running the API locally
+
+-   Run `yarn workspace @revertdotdev/backend dev` to the run service locally at `:4001`
 
 ### Connect to Pipedrive CRM
 
