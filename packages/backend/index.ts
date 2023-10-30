@@ -97,21 +97,22 @@ const testv2Router = (_req: Request, res: Response) => {
     res.send({ data: 'v2 hit' });
 };
 
-// 2. Set the options, the only required field is applicationId
-const moesifMiddleware = moesif({
-    applicationId: config.MOESIF_APPLICATION_ID!,
-    debug: process.env.NODE_ENV !== 'production', // enable debug mode.
-    logBody: true,
-    // Optional hook to link API calls to users
-    identifyUser: function (req: any, _: any) {
-        return req.headers['x-revert-t-id'] ? req.headers['x-revert-t-id'] : undefined;
-    },
-    identifyCompany: function (_: any, res: any) {
-        return res.locals?.account?.id;
-    },
-});
-
-app.use(moesifMiddleware);
+if (config.MOESIF_APPLICATION_ID) {
+    // Set the options, the only required field is applicationId
+    const moesifMiddleware = moesif({
+        applicationId: config.MOESIF_APPLICATION_ID!,
+        debug: process.env.NODE_ENV !== 'production', // enable debug mode.
+        logBody: true,
+        // Optional hook to link API calls to users
+        identifyUser: function (req: any, _: any) {
+            return req.headers['x-revert-t-id'] ? req.headers['x-revert-t-id'] : undefined;
+        },
+        identifyCompany: function (_: any, res: any) {
+            return res.locals?.account?.id;
+        },
+    });
+    app.use(moesifMiddleware);
+}
 
 app.use(
     '/',
