@@ -308,7 +308,9 @@ const createIntegrationBlock = function (self, integration) {
                 rootElement.firstChild.remove();
             }
             this.state = 'close';
-            this.#onClose();
+            if (this.#onClose) {
+                this.#onClose();
+            }
         };
 
         renderInitialStage = function (integrationId) {
