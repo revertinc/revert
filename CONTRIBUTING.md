@@ -26,7 +26,7 @@ Thanks for taking the interest in contributing ♥. We really appreciate any sup
     git checkout -b feat/<feature-description>
     ```
 
-3. See the individual [package's](https://github.com/revertinc/Revert#packages) README for instructions on how to build each from source.
+3. See the individual [package's](https://github.com/revertinc/revert#packages) README for instructions on how to build each from source.
 
 ## Building
 
