@@ -126,12 +126,18 @@ git clone --depth 1 https://github.com/revertinc/revert
 
 # Copy the example env file
 cp .env.example .env
+cp .env.example .env
+cp packages/backend/.env.example packages/backend/.env
+cp packages/client/.env.example packages/client/.env
+cp packages/js/.env.example packages/js/.env
+cp packages/react/.env.example packages/react/.env
+cp packages/vue/.env.example packages/vue/.env
 
-# Update this .env file with your own secrets
+# Update these .env files with your own secrets if you'd like to.
 
 # Then In the root directory run
 
-# When running for the first time to seed the database.
+# When running for the first time to seed the database. (RUN ONLY ONCE)
 docker-compose run db-seed
 
 # For subsequent runs

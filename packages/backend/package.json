@@ -15,6 +15,7 @@
         "db-seed": "prisma db seed",
         "db-seed:docker": "ts-node prisma/seed.ts",
         "db-pull": "prisma db pull",
+        "db-studio": "prisma studio",
         "migration:resolve": "prisma migrate resolve --applied $MIGRATION_ID",
         "migration:dev": "prisma migrate dev",
         "migration:rollback": "prisma migrate resolve --rolled-back $MIGRATION_ID",
