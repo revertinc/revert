@@ -137,6 +137,24 @@ const contactService = new ContactService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        const a = 2;
+                        const b = 5;
+                        const sum = a + b;
+                        console.log(sum);
+
+                        let contact: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/contact/${contactId}/`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+                        console.log(contact);
+                        res.send({ status: 'ok', result: contact.data });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -321,6 +339,31 @@ const contactService = new ContactService(
                             )
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedContacts });
+                        break;
+                    }
+                    case TP_ID.closecrm: {
+                        // @TODO do pagination effectively
+                        const skipCount = 0;
+                        const pagingString = `${pageSize ? `&_limit=${pageSize}` : ''}&_skip=${skipCount}`;
+                        // const pagingString = `&_limit=${pageSize}`;
+
+                        let contacts: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/contact/?${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            next: contacts.data?.has_more
+                                ? `?&_limit=${pageSize}&_skip=${skipCount + pageSize}`
+                                : undefined,
+                            previous: undefined, // Field not supported by Hubspot.
+                            results: contacts.data,
+                        });
                         break;
                     }
                     default: {

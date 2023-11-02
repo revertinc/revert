@@ -115,6 +115,27 @@ const noteService = new NoteService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        let note: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/activity/note/${noteId}/`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+                        note = await unifyObject<any, UnifiedNote>({
+                            obj: note.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        // console.log(note);
+                        res.send({ status: 'ok', result: note });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -283,6 +304,40 @@ const noteService = new NoteService(
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedNotes });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        let notes: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/activity/note/`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        // @TODO handle hasMore while pagination
+                        // const hasMore = notes.data.has_more;
+                        notes = notes.data.data;
+                        notes = await Promise.all(
+                            notes?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedNote>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+                        // notes = { ...notes, hasMore };
+                        res.send({
+                            status: 'ok',
+                            next: 'nextCursor',
+                            previous: undefined, // Field not supported by Hubspot.
+                            results: notes,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -312,6 +367,7 @@ const noteService = new NoteService(
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
                 console.log('Revert::CREATE NOTE', connection.app?.env?.accountId, tenantId, note);
+                console.log('Account...', account);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -370,6 +426,25 @@ const noteService = new NoteService(
                             result: {
                                 ...noteCreated.data.data,
                             },
+                        });
+                        break;
+                    }
+                    case TP_ID.closecrm: {
+                        const response = await axios({
+                            method: 'post',
+                            url: `https://api.close.com/api/v1/activity/note/`,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Accept: 'application/json',
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(note),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'CloseCRM note created',
+                            result: { id: response.data.id, ...response.data },
                         });
                         break;
                     }

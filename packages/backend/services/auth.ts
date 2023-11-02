@@ -174,8 +174,6 @@ class AuthService {
                             });
 
                             if (result.data && result.data.access_token) {
-                                console.log('***********token refreshed********');
-
                                 await prisma.connections.update({
                                     where: {
                                         id: connection.id,

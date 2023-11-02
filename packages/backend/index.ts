@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 // Note: Sentry should be initialized as early in your app as possible.
 import * as Sentry from '@sentry/node';
-import moesif from 'moesif-nodejs';
+// import moesif from 'moesif-nodejs';
 import config from './config';
 import indexRouter from './routes/index';
 import cors from 'cors';
@@ -98,20 +98,20 @@ const testv2Router = (_req: Request, res: Response) => {
 };
 
 // 2. Set the options, the only required field is applicationId
-const moesifMiddleware = moesif({
-    applicationId: config.MOESIF_APPLICATION_ID!,
-    debug: process.env.NODE_ENV !== 'production', // enable debug mode.
-    logBody: true,
-    // Optional hook to link API calls to users
-    identifyUser: function (req: any, _: any) {
-        return req.headers['x-revert-t-id'] ? req.headers['x-revert-t-id'] : undefined;
-    },
-    identifyCompany: function (_: any, res: any) {
-        return res.locals?.account?.id;
-    },
-});
+// const moesifMiddleware = moesif({
+//     applicationId: config.MOESIF_APPLICATION_ID!,
+//     debug: process.env.NODE_ENV !== 'production', // enable debug mode.
+//     logBody: true,
+//     // Optional hook to link API calls to users
+//     identifyUser: function (req: any, _: any) {
+//         return req.headers['x-revert-t-id'] ? req.headers['x-revert-t-id'] : undefined;
+//     },
+//     identifyCompany: function (_: any, res: any) {
+//         return res.locals?.account?.id;
+//     },
+// });
 
-app.use(moesifMiddleware);
+// app.use(moesifMiddleware);
 
 app.use(
     '/',
