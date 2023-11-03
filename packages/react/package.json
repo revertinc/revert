@@ -15,6 +15,7 @@
         "publish": "npm publish --access public"
     },
     "dependencies": {
+        "@revertdotdev/revert-react": "^0.0.17-rc2",
         "react-script-hook": "^1.7.2"
     },
     "devDependencies": {

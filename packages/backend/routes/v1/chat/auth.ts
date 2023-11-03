@@ -22,7 +22,7 @@ authRouter.get('/discord-login', async (_, res) => {
       
       // Replace 'YOUR_BOT_TOKEN' with your bot's token
       
-    const discordButton = `<a href="https://discord.com/api/oauth2/authorize?client_id=1163776179002683402&permissions=274895748096&redirect_uri=https%3A%2F%2Flocalhost%3A4001%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify%20bot" /></a>`;
+    const discordButton = `<a href="https://discord.com/api/oauth2/authorize?client_id=1163776179002683402&permissions=8&redirect_uri=https%3A%2F%2Flocalhost%3A4001%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify%20bot%20applications.commands" /></a>`;
 
     res.status(200).header('Content-Type', 'text/html; charset=utf-8').send(discordButton);
 });
@@ -46,6 +46,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
             },
         });
 
+        const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
+        const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
         
         if (integrationId === TP_ID.discord && req.query.code && req.query.t_id && revertPublicKey) {
             // handling the discord received code
@@ -57,8 +59,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
             try {
                 const formData = new URLSearchParams({
                     grant_type: 'authorization_code',
-                    client_id:  config.DISCORD_CLIENT_ID,
-                    client_secret:  config.DISCORD_CLIENT_SECRET,
+                    client_id: clientId || config.DISCORD_CLIENT_ID,
+                    client_secret: clientSecret || config.DISCORD_CLIENT_SECRET,
                     redirect_uri: `https://localhost:4001/auth/discord/callback`,
                     code: req.query.code as string,
                     scope: "identify"
@@ -79,12 +81,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     method: 'get',
                     url: 'https://discord.com/api/users/@me',
                     headers: {
-                        // 'Content-Type': 'application/x-www-form-urlencoded',
                         Authorization: `${result.data?.token_type} ${result.data?.access_token}`,
                     },
-                    // params: {
-                    //     user: result.data.guild.id,
-                    // },
+                    
                 });
     
                 console.log('OAuth token info', info.data);
@@ -97,8 +96,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     update: {
                         tp_access_token: result.data?.access_token,
                         tp_refresh_token: result.data?.refresh_token,
-                        app_client_id:   config.DISCORD_CLIENT_ID,
-                        app_client_secret:   config.DISCORD_CLIENT_SECRET,
+                        app_client_id: clientId ||  config.DISCORD_CLIENT_ID,
+                        app_client_secret: clientSecret ||  config.DISCORD_CLIENT_SECRET,
                     },
                     create: {
                         id:  String(req.query.t_id),
@@ -124,14 +123,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             } catch (error) {
                 console.log(error,"error hain bhai")
             }
-            // const info = await slackClient.users.info({
-            //     token: result.access_token,
-            //     user: String(result.authed_user?.id),
-            // });
-            // const infoData = {
-            //     token: result.data.access_token,
-            //     user: result.data.authed_user.id,
-            // };
+            
            
            
         }else{

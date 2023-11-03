@@ -17,7 +17,6 @@ const ApiKeys = ({ environment }) => {
     useEffect(() => {
         const headers = new Headers();
         headers.append('Content-Type', 'application/json');
-
         const data = JSON.stringify({
             userId: user.user?.id,
         });
@@ -34,8 +33,9 @@ const ApiKeys = ({ environment }) => {
                 setLoading(false);
             })
             .catch((error) => {
+                console.log("inside_erroe")
                 Sentry.captureException(error);
-                console.log('error', error);
+                console.log('error============================', error);
                 setLoading(false);
             });
     }, [user.user?.id, environment]);
