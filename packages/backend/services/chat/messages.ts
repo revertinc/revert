@@ -9,7 +9,7 @@ import { UnifiedMessage,disunifyMessage,unifyMessage } from '../../models/unifie
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { isStandardError } from '../../helpers/error';
-import config from 'config';
+import config from '../../config'
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 
 const messageService = new MessagesService(

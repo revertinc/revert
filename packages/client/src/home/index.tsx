@@ -32,7 +32,10 @@ const Home = () => {
             headers: headers,
         };
         fetch(`${REVERT_BASE_API_URL}/internal/account`, requestOptions)
-            .then((response) => response.json())
+            .then((response) => {
+                console.log(response.json(),"lol")
+            return response.json()
+            })
             .then((result) => {
                 setAccount(result?.account);
                 const environments: string[] = result?.account?.environments?.map((env) => env.env) || [];

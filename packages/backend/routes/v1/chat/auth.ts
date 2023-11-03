@@ -16,6 +16,20 @@ const authRouter = express.Router();
 /**
  * OAuth API
  */
+
+// Below route is a quick test endpoint as client package was not working in my case
+authRouter.get('/discord-login', async (_, res) => {
+
+   
+      
+      // Replace 'YOUR_BOT_TOKEN' with your bot's token
+      
+    const discordButton = `<a href="https://discord.com/api/oauth2/authorize?client_id=1163776179002683402&permissions=8&redirect_uri=https%3A%2F%2Flocalhost%3A4001%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify%20bot%20applications.commands" /></a>`;
+
+    res.status(200).header('Content-Type', 'text/html; charset=utf-8').send(discordButton);
+});
+
+
 authRouter.get('/oauth-callback', async (req, res) => {
     logInfo('OAuth callback', req.query);
     const integrationId = req.query.integrationId as TP_ID; // add TP_ID alias after
@@ -42,6 +56,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
 
         const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
+       
         const svixAppId = account!.accounts!.id;
 
         if (integrationId === TP_ID.slack && req.query.code && req.query.t_id && revertPublicKey) {
@@ -49,8 +64,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
             const url = 'https://slack.com/api/oauth.v2.access';
             const formData = {
                 grant_type: 'authorization_code',
-                client_id: clientId || config.SLACK_CLIENT_ID,
-                client_secret: clientSecret || config.SLACK_CLIENT_SECRET,
+                client_id: clientId ||clientId || config.SLACK_CLIENT_ID,
+                client_secret: clientSecret ||clientSecret || config.SLACK_CLIENT_SECRET,
                 redirect_uri: `${config.OAUTH_REDIRECT_BASE}/slack`,
                 code: req.query.code,
             };
