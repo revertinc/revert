@@ -29,6 +29,12 @@ navigation:
       contents:
           - page: Webhooks
             path: ./mdx/webhooks.mdx
+    - section: Developer guides
+      contents:
+          - page:  Developer guides
+            path: ./mdx/developer-guides.mdx
+          
+
 colors:
     accentPrimary: '#ffffff'
 logo:
