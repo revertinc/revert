@@ -2,45 +2,44 @@ import { TP_ID } from '@prisma/client';
 // import { UsersService } from '../../generated/typescript/api/resources/discord/resources/users/service/UsersService';
 // import { UserService } from 'generated/typescript/api/resources/chat/resources/user/service/UserService';
 import { UsersService } from '../../generated/typescript/api/resources/chat/resources/users/service/UsersService';
-import { InternalServerError } from '../../generated/typescript/api/resources/common';
+// import { InternalServerError } from '../../generated/typescript/api/resources/common';
+import { InternalServerError } from '../../generated/typescript/api/resources/common/resources';
 import { isStandardError } from '../../helpers/error';
 import logError from '../../helpers/logger';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import axios from 'axios';
 import { unifyDiscordUser } from '../../models/unified/chatUsers';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
-
+import config from '../../config'
 const usersService = new UsersService(
     {
         async getUsers(req:any , res : any) {
             try {
                 const connection = res.locals.connection;
                 const pageSize = parseInt(String(req.query.pageSize));
-                const cursor = req.query.cursor;
+                // const cursor = req.query.cursor;
+               
                 const thirdPartyId = connection.tp_id;
-                const thirdPartyToken = connection.tp_access_token;
-                const tenantId = connection.t_id;
-                console.log('Revert::GET USERS', tenantId, thirdPartyId, thirdPartyToken);
+                const thirdPartyToken = connection.tp_customer_id;
+                // const tenantId = connection.t_id;
+               
 
                 switch (thirdPartyId) {
                     case TP_ID.discord: {
-                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
-                            cursor ? `&after=${cursor}` : ''
-                        }`;
-
-                        const url = `https://slack.com/api/users.list?${pagingString}`;
+                        
+                        console.log('Revert::GET USERS', connection,pageSize);
+                       
 
                         let users: any = await axios({
                             method: 'get',
-                            url: url,
+                            url: `https://discord.com/api/guilds/${thirdPartyToken}/members`,
                             headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Authorization: `Bot ${config.DISCORD_BOT_TOKEN}`,
                             },
                         });
                         const nextCursor = users.data?.response_metadata?.next_cursor || undefined;
-
-                        users = users.data.members;
+                        console.log(users,"pssssss")
+                        users = users.data;
                         users = users?.map((l: any) => unifyDiscordUser(l));
 
                         res.send({ status: 'ok', next: nextCursor, results: users });
