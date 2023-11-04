@@ -10,26 +10,19 @@ import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import axios from 'axios';
 import { unifyDiscordUser } from '../../models/unified/chatUsers';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
-import config from '../../config'
+import config from '../../config';
 const usersService = new UsersService(
     {
-        async getUsers(req:any , res : any) {
+        async getUsers(req: any, res: any) {
             try {
+                console.log(req)
                 const connection = res.locals.connection;
-                const pageSize = parseInt(String(req.query.pageSize));
-                // const cursor = req.query.cursor;
-               
+
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_customer_id;
-                // const tenantId = connection.t_id;
-               
 
                 switch (thirdPartyId) {
                     case TP_ID.discord: {
-                        
-                        console.log('Revert::GET USERS', connection,pageSize);
-                       
-
                         let users: any = await axios({
                             method: 'get',
                             url: `https://discord.com/api/guilds/${thirdPartyToken}/members`,
@@ -38,7 +31,7 @@ const usersService = new UsersService(
                             },
                         });
                         const nextCursor = users.data?.response_metadata?.next_cursor || undefined;
-                        console.log(users,"pssssss")
+
                         users = users.data;
                         users = users?.map((l: any) => unifyDiscordUser(l));
 

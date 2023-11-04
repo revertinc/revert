@@ -32,7 +32,7 @@ const Integrations = ({ environment }) => {
         const payload = {
             userId: user.user?.id,
         };
-        await fetch({
+        const res = await fetch({
             url: '/internal/account',
             method: 'POST',
             payload,
@@ -47,6 +47,7 @@ const Integrations = ({ environment }) => {
 
     React.useEffect(() => {
         setAccount(data?.account);
+        console.log(data,"dataaa")
         localStorage.setItem(LOCALSTORAGE_KEYS.privateToken, data?.account?.private_token);
     }, [data]);
 
@@ -149,6 +150,8 @@ const Integrations = ({ environment }) => {
                                     <IconButton
                                         onClick={() => handleOpen('hubspot')}
                                         style={{
+                           
+                           
                                             color: '#6e6e6e',
                                             fontSize: 12,
                                             position: 'absolute',
@@ -244,6 +247,48 @@ const Integrations = ({ environment }) => {
                                     </IconButton>
                                 </div>
                             </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '2rem 0rem',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        padding: 30,
+                                        border: '2px #00000029 solid',
+                                        borderRadius: 10,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        minHeight: 200,
+                                        justifyContent: 'flex-end',
+                                        position: 'relative',
+                                    }}
+                                >
+                                    <img
+                                        width={100}
+                                        alt="Slack logo"
+                                        src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1697800654/Revert/txfq0qixzprqniuc0wry.png"
+                                    />
+                                    <p className="font-bold mt-4">Slack Chat</p>
+                                    <span>Configure your Slack Chat App from here.</span>
+                                    <IconButton
+                                        onClick={() => handleOpen('discord')}
+                                        style={{
+                                            color: '#6e6e6e',
+                                            fontSize: 12,
+                                            position: 'absolute',
+                                            top: 10,
+                                            right: 10,
+                                        }}
+                                    >
+                                        <SettingsIcon />
+                                    </IconButton>
+                                </div>
+                            </Box>
                         </div>
                     ) : (
                         <>
@@ -268,7 +313,10 @@ const Integrations = ({ environment }) => {
                 <EditCredentials
                     app={account?.environments
                         ?.find((env) => env.env === environment)
-                        ?.apps?.find((a) => a.tp_id === appId)}
+                        ?.apps?.find((a) => {
+                            console.log(a,"aa0")
+                            return a.tp_id === appId
+                        })}
                     handleClose={handleClose}
                 />
             </Modal>

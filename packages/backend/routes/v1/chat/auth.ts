@@ -22,7 +22,7 @@ authRouter.get('/discord-login', async (_, res) => {
       
       // Replace 'YOUR_BOT_TOKEN' with your bot's token
       
-    const discordButton = `<a href="https://discord.com/api/oauth2/authorize?client_id=1163776179002683402&permissions=8&redirect_uri=https%3A%2F%2Flocalhost%3A4001%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify%20bot%20applications.commands" /></a>`;
+    const discordButton = `<a href="https://discord.com/api/oauth2/authorize?client_id=1163776179002683402&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A4001%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify%20messages.read%20applications.commands%20bot" /></a>`;
 
     res.status(200).header('Content-Type', 'text/html; charset=utf-8').send(discordButton);
 });
@@ -61,7 +61,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     grant_type: 'authorization_code',
                     client_id: clientId || config.DISCORD_CLIENT_ID,
                     client_secret: clientSecret || config.DISCORD_CLIENT_SECRET,
-                    redirect_uri: `https://localhost:4001/auth/discord/callback`,
+                    redirect_uri: `http://localhost:4001/auth/discord/callback`,
                     code: req.query.code as string,
                     scope: "identify"
                 });

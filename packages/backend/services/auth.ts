@@ -154,7 +154,7 @@ class AuthService {
                                 },
                             });
                         } else if (connection.tp_id === TP_ID.discord ){
-                            const url = 'https://discord.com/api/oauth2/token';
+                            const url = 'http://discord.com/api/oauth2/token';
                             const formData = {
                                 grant_type: 'refresh_token',
                                 client_id: connection.app?.is_revert_app
@@ -163,7 +163,7 @@ class AuthService {
                                 client_secret: connection.app?.is_revert_app
                                     ? config.DISCORD_CLIENT_SECRET
                                     : connection.app_client_secret || config.DISCORD_CLIENT_SECRET,
-                                redirect_uri: 'https://localhost:4001/auth/discord/callback' ,
+                                redirect_uri: 'http://localhost:4001/auth/discord/callback' ,
                                 refresh_token: connection.tp_refresh_token,
                             }
 

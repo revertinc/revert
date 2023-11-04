@@ -33,9 +33,9 @@ const ApiKeys = ({ environment }) => {
                 setLoading(false);
             })
             .catch((error) => {
-                console.log("inside_erroe")
+                
                 Sentry.captureException(error);
-                console.log('error============================', error);
+                
                 setLoading(false);
             });
     }, [user.user?.id, environment]);

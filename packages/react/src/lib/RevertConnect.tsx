@@ -7,7 +7,7 @@ const RevertConnect = (props: RevertConnectProps) => {
         <button
             disabled={loading || Boolean(error)}
             id="revert-connect-button"
-            onClick={() => open()}
+            onClick={() => open('discord')}
             style={{
                 padding: 10,
                 outline: 'none',
