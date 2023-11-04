@@ -1,11 +1,7 @@
-// import logError from '../../helpers/logError';
 import logError from '../../helpers/logger';
-// import { MessagesService } from '../../generated/typescript/api/resources/discord/resources/messages/service/MessagesService';
-// import { MessagesService } from '../../generated/typescript/api/resources/chat/resources/messages/service/MessagesService';
 import { MessagesService } from '../../generated/typescript/api/resources/chat/resources/messages/service/MessagesService';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import { UnifiedMessage,disunifyMessage,unifyMessage } from '../../models/unified/messages';
-// import { UnifiedMessage, disunifyMessage, unifyMessage } from '../../models/unified/message';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { isStandardError } from '../../helpers/error';
@@ -26,7 +22,7 @@ const messageService = new MessagesService(
 
                 switch (thirdPartyId) {
                     case TP_ID.discord: {
-                        console.log(thirdPartyId,"third")
+                      
                         let disocrdRes: any = await axios({
                             method: 'post',
                             url: `https://discord.com/api/channels/${message.channel}/messages`,
@@ -37,7 +33,7 @@ const messageService = new MessagesService(
                             data: JSON.stringify(message),
                         });
                        
-                        console.log(disocrdRes);
+                      
                         disocrdRes = unifyMessage(disocrdRes.data);
                         res.send({
                             status: 'ok',

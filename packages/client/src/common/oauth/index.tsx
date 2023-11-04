@@ -105,7 +105,6 @@ export const OAuthCallback = (props) => {
                                     ? ': Already connected another CRM. Please disconnect first.'
                                     : '';
                             setStatus('Errored out' + errorMessage);
-                            window.close();
                         } else {
                             setStatus('Succeeded. Please feel free to close this window.');
                             window.close();
@@ -117,9 +116,8 @@ export const OAuthCallback = (props) => {
                         setIsLoading(false);
                         console.error(err);
                         setStatus('Errored out');
-                        window.close();
                     });
-            } else if (integrationId === 'slack') {
+            }else if (integrationId === 'discord') {
                 console.log('Post communication app installation', integrationId, params);
                 const { tenantId, revertPublicToken } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
@@ -158,6 +156,8 @@ export const OAuthCallback = (props) => {
             }
         }
     }, [integrationId]);
+
+
     return (
         <div>
             <h3 className="flex justify-center font-bold">OAuth Authorization {status}</h3>

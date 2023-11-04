@@ -8,15 +8,14 @@ import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import axios from 'axios';
 import { unifyChatUser } from '../../models/unified/chatUsers';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
-import config from '../../config'
+import config from '../../config';
 const usersService = new UsersService(
     {
-        async getUsers(req, res) {
+        async getUsers(req: any, res: any) {
             try {
+                console.log(req)
                 const connection = res.locals.connection;
-                const pageSize = parseInt(String(req.query.pageSize));
-                // const cursor = req.query.cursor;
-               
+
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;

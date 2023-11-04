@@ -12,7 +12,6 @@ import config from '../../config'
 const channelService = new ChannelsService(
     {
         async getChannels(req : any, res : any) {
-            console.log(req.query);
             try {
                 
                 const connection = res.locals.connection;
