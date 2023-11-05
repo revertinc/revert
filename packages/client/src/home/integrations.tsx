@@ -271,11 +271,11 @@ const Integrations = ({ environment }) => {
                                 >
                                     <img
                                         width={100}
-                                        alt="Slack logo"
-                                        src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1697800654/Revert/txfq0qixzprqniuc0wry.png"
+                                        alt="Discord logo"
+                                        src="https://1000logos.net/wp-content/uploads/2021/06/Discord-logo-768x432.png"
                                     />
-                                    <p className="font-bold mt-4">Slack Chat</p>
-                                    <span>Configure your Slack Chat App from here.</span>
+                                    <p className="font-bold mt-4">Discord Chat</p>
+                                    <span>Configure your Discord Chat App from here.</span>
                                     <IconButton
                                         onClick={() => handleOpen('slack')}
                                         style={{
