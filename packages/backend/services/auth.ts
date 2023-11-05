@@ -364,7 +364,7 @@ class AuthService {
                                     grant_type: 'refresh_token',
                                     client_id: connection.app?.is_revert_app
                                         ? config.DISCORD_CLIENT_ID
-                                        : connection.app_client_id || config.DISCORD_CLIENT_SECRET,
+                                        : connection.app_client_id || config.DISCORD_CLIENT_ID,
                                     client_secret: connection.app?.is_revert_app
                                         ? config.DISCORD_CLIENT_SECRET
                                         : connection.app_client_secret || config.DISCORD_CLIENT_SECRET,
@@ -410,6 +410,7 @@ class AuthService {
         publicToken,
         clientId,
         clientSecret,
+        botToken,
         scopes = [],
         tpId,
         isRevertApp,
@@ -418,6 +419,7 @@ class AuthService {
         publicToken: string;
         clientId?: string;
         clientSecret?: string;
+        botToken?: string;
         scopes?: string[];
         tpId: TP_ID;
         isRevertApp: boolean;
@@ -432,6 +434,7 @@ class AuthService {
             data: {
                 ...(clientId && { app_client_id: clientId }),
                 ...(clientSecret && { app_client_secret: clientSecret }),
+                ...(botToken && { app_bot_token: botToken }),
                 is_revert_app: isRevertApp,
                 ...(scopes.filter(Boolean).length && { scope: scopes }),
             },

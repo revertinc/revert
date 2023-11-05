@@ -48,6 +48,7 @@ model apps {
   scope                      String[]
   app_client_id              String?
   app_client_secret          String?
+  app_bot_token              String?
   owner_account_public_token String?
   environmentId              String
   env                        environments  @relation(fields: [environmentId], references: [id])
@@ -74,6 +75,7 @@ model connections {
   owner_account_public_token String
   app_client_id              String?
   app_client_secret          String?
+  app_bot_token              String?
   app                        apps?   @relation(fields: [appId], references: [id])
   appId                      String?
 

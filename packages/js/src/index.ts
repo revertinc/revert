@@ -481,6 +481,12 @@ const createIntegrationBlock = function (self, integration) {
                             selectedIntegration.clientId
                         }&redirect_uri=${this.#REDIRECT_URL_BASE}/pipedrive&state=${state}`
                     );
+                } else if (selectedIntegration.integrationId === 'slack') {
+                    window.open(
+                        `https://slack.com/oauth/v2/authorize?client_id=${selectedIntegration.clientId}&redirect_uri=${
+                            this.#REDIRECT_URL_BASE
+                        }/slack&scope=${scopes.join(',')}&user_scope=identity.basic,identity.email&state=${state}`
+                    );
                 }
                 if (closeWindow) {
                     this.close();
