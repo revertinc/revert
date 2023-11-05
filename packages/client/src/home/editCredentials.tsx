@@ -90,8 +90,9 @@ const EditCredentials: React.FC<{
         const payload = {
             appId: app.id,
             tpId: app.tp_id,
+            Bottoken:botToken,
             isRevertApp,
-            ...(!isRevertApp && { clientId, clientSecret, scopes }),
+            ...(!isRevertApp && { clientId, clientSecret,botToken, scopes }),
         };
         await fetch({
             url: '/internal/account/credentials',
@@ -182,7 +183,7 @@ const EditCredentials: React.FC<{
                     variant="contained"
                     onClick={handleSubmit}
                     loading={loading}
-                    disabled={isRevertApp ? false : !clientId || !clientSecret}
+                    disabled={isRevertApp ? false : app.tp_id === 'discord' ? !clientId || !clientSecret || !botToken : !clientId || !clientSecret }
                 >
                     Submit
                 </LoadingButton>

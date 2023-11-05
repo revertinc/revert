@@ -22,6 +22,7 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
     async (response) => {
+        console.log(response,"]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
         return response;
     },
     async (error) => {

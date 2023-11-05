@@ -17,6 +17,7 @@ types:
             scope: optional<list<string>>
             app_client_id: optional<string>
             app_client_secret: optional<string>
+            app_bot_token: optional<string>
             owner_account_public_token: string
             account: optional<Account>
             connections: optional<list<Connection>>
@@ -41,6 +42,7 @@ types:
             owner_account_public_token: string
             app_client_id: optional<string>
             app_client_secret: optional<string>
+            app_bot_token: optional<string>
             app: optional<App>
 
     TPID:
