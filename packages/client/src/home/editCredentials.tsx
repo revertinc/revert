@@ -71,6 +71,7 @@ const EditCredentials: React.FC<{
     handleClose: ({ refetchOnClose }: { refetchOnClose?: boolean | undefined }) => Promise<void>;
 }> = ({ app, handleClose }) => {
     const [clientId, setClientId] = React.useState<string>(app.app_client_id);
+    const [botToken,setBotToken] = React.useState<string>('');
     const [clientSecret, setClientSecret] = React.useState<string>(app.app_client_secret);
     const [scopes, setScopes] = React.useState<string[]>(app.scope);
     const [newScope, setNewScope] = React.useState<string>('');
@@ -128,6 +129,16 @@ const EditCredentials: React.FC<{
                             error={!clientId}
                         />
                     </Row>
+                    {
+                        app.tp_id === 'discord' && <Row>
+                        <span className="font-bold">Bot Token: </span>
+                        <Input
+                            value={botToken}
+                            onChange={(ev) => setBotToken((ev.target.value || '').trim())}
+                            error={!botToken}
+                        />
+                    </Row>
+                    }
                     <Row>
                         <span className="font-bold">Client Secret: </span>
                         <Input
