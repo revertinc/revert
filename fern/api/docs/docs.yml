@@ -8,9 +8,9 @@ navigation:
       contents:
           - page: Quick Start
             path: ./mdx/quick-start.mdx
-    - section: Usecases
+    - section: Use Cases
       contents:
-          - page: Usecases
+          - page: Use Cases
             path: ./mdx/usecases.mdx
     - section: How it works
       contents:
