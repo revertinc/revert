@@ -104,6 +104,7 @@ const createPoweredByBanner = function (self) {
             fontWeight: '400',
             lineHeight: '13px',
             letterSpacing: '0em',
+            color: '#343232',
         }),
         [],
         'Powered By'
@@ -120,7 +121,7 @@ const createPoweredByBanner = function (self) {
             alignItems: 'center',
             cursor: 'pointer',
             height: 35,
-            background: '#343232',
+            background: 'none',
             color: '#fff',
         }),
         [poweredBySpan1, poweredBySpan3],
@@ -129,6 +130,40 @@ const createPoweredByBanner = function (self) {
 
     poweredBy.addEventListener('click', openInNewTab.bind(self));
     return poweredBy;
+};
+
+const createLoader = function () {
+    const loader = document.createElement('span');
+    loader.setAttribute('class', 'loader');
+    addStyle(`
+        .loader {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            background: linear-gradient(0deg, #2047D033, #2047D0 100%);
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        .loader::after {
+            content: '';  
+            box-sizing: border-box;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #fff;
+        }
+        @keyframes rotation {
+            0% { transform: rotate(0deg) }
+            100% { transform: rotate(360deg)}
+        } 
+    `);
+    return loader;
 };
 
 const createIntegrationBlock = function (self, integration) {
@@ -154,8 +189,9 @@ const createIntegrationBlock = function (self, integration) {
 
     const image = document.createElement('img');
     image.src = integration.imageSrc;
-    image.height = 62;
+    image.style.height = '62px';
     image.style.pointerEvents = 'none';
+    image.style.objectFit = 'scale-down';
     integrationConnect.appendChild(image);
     if (isInActive) {
         image.style.filter = 'gray';
@@ -223,6 +259,7 @@ const createIntegrationBlock = function (self, integration) {
 
         init = function (config) {
             this.API_REVERT_PUBLIC_TOKEN = config.revertToken;
+            this.closeAfterOAuthFlow = config.closeAfterOAuthFlow !== undefined ? config.closeAfterOAuthFlow : true; // TODO: Make this backend controlled.
             this.tenantId = config.tenantId;
             this.#onClose = config.onClose;
             addStyle(`
@@ -261,6 +298,22 @@ const createIntegrationBlock = function (self, integration) {
         };
 
         open = function (integrationId) {
+            this.renderInitialStage(integrationId);
+        };
+
+        close = function () {
+            let rootElement = document.getElementById('revert-ui-root');
+
+            while (rootElement?.firstChild) {
+                rootElement.firstChild.remove();
+            }
+            this.state = 'close';
+            if (this.#onClose) {
+                this.#onClose();
+            }
+        };
+
+        renderInitialStage = function (integrationId) {
             if (!integrationId) {
                 let selectedIntegrationId;
                 // show every integration possible
@@ -309,7 +362,7 @@ const createIntegrationBlock = function (self, integration) {
                         color: '#777',
                     }),
                     [],
-                    'Select CRM'
+                    'Select tool to integrate'
                 );
                 headerDiv.appendChild(headerText);
                 headerDiv.appendChild(closeButton);
@@ -389,11 +442,9 @@ const createIntegrationBlock = function (self, integration) {
                     const selectedIntegration = this.#integrations.find(
                         (int) => int.integrationId === selectedIntegrationId
                     );
-                    this.handleIntegrationRedirect(selectedIntegration, true);
+                    this.handleIntegrationRedirect(selectedIntegration);
                 });
                 signInElement.appendChild(button);
-                // let poweredByBanner = createPoweredByBanner(this);
-                // signInElement.appendChild(poweredByBanner);
                 let signInElementWrapper = createViewElement(
                     'div',
                     'revert-signin-container-wrapper',
@@ -417,7 +468,6 @@ const createIntegrationBlock = function (self, integration) {
                     if (!signInElement.contains(event.target)) {
                         signInElementWrapper.style.animation = 'fadeoout .8s forwards';
                         signInElementWrapper.style.transition = 'color 500ms ease-in-out';
-                        this.close();
                     }
                 });
                 rootElement.appendChild(signInElementWrapper);
@@ -430,17 +480,608 @@ const createIntegrationBlock = function (self, integration) {
             }
         };
 
-        close = function () {
-            let rootElement = document.getElementById('revert-ui-root');
-
-            while (rootElement?.firstChild) {
-                rootElement.firstChild.remove();
+        clearInitialOrProcessingOrSuccessStage = function () {
+            const container = document.getElementById('revert-signin-container');
+            while (container?.firstChild) {
+                container.removeChild(container.lastChild);
             }
-            this.state = 'close';
-            this.#onClose();
         };
 
-        handleIntegrationRedirect = function (selectedIntegration, closeWindow = false) {
+        renderProcessingStage = function () {
+            const el = document.createElement('div');
+            const processingText = createViewElement(
+                'span',
+                'processing-header',
+                transformStyle({
+                    fontWeight: 'bold',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    color: '#777',
+                }),
+                [],
+                'Integration setup in progress...'
+            );
+            el.appendChild(processingText);
+            const container = document.getElementById('revert-signin-container');
+            container.style.height = '534px';
+            const loadingArea = document.createElement('div');
+            loadingArea.style.display = 'flex';
+            loadingArea.style.flexDirection = 'column';
+            loadingArea.style.alignItems = 'center';
+            loadingArea.style.gap = '15px';
+            const loader = createLoader();
+            loadingArea.appendChild(loader);
+            loadingArea.appendChild(el);
+            container.appendChild(loadingArea);
+            const poweredByBanner = createPoweredByBanner(this);
+            poweredByBanner.style.position = 'absolute';
+            poweredByBanner.style.bottom = '10px';
+            poweredByBanner.style.left = '0';
+            container.appendChild(poweredByBanner);
+        };
+
+        renderFailedStage = function () {
+            const el = document.createElement('div');
+            const failedText = createViewElement(
+                'span',
+                'processing-header',
+                transformStyle({
+                    fontWeight: 'bold',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    color: '#777',
+                }),
+                [],
+                'Something went wrong...'
+            );
+            el.appendChild(failedText);
+            const container = document.getElementById('revert-signin-container');
+            container.style.height = '534px';
+            let closeButton = createCloseButton();
+            closeButton.addEventListener('click', this.close.bind(this));
+            closeButton.style.position = 'absolute';
+            closeButton.style.right = '20px';
+            closeButton.style.top = '20px';
+            container.appendChild(closeButton);
+            const poweredByBanner = createPoweredByBanner(this);
+            poweredByBanner.style.position = 'absolute';
+            poweredByBanner.style.bottom = '10px';
+            poweredByBanner.style.left = '0';
+            container.appendChild(el);
+            container.appendChild(poweredByBanner);
+        };
+
+        renderSuccessStage = function (fieldMappingData, integrationName, tenantToken) {
+            console.log(fieldMappingData);
+            if (!fieldMappingData.canAddCustomMapping || !(fieldMappingData.mappableFields || []).length) {
+                if (this.closeAfterOAuthFlow) {
+                    return this.close();
+                }
+                return this.renderDoneStage(integrationName);
+            }
+            const container = document.getElementById('revert-signin-container');
+            const poweredByBanner = createPoweredByBanner(this);
+            poweredByBanner.style.position = 'absolute';
+            poweredByBanner.style.bottom = '10px';
+            poweredByBanner.style.left = '0';
+            container.appendChild(poweredByBanner);
+
+            container.style.alignItems = null;
+            container.style.justifyContent = null;
+            container.style.gap = '5px';
+            container.style.minHeight = '534px';
+            container.style.maxHeight = '80%';
+            container.style.paddingBottom = '48px';
+            container.style.height = null;
+
+            let closeButton = createCloseButton();
+            closeButton.addEventListener('click', this.close.bind(this));
+            closeButton.style.position = 'absolute';
+            closeButton.style.right = '20px';
+            closeButton.style.top = '20px';
+            container.appendChild(closeButton);
+
+            const header = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    fontFamily: 'Inter',
+                    fontSize: '20px',
+                    fontWeight: '500',
+                    lineHeight: '27px',
+                    color: '#656468',
+                }),
+                [],
+                'Field mappings'
+            );
+            const subHeader = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    fontFamily: 'Inter',
+                    fontSize: '14px',
+                    fontWeight: '400',
+                    lineHeight: '19px',
+                    color: '#656468',
+                    marginBottom: '5px',
+                }),
+                [],
+                `Map fields specific to your ${integrationName} Account`
+            );
+            container.appendChild(header);
+            container.appendChild(subHeader);
+            const inputContainer = document.createElement('div');
+            inputContainer.style.overflowY = 'auto';
+            inputContainer.style.padding = '5px';
+            inputContainer.style.height = '400px';
+            container.appendChild(inputContainer);
+            fieldMappingData.mappableFields.forEach((field) => {
+                const p = this.getFieldMappingInputPair(
+                    field.fieldName,
+                    fieldMappingData.fieldList[field.objectName],
+                    field.objectName
+                );
+                inputContainer.appendChild(p);
+            });
+
+            if (fieldMappingData.canAddCustomMapping) {
+                const addBtn = createViewElement(
+                    'div',
+                    '',
+                    transformStyle({
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        background: '#D9D9D9',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }),
+                    [],
+                    `+`
+                );
+                addBtn.classList.add('add-btn');
+                addStyle(`
+                    .add-btn:hover {
+                        background: #c9c9c9 !important;
+                    }
+                    .input-style {
+                        box-shadow: 0px 4px 10px 0px #1A1E301A;
+                        padding: 10px;
+                        border-radius: 5px;
+                        outline: none;
+                        border: 1px solid transparent;
+                        border-right: 10px solid transparent;
+                    }
+                    .invalid-form-field {
+                        border-color: red;
+                    }
+                `);
+                container.appendChild(addBtn);
+                let customEntries = 0;
+                addBtn.addEventListener('click', () => {
+                    const p = this.getCustomFieldMappingInputPair(fieldMappingData.fieldList, customEntries);
+                    customEntries++;
+                    inputContainer.appendChild(p);
+                });
+            }
+            const saveButton = createViewElement(
+                'div',
+                `save-mapping`,
+                transformStyle({
+                    cursor: 'pointer',
+                    padding: '8px 20px',
+                    color: '#fff',
+                    textAlign: 'center',
+                    alignSelf: 'center',
+                    background: '#272DC0',
+                    borderRadius: 8,
+                    fontSize: 20,
+                    width: '100%',
+                    height: '72px',
+                    boxSizing: 'border-box',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginTop: '50px',
+                    marginBottom: '20px',
+                }),
+                [],
+                'Save Mappings'
+            );
+            saveButton.addEventListener('click', () => {
+                const getElTextContent = (el: any) => {
+                    if (!el.textContent) {
+                        el.classList.add('invalid-form-field');
+                    } else {
+                        el.classList.remove('invalid-form-field');
+                    }
+                    return el.textContent;
+                };
+                const getElValue = (el: any) => {
+                    if (!el.value) {
+                        el.classList.add('invalid-form-field');
+                    } else {
+                        el.classList.remove('invalid-form-field');
+                    }
+                    return el.value;
+                };
+                const objectsEl = document.getElementsByClassName('stdHiddenObj');
+                const objects = Array.from(objectsEl).map(getElTextContent);
+                const lablesEl = document.getElementsByClassName('mappableInput');
+                const lables = Array.from(lablesEl).map(getElValue);
+                const valuesEl = document.getElementsByClassName('accountSpecificInput');
+                const values = Array.from(valuesEl).map(getElValue);
+                const standardMappings = lables.map((l, i) => ({
+                    sourceFieldName: values[i],
+                    targetFieldName: l,
+                    object: objects[i],
+                }));
+                console.log('standardMappings', standardMappings);
+
+                const customObjectsEl = document.querySelectorAll('[id^="custom-object-"]');
+                const customObjects = Array.from(customObjectsEl).map(getElValue);
+                const customLablesEl = document.querySelectorAll('[id^="custom-mappableInput-"]');
+                const customLables = Array.from(customLablesEl).map(getElValue);
+                const customValuesEl = document.querySelectorAll('[id^="custom-accountSpecificInput-"]');
+                const customValues = Array.from(customValuesEl).map(getElValue);
+                const customMappings = customLables.map((l, i) => ({
+                    sourceFieldName: customValues[i],
+                    targetFieldName: l,
+                    object: customObjects[i],
+                }));
+                console.log('customMappings', customMappings);
+
+                const isEmptyField = [...standardMappings, ...customMappings].some(
+                    (mapping) => !mapping.object || !mapping.sourceFieldName || !mapping.targetFieldName
+                );
+                if (isEmptyField) {
+                    return;
+                }
+
+                // save field mapping
+                fetch(`${this.CORE_API_BASE_URL}crm/field-mapping`, {
+                    mode: 'cors' as RequestMode,
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-revert-t-id': this.tenantId,
+                        'x-revert-t-token': tenantToken,
+                    },
+                    body: JSON.stringify({ standardMappings, customMappings }),
+                })
+                    .then((data) => data.json())
+                    .then((data) => {
+                        this.clearInitialOrProcessingOrSuccessStage();
+                        this.renderDoneStage(integrationName);
+                    });
+            });
+            container.appendChild(saveButton);
+        };
+
+        renderDoneStage = function (integrationName) {
+            const el = document.createElement('div');
+            const connectedText = createViewElement(
+                'span',
+                'done-header',
+                transformStyle({
+                    fontWeight: 'bold',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    color: '#777',
+                    textAlign: 'center',
+                }),
+                [],
+                `Connected to ${integrationName}`
+            );
+            const msgContainer = document.createElement('div');
+            msgContainer.style.display = 'flex';
+            msgContainer.style.flexDirection = 'column';
+            msgContainer.style.alignItems = 'center';
+            msgContainer.style.justifyContent = 'center';
+            msgContainer.style.gap = '15px';
+            msgContainer.style.position = 'absolute';
+            msgContainer.style.top = '75px';
+            msgContainer.style.left = '0';
+            msgContainer.style.right = '0';
+            const tick = this.getDoneTick();
+            msgContainer.appendChild(tick);
+            msgContainer.appendChild(connectedText);
+            el.appendChild(msgContainer);
+
+            const container = document.getElementById('revert-signin-container');
+            container.style.height = '534px';
+            const poweredByBanner = createPoweredByBanner(this);
+            poweredByBanner.style.position = 'absolute';
+            poweredByBanner.style.bottom = '10px';
+            poweredByBanner.style.left = '0';
+            container.appendChild(el);
+            container.appendChild(poweredByBanner);
+
+            const doneButton = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    cursor: 'pointer',
+                    padding: '8px 20px',
+                    color: '#fff',
+                    textAlign: 'center',
+                    alignSelf: 'center',
+                    background: '#272DC0',
+                    borderRadius: 8,
+                    fontSize: 20,
+                    height: '72px',
+                    boxSizing: 'border-box',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'absolute',
+                    width: '80%',
+                    bottom: '75px',
+                }),
+                [],
+                'Close'
+            );
+            doneButton.addEventListener('click', () => this.close());
+            container.appendChild(doneButton);
+        };
+
+        getDoneTick = function () {
+            const el = document.createElement('span');
+            el.innerHTML = `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32 2C15.431 2 2 15.432 2 32C2 48.568 15.432 62 32 62C48.568 62 62 48.568 62 32C62 15.432 48.568 2 32 2ZM25.025 50L25.005 49.98L24.988 50L11 35.6L18.029 28.436L25.006 35.62L46.006 14.001L53 21.199L25.025 50Z" fill="#43A047"/></svg>`;
+            return el;
+        };
+
+        getFieldMappingInputPair = function (fieldName, data, objectName) {
+            const options = data.map((a) => {
+                const op = document.createElement('option');
+                op.setAttribute('value', a.fieldName);
+                op.innerHTML = a.fieldName;
+                return op;
+            });
+            const hiddenObject = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    visibility: 'hidden',
+                    height: '1px',
+                }),
+                [],
+                objectName
+            );
+            hiddenObject.classList.add('stdHiddenObj');
+            const mappableHeading = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                    color: '#4C505B',
+                }),
+                [],
+                'Mappable field name'
+            );
+            const mappableInput = createViewElement(
+                'input',
+                `mappable-input-${fieldName}`,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                    background: 'transparent',
+                }),
+                [],
+                ''
+            );
+            mappableInput.classList.add('mappableInput');
+            mappableInput.classList.add('input-style');
+            mappableInput.setAttribute('disabled', true);
+            mappableInput.setAttribute('value', fieldName);
+
+            const accountSpecificHeading = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                    color: '#4C505B',
+                }),
+                [],
+                'Account specific field name'
+            );
+            const accountSpecificInput = createViewElement(
+                'select',
+                `account-input-${fieldName}`,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                    background: 'transparent',
+                }),
+                options,
+                ''
+            );
+            accountSpecificInput.classList.add('accountSpecificInput');
+            accountSpecificInput.classList.add('input-style');
+
+            const container = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginBottom: '25px',
+                    gap: '10px',
+                }),
+                [hiddenObject, mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
+                ''
+            );
+            return container;
+        };
+
+        getCustomFieldMappingInputPair = function (fieldList, n) {
+            const dividerContainer = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '10px 0',
+                }),
+                [],
+                ''
+            );
+            const divider = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    width: '100%',
+                    height: '2px',
+                    borderRadius: '10px',
+                    background: '#272DC0',
+                }),
+                [],
+                ''
+            );
+            divider.classList.add('section-divider');
+            dividerContainer.appendChild(divider);
+            const removeBtn = createViewElement(
+                'div',
+                `remove-btn-custom-${n}`,
+                transformStyle({
+                    width: '15px',
+                    height: '15px',
+                    cursor: 'pointer',
+                    position: 'absolute',
+                    top: '30px',
+                    right: '0',
+                    borderRadius: '10px',
+                    color: 'white',
+                    fontSize: '12px',
+                    background: 'rgba(183, 156, 155, 0.33)',
+                    textAlign: 'center',
+                }),
+                [],
+                'x'
+            );
+            removeBtn.addEventListener('click', () => {
+                document.getElementById(`custom-pair-container-${n}`)?.remove();
+            });
+            const getOptions = (obj) =>
+                (fieldList[obj] || []).map((a) => {
+                    const op = document.createElement('option');
+                    op.setAttribute('value', a.fieldName);
+                    op.innerHTML = a.fieldName;
+                    return op;
+                });
+            const objOptions = Object.keys(fieldList).map((a) => {
+                const op = document.createElement('option');
+                op.setAttribute('value', a);
+                op.innerHTML = a;
+                return op;
+            });
+            const objectHeading = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                    color: '#4C505B',
+                }),
+                [],
+                'Object'
+            );
+            const objInput = createViewElement(
+                'select',
+                `custom-object-${n}`,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                }),
+                objOptions,
+                ''
+            );
+            objInput.classList.add('input-style');
+            objInput.addEventListener('change', (ev) => {
+                let a = document.getElementById(`custom-accountSpecificInput-${n}`);
+                while (a.firstChild) {
+                    a.removeChild(a.lastChild);
+                }
+                getOptions(ev.target.value).map((b) => a.appendChild(b));
+            });
+            const mappableHeading = createViewElement(
+                'div',
+                `custom-mappableHeading-${n}`,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                    color: '#4C505B',
+                }),
+                [],
+                'Mappable field name'
+            );
+            const mappableInput = createViewElement(
+                'input',
+                `custom-mappableInput-${n}`,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                }),
+                [],
+                ''
+            );
+            mappableInput.classList.add('input-style');
+
+            const accountSpecificHeading = createViewElement(
+                'div',
+                `custom-accountSpecificHeading-${n}`,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                    color: '#4C505B',
+                }),
+                [],
+                'Account specific field name'
+            );
+            const accountSpecificInput = createViewElement(
+                'select',
+                `custom-accountSpecificInput-${n}`,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                }),
+                getOptions('company'),
+                ''
+            );
+            accountSpecificInput.classList.add('input-style');
+
+            const container = createViewElement(
+                'div',
+                `custom-pair-container-${n}`,
+                transformStyle({
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginBottom: '25px',
+                    gap: '10px',
+                    position: 'relative',
+                }),
+                [
+                    dividerContainer,
+                    objectHeading,
+                    removeBtn,
+                    objInput,
+                    mappableHeading,
+                    mappableInput,
+                    accountSpecificHeading,
+                    accountSpecificInput,
+                ],
+                ''
+            );
+            return container;
+        };
+
+        handleIntegrationRedirect = function (selectedIntegration) {
             if (selectedIntegration) {
                 const scopes = selectedIntegration.scopes;
                 const state = JSON.stringify({
@@ -481,10 +1122,58 @@ const createIntegrationBlock = function (self, integration) {
                             selectedIntegration.clientId
                         }&redirect_uri=${this.#REDIRECT_URL_BASE}/pipedrive&state=${state}`
                     );
+                } else if (selectedIntegration.integrationId === 'slack') {
+                    window.open(
+                        `https://slack.com/oauth/v2/authorize?client_id=${selectedIntegration.clientId}&redirect_uri=${
+                            this.#REDIRECT_URL_BASE
+                        }/slack&scope=${scopes.join(',')}&user_scope=identity.basic,identity.email&state=${state}`
+                    );
                 }
-                if (closeWindow) {
+                this.clearInitialOrProcessingOrSuccessStage();
+                if (!this.closeAfterOAuthFlow) {
+                    this.renderProcessingStage();
+                } else {
                     this.close();
                 }
+                const evtSource = new EventSource(
+                    `${this.CORE_API_BASE_URL}crm/integration-status/${this.API_REVERT_PUBLIC_TOKEN}?tenantId=${this.tenantId}`
+                );
+                evtSource.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    const parsedData = JSON.parse(data);
+                    console.log(parsedData);
+                    if (parsedData.status === 'FAILED') {
+                        this.clearInitialOrProcessingOrSuccessStage();
+                        evtSource.close();
+                        if (this.closeAfterOAuthFlow) {
+                            return this.close();
+                        }
+                        this.renderFailedStage();
+                    }
+                    if (parsedData.status === 'SUCCESS') {
+                        const processingMsg = document.getElementById('processing-header');
+                        if (processingMsg) {
+                            processingMsg.innerHTML = 'fetching account properties..';
+                        }
+                        evtSource.close();
+                        const tenantToken = parsedData.tenantSecretToken;
+                        // fetch field mapping
+                        fetch(`${this.CORE_API_BASE_URL}crm/field-mapping`, {
+                            mode: 'cors' as RequestMode,
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'x-revert-t-id': this.tenantId,
+                                'x-revert-t-token': tenantToken,
+                            },
+                        })
+                            .then((data) => data.json())
+                            .then((data) => {
+                                this.clearInitialOrProcessingOrSuccessStage();
+                                this.renderSuccessStage(data, parsedData.integrationName, tenantToken);
+                            });
+                    }
+                };
             } else {
                 console.warn('Invalid integration ID provided.');
             }

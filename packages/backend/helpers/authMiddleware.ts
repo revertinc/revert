@@ -1,11 +1,17 @@
 import { Request, Response } from 'express';
 import prisma from '../prisma/client';
-import logError from './logger';
+import { logError } from './logger';
 
 const revertAuthMiddleware = () => async (req: Request, res: Response, next: () => any) => {
     const nonSecurePaths = ['/oauth-callback', '/oauth/refresh'];
-    if (nonSecurePaths.includes(req.path)) return next();
-    const { 'x-revert-api-token': token } = req.headers;
+    const nonSecurePathsPartialMatch = ['/integration-status'];
+    if (nonSecurePaths.includes(req.path) || nonSecurePathsPartialMatch.some((path) => req.path.includes(path)))
+        return next();
+    const { 'x-revert-api-token': token, 'x-revert-t-token': tenantSecretToken } = req.headers;
+
+    if (tenantSecretToken && !token) {
+        return next();
+    }
 
     if (!token) {
         res.status(401).send({
@@ -24,6 +30,7 @@ const revertAuthMiddleware = () => async (req: Request, res: Response, next: () 
             },
             include: {
                 environments: true,
+                accountFieldMappingConfig: true,
             },
         });
         if (!account || !account.length) {
@@ -31,6 +38,7 @@ const revertAuthMiddleware = () => async (req: Request, res: Response, next: () 
                 error: 'Api token unauthorized',
             });
         }
+        res.locals.account = account[0];
         return next();
     } catch (error: any) {
         logError(error);

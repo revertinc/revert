@@ -1,0 +1,75 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../../common/errors.yml
+    types: ../../common/types.yml
+
+types:
+    MappableFieldType:
+        properties:
+            fieldName: string
+            objectName: types.StandardObject
+    FieldDetailsType:
+        properties:
+            fieldName: string
+            fieldType: string
+            fieldDescription: string
+    FieldMappingType:
+        properties:
+            sourceFieldName: string
+            targetFieldName: string
+            object: string
+    GetFieldMappingResponse:
+        properties:
+            canAddCustomMapping: boolean
+            mappableFields: list<MappableFieldType>
+            fieldList: unknown
+    CreateFieldMappingRequestBody:
+        properties:
+            standardMappings: list<FieldMappingType>
+            customMappings: list<FieldMappingType>
+    CreateFieldMappingResponse:
+        properties:
+            status: types.ResponseStatus
+
+service:
+    base-path: /crm/field-mapping
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: optional<string>
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-revert-t-token:
+            type: optional<string>
+            docs: The temp used to identify tenant.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getFieldMapping:
+            docs: Get field mappings for a connection
+            method: GET
+            path: ''
+            request:
+                name: GetFieldMappingRequest
+            response: GetFieldMappingResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+        createFieldMapping:
+            docs: Create field mappings for a connection
+            method: POST
+            path: ''
+            request:
+                name: CreateFieldMappingRequest
+                body: CreateFieldMappingRequestBody
+            response: CreateFieldMappingResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

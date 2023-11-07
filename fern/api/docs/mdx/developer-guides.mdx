@@ -10,13 +10,16 @@ Before you start, make sure you have the following applications and their minimu
 ## System Requirements
 
 ## Get Started
+
 ### setup
+
 
 1 . Clone the forked repository and open the created directory
 
 ```shell
 git clone https://github.com/<YOUR_GITHUB_USERNAME>/revert.git
 cd revert
+
 ```
 
 2 . Install dependencies
@@ -70,7 +73,6 @@ to the run service locally at `:4001`
 cp packages/client/.env.example packages/client/.env
 
 # Update this .env file with your own secrets if you'd like to.
-```
 
 1. Generate a Tunnel URL
 
@@ -102,3 +104,4 @@ cp packages/client/.env.example packages/client/.env
  - In the request's URL field, use http://localhost:4001/clerk/webhook. This is the endpoint Clerk will send notifications to.
 
  - In the request body, paste the user.created object that you copied from your Clerk dashboard.
+

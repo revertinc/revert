@@ -49,6 +49,17 @@ types:
             - zohocrm
             - sfdc
             - pipedrive
+            - slack
+    StandardObject:
+        enum:
+            - company
+            - contact
+            - deal
+            - event
+            - lead
+            - note
+            - task
+            - user
     ResponseStatus:
         enum:
             - ok

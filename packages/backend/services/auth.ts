@@ -5,7 +5,7 @@ import prisma from '../prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import isWorkEmail from '../helpers/isWorkEmail';
 import { ENV, TP_ID } from '@prisma/client';
-import logError, { logInfo } from '../helpers/logger';
+import { logInfo, logError } from '../helpers/logger';
 import { DEFAULT_SCOPE } from '../constants/common';
 
 class AuthService {
@@ -166,6 +166,63 @@ class AuthService {
         }
         return { status: 'ok', message: 'Tokens refreshed' };
     }
+
+    async refreshOAuthTokensForThirdPartyChatServices() {
+        try {
+            const connections = await prisma.connections.findMany({
+                include: { app: true },
+            });
+
+            for (let i = 0; i < connections.length; i++) {
+                const connection = connections[i];
+                if (connection.tp_refresh_token) {
+                    try {
+                        if (connection.tp_id === TP_ID.slack) {
+                            // Refresh slack token
+                            const url = 'https://slack.com/api/oauth.v2.access';
+                            const formData = {
+                                grant_type: 'refresh_token',
+                                client_id: connection.app?.is_revert_app
+                                    ? config.SLACK_CLIENT_ID
+                                    : connection.app_client_id || config.SLACK_CLIENT_ID,
+                                client_secret: connection.app?.is_revert_app
+                                    ? config.SLACK_CLIENT_SECRET
+                                    : connection.app_client_secret || config.SLACK_CLIENT_SECRET,
+                                // redirect_uri: '' TODO
+                                refresh_token: connection.tp_refresh_token,
+                            };
+                            const result = await axios({
+                                method: 'post',
+                                url: url,
+                                data: qs.stringify(formData),
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                            });
+
+                            await prisma.connections.update({
+                                where: {
+                                    id: connection.id,
+                                },
+                                data: {
+                                    tp_access_token: result.data.access_token,
+                                    tp_refresh_token: result.data.refresh_token,
+                                },
+                            });
+                        }
+                    } catch (error: any) {
+                        logError(error.response?.data);
+                        console.error('Could not refresh token', connection.t_id, error.response?.data);
+                    }
+                }
+            }
+        } catch (error: any) {
+            logError(error);
+            console.error('Could not update db', error.response?.data);
+        }
+        return { status: 'ok', message: 'Chat services tokens refreshed' };
+    }
+
     async createAccountOnClerkUserCreation(webhookData: any, webhookEventType: string) {
         let response;
         logInfo('webhookData', webhookData, webhookEventType);
@@ -223,14 +280,18 @@ class AuthService {
                     },
                     include: { environments: true },
                 });
-                // Create default apps.
+                // Create default apps that don't yet exist.
                 await Promise.all(
                     Object.keys(ENV).map((env) => {
                         Object.keys(TP_ID).map(async (tp) => {
                             try {
                                 const environment = account.environments?.find((e) => e.env === env)!;
-                                await prisma.apps.create({
-                                    data: {
+                                await prisma.apps.upsert({
+                                    where: {
+                                        id: `${tp}_${account.id}_${env}`,
+                                    },
+                                    update: {},
+                                    create: {
                                         id: `${tp}_${account.id}_${env}`,
                                         tp_id: tp as TP_ID,
                                         scope: [],
@@ -259,6 +320,24 @@ class AuthService {
                         accountId: account.id,
                     },
                 });
+                // Send onboarding campaign email
+                try {
+                    const res = await axios({
+                        method: 'post',
+                        url: 'https://app.loops.so/api/v1/transactional',
+                        data: JSON.stringify({
+                            transactionalId: config.LOOPS_ONBOARDING_TXN_ID,
+                            email: userEmail,
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${config.LOOPS_API_KEY}`,
+                        },
+                    });
+                    logInfo('Sent onboarding email', res);
+                } catch (error: any) {
+                    logError(error);
+                }
                 response = { status: 'ok' };
             } catch (e: any) {
                 logError(e);

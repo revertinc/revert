@@ -12,6 +12,7 @@ enum TP_ID {
   zohocrm
   sfdc
   pipedrive
+  slack
 }
 
 enum ENV {
@@ -20,15 +21,18 @@ enum ENV {
 }
 
 model accounts {
-  id            String         @id
-  tenant_count  Int?           @default(0)
-  private_token String         @unique
-  public_token  String         @unique
-  domain        String         @unique @default("")
-  skipWaitlist  Boolean        @default(true)
-  workspaceName String?
-  users         users[]
-  environments  environments[]
+  id                        String                     @id
+  tenant_count              Int?                       @default(0)
+  private_token             String                     @unique
+  public_token              String                     @unique
+  domain                    String                     @unique @default("")
+  skipWaitlist              Boolean                    @default(true)
+  workspaceName             String?
+  users                     users[]
+  environments              environments[]
+  accountFieldMappingConfig accountFieldMappingConfig?
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @default(now()) @updatedAt
 }
 
 model environments {
@@ -39,6 +43,8 @@ model environments {
   accounts      accounts? @relation(fields: [accountId], references: [id])
   accountId     String
   apps          apps[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
 }
 
 model apps {
@@ -52,6 +58,8 @@ model apps {
   env                        environments  @relation(fields: [environmentId], references: [id])
   connections                connections[]
   is_revert_app              Boolean       @default(false)
+  createdAt                  DateTime      @default(now())
+  updatedAt                  DateTime      @default(now()) @updatedAt
 }
 
 model users {
@@ -60,10 +68,12 @@ model users {
   email     String
   accountId String
   account   accounts @relation(fields: [accountId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model connections {
-  id                         String  @id @default(uuid())
+  id                         String          @id @default(uuid())
   tp_id                      TP_ID
   tp_access_token            String
   tp_refresh_token           String?
@@ -73,14 +83,53 @@ model connections {
   owner_account_public_token String
   app_client_id              String?
   app_client_secret          String?
-  app                        apps?   @relation(fields: [appId], references: [id])
+  app                        apps?           @relation(fields: [appId], references: [id])
   appId                      String?
+  schema_mapping_id          String?
+  schema_mapping             schema_mapping? @relation(fields: [schema_mapping_id], references: [id])
+  createdAt                  DateTime        @default(now())
+  updatedAt                  DateTime        @default(now()) @updatedAt
 
   @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")
   @@unique([tp_id, t_id], name: "uniqueThirdPartyPerTenant")
   @@unique([tp_customer_id, t_id, tp_id], name: "uniqueCustomerPerTenantPerThirdParty")
 }
 
+model schema_mapping {
+  id                String        @id
+  object_schema_ids String[]
+  object_schemas    schemas[]
+  connections       connections[] // TODO: can make this single to enforce one-on-one relationship (set schema_mapping_id on connections unique)
+}
+
+model schemas {
+  id                 String          @id
+  fields             String[]
+  object             String
+  schema_mapping_id  String
+  schema_mapping     schema_mapping  @relation(fields: [schema_mapping_id], references: [id])
+  fields_mapping_ids String[]
+  fieldMappings      fieldMappings[]
+}
+
+model fieldMappings {
+  id                String  @id
+  source_tp_id      TP_ID
+  source_field_name String?
+  target_field_name String
+  is_standard_field Boolean
+  schema_id         String
+  schema            schemas @relation(fields: [schema_id], references: [id])
+}
+
 model waitlist {
   email String @id
+}
+
+model accountFieldMappingConfig {
+  id                                      String   @id
+  account_id                              String   @unique
+  account                                 accounts @relation(fields: [account_id], references: [id])
+  allow_connection_override_custom_fields Boolean  @default(true)
+  mappable_by_connection_field_list       Json? // [{ objectName, fieldName }]
 }

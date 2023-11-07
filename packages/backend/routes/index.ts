@@ -11,7 +11,7 @@ import { metadataService } from '../services/metadata';
 import { accountService } from '../services/Internal/account';
 
 import AuthService from '../services/auth';
-import logError from '../helpers/logger';
+import { logError } from '../helpers/logger';
 import verifyRevertWebhook from '../helpers/verifyRevertWebhook';
 import {
     companyService,
@@ -25,6 +25,12 @@ import {
     userService,
 } from '../services/crm';
 import { connectionService } from '../services/connection';
+import { fieldMappingService } from './v1/crm/fieldMapping';
+import { propertiesService } from './properties';
+import chatRouter from './v1/chat';
+import { usersService } from '../services/chat/users';
+import { channelsService } from '../services/chat/channels';
+import { messageService } from '../services/chat/message';
 
 const router = express.Router();
 
@@ -106,6 +112,8 @@ router.post('/clerk/webhook', async (req, res) => {
 
 router.use('/crm', cors(), revertAuthMiddleware(), crmRouter);
 
+router.use('/chat', cors(), revertAuthMiddleware(), chatRouter);
+
 register(router, {
     metadata: metadataService,
     internal: {
@@ -121,8 +129,17 @@ register(router, {
         task: taskService,
         user: userService,
         proxy: proxyService,
+        fieldMapping: {
+            fieldMapping: fieldMappingService,
+        },
+        properties: propertiesService,
     },
     connection: connectionService,
+    chat: {
+        users: usersService,
+        channels: channelsService,
+        messages: messageService,
+    },
 });
 
 export default router;

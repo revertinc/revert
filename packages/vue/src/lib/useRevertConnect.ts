@@ -12,13 +12,14 @@ if (typeof window !== 'undefined') {
     window.Revert = window.Revert || {};
 }
 
+declare const __CDN_PATH__: string;
+
 export const useRevertConnectScript = () => {
     const loading = ref(true);
     const error = ref('');
 
     onMounted(() => {
-        const src =
-            process.env.NODE_ENV === 'development' ? 'src/lib/revert-dev.js' : 'https://cdn.revert.dev/revert.js';
+        const src = `${__CDN_PATH__}`;
         const script = document.createElement('script');
         script.src = src;
         script.async = true;

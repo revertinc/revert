@@ -1,10 +1,12 @@
 import express, { Express, Request, Response } from 'express';
 // Note: Sentry should be initialized as early in your app as possible.
 import * as Sentry from '@sentry/node';
+import moesif from 'moesif-nodejs';
 import config from './config';
 import indexRouter from './routes/index';
 import cors from 'cors';
 import cron from 'node-cron';
+import morgan from 'morgan';
 import AuthService from './services/auth';
 import versionMiddleware, { manageRouterVersioning } from './helpers/versionMiddleware';
 import { ShortloopSDK } from '@shortloop/node';
@@ -62,6 +64,22 @@ app.use(Sentry.Handlers.tracingHandler());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+
+// add morgan route logging
+morgan.token('tenant-id', (req: any) => {
+    return req.headers['x-revert-t-id'];
+});
+morgan.token('account-id', (_req, res: any) => {
+    return res.locals?.account?.id;
+});
+app.use(
+    morgan('[:date[iso]] :method :url :status :response-time ms tenant - :tenant-id | account - :account-id', {
+        skip: (req, _) => {
+            return req.originalUrl.startsWith('/health-check');
+        },
+    })
+);
+
 app.use(limiter);
 app.use(versionMiddleware());
 
@@ -78,6 +96,23 @@ app.use(ShortloopSDK.capture());
 const testv2Router = (_req: Request, res: Response) => {
     res.send({ data: 'v2 hit' });
 };
+
+if (config.MOESIF_APPLICATION_ID) {
+    // Set the options, the only required field is applicationId
+    const moesifMiddleware = moesif({
+        applicationId: config.MOESIF_APPLICATION_ID!,
+        debug: process.env.NODE_ENV !== 'production', // enable debug mode.
+        logBody: true,
+        // Optional hook to link API calls to users
+        identifyUser: function (req: any, _: any) {
+            return req.headers['x-revert-t-id'] ? req.headers['x-revert-t-id'] : undefined;
+        },
+        identifyCompany: function (_: any, res: any) {
+            return res.locals?.account?.id;
+        },
+    });
+    app.use(moesifMiddleware);
+}
 
 app.use(
     '/',
@@ -111,5 +146,6 @@ app.listen(config.PORT, () => {
     // TODO: do this optimistically.
     cron.schedule(`*/2 * * * *`, async () => {
         await AuthService.refreshOAuthTokensForThirdParty();
+        await AuthService.refreshOAuthTokensForThirdPartyChatServices();
     });
 }).setTimeout(600000);

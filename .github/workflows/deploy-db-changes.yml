@@ -5,11 +5,11 @@ on:
         branches:
             - main
         # paths:
-        #     - packages/prisma/**
+        #     - packages/backend/**
 
 jobs:
     deploy-prisma:
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
 
         steps:
             - name: Checkout Repository
@@ -19,6 +19,9 @@ jobs:
               uses: actions/setup-node@v2
               with:
                   node-version: 17
+            - name: Install Yarn
+              run: npm install -g yarn
+
             - name: Install Fern
               run: npm install -g fern-api
 

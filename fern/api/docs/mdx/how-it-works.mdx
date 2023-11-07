@@ -32,3 +32,23 @@
 <br />
 
 -   Use our unified API to read or update your customer's CRM data seamlessly.
+
+## Architecture
+
+### Connection flow for your app's users with Revert
+
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1697104094/Revert/pk3dqcyqaebrobrs5eui.png" />
+
+### Architecture Overview
+
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1697107526/Revert/how4gj3vp2wch4kw2akb.png" />
+
+### Concepts
+
+-   `connection`: A single connection is one of your customers connecting a third party tool (such as Salesforce) using Revert APIs.
+-   `tenant_id or t_id`: A connection as defined above, needs to have a globally unique identifier on our end. This will be passed on to us by you using the frontend SDK. We do not create a unique identifier on our end for this and will be mapping or identifying connections using this `id`. You will need to pass over this `t_id` in your backend API calls to us to read or write to the third party tool this user integrated using our managed OAuth Flow.
+-   `public_token`: A public token given to you to pass in the frontend. This can be public.
+-   `private_token`: A private token that will be used as the `x-revert-api-token` in your backend calls. **Please ensure this remains private and is not shared. If you'd like to get a new set of keys let us know. **
+-   `app` or `thirdPartyProvider`: For every third party tool we support we have an app with its own set of credentials. You can use the default Revert apps on these third party platforms or add your `clientId` and `clientSecret` to white-label the OAuth flow.
+
+You can manage this on your dashboard at https://app.revert.dev/home

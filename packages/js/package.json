@@ -4,7 +4,7 @@
     "description": "Client side javascript sdk",
     "scripts": {
         "dev": "concurrently --kill-others \"yarn run watch:ts\" \"yarn workspace @revertdotdev/revert-react dev\"",
-        "watch:ts": "nodemon -w src/index.ts --exec \"yarn run build && cp dist/revert.js ../react/src/lib/build/revert-dev.js\"",
+        "watch:ts": "nodemon -w src/index.ts --exec \"yarn run build && cp dist/revert.js ../react/src/lib/build/revert-dev.js && cp dist/revert.js ../vue/src/lib/build/revert-dev.js\"",
         "test": "npm test",
         "build": "npm run prebuild && vite build",
         "prebuild": "tsc && babel src -d lib && browserify lib/index.js -o lib/bundle.js",
@@ -26,12 +26,5 @@
         "nodemon": "^2.0.22",
         "typescript": "4.6.3",
         "vite": "^4.4.9"
-    },
-    "dependencies": {
-        "@fingerprintjs/fingerprintjs": "^3.0.5",
-        "loose-envify": "^1.4.0",
-        "scroll-into-view-if-needed": "^2.2.26",
-        "tinycolor2": "^1.4.2",
-        "uuid": "^8.3.2"
     }
 }

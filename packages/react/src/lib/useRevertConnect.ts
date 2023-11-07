@@ -12,13 +12,14 @@ if (typeof window !== 'undefined') {
     window.Revert = window.Revert || {};
 }
 
+declare var __CDN_PATH__: string;
+
 export function useRevertConnectScript() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
-        const src =
-            process.env.NODE_ENV === 'development' ? 'src/lib/build/revert-dev.js' : 'https://cdn.revert.dev/revert.js';
+        const src = `${__CDN_PATH__}`;
         const script = document.createElement('script');
         script.src = src;
         script.async = true;
@@ -67,6 +68,5 @@ export default function useRevertConnect(props: useRevertConnectProps) {
         }
         window.Revert.open(integrationId);
     };
-
     return { open, error, loading: loading || !integrationsLoaded };
 }

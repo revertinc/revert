@@ -2,7 +2,7 @@ import prisma from '../prisma/client';
 import { MetadataService } from '../generated/typescript/api/resources/metadata/service/MetadataService';
 import { CrmMetadata } from '../generated/typescript/api';
 import { InternalServerError, UnAuthorizedError } from '../generated/typescript/api/resources/common';
-import logError from '../helpers/logger';
+import { logError } from '../helpers/logger';
 import config from '../config';
 import { TP_ID, apps } from '@prisma/client';
 import { DEFAULT_SCOPE } from '../constants/common';
@@ -16,7 +16,7 @@ const metadataService = new MetadataService({
 
         try {
             const apps = await prisma.apps.findMany({
-                select: { scope: true, app_client_id: true, tp_id: true },
+                select: { scope: true, app_client_id: true, tp_id: true, env: { include: { accounts: true } } },
                 where: {
                     env: {
                         public_token: token as string,
@@ -28,6 +28,7 @@ const metadataService = new MetadataService({
                     error: 'Api token unauthorized',
                 });
             }
+            res.locals.account = apps?.[0].env.accounts;
             const getScope = (apps: Partial<apps>[], integration: TP_ID) => {
                 const app = apps.find((app) => app.tp_id === integration);
                 const scopes = app?.is_revert_app ? [] : app?.scope;
@@ -72,6 +73,15 @@ const metadataService = new MetadataService({
                     status: 'active',
                     scopes: getScope(apps, TP_ID.pipedrive),
                     clientId: getClientId(apps, TP_ID.pipedrive) || config.PIPEDRIVE_CLIENT_ID,
+                },
+                {
+                    integrationId: 'slack',
+                    name: 'slack',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1697800999/Revert/sr7ikiijgzsmednoeil0.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.slack),
+                    clientId: getClientId(apps, TP_ID.slack) || config.SLACK_CLIENT_ID,
                 },
                 {
                     integrationId: 'microsoft_dynamics',
