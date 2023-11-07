@@ -8,6 +8,10 @@ navigation:
       contents:
           - page: Quick Start
             path: ./mdx/quick-start.mdx
+    - section: Usecases
+      contents:
+          - page: Usecases
+            path: ./mdx/usecases.mdx
     - section: How it works
       contents:
           - page: How it works
