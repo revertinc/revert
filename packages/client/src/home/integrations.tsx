@@ -48,7 +48,6 @@ const Integrations = ({ environment }) => {
 
     React.useEffect(() => {
         setAccount(data?.account);
-        console.log(data,"dataaa")
         localStorage.setItem(LOCALSTORAGE_KEYS.privateToken, data?.account?.private_token);
     }, [data]);
 
@@ -356,10 +355,7 @@ const Integrations = ({ environment }) => {
                 <EditCredentials
                     app={account?.environments
                         ?.find((env) => env.env === environment)
-                        ?.apps?.find((a) => {
-                            console.log(a,"aa0")
-                            return a.tp_id === appId
-                        })}
+                        ?.apps?.find((a) => { return a.tp_id === appId })}
                     handleClose={handleClose}
                 />
             </Modal>

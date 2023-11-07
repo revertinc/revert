@@ -33,7 +33,6 @@ const Home = () => {
         };
         fetch(`${REVERT_BASE_API_URL}/internal/account`, requestOptions)
             .then((response) => {
-                console.log(response.json(),"lol")
             return response.json()
             })
             .then((result) => {

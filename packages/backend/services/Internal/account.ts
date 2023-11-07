@@ -9,7 +9,7 @@ const accountService = new AccountService({
         try {
             const userId = req.body.userId;
             const result = await AuthService.getAccountForUser(userId);
-            console.log(userId,result,"uuuuuuu=")
+            
             if (result?.error) {
                 throw new NotFoundError({ error: 'Could not get the account for user' });
             } else {
