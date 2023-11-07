@@ -10,14 +10,13 @@ Before you start, make sure you have the following applications and their minimu
 ## System Requirements
 
 ## Get Started
-### **setup**
+### setup
 
 1 . Clone the forked repository and open the created directory
 
 ```shell
 git clone https://github.com/<YOUR_GITHUB_USERNAME>/revert.git
 cd revert
-
 ```
 
 2 . Install dependencies
@@ -31,12 +30,10 @@ yarn
 # @revertdotdev/backend
 
 ```shell
-
 # Copy the example env file
 cp packages/backend/.env.example packages/backend/.env
 
 # Update this .env file with your own secrets if you'd like to.
-
 ```
 
 ### Fern setup
@@ -54,7 +51,6 @@ cp packages/backend/.env.example packages/backend/.env
 ```shell
 # seed the database with sample data
 yarn workspace @revertdotdev/backend db-seed
-
 ```
 
 ### Running the API locally
@@ -70,26 +66,11 @@ to the run service locally at `:4001`
 # @revertdotdev/client
 
 ```shell
-
 # Copy the example env file
 cp packages/client/.env.example packages/client/.env
 
 # Update this .env file with your own secrets if you'd like to.
-
 ```
-
-create a tunnel using ngrok
-
-```shell
-
-ngrok http 3000
-```
-
-After generationg a tunnel copy that url and paste into clerk webhook
-make sure the endpoint is `clerk/webhook` 
-
-Now signup in app you will get user.created object in clerk dashboard copy that object
-and paste in body of this endpoint `http://localhost:4001/clerk/webhook` in the postman 
 
 1. Generate a Tunnel URL
 
