@@ -123,13 +123,13 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 res.send({ status: 'error', error: error });
             }
             } catch (error) {
-                console.log(error,"error hain bhai")
+                console.log(error)
             }
             
            
            
         }else{
-            console.log("first")
+          
         }
         res.status(200).json({ msg: 'yo', account });
     } catch (error: any) {}

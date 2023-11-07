@@ -78,7 +78,7 @@ const EditCredentials: React.FC<{
     const [isRevertApp, setIsRevertApp] = React.useState(app.is_revert_app);
 
     const { loading, status, fetch } = useApi();
-    console.log(app,"appu")
+   
     const handleAddNewScope = (e) => {
         if (e.key === 'Enter') {
             setScopes((ss) => [...ss, ...newScope.split(',').map((s) => s.trim())]);
@@ -98,7 +98,7 @@ const EditCredentials: React.FC<{
             method: 'POST',
             payload,
         });
-        console.log(res,"fetched")
+
     };
 
     React.useEffect(() => {
