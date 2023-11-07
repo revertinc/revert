@@ -39,7 +39,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             },
             include: {
                 apps: {
-                    select: { id: true, app_client_id: true, app_client_secret: true, is_revert_app: true },
+                    select: { id: true, app_client_id: true, app_client_secret: true,app_bot_token:true, is_revert_app: true },
                     where: { tp_id: integrationId },
                 },
                 accounts: true,
@@ -48,7 +48,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
 
         const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
-        
+        const botToken = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0].app_bot_token;
         if (integrationId === TP_ID.discord && req.query.code && req.query.t_id && revertPublicKey) {
             // handling the discord received code
 
@@ -98,6 +98,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_refresh_token: result.data?.refresh_token,
                         app_client_id: clientId ||  config.DISCORD_CLIENT_ID,
                         app_client_secret: clientSecret ||  config.DISCORD_CLIENT_SECRET,
+                        app_bot_token: botToken ||  config.DISCORD_BOT_TOKEN,
                     },
                     create: {
                         id:  String(req.query.t_id),
@@ -105,8 +106,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_id: integrationId,
                         tp_access_token: String(result.data?.access_token),
                         tp_refresh_token: String(result.data?.refresh_token),
-                        app_client_id:   config.DISCORD_CLIENT_ID,
-                        app_client_secret:    config.DISCORD_CLIENT_SECRET,
+                        app_client_id:  clientId || config.DISCORD_CLIENT_ID,
+                        app_client_secret: clientSecret ||    config.DISCORD_CLIENT_SECRET,
+                        app_bot_token: botToken ||    config.DISCORD_BOT_TOKEN,
                         tp_customer_id: String(info.data.user?.id),
                         owner_account_public_token: revertPublicKey,
                         appId: account?.apps[0].id,

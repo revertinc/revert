@@ -71,7 +71,7 @@ const EditCredentials: React.FC<{
     handleClose: ({ refetchOnClose }: { refetchOnClose?: boolean | undefined }) => Promise<void>;
 }> = ({ app, handleClose }) => {
     const [clientId, setClientId] = React.useState<string>(app.app_client_id);
-    const [botToken,setBotToken] = React.useState<string>('');
+    const [botToken,setBotToken] = React.useState<string>(app.app_bot_token);
     const [clientSecret, setClientSecret] = React.useState<string>(app.app_client_secret);
     const [scopes, setScopes] = React.useState<string[]>(app.scope);
     const [newScope, setNewScope] = React.useState<string>('');
@@ -90,15 +90,15 @@ const EditCredentials: React.FC<{
         const payload = {
             appId: app.id,
             tpId: app.tp_id,
-            Bottoken:botToken,
             isRevertApp,
             ...(!isRevertApp && { clientId, clientSecret,botToken, scopes }),
         };
-        await fetch({
+       const res = await fetch({
             url: '/internal/account/credentials',
             method: 'POST',
             payload,
         });
+        console.log(res,"fetched")
     };
 
     React.useEffect(() => {
@@ -130,16 +130,7 @@ const EditCredentials: React.FC<{
                             error={!clientId}
                         />
                     </Row>
-                    {
-                        app.tp_id === 'discord' && <Row>
-                        <span className="font-bold">Bot Token: </span>
-                        <Input
-                            value={botToken}
-                            onChange={(ev) => setBotToken((ev.target.value || '').trim())}
-                            error={!botToken}
-                        />
-                    </Row>
-                    }
+                    
                     <Row>
                         <span className="font-bold">Client Secret: </span>
                         <Input
@@ -148,6 +139,17 @@ const EditCredentials: React.FC<{
                             error={!clientSecret}
                         />
                     </Row>
+                    {
+                        app.tp_id === 'discord' && <Row>
+                        <span className="font-bold">Bot Token: </span>
+                        <Input
+                            value={botToken}
+                            onChange={(ev) => setBotToken((ev.target.value || '').trim())
+                            }
+                            error={!botToken}
+                        />
+                    </Row>
+                    }
                     <Row>
                         <span className="font-bold">Scopes: </span>
                         {/* <p className="break-words">{scopes}</p> */}

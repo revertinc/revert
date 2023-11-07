@@ -40,6 +40,7 @@ service:
                     properties:
                         clientId: optional<string>
                         clientSecret: optional<string>
+                        botToken: optional<string>
                         scopes: optional<list<string>>
                         tpId: types.TPID
                         isRevertApp: boolean

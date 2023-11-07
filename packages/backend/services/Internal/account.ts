@@ -1,6 +1,6 @@
 import logError from '../../helpers/logger';
 import { AccountService } from '../../generated/typescript/api/resources/internal/resources/account/service/AccountService';
-import { InternalServerError, NotFoundError, UnAuthorizedError } from '../../generated/typescript/api/resources/common';
+import { InternalServerError, NotFoundError, UnAuthorizedError } from '../../generated/typescript/api/resources/common/resources/errors';
 import AuthService from '../auth';
 import prisma from '../../prisma/client';
 
@@ -23,7 +23,7 @@ const accountService = new AccountService({
     },
     async updateAccountCredentials(req, res) {
         try {
-            const { clientId, clientSecret, scopes, tpId, isRevertApp, appId } = req.body;
+            const { clientId, clientSecret,botToken, scopes, tpId, isRevertApp, appId } = req.body;
             const { 'x-revert-api-token': token } = req.headers;
             const account = await prisma.accounts.findFirst({
                 where: {
@@ -43,6 +43,7 @@ const accountService = new AccountService({
                 publicToken: account.public_token,
                 clientId,
                 clientSecret,
+                botToken,
                 scopes,
                 isRevertApp,
                 tpId,
