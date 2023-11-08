@@ -37,6 +37,14 @@ navigation:
       contents:
           - page: Developer Guide
             path: ./mdx/developer-guides.mdx
+    - section: CRM Support
+      contents:
+          - page: CRM Support
+            path: ./mdx/crm-supported.mdx
+    - section: Messaging tools Support
+      contents:
+          - page: Messaging tools Support
+            path: ./mdx/messaging-supported.mdx
 colors:
     accentPrimary: '#ffffff'
 logo:
