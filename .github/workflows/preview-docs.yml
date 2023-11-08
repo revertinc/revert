@@ -1,0 +1,28 @@
+name: preview-docs
+
+on:
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    generate-preview-docs:
+        name: Generate Documentation Preview
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '18'
+
+            - name: Install Fern
+              run: npm install -g fern-api
+
+            - name: Generate Documentation Preview with Fern
+              env:
+                  FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
+              run: fern generate --docs --preview

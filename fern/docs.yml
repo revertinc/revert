@@ -1,0 +1,78 @@
+title: Revert | API Docs
+instances:
+    - url: revert.docs.buildwithfern.com
+      custom-domain: docs.revert.dev
+tabs:
+    help:
+        display-name: Overview
+        icon: 'fa-solid fa-globe'
+    api:
+        display-name: API Reference
+        icon: 'fa-solid fa-code'
+navigation:
+    - tab: help
+      layout:
+          - section: Introduction
+            contents:
+                - page: Getting Started
+                  path: ./docs/contents/intro.mdx
+          - section: Quick Start
+            contents:
+                - page: Quick Start
+                  path: ./docs/contents/quick-start.mdx
+          - section: Use Cases
+            contents:
+                - page: Use Cases
+                  path: ./docs/contents/usecases.mdx
+          - section: How it works
+            contents:
+                - page: How it works
+                  path: ./docs/contents/how-it-works.mdx
+          - section: Rate Limits
+            contents:
+                - page: Rate limits
+                  path: ./docs/contents/rate-limits.mdx
+          - section: Pagination
+            contents:
+                - page: Pagination
+                  path: ./docs/contents/pagination.mdx
+          - section: API Versioning
+            contents:
+                - page: API Versioning
+                  path: ./docs/contents/versioning.mdx
+          - section: Webhooks
+            contents:
+                - page: Webhooks
+                  path: ./docs/contents/webhooks.mdx
+          - section: Developer Guide
+            contents:
+                - page: Developer Guide
+                  path: ./docs/contents/developer-guides.mdx
+          - section: CRM Support
+            contents:
+                - page: CRM Support
+                  path: ./docs/contents/crm-supported.mdx
+          - section: Messaging tools Support
+            contents:
+                - page: Messaging tools Support
+                  path: ./docs/contents/messaging-supported.mdx
+    - tab: help
+      layout:
+          - api: API Reference
+colors:
+    accentPrimary: '#ffffff'
+logo:
+    dark: ./docs/assets/logo.png
+    light: ./docs/assets/logo.png
+    href: https://revert.dev
+favicon: ./docs/assets/favicon.ico
+navbar-links:
+    - type: secondary
+      text: Star us on Github ⭐
+      url: https://github.com/revertinc/Revert
+    - type: secondary
+      text: Join our discord
+      url: https://discord.gg/q5K5cRhymW
+    - type: primary
+      text: Book a demo
+      url: https://calendly.com/jatin-revert-dev/30min

@@ -15,6 +15,10 @@
     },
     "scripts": {
         "fern": "fern generate --log-level debug --group local",
+        "fern-check": "fern check",
+        "fern-format": "fern format",
+        "fern-upgrade": "fern upgrade --rc",
+        "fern-docs:preview": "fern generate --docs --preview",
         "fern-docs": "fern generate --group external",
         "build": "yarn workspaces foreach run build",
         "prepare": "husky install",
