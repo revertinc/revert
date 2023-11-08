@@ -1,9 +1,6 @@
 import RevertConnect from './lib/RevertConnect';
 
-
-
 function App() {
-   
     return (
         <div
             style={{
@@ -14,7 +11,7 @@ function App() {
         >
             <RevertConnect
                 config={{
-                    revertToken: 'localPublicToken',
+                    revertToken: 'pk_test_e9f8e58d-af16-4dbd-bd54-2c6a66164d71',
                     tenantId: 'testTenantId',
                     onClose: () => {
                         console.log('On close working!');
