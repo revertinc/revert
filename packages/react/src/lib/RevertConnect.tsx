@@ -8,7 +8,8 @@ const RevertConnect = (props: RevertConnectProps) => {
             <button
                 disabled={loading || Boolean(error)}
                 id="revert-connect-button"
-                onClick={() => open()}
+                onClick={() => {console.log(loading,"lola",error) 
+                open()}}
                 style={{
                     padding: 10,
                     outline: 'none',
