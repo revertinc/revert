@@ -21,7 +21,3 @@ groups:
                   workspace-id: ${POSTMAN_WORKSPACE_ID}
               github:
                   repository: revertinc/revert-postman
-        docs:
-            domain: revert.docs.buildwithfern.com
-            custom-domains:
-                - docs.revert.dev
