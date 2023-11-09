@@ -56,7 +56,7 @@ navigation:
             contents:
                 - page: Messaging tools Support
                   path: ./docs/contents/messaging-supported.mdx
-    - tab: help
+    - tab: api
       layout:
           - api: API Reference
 colors:
