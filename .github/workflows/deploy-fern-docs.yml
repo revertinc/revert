@@ -25,9 +25,13 @@ jobs:
             - name: Install Dependencies
               run: yarn install
 
-            - name: Generate docs & postman collection
+            - name: Generate postman collection
               run: fern generate --group external
               env:
                   POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
                   POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
                   FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
+            - name: Generate Production Docs
+              env:
+                  FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
+              run: fern generate --docs --instance revert.docs.buildwithfern.com --log-level debug

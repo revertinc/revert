@@ -79,7 +79,8 @@ CRMs:
 
 Communication tools:
 
--   [ ] Slack
+-   [x] Slack
+-   [ ] Discord
 -   [ ] Microsoft Teams
 
 Accounting software:
