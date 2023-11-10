@@ -126,7 +126,7 @@ async function main() {
             {
                 source_field_name: {
                     [TP_ID.hubspot]: 'email',
-                    [TP_ID.pipedrive]: 'phone.0.value',
+                    [TP_ID.pipedrive]: 'email.0.value',
                     [TP_ID.sfdc]: 'Email',
                     [TP_ID.zohocrm]: 'Email',
                 },
