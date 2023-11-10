@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 // Note: Sentry should be initialized as early in your app as possible.
 import * as Sentry from '@sentry/node';
-// import moesif from 'moesif-nodejs';
+import moesif from 'moesif-nodejs';
 import config from './config';
 import indexRouter from './routes/index';
 import cors from 'cors';
@@ -97,21 +97,22 @@ const testv2Router = (_req: Request, res: Response) => {
     res.send({ data: 'v2 hit' });
 };
 
-// 2. Set the options, the only required field is applicationId
-// const moesifMiddleware = moesif({
-//     applicationId: config.MOESIF_APPLICATION_ID!,
-//     debug: process.env.NODE_ENV !== 'production', // enable debug mode.
-//     logBody: true,
-//     // Optional hook to link API calls to users
-//     identifyUser: function (req: any, _: any) {
-//         return req.headers['x-revert-t-id'] ? req.headers['x-revert-t-id'] : undefined;
-//     },
-//     identifyCompany: function (_: any, res: any) {
-//         return res.locals?.account?.id;
-//     },
-// });
-
-// app.use(moesifMiddleware);
+if (config.MOESIF_APPLICATION_ID) {
+    // Set the options, the only required field is applicationId
+    const moesifMiddleware = moesif({
+        applicationId: config.MOESIF_APPLICATION_ID!,
+        debug: process.env.NODE_ENV !== 'production', // enable debug mode.
+        logBody: true,
+        // Optional hook to link API calls to users
+        identifyUser: function (req: any, _: any) {
+            return req.headers['x-revert-t-id'] ? req.headers['x-revert-t-id'] : undefined;
+        },
+        identifyCompany: function (_: any, res: any) {
+            return res.locals?.account?.id;
+        },
+    });
+    app.use(moesifMiddleware);
+}
 
 app.use(
     '/',
@@ -147,4 +148,5 @@ app.listen(config.PORT, () => {
         await AuthService.refreshOAuthTokensForThirdParty();
         await AuthService.refreshOAuthTokensForThirdPartyChatServices();
     });
-}).setTimeout(600000);
+}).setTimeout(3000);
+// 600000

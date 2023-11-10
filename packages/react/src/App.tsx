@@ -11,11 +11,11 @@ function App() {
         >
             <RevertConnect
                 config={{
-                    revertToken: 'pk_test_7e761119-4cd5-4ff8-92d3-ae5d7e3eca0f',
+                    revertToken: 'pk_test_ab0017b3-25fe-4acb-bf75-a7511b2a9f44',
                     tenantId: 'testTenantId_closecrm',
-                    onClose: () => {
-                        console.log('On close working!');
-                    },
+                    // onClose: () => {
+                    //     console.log('On close working!');
+                    // },
                 }}
             />
         </div>

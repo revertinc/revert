@@ -18,9 +18,8 @@ export async function disunifyObject<T extends Record<string, any>>({
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }) {
-    console.log('OG object...', obj);
     const flattenedObj = flattenObj(obj, ['additional', 'associations']);
-    console.log('Flattended  object...', flattenedObj);
+
     const transformedObj = await transformModelToFieldMapping({
         unifiedObj: flattenedObj,
         tpId,
@@ -28,15 +27,12 @@ export async function disunifyObject<T extends Record<string, any>>({
         tenantSchemaMappingId,
         accountFieldMappingConfig,
     });
-    console.log('transformed obj...', transformedObj);
+
     const processedObj = postprocessDisUnifyObject({ obj: transformedObj, tpId, objType });
-    console.log('Processed object....', processedObj);
 
     switch (tpId) {
         case TP_ID.hubspot: {
-            const damn = handleHubspotDisunify({ obj, objType, transformedObj: processedObj });
-            console.log('damn...', damn);
-            return damn;
+            return handleHubspotDisunify({ obj, objType, transformedObj: processedObj });
         }
         case TP_ID.pipedrive: {
             return handlePipedriveDisunify({ obj, transformedObj: processedObj });
@@ -48,6 +44,11 @@ export async function disunifyObject<T extends Record<string, any>>({
             return handleSfdcDisunify({ obj, objType, transformedObj: processedObj });
         }
         case TP_ID.closecrm: {
+            ['phones', 'emails'].forEach((key) => {
+                if (processedObj[key] && processedObj[key].constructor === Object) {
+                    processedObj[key] = Object.values(processedObj[key]);
+                }
+            });
             return processedObj;
         }
     }

@@ -8,6 +8,10 @@ navigation:
       contents:
           - page: Quick Start
             path: ./mdx/quick-start.mdx
+    - section: Use Cases
+      contents:
+          - page: Use Cases
+            path: ./mdx/usecases.mdx
     - section: How it works
       contents:
           - page: How it works
@@ -29,6 +33,10 @@ navigation:
       contents:
           - page: Webhooks
             path: ./mdx/webhooks.mdx
+    - section: Developer Guide
+      contents:
+          - page: Developer Guide
+            path: ./mdx/developer-guides.mdx
 colors:
     accentPrimary: '#ffffff'
 logo:

@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { TP_ID } from '@prisma/client';
-
 import { ContactService } from '../../generated/typescript/api/resources/crm/resources/contact/service/ContactService';
 import { BadRequestError, InternalServerError } from '../../generated/typescript/api/resources/common';
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
@@ -138,11 +137,6 @@ const contactService = new ContactService(
                         break;
                     }
                     case TP_ID.closecrm: {
-                        const a = 2;
-                        const b = 5;
-                        const sum = a + b;
-                        console.log(sum);
-
                         let contact: any = await axios({
                             method: 'get',
                             url: `https://api.close.com/api/v1/contact/${contactId}/`,
@@ -151,8 +145,16 @@ const contactService = new ContactService(
                                 Accept: 'application/json',
                             },
                         });
-                        console.log(contact);
-                        res.send({ status: 'ok', result: contact.data });
+                        console.log('Contact from closecrm', contact.data);
+
+                        contact = await unifyObject<any, UnifiedContact>({
+                            obj: contact.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: contact });
                         break;
                     }
                     default: {
@@ -355,6 +357,21 @@ const contactService = new ContactService(
                                 Accept: 'application/json',
                             },
                         });
+                        console.log('All contacts closecrm ', contacts);
+
+                        contacts = contacts.data?.data as any[];
+                        contacts = await Promise.all(
+                            contacts?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedContact>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
 
                         res.send({
                             status: 'ok',
@@ -362,7 +379,7 @@ const contactService = new ContactService(
                                 ? `?&_limit=${pageSize}&_skip=${skipCount + pageSize}`
                                 : undefined,
                             previous: undefined, // Field not supported by Hubspot.
-                            results: contacts.data,
+                            results: contacts,
                         });
                         break;
                     }
@@ -395,6 +412,8 @@ const contactService = new ContactService(
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
                 console.log('Revert::CREATE CONTACT', connection.app?.env?.accountId, tenantId, contact, thirdPartyId);
+                // console.log('tenantSchemaMappingId ', connection.schema_mapping_id);
+                // console.log('accountFieldMappingConfig ', account.accountFieldMappingConfig);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -502,6 +521,27 @@ const contactService = new ContactService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        // Manually setting the contact name since it couldn't be retrieved from fieldMappings
+                        contact.name = `${contactData.firstName} ${contactData.lastName}`;
+                        console.log('contacts.....', contact);
+                        const response = await axios({
+                            method: 'post',
+                            url: 'https://api.close.com/api/v1/contact/',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: contact,
+                        });
+                        console.log(response);
+                        res.send({
+                            status: 'ok',
+                            message: 'Closecrm contact created',
+                            result: response.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -593,6 +633,25 @@ const contactService = new ContactService(
                             result: {
                                 ...contactUpdated.data.data,
                             },
+                        });
+                        break;
+                    }
+                    case TP_ID.closecrm: {
+                        contact.name = `${contactData.firstName} ${contactData.lastName}`;
+                        const response = await axios({
+                            method: 'put',
+                            url: `https://api.close.com/api/v1/contact/${contactId}`,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: contact,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Closecrm contact updated',
+                            result: response.data,
                         });
                         break;
                     }
@@ -751,6 +810,10 @@ const contactService = new ContactService(
                             )
                         );
                         res.send({ status: 'ok', results: unifiedContacts });
+                        break;
+                    }
+                    // @TODO
+                    case TP_ID.closecrm: {
                         break;
                     }
                     default: {

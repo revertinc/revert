@@ -241,6 +241,7 @@ const createIntegrationBlock = function (self, integration) {
             };
 
             let fetchURL = this.CORE_API_BASE_URL + this.#API_CRM_METADATA_SUFFIX;
+            console.log('fetch URL ', fetchURL);
 
             fetch(fetchURL, requestOptions)
                 .then((response) => response.json())
@@ -308,7 +309,9 @@ const createIntegrationBlock = function (self, integration) {
                 rootElement.firstChild.remove();
             }
             this.state = 'close';
-            this.#onClose();
+            if (this.#onClose) {
+                this.#onClose();
+            }
         };
 
         renderInitialStage = function (integrationId) {

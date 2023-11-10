@@ -128,7 +128,14 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
             [StandardObjects.note]: (obj: T) => {
                 return {
                     ...obj,
-                    lead_id: 'lead_cPijVWvdflonC5ca4YmRzkTd8eFPbBh3y7o3rE5spOh',
+                    lead_id: 'lead_Nrm1Zb3eowbiKwCd4isjTsLSKPzQoxMtvu5Ms9IDeS3',
+                };
+            },
+            [StandardObjects.contact]: (obj: T) => {
+                console.log('From obj.....', obj);
+                return {
+                    ...obj,
+                    lead_id: 'lead_Nrm1Zb3eowbiKwCd4isjTsLSKPzQoxMtvu5Ms9IDeS3',
                 };
             },
         },

@@ -46,6 +46,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 accounts: true,
             },
         });
+        console.log('Account ', account);
+
         const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
         const svixAppId = account!.accounts!.id;
@@ -317,7 +319,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     tenantId: req.query.t_id,
                     tenantSecretToken,
                 } as IntegrationStatusSseMessage);
-                res.send({ status: 'ok', tp_customer_id: 'testSfdcUser' });
+                res.send({ status: 'ok', tp_customer_id: info.data.email });
             } catch (error: any) {
                 logError(error);
                 if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -434,6 +436,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 grant_type: 'authorization_code',
                 code: req.query.code,
             };
+            console.log('Form data close crm ', formData);
 
             const result = await axios({
                 method: 'post',
@@ -441,7 +444,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 data: qs.stringify(formData),
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             });
-
+            console.log('OAuth creds for close crm', result.data);
             logInfo('OAuth creds for close crm', result.data);
 
             const info = await axios({

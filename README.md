@@ -16,6 +16,16 @@
 
 </p>
 
+#### Hacker News
+
+<a href="https://news.ycombinator.com/item?id=37995761">
+  <img
+    style="width: 250px; height: 54px;" width="250" height="54"
+    alt="Featured on Hacker News"
+    src="https://hackernews-badge.vercel.app/api?id=37995761"
+  />
+</a>
+
 ### ⭐ About Revert
 
 Revert makes it incredibly easy to build integrations with any third party API such as
@@ -116,11 +126,23 @@ git clone --depth 1 https://github.com/revertinc/revert
 
 # Copy the example env file
 cp .env.example .env
+cp .env.example .env
+cp packages/backend/.env.example packages/backend/.env
+cp packages/client/.env.example packages/client/.env
+cp packages/js/.env.example packages/js/.env
+cp packages/react/.env.example packages/react/.env
+cp packages/vue/.env.example packages/vue/.env
 
-# Update this .env file with your own secrets
+# Update these .env files with your own secrets if you'd like to.
 
 # Then In the root directory run
+
+# When running for the first time to seed the database. (RUN ONLY ONCE)
+docker-compose run db-seed
+
+# For subsequent runs
 docker-compose up -d
+
 ```
 
 The UI is now available at http://localhost:3000 and the backend is available at http://localhost:4001.
