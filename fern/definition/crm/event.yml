@@ -28,6 +28,10 @@ types:
         properties:
             status: types.ResponseStatus
             results: list<unified.Event>
+    DeleteEventResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
 
 service:
     base-path: /crm/events
@@ -113,6 +117,19 @@ service:
                 query-parameters:
                     fields: optional<string>
             response: SearchEventsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        deleteEvent:
+            docs: Delete details of an event in a CRM
+            method: DELETE
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: DeleteEventRequest
+            response: DeleteEventResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

@@ -130,7 +130,7 @@ const eventService = new EventService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not fetch lead', error);
+                console.error('Could not fetch event', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -307,7 +307,7 @@ const eventService = new EventService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not fetch leads', error);
+                console.error('Could not fetch events', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -402,7 +402,7 @@ const eventService = new EventService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not create lead', error.response);
+                console.error('Could not create event', error.response);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -608,6 +608,82 @@ const eventService = new EventService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not search CRM', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async deleteEvent(req, res) {
+            try {
+                const connection = res.locals.connection;
+                const eventId = req.params.id;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                logInfo(
+                    'Revert::DELETE EVENT',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    eventId
+                );
+
+                switch (thirdPartyId) {
+                    case TP_ID.hubspot: {
+                        await axios({
+                            method: 'delete',
+                            url: `https://api.hubapi.com/crm/v3/objects/meetings/${eventId}`,
+                            headers: {
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+                        res.send({ status: 'ok', message: 'deleted' });
+                        break;
+                    }
+                    case TP_ID.zohocrm: {
+                        await axios({
+                            method: 'delete',
+                            url: `https://www.zohoapis.com/crm/v3/Events/${eventId}`,
+                            headers: {
+                                authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
+                            },
+                        });
+                        res.send({ status: 'ok', message: 'deleted' });
+                        break;
+                    }
+                    case TP_ID.sfdc: {
+                        const instanceUrl = connection.tp_account_url;
+                        await axios({
+                            method: 'delete',
+                            url: `${instanceUrl}/services/data/v56.0/sobjects/Event/${eventId}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+                        res.send({ status: 'ok', message: 'deleted' });
+                        break;
+                    }
+                    case TP_ID.pipedrive: {
+                        await axios.delete<{ data: Partial<PipedriveEvent> } & PipedrivePagination>(
+                            `${connection.tp_account_url}/v1/activities/${eventId}`,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            }
+                        );
+                        res.send({ status: 'ok', message: 'deleted' });
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized CRM' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not delete event', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
