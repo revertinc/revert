@@ -13,7 +13,7 @@ jobs:
 
         steps:
             - name: Checkout Repository
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Set up Node.js
               uses: actions/setup-node@v2
@@ -32,6 +32,3 @@ jobs:
               run: yarn workspace @revertdotdev/backend db-deploy
               env:
                   PGSQL_URL: ${{ secrets.PGSQL_URL }}
-
-            - name: Cleanup working directory
-              run: rm -rf ${{ github.workspace }}
