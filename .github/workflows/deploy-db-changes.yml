@@ -32,3 +32,6 @@ jobs:
               run: yarn workspace @revertdotdev/backend db-deploy
               env:
                   PGSQL_URL: ${{ secrets.PGSQL_URL }}
+
+            - name: Cleanup working directory
+              run: rm -rf ${{ github.workspace }}
