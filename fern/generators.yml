@@ -6,7 +6,7 @@ groups:
               version: 0.7.2-rc2
               output:
                   location: local-file-system
-                  path: ../../packages/backend/generated/typescript
+                  path: ../packages/backend/generated/typescript
               config:
                   noSerdeLayer: true
     external:
