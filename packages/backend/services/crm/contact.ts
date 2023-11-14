@@ -374,9 +374,7 @@ const contactService = new ContactService(
                         let cursorVal = parseInt(String(cursor));
                         if (isNaN(cursorVal)) cursorVal = 0;
                         const nextSkipVal = hasMore ? cursorVal + pageSize : undefined;
-
-                        let prevSkipVal =
-                            pageSize === nextSkipVal ? undefined : String(Math.max(cursorVal - pageSize, 0));
+                        const prevSkipVal = cursorVal > 0 ? String(Math.max(cursorVal - pageSize, 0)) : undefined;
 
                         res.send({
                             status: 'ok',
@@ -526,8 +524,8 @@ const contactService = new ContactService(
                     }
                     case TP_ID.closecrm: {
                         // Manually setting the contact name since it couldn't be retrieved from fieldMappings
-                        contact.name = `${contactData.firstName} ${contactData.lastName}`;
-                        console.log('contacts.....', contact);
+                        // contact.name = `${contactData.firstName} ${contactData.lastName}`;
+                        console.log('contacts.....', contactData);
                         const response = await axios({
                             method: 'post',
                             url: 'https://api.close.com/api/v1/contact/',
