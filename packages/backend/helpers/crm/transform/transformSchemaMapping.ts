@@ -93,11 +93,16 @@ export const transformModelToFieldMapping = async ({
                               .includes(key)
                         : accountFieldMappingConfig?.allow_connection_override_custom_fields))
         );
-        const rootFieldMapping = rootSchema?.fieldMappings?.find((r) => r?.target_field_name === key);
-        const crmKey = tenantFieldMapping?.source_field_name || rootFieldMapping?.source_field_name;
+        const rootFieldMapping = rootSchema?.fieldMappings?.filter((r) => r?.target_field_name === key);
+        const crmKey = tenantFieldMapping?.source_field_name;
         if (crmKey) {
             crmObj = assignValueToObject(crmObj, crmKey, get(unifiedObj, key));
         }
+        rootFieldMapping?.forEach((mapping) => {
+            if (mapping.source_field_name) {
+                crmObj = assignValueToObject(crmObj, mapping.source_field_name, get(unifiedObj, key));
+            }
+        });
     });
     logDebug('transformModelToFieldMapping crmObj:', crmObj);
     return crmObj;
