@@ -642,7 +642,7 @@ const contactService = new ContactService(
                                 'Content-Type': 'application/json',
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
-                            data: contact,
+                            data: JSON.stringify(contact),
                         });
 
                         res.send({
@@ -658,7 +658,7 @@ const contactService = new ContactService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not update lead', error.response);
+                console.error('Could not update lead', error);
                 if (isStandardError(error)) {
                     throw error;
                 }

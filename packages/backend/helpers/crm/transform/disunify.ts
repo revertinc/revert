@@ -27,7 +27,6 @@ export async function disunifyObject<T extends Record<string, any>>({
         tenantSchemaMappingId,
         accountFieldMappingConfig,
     });
-
     const processedObj = postprocessDisUnifyObject({ obj: transformedObj, tpId, objType });
 
     switch (tpId) {
