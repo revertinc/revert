@@ -145,7 +145,6 @@ const contactService = new ContactService(
                                 Accept: 'application/json',
                             },
                         });
-                        console.log('Contact from closecrm', contact.data);
 
                         contact = await unifyObject<any, UnifiedContact>({
                             obj: contact.data,
@@ -202,6 +201,7 @@ const contactService = new ContactService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
+                        console.log('DEBUG', formattedFields);
                         let contacts: any = await axios({
                             method: 'get',
                             url: `https://api.hubapi.com/crm/v3/objects/contacts?properties=${formattedFields}&${pagingString}`,
@@ -344,10 +344,9 @@ const contactService = new ContactService(
                         break;
                     }
                     case TP_ID.closecrm: {
-                        // @TODO do pagination effectively
-                        const skipCount = 0;
-                        const pagingString = `${pageSize ? `&_limit=${pageSize}` : ''}&_skip=${skipCount}`;
-                        // const pagingString = `&_limit=${pageSize}`;
+                        const pagingString = `${pageSize ? `&_limit=${pageSize}` : ''}${
+                            cursor ? `&_skip=${cursor}` : ''
+                        }`;
 
                         let contacts: any = await axios({
                             method: 'get',
@@ -357,8 +356,7 @@ const contactService = new ContactService(
                                 Accept: 'application/json',
                             },
                         });
-                        console.log('All contacts closecrm ', contacts);
-
+                        const hasMore = contacts.data?.has_more;
                         contacts = contacts.data?.data as any[];
                         contacts = await Promise.all(
                             contacts?.map(
@@ -373,12 +371,17 @@ const contactService = new ContactService(
                             )
                         );
 
+                        let cursorVal = parseInt(String(cursor));
+                        if (isNaN(cursorVal)) cursorVal = 0;
+                        const nextSkipVal = hasMore ? cursorVal + pageSize : undefined;
+
+                        let prevSkipVal =
+                            pageSize === nextSkipVal ? undefined : String(Math.max(cursorVal - pageSize, 0));
+
                         res.send({
                             status: 'ok',
-                            next: contacts.data?.has_more
-                                ? `?&_limit=${pageSize}&_skip=${skipCount + pageSize}`
-                                : undefined,
-                            previous: undefined, // Field not supported by Hubspot.
+                            next: nextSkipVal ? String(nextSkipVal) : undefined,
+                            previous: prevSkipVal,
                             results: contacts,
                         });
                         break;
