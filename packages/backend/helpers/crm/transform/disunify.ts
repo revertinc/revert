@@ -4,6 +4,7 @@ import { transformModelToFieldMapping } from '.';
 import { handleHubspotDisunify, handlePipedriveDisunify, handleSfdcDisunify, handleZohoDisunify } from '..';
 import { postprocessDisUnifyObject } from './preprocess';
 import { flattenObj } from '../../../helpers/flattenObj';
+import handleCloseCRMDisunify from '../closecrm';
 
 export async function disunifyObject<T extends Record<string, any>>({
     obj,
@@ -19,7 +20,6 @@ export async function disunifyObject<T extends Record<string, any>>({
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }) {
     const flattenedObj = flattenObj(obj, ['additional', 'associations']);
-
     const transformedObj = await transformModelToFieldMapping({
         unifiedObj: flattenedObj,
         tpId,
@@ -44,12 +44,7 @@ export async function disunifyObject<T extends Record<string, any>>({
             return handleSfdcDisunify({ obj, objType, transformedObj: processedObj });
         }
         case TP_ID.closecrm: {
-            ['phones', 'emails'].forEach((key) => {
-                if (processedObj[key] && processedObj[key].constructor === Object) {
-                    processedObj[key] = Object.values(processedObj[key]);
-                }
-            });
-            return processedObj;
+            return handleCloseCRMDisunify({ obj, transformedObj: processedObj });
         }
     }
 }

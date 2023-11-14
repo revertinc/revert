@@ -28,6 +28,25 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.closecrm]: {
+            [StandardObjects.contact]: (obj: T) => {
+                if (obj.name) {
+                    const names = obj.name.split(' ');
+                    const modifiedObj = {
+                        ...obj,
+                        firstName: names[0],
+                        lastName: names[1],
+                    };
+                    console.log(
+                        'DEBUG',
+                        'lalsdjaslkdjlsjdlasdlasjdlasdlasjdlasdkaljdlajsdlaksdjlasjdlajsdlajad',
+                        modifiedObj
+                    );
+                    return modifiedObj;
+                }
+                return { ...obj };
+            },
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
@@ -125,19 +144,19 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
             },
         },
         [TP_ID.closecrm]: {
-            [StandardObjects.note]: (obj: T) => {
-                return {
-                    ...obj,
-                    lead_id: 'lead_Nrm1Zb3eowbiKwCd4isjTsLSKPzQoxMtvu5Ms9IDeS3',
-                };
-            },
-            [StandardObjects.contact]: (obj: T) => {
-                console.log('From obj.....', obj);
-                return {
-                    ...obj,
-                    lead_id: 'lead_Nrm1Zb3eowbiKwCd4isjTsLSKPzQoxMtvu5Ms9IDeS3',
-                };
-            },
+            // [StandardObjects.note]: (obj: T) => {
+            //     return {
+            //         ...obj,
+            //         lead_id: 'lead_u1ETw8SoeXST0FXO8V7OdxEwD67q3SwGjROpbUHy6sV',
+            //     };
+            // },
+            // [StandardObjects.contact]: (obj: T) => {
+            //     console.log('DEBUG', 'From preprocess closecrm', obj);
+            //     return {
+            //         ...obj,
+            //         name: `${obj.firstName} ${obj.lastName}`,
+            //     };
+            // },
         },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];

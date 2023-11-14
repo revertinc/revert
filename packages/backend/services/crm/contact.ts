@@ -413,8 +413,6 @@ const contactService = new ContactService(
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
                 console.log('Revert::CREATE CONTACT', connection.app?.env?.accountId, tenantId, contact, thirdPartyId);
-                // console.log('tenantSchemaMappingId ', connection.schema_mapping_id);
-                // console.log('accountFieldMappingConfig ', account.accountFieldMappingConfig);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -524,8 +522,7 @@ const contactService = new ContactService(
                     }
                     case TP_ID.closecrm: {
                         // Manually setting the contact name since it couldn't be retrieved from fieldMappings
-                        // contact.name = `${contactData.firstName} ${contactData.lastName}`;
-                        console.log('contacts.....', contactData);
+
                         const response = await axios({
                             method: 'post',
                             url: 'https://api.close.com/api/v1/contact/',
@@ -638,7 +635,6 @@ const contactService = new ContactService(
                         break;
                     }
                     case TP_ID.closecrm: {
-                        contact.name = `${contactData.firstName} ${contactData.lastName}`;
                         const response = await axios({
                             method: 'put',
                             url: `https://api.close.com/api/v1/contact/${contactId}`,

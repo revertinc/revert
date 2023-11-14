@@ -71,19 +71,17 @@ export const transformModelToFieldMapping = async ({
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }) => {
-    console.log(tpId, objType);
     logDebug('transformModelToFieldMapping unifiedObj:', unifiedObj);
     const connectionSchema = await prisma.schemas.findFirst({
         where: { object: objType, schema_mapping_id: !!tenantSchemaMappingId ? tenantSchemaMappingId : undefined },
         include: { fieldMappings: { where: { source_tp_id: tpId } } },
     });
-    console.log('Connection schema', connectionSchema);
 
     const rootSchema = await prisma.schemas.findFirst({
         where: { object: objType, schema_mapping_id: rootSchemaMappingId },
         include: { fieldMappings: { where: { source_tp_id: tpId } } },
     });
-    console.log('Root schema', rootSchema);
+
     let crmObj: Record<string, string> = {};
     Object.keys(unifiedObj).forEach((key) => {
         const tenantFieldMapping = connectionSchema?.fieldMappings?.find(

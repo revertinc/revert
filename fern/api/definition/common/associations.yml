@@ -13,6 +13,10 @@ types:
             dealId:
                 type: optional<string>
                 docs: The id of the deal to associate with contact
+            leadId:
+                type: optional<string>
+                docs: The id of lead to associate with contact for close crm
+
         examples:
             - name: Associate hubspot contact with deal
               value:
