@@ -7,6 +7,7 @@ import indexRouter from './routes/index';
 import cors from 'cors';
 import cron from 'node-cron';
 import morgan from 'morgan';
+import os from 'os';
 import AuthService from './services/auth';
 import versionMiddleware, { manageRouterVersioning } from './helpers/versionMiddleware';
 import { ShortloopSDK } from '@shortloop/node';
@@ -72,8 +73,31 @@ morgan.token('tenant-id', (req: any) => {
 morgan.token('account-id', (_req, res: any) => {
     return res.locals?.account?.id;
 });
+
+morgan.token('hostname', function getHostname() {
+    return os.hostname();
+});
+
+const jsonFormat = (tokens: any, req: any, res: any) => {
+    return JSON.stringify({
+        tenant: tokens['tenant-id'](req, res),
+        account: tokens['account-id'](req, res),
+        'remote-address': tokens['remote-addr'](req, res),
+        time: tokens['date'](req, res, 'iso'),
+        method: tokens['method'](req, res),
+        url: tokens['url'](req, res),
+        'http-version': tokens['http-version'](req, res),
+        status: tokens['status'](req, res),
+        'content-length': tokens['res'](req, res, 'content-length'),
+        referrer: tokens['referrer'](req, res),
+        'user-agent': tokens['user-agent'](req, res),
+        hostname: tokens['hostname'](req, res),
+        'response-time': `${tokens['response-time'](req, res)}`, // in milliseconds
+    });
+};
+
 app.use(
-    morgan('[:date[iso]] :method :url :status :response-time ms tenant - :tenant-id | account - :account-id', {
+    morgan(jsonFormat, {
         skip: (req, _) => {
             return req.originalUrl.startsWith('/health-check');
         },
