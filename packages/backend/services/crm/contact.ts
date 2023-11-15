@@ -533,7 +533,6 @@ const contactService = new ContactService(
                             },
                             data: contact,
                         });
-                        console.log(response);
                         res.send({
                             status: 'ok',
                             message: 'Closecrm contact created',
@@ -640,7 +639,6 @@ const contactService = new ContactService(
                         if ((contact.lastName || contact.firstName) && (!contact.firstName || !contact.lastName)) {
                             throw new Error('Both firstName and lastName fields are required for Close CRM.');
                         }
-                        console.log('Yooooooo');
                         const response = await axios({
                             method: 'put',
                             url: `https://api.close.com/api/v1/contact/${contactId}`,
