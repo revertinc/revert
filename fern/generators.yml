@@ -6,7 +6,7 @@ groups:
               version: 0.7.2-rc2
               output:
                   location: local-file-system
-                  path: ../../packages/backend/generated/typescript
+                  path: ../packages/backend/generated/typescript
               config:
                   noSerdeLayer: true
     external:
@@ -21,7 +21,3 @@ groups:
                   workspace-id: ${POSTMAN_WORKSPACE_ID}
               github:
                   repository: revertinc/revert-postman
-        docs:
-            domain: revert.docs.buildwithfern.com
-            custom-domains:
-                - docs.revert.dev

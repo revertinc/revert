@@ -5650,7 +5650,7 @@ __metadata:
   resolution: "@revertdotdev/main@workspace:."
   dependencies:
     concurrently: ^8.2.1
-    fern-api: 0.12.0
+    fern-api: 0.15.0-rc70
     husky: ^8.0.3
     lint-staged: ^14.0.1
     prettier: 2.5.1
@@ -16638,12 +16638,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fern-api@npm:0.12.0":
-  version: 0.12.0
-  resolution: "fern-api@npm:0.12.0"
+"fern-api@npm:0.15.0-rc70":
+  version: 0.15.0-rc70
+  resolution: "fern-api@npm:0.15.0-rc70"
   bin:
     fern: cli.cjs
-  checksum: 1e93f846028139c15d2264162439de8b3786fe5f832b8d0cd47ca2ca3d656fdce5202357f9bf6ad675f900669a1400771d508fce1c5386d1f02bc53a36d103fa
+  checksum: a70d7d698b5a8b4bde046f7778344835e287957c74d76c4e8f941041f395c1a0999e21fdbe200848d619ba18af65c954c04d16d0bf29adc15fe40f58610373c7
   languageName: node
   linkType: hard
 
