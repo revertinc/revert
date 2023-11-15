@@ -5,8 +5,6 @@ export default function handleCloseCRMDisunify<T extends Record<string, any>>({
     obj: T;
     transformedObj: any;
 }) {
-    console.log('DEBUG', 'OG obj......', obj);
-    // const names = transformedObj['name'].split(' ');
     if (obj.firstName && obj.lastName) {
         transformedObj['name'] = `${obj.firstName} ${obj.lastName}`;
     } else if (obj.firstName) {

@@ -37,11 +37,6 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                         firstName: names[0],
                         lastName: names[1],
                     };
-                    console.log(
-                        'DEBUG',
-                        'lalsdjaslkdjlsjdlasdlasjdlasdlasjdlasdkaljdlajsdlaksdjlasjdlajsdlajad',
-                        modifiedObj
-                    );
                     return modifiedObj;
                 }
                 return { ...obj };
@@ -143,21 +138,7 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
-        [TP_ID.closecrm]: {
-            // [StandardObjects.note]: (obj: T) => {
-            //     return {
-            //         ...obj,
-            //         lead_id: 'lead_u1ETw8SoeXST0FXO8V7OdxEwD67q3SwGjROpbUHy6sV',
-            //     };
-            // },
-            // [StandardObjects.contact]: (obj: T) => {
-            //     console.log('DEBUG', 'From preprocess closecrm', obj);
-            //     return {
-            //         ...obj,
-            //         name: `${obj.firstName} ${obj.lastName}`,
-            //     };
-            // },
-        },
+        [TP_ID.closecrm]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

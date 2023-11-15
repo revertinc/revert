@@ -201,7 +201,6 @@ const contactService = new ContactService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
-                        console.log('DEBUG', formattedFields);
                         let contacts: any = await axios({
                             method: 'get',
                             url: `https://api.hubapi.com/crm/v3/objects/contacts?properties=${formattedFields}&${pagingString}`,
@@ -522,7 +521,9 @@ const contactService = new ContactService(
                     }
                     case TP_ID.closecrm: {
                         // Manually setting the contact name since it couldn't be retrieved from fieldMappings
-
+                        if (!contactData.lastName || !contactData.firstName) {
+                            throw new Error('Both "firstName" and "lastName" fields are required.');
+                        }
                         const response = await axios({
                             method: 'post',
                             url: 'https://api.close.com/api/v1/contact/',
@@ -635,6 +636,11 @@ const contactService = new ContactService(
                         break;
                     }
                     case TP_ID.closecrm: {
+                        // checks for name field
+                        if ((contact.lastName || contact.firstName) && (!contact.firstName || !contact.lastName)) {
+                            throw new Error('Both firstName and lastName fields are required for Close CRM.');
+                        }
+                        console.log('Yooooooo');
                         const response = await axios({
                             method: 'put',
                             url: `https://api.close.com/api/v1/contact/${contactId}`,
@@ -658,7 +664,7 @@ const contactService = new ContactService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not update lead', error);
+                console.error('Could not update contact', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -811,6 +817,31 @@ const contactService = new ContactService(
                     }
                     // @TODO
                     case TP_ID.closecrm: {
+                        const fields = ['id', 'date_created', 'date_updated', 'name', 'phones', 'emails', 'lead_id'];
+                        const response: any = await axios({
+                            method: 'post',
+                            url: 'https://api.close.com/api/v1/data/search',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: { ...searchCriteria, _fields: { contact: fields } },
+                        });
+
+                        const contacts = await Promise.all(
+                            response.data.data.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedContact>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({ status: 'ok', results: contacts });
                         break;
                     }
                     default: {
