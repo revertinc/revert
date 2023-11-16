@@ -62,7 +62,7 @@ export enum StandardObjects {
     user = 'user',
 }
 
-export const objectNameMapping: Record<string, Record<TP_ID, string | undefined>> = {
+export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefined>> = {
     [StandardObjects.company]: {
         [TP_ID.hubspot]: 'companies',
         [TP_ID.pipedrive]: 'organization',

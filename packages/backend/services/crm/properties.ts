@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { TP_ID, connections } from '@prisma/client';
 import { CRM_TP_ID, objectNameMapping } from '../../constants/common';
-import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
+// import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
+import {InternalServerError,NotFoundError} from '../../generated/typescript/api/resources/common/resources/errors/errors/'
 import { FieldDetailsTypeRequest } from '../../generated/typescript/api/resources/crm';
 import { logError } from '../../helpers/logger';
 import { isStandardError } from '../../helpers/error';

@@ -7,14 +7,15 @@ imports:
 types:
     FieldDetailsType:
         properties:
-            fieldName: string
-            fieldType: string
-            fieldDescription: string
+            name: string
+            type: string
+            description: string
     FieldDetailsTypeRequest:
         extends: FieldDetailsType
         properties:
-            groupName: string
-            type: string
+            additional:
+                type: unknown
+                docs: Any fields that are not unified yet/non-unifiable come inside this `json` object.
     SetObjectPropertiesRequest: FieldDetailsTypeRequest
     GetObjectPropertiesResponse: unknown
     SetObjectPropertiesResponse: unknown
@@ -62,8 +63,3 @@ service:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
-
-
-
-
