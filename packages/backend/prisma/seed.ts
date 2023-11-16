@@ -107,7 +107,7 @@ async function main() {
                     [TP_ID.pipedrive]: 'first_name',
                     [TP_ID.sfdc]: 'FirstName',
                     [TP_ID.zohocrm]: 'First_Name',
-                    [TP_ID.closecrm]: 'name', //@TODO closecrm does not provide firstname and lastname
+                    [TP_ID.closecrm]: 'firstName', //@TODO closecrm does not provide firstname and lastname
                 },
                 target_field_name: 'firstName',
             },
@@ -117,7 +117,7 @@ async function main() {
                     [TP_ID.pipedrive]: 'last_name',
                     [TP_ID.sfdc]: 'LastName',
                     [TP_ID.zohocrm]: 'Last_Name',
-                    [TP_ID.closecrm]: undefined, //@TODO closecrm does not provide firstname and lastname
+                    [TP_ID.closecrm]: 'lastName', //@TODO closecrm does not provide firstname and lastname
                 },
                 target_field_name: 'lastName',
             },
@@ -575,7 +575,7 @@ async function main() {
                     [TP_ID.pipedrive]: 'title',
                     [TP_ID.sfdc]: 'FirstName',
                     [TP_ID.zohocrm]: 'First_Name',
-                    [TP_ID.closecrm]: 'name',
+                    [TP_ID.closecrm]: 'firstName',
                 },
                 target_field_name: 'firstName',
             },
@@ -585,7 +585,7 @@ async function main() {
                     [TP_ID.pipedrive]: undefined, // firstName (title) includes full name
                     [TP_ID.sfdc]: 'LastName',
                     [TP_ID.zohocrm]: 'Last_Name',
-                    [TP_ID.closecrm]: undefined,
+                    [TP_ID.closecrm]: 'lastName',
                 },
                 target_field_name: 'lastName',
             },
@@ -595,7 +595,7 @@ async function main() {
                     [TP_ID.pipedrive]: 'person.phone.0.value',
                     [TP_ID.sfdc]: 'Phone',
                     [TP_ID.zohocrm]: 'Phone',
-                    [TP_ID.closecrm]: 'contacts.phones.0.phone',
+                    [TP_ID.closecrm]: 'contacts.0.phones.0.phone',
                 },
                 target_field_name: 'phone',
             },
@@ -605,7 +605,7 @@ async function main() {
                     [TP_ID.pipedrive]: 'person.email.0.value',
                     [TP_ID.sfdc]: 'Email',
                     [TP_ID.zohocrm]: 'Email',
-                    [TP_ID.closecrm]: 'contacts.emails.0.email',
+                    [TP_ID.closecrm]: 'contacts.0.emails.0.email',
                 },
                 target_field_name: 'email',
             },

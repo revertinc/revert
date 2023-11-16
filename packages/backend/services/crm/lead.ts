@@ -137,6 +137,26 @@ const leadService = new LeadService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        let lead: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/lead/${leadId}/`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        lead = await unifyObject<any, UnifiedLead>({
+                            obj: lead.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: lead });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
                     }
@@ -322,6 +342,49 @@ const leadService = new LeadService(
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedLeads });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        const pagingString = `${pageSize ? `&_limit=${pageSize}` : ''}${
+                            cursor ? `&_skip=${cursor}` : ''
+                        }`;
+
+                        let leads: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/lead/?${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+                        const hasMore = leads.data?.has_more;
+                        leads = leads.data?.data as any[];
+                        leads = await Promise.all(
+                            leads?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedLead>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        let cursorVal = parseInt(String(cursor));
+                        if (isNaN(cursorVal)) cursorVal = 0;
+                        const nextSkipVal = hasMore ? cursorVal + pageSize : undefined;
+                        const prevSkipVal = cursorVal > 0 ? String(Math.max(cursorVal - pageSize, 0)) : undefined;
+
+                        res.send({
+                            status: 'ok',
+                            next: nextSkipVal ? String(nextSkipVal) : undefined,
+                            previous: prevSkipVal,
+                            results: leads,
+                        });
+
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
                     }
@@ -421,6 +484,27 @@ const leadService = new LeadService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        // checks for name field
+                        if ((lead.lastName || lead.firstName) && (!lead.firstName || !lead.lastName)) {
+                            throw new Error('Both firstName and lastName fields are required for Close CRM.');
+                        }
+                        const response = await axios({
+                            method: 'post',
+                            url: 'https://api.close.com/api/v1/lead/',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: lead,
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Closecrm lead created',
+                            result: response.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
                     }
@@ -512,6 +596,29 @@ const leadService = new LeadService(
                             result: {
                                 ...leadUpdated.data.data,
                             },
+                        });
+                        break;
+                    }
+                    case TP_ID.closecrm: {
+                        // checks for name field
+                        // if ((lead.lastName || lead.firstName) && (!lead.firstName || !lead.lastName)) {
+                        //     throw new Error('Both firstName and lastName fields are required for Close CRM.');
+                        // }
+
+                        const response = await axios({
+                            method: 'put',
+                            url: `https://api.close.com/api/v1/lead/${leadId}`,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(lead),
+                        });
+                        console.log('DEBUG', response.data);
+                        res.send({
+                            status: 'ok',
+                            message: 'Closecrm lead updated',
+                            result: response.data,
                         });
                         break;
                     }

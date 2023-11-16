@@ -41,6 +41,18 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 }
                 return { ...obj };
             },
+            [StandardObjects.lead]: (obj: T) => {
+                if (obj.name) {
+                    const names = obj.name.split(' ');
+                    const modifiedObj = {
+                        ...obj,
+                        firstName: names[0],
+                        lastName: names[1],
+                    };
+                    return modifiedObj;
+                }
+                return { ...obj };
+            },
         },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
