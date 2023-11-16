@@ -122,6 +122,30 @@ const taskService = new TaskService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        let task: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/task/${taskId}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+                        // console.log(task);
+                        task = await unifyObject<any, UnifiedTask>({
+                            obj: task.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: task,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -297,6 +321,48 @@ const taskService = new TaskService(
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedTasks });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        const pagingString = `${pageSize ? `&_limit=${pageSize}` : ''}${
+                            cursor ? `&_skip=${cursor}` : ''
+                        }`;
+
+                        let tasks: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/task/?${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+                        console.log(tasks);
+                        const hasMore = tasks.data?.has_more;
+                        tasks = tasks.data?.data as any[];
+                        tasks = await Promise.all(
+                            tasks?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedTask>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        let cursorVal = parseInt(String(cursor));
+                        if (isNaN(cursorVal)) cursorVal = 0;
+                        const nextSkipVal = hasMore ? cursorVal + pageSize : undefined;
+                        const prevSkipVal = cursorVal > 0 ? String(Math.max(cursorVal - pageSize, 0)) : undefined;
+
+                        res.send({
+                            status: 'ok',
+                            next: nextSkipVal ? String(nextSkipVal) : undefined,
+                            previous: prevSkipVal,
+                            results: tasks,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -396,6 +462,24 @@ const taskService = new TaskService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        const response: any = await axios({
+                            method: 'post',
+                            url: 'https://api.close.com/api/v1/task/',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: task,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Closecrm task created',
+                            result: response.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -487,6 +571,24 @@ const taskService = new TaskService(
                             result: {
                                 ...taskUpdated.data.data,
                             },
+                        });
+                        break;
+                    }
+                    case TP_ID.closecrm: {
+                        const response = await axios({
+                            method: 'put',
+                            url: `https://api.close.com/api/v1/task/${taskId}`,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(task),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Closecrm task updated',
+                            result: response.data,
                         });
                         break;
                     }

@@ -339,7 +339,7 @@ const noteService = new NoteService(
                         res.send({
                             status: 'ok',
                             next: nextSkipVal ? String(nextSkipVal) : undefined,
-                            previous: prevSkipVal, // Field not supported by Hubspot.
+                            previous: prevSkipVal,
                             results: notes,
                         });
                         break;
