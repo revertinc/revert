@@ -55,7 +55,7 @@ async function main() {
                     [TP_ID.pipedrive]: 'content',
                     [TP_ID.sfdc]: 'Body',
                     [TP_ID.zohocrm]: 'Note_Content',
-                    [TP_ID.closecrm]: 'note',
+                    [TP_ID.closecrm]: 'note_html',
                 },
                 target_field_name: 'content',
             },

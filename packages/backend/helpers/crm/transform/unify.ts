@@ -38,8 +38,9 @@ export async function unifyObject<T extends Record<string, any>, K>({
     Object.keys(obj).forEach((key) => {
         if (!(key in unifiedObject) && key !== 'properties') {
             unifiedObject['additional'][key] = obj[key];
-            if (unifiedObject.additional.lead_id) {
+            if (unifiedObject.additional.lead_id || unifiedObject.additional.organization_id) {
                 unifiedObject['associations']['leadId'] = unifiedObject.additional.lead_id;
+                unifiedObject['associations']['companyId'] = unifiedObject.additional.organization_id;
             }
         }
     });

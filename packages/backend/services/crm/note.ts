@@ -305,9 +305,12 @@ const noteService = new NoteService(
                         break;
                     }
                     case TP_ID.closecrm: {
+                        const pagingString = `${pageSize ? `&_limit=${pageSize}` : ''}${
+                            cursor ? `&_skip=${cursor}` : ''
+                        }`;
                         let notes: any = await axios({
                             method: 'get',
-                            url: `https://api.close.com/api/v1/activity/note/`,
+                            url: `https://api.close.com/api/v1/activity/note/?${pagingString}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
@@ -315,8 +318,8 @@ const noteService = new NoteService(
                         });
 
                         // @TODO handle hasMore while pagination
-                        // const hasMore = notes.data.has_more;
-                        notes = notes.data.data;
+                        const hasMore = notes.data?.has_more;
+                        notes = notes.data?.data as any[];
                         notes = await Promise.all(
                             notes?.map(
                                 async (l: any) =>
@@ -329,11 +332,14 @@ const noteService = new NoteService(
                                     })
                             )
                         );
-                        // notes = { ...notes, hasMore };
+                        let cursorVal = parseInt(String(cursor));
+                        if (isNaN(cursorVal)) cursorVal = 0;
+                        const nextSkipVal = hasMore ? cursorVal + pageSize : undefined;
+                        const prevSkipVal = cursorVal > 0 ? String(Math.max(cursorVal - pageSize, 0)) : undefined;
                         res.send({
                             status: 'ok',
-                            next: 'nextCursor',
-                            previous: undefined, // Field not supported by Hubspot.
+                            next: nextSkipVal ? String(nextSkipVal) : undefined,
+                            previous: prevSkipVal, // Field not supported by Hubspot.
                             results: notes,
                         });
                         break;
@@ -367,7 +373,6 @@ const noteService = new NoteService(
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
                 console.log('Revert::CREATE NOTE', connection.app?.env?.accountId, tenantId, note);
-                console.log('Account...', account);
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
@@ -454,7 +459,7 @@ const noteService = new NoteService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not create lead', error.response);
+                console.error('Could not create note', error.response);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -535,6 +540,24 @@ const noteService = new NoteService(
                             result: {
                                 ...noteUpdated.data.data,
                             },
+                        });
+                        break;
+                    }
+                    case TP_ID.closecrm: {
+                        const response = await axios({
+                            method: 'put',
+                            url: `https://api.close.com/api/v1/activity/note/${noteId}`,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(note),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Closecrm note updated',
+                            result: response.data,
                         });
                         break;
                     }
@@ -643,6 +666,36 @@ const noteService = new NoteService(
                         break;
                     }
                     case TP_ID.pipedrive: {
+                        throw new NotFoundError({ error: 'Method not allowed' });
+                    }
+                    // @TODO do search effectively
+                    case TP_ID.closecrm: {
+                        // const fields = ['id', 'note_html'];
+                        // const response: any = await axios({
+                        //     method: 'post',
+                        //     url: 'https://api.close.com/api/v1/data/search',
+                        //     headers: {
+                        //         'Content-Type': 'application/json',
+                        //         Authorization: `Bearer ${thirdPartyToken}`,
+                        //     },
+                        //     data: { ...searchCriteria },
+                        // });
+
+                        // const notes = await Promise.all(
+                        //     response.data.data.map(
+                        //         async (l: any) =>
+                        //             await unifyObject<any, UnifiedNote>({
+                        //                 obj: l,
+                        //                 tpId: thirdPartyId,
+                        //                 objType,
+                        //                 tenantSchemaMappingId: connection.schema_mapping_id,
+                        //                 accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        //             })
+                        //     )
+                        // );
+
+                        // res.send({ status: 'ok', results: notes });
+                        // break;
                         throw new NotFoundError({ error: 'Method not allowed' });
                     }
                     default: {
