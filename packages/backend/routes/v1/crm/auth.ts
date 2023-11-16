@@ -1,7 +1,6 @@
 import axios from 'axios';
 import express from 'express';
 import { randomUUID } from 'crypto';
-import { randomUUID } from 'crypto';
 import config from '../../../config';
 import qs from 'qs';
 import { TP_ID } from '@prisma/client';

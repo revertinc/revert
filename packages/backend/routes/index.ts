@@ -28,19 +28,10 @@ import { connectionService } from '../services/connection';
 import { fieldMappingService } from './v1/crm/fieldMapping';
 import { propertiesService } from './properties';
 import chatRouter from './v1/chat';
-import { usersService } from '../services/chat/users';
-import { channelService} from '../services/chat/channel';
-import { messageService } from '../services/chat/messages';
-import { fieldMappingService } from './v1/crm/fieldMapping';
-import { propertiesService } from './properties';
-import chatRouter from './v1/chat';
-import { usersService } from '../services/chat/users';
 import { channelsService } from '../services/chat/channels';
-import { messageService } from '../services/chat/message';
-import discordChatRouter from './v1/discord';
-import { usersService } from '../services/discord/users';
-import { serversService } from '../services/discord/servers';
-import { messageService } from '../services/discord/messages';
+import { messageService } from '../services/chat/messages';
+import { usersService } from '../services/chat/users';
+
 
 const router = express.Router();
 

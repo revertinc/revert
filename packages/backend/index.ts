@@ -2,12 +2,10 @@ import express, { Express, Request, Response } from 'express';
 // Note: Sentry should be initialized as early in your app as possible.
 import * as Sentry from '@sentry/node';
 import moesif from 'moesif-nodejs';
-import moesif from 'moesif-nodejs';
 import config from './config';
 import indexRouter from './routes/index';
 import cors from 'cors';
 import cron from 'node-cron';
-import morgan from 'morgan';
 import morgan from 'morgan';
 import AuthService from './services/auth';
 import versionMiddleware, { manageRouterVersioning } from './helpers/versionMiddleware';
