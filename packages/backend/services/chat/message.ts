@@ -1,11 +1,12 @@
 import { logError, logInfo } from '../../helpers/logger';
-import { MessagesService } from '../../generated/typescript/api/resources/chat/resources/messages/service/MessagesService';
+
+import {MessagesService} from '../../generated/typescript/api/resources/chat/resources/messages/service/MessagesService';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import { UnifiedMessage, disunifyMessage, unifyMessage } from '../../models/unified/message';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { isStandardError } from '../../helpers/error';
-import { InternalServerError } from '../../generated/typescript/api/resources/common';
+import {InternalServerError} from '../../generated/typescript/api/resources/common/resources/errors/errors';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 
 const messageService = new MessagesService(

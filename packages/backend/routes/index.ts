@@ -29,7 +29,7 @@ import { fieldMappingService } from './v1/crm/fieldMapping';
 import { propertiesService } from './properties';
 import chatRouter from './v1/chat';
 import { channelsService } from '../services/chat/channels';
-import { messageService } from '../services/chat/messages';
+import { messageService } from '../services/chat/message';
 import { usersService } from '../services/chat/users';
 
 

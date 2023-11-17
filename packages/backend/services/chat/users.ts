@@ -1,6 +1,6 @@
 import { TP_ID } from '@prisma/client';
-import { UsersService } from '../../generated/typescript/api/resources/chat/resources/users/service/UsersService';
-import { InternalServerError } from '../../generated/typescript/api/resources/common';
+import {UsersService} from '../../generated/typescript/api/resources/chat/resources/users/service/UsersService';
+import {InternalServerError} from '../../generated/typescript/api/resources/common/resources/errors/errors';
 import { isStandardError } from '../../helpers/error';
 import { logError, logInfo } from '../../helpers/logger';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
@@ -18,7 +18,8 @@ const usersService = new UsersService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-
+                const customorId = connection.tp_customer_id;
+                // const botToken = connection.app_bot_token;
                 logInfo(
                     'Revert::GET ALL USERS',
                     connection.app?.env?.accountId,
@@ -52,6 +53,34 @@ const usersService = new UsersService(
 
                         break;
                     }
+
+                    case TP_ID.discord: {
+                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&after=${cursor}` : ''
+                        }`;
+
+
+                        const url = `https://discord.com/api/guilds/${customorId}/channels?${pagingString}`;
+
+                        let channels: any = await axios({
+                            method: 'get',
+                            url: url,
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                Authorization: `Bot MTE2Mzc3NjE3OTAwMjY4MzQwMg.GJPLXM.RicdoQAHC5GDBIO0jeVqG1MaibHpxjfA8Nj4w4`,
+                            },
+                        });
+
+                        const nextCursor = channels.data?.response_metadata?.next_cursor || undefined;
+
+                        channels = channels.data;
+
+                        channels = channels.map((l: any) => unifyChatUser(l));
+
+                        res.send({ status: 'ok',next: nextCursor,results: channels });
+                        break;
+                    }
+
                 }
             } catch (error: any) {
                 logError(error);
