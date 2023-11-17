@@ -20,15 +20,14 @@ const authRouter = express.Router();
 // Below route is a quick test endpoint as client package was not working in my case
 authRouter.get('/discord-login', async (_, res) => {
 
-   
-      
-      // Replace 'YOUR_BOT_TOKEN' with your bot's token
-      
-    const discordButton = `<a href="https://discord.com/api/oauth2/authorize?client_id=1163776179002683402&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A4001%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify%20messages.read%20applications.commands%20bot" /></a>`;
 
-    res.status(200).header('Content-Type', 'text/html; charset=utf-8').send(discordButton);
+
+    // Replace 'YOUR_BOT_TOKEN' with your bot's token
+
+  const discordButton = `<a href="https://discord.com/api/oauth2/authorize?client_id=1163776179002683402&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A4001%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify%20messages.read%20applications.commands%20bot" /></a>`;
+
+  res.status(200).header('Content-Type', 'text/html; charset=utf-8').send(discordButton);
 });
-
 
 authRouter.get('/oauth-callback', async (req, res) => {
     logInfo('OAuth callback', req.query);
@@ -47,7 +46,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             },
             include: {
                 apps: {
-                    select: { id: true, app_client_id: true, app_client_secret: true,app_bot_token:true, is_revert_app: true },
+                    select: { id: true, app_client_id: true, app_client_secret: true,app_bot_token: true, is_revert_app: true },
                     where: { tp_id: integrationId },
                 },
                 accounts: true,
@@ -56,23 +55,18 @@ authRouter.get('/oauth-callback', async (req, res) => {
 
         const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
+        const svixAppId = account!.accounts!.id;
         const botToken = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0].app_bot_token;
-        if (integrationId === TP_ID.discord && req.query.code && req.query.t_id && revertPublicKey) {
-            // handling the discord received code
-
-           
-            const url = 'https://discord.com/api/oauth2/token';
-            
-            
-            try {
-                const formData = new URLSearchParams({
-                    grant_type: 'authorization_code',
-                    client_id: clientId || config.DISCORD_CLIENT_ID,
-                    client_secret: clientSecret || config.DISCORD_CLIENT_SECRET,
-                    redirect_uri: `http://localhost:4001/auth/discord/callback`,
-                    code: req.query.code as string,
-                    scope: "identify"
-                });
+        if (integrationId === TP_ID.slack && req.query.code && req.query.t_id && revertPublicKey) {
+            // handling the slack received code
+            const url = 'https://slack.com/api/oauth.v2.access';
+            const formData = {
+                grant_type: 'authorization_code',
+                client_id: clientId || config.SLACK_CLIENT_ID,
+                client_secret: clientSecret || config.SLACK_CLIENT_SECRET,
+                redirect_uri: `${config.OAUTH_REDIRECT_BASE}/slack`,
+                code: req.query.code,
+            };
 
             const result = await axios({
                 method: 'post',
@@ -105,9 +99,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     update: {
                         tp_access_token: result.data?.access_token,
                         tp_refresh_token: result.data?.refresh_token,
-                        app_client_id: clientId ||  config.DISCORD_CLIENT_ID,
-                        app_client_secret: clientSecret ||  config.DISCORD_CLIENT_SECRET,
-                        app_bot_token: botToken ||  config.DISCORD_BOT_TOKEN,
+                        app_client_id: clientId || config.SLACK_CLIENT_ID,
+                        app_client_secret: clientSecret || config.SLACK_CLIENT_SECRET,
                     },
                     create: {
                         id: String(req.query.t_id),
@@ -115,9 +108,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_id: integrationId,
                         tp_access_token: String(result.data?.access_token),
                         tp_refresh_token: String(result.data?.refresh_token),
-                        app_client_id:  clientId || config.DISCORD_CLIENT_ID,
-                        app_client_secret: clientSecret ||    config.DISCORD_CLIENT_SECRET,
-                        app_bot_token: botToken ||    config.DISCORD_BOT_TOKEN,
+                        app_client_id: clientId || config.SLACK_CLIENT_ID,
+                        app_client_secret: clientSecret || config.SLACK_CLIENT_SECRET,
                         tp_customer_id: String(info.data.user?.id),
                         owner_account_public_token: revertPublicKey,
                         appId: account?.apps[0].id,
@@ -166,11 +158,93 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
+        } 
+        
+        if (integrationId === TP_ID.discord && req.query.code && req.query.t_id && revertPublicKey) {
+            // handling the discord received code
+
+
+            const url = 'https://discord.com/api/oauth2/token';
+
+
+            try {
+                const formData = new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: clientId || config.DISCORD_CLIENT_ID,
+                    client_secret: clientSecret || config.DISCORD_CLIENT_SECRET,
+                    redirect_uri: `http://localhost:4001/auth/discord/callback`,
+                    code: req.query.code as string,
+                    scope: "identify"
+                });
+
+                const result = await axios({
+                    method: 'post',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    url: url,
+                    data: formData,
+                });
+
+                console.log('OAuth creds for discord', result.data);
+                console.log(result.data?.refresh_token, "result.data?.refresh_token")
+                const info = await axios({
+                    method: 'get',
+                    url: 'https://discord.com/api/users/@me',
+                    headers: {
+                        Authorization: `${result.data?.token_type} ${result.data?.access_token}`,
+                    },
+
+                });
+
+                console.log('OAuth token info', info.data);
+
+     try {
+                await xprisma.connections.upsert({
+                    where: {
+                        id: String(req.query.t_id),
+                    },
+                    update: {
+                        tp_access_token: result.data?.access_token,
+                        tp_refresh_token: result.data?.refresh_token,
+                        app_client_id: clientId ||  config.DISCORD_CLIENT_ID,
+                        app_client_secret: clientSecret ||  config.DISCORD_CLIENT_SECRET,
+                        app_bot_token: botToken ||  config.DISCORD_BOT_TOKEN,
+                    },
+                    create: {
+                        id:  String(req.query.t_id),
+                        t_id:  req.query.t_id as string,
+                        tp_id: integrationId,
+                        tp_access_token: String(result.data?.access_token),
+                        tp_refresh_token: String(result.data?.refresh_token),
+                        app_client_id:  clientId || config.DISCORD_CLIENT_ID,
+                        app_client_secret: clientSecret ||    config.DISCORD_CLIENT_SECRET,
+                        app_bot_token: botToken ||    config.DISCORD_BOT_TOKEN,
+                        tp_customer_id: String(info.data.user?.id),
+                        owner_account_public_token: revertPublicKey,
+                        appId: account?.apps[0].id,
+                    },
+                });
+                // Svix stuff goes here ****
+
+                res.send({ status: 'ok', tp_customer_id: info.data.user?.id});
+            } catch (error: any) {
+                logError(error);
+
+                res.send({ status: 'error', error: error });
+            }
+            } catch (error) {
+                console.log(error)
+            }
+
+
+
         } else {
             res.send({
                 status: 'noop',
             });
         }
+        res.status(200).json({ msg: 'yo', account });
     } catch (error: any) {
         logError(error);
         logInfo('Error while getting oauth creds', error);

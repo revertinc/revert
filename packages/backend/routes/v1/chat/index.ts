@@ -23,7 +23,9 @@ chatRouter.get('/integration-status/:publicToken', async (req, res) => {
     try {
         const publicToken = req.params.publicToken;
         const { tenantId } = req.query;
+        console.log("🫸")
         const session = await createSession(req, res);
+        console.log(session,"session ⏲️")
         await pubsub.subscribe(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${tenantId}`, async (message: any) => {
             logDebug('pubsub message', message);
             let parsedMessage = JSON.parse(message) as IntegrationStatusSseMessage;

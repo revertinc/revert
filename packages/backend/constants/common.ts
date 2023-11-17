@@ -39,15 +39,16 @@ export const DEFAULT_SCOPE = {
     [TP_ID.pipedrive]: [],
     [TP_ID.slack]: ['users:read', 'users.profile:read'],
     [TP_ID.discord]: [],
-    [TP_ID.slack]: ['users:read', 'users.profile:read'],
 };
 
 export const mapIntegrationIdToIntegrationName = {
-    [TP_ID.hubspot]: "Hubspot",
-    [TP_ID.pipedrive]: "Pipedrive",
-    [TP_ID.sfdc]: "Salesforce",
-    [TP_ID.zohocrm]: "Zoho",
-}
+    [TP_ID.hubspot]: 'Hubspot',
+    [TP_ID.pipedrive]: 'Pipedrive',
+    [TP_ID.sfdc]: 'Salesforce',
+    [TP_ID.zohocrm]: 'Zoho',
+    [TP_ID.slack]: 'Slack',
+    [TP_ID.discord]: 'Discord',
+};
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';
 
