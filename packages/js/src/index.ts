@@ -1128,6 +1128,10 @@ const createIntegrationBlock = function (self, integration) {
                             this.#REDIRECT_URL_BASE
                         }/slack&scope=${scopes.join(',')}&user_scope=identity.basic,identity.email&state=${state}`
                     );
+                }else if (selectedIntegration.integrationId === 'discord') {
+                    window.open(
+                        `https://discord.com/api/oauth2/authorize?client_id=${selectedIntegration.clientId}&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A4001%2Fauth%2Fdiscord%2Fcallback&scope=identify%20messages.read%20applications.commands%20bot&state=${state}`
+                    );
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {

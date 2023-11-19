@@ -84,6 +84,15 @@ const metadataService = new MetadataService({
                     clientId: getClientId(apps, TP_ID.slack) || config.SLACK_CLIENT_ID,
                 },
                 {
+                    integrationId: 'discord',
+                    name: 'discord',
+                    imageSrc:
+                        'https://1000logos.net/wp-content/uploads/2021/06/Discord-logo-768x432.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.discord),
+                    clientId: getClientId(apps, TP_ID.discord) || config.DISCORD_CLIENT_ID,
+                },
+                {
                     integrationId: 'microsoft_dynamics',
                     name: 'microsoft dynamics 365',
                     imageSrc:

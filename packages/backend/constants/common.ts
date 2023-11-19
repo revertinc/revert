@@ -38,7 +38,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.sfdc]: [], // https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_tokens_scopes.htm&type=5
     [TP_ID.pipedrive]: [],
     [TP_ID.slack]: ['users:read', 'users.profile:read'],
-    [TP_ID.discord]: [],
+    [TP_ID.discord]: ['users:read', 'users.profile:read'],
 };
 
 export const mapIntegrationIdToIntegrationName = {
