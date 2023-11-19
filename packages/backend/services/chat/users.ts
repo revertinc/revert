@@ -19,7 +19,7 @@ const usersService = new UsersService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const customorId = connection.tp_customer_id;
-                // const botToken = connection.app_bot_token;
+                const botToken = connection.app_bot_token;
                 logInfo(
                     'Revert::GET ALL USERS',
                     connection.app?.env?.accountId,
@@ -67,7 +67,7 @@ const usersService = new UsersService(
                             url: url,
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded',
-                                Authorization: `Bot MTE2Mzc3NjE3OTAwMjY4MzQwMg.GJPLXM.RicdoQAHC5GDBIO0jeVqG1MaibHpxjfA8Nj4w4`,
+                                Authorization: `Bot ${botToken}`,
                             },
                         });
 
