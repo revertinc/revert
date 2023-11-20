@@ -70,7 +70,6 @@ const EditCredentials: React.FC<{
     app: any;
     handleClose: ({ refetchOnClose }: { refetchOnClose?: boolean | undefined }) => Promise<void>;
 }> = ({ app, handleClose }) => {
-    console.log('#### APP ####', app);
     const [clientId, setClientId] = React.useState<string>(app.app_client_id);
     const [clientSecret, setClientSecret] = React.useState<string>(app.app_client_secret);
     const [scopes, setScopes] = React.useState<string[]>(app.scope);

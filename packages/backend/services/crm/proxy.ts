@@ -72,8 +72,6 @@ const proxyService = new ProxyService(
                     params: queryParams,
                 });
 
-                console.log('DEBUG', 'Proxy Request.....', result.data);
-
                 res.send({ result: result.data });
             } else {
                 throw new NotFoundError({ error: 'Unrecognized CRM!' });

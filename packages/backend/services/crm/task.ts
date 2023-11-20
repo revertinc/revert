@@ -131,7 +131,6 @@ const taskService = new TaskService(
                                 Accept: 'application/json',
                             },
                         });
-                        // console.log(task);
                         task = await unifyObject<any, UnifiedTask>({
                             obj: task.data,
                             tpId: thirdPartyId,
@@ -334,7 +333,6 @@ const taskService = new TaskService(
                                 Accept: 'application/json',
                             },
                         });
-                        console.log(tasks);
                         const hasMore = tasks.data?.has_more;
                         tasks = tasks.data?.data as any[];
                         tasks = await Promise.all(

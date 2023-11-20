@@ -120,7 +120,6 @@ export const OAuthCallback = (props) => {
                         window.close();
                     });
             } else if (integrationId === 'closecrm') {
-                console.log('Post crm installation', integrationId, params);
                 const { tenantId, revertPublicToken } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
                     `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=closecrm&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}`,
@@ -150,7 +149,6 @@ export const OAuthCallback = (props) => {
                         setIsLoading(false);
                     })
                     .catch((err) => {
-                        console.log('yo there is a error');
                         Sentry.captureException(err);
                         setIsLoading(false);
                         console.error(err);

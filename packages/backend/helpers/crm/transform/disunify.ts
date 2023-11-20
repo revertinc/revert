@@ -28,7 +28,6 @@ export async function disunifyObject<T extends Record<string, any>>({
         accountFieldMappingConfig,
     });
     const processedObj = postprocessDisUnifyObject({ obj: transformedObj, tpId, objType });
-
     switch (tpId) {
         case TP_ID.hubspot: {
             return handleHubspotDisunify({ obj, objType, transformedObj: processedObj });

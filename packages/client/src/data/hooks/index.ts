@@ -19,7 +19,6 @@ const useApi = () => {
         setLoading(true);
         try {
             const result = await axiosInstance({ url, method, data: payload });
-            console.log('From axios hook ', result);
 
             setData(result.data);
             setStatus(result.status);

@@ -25,8 +25,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
     logInfo('OAuth callback', req.query);
     const integrationId = req.query.integrationId as CRM_TP_ID;
     const revertPublicKey = req.query.x_revert_public_token as string;
-    console.log(req.query);
-    console.log(`IntegrationID: ${integrationId}, revertPublicKey: ${revertPublicKey}`);
 
     // generate a token for connection auth and save in redis for 5 mins
     const tenantSecretToken = randomUUID();
@@ -46,7 +44,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 accounts: true,
             },
         });
-        console.log('Account ', account);
 
         const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
@@ -436,7 +433,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 grant_type: 'authorization_code',
                 code: req.query.code,
             };
-            console.log('Form data close crm ', formData);
 
             const result = await axios({
                 method: 'post',
@@ -444,7 +440,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 data: qs.stringify(formData),
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             });
-            console.log('OAuth creds for close crm', result.data);
             logInfo('OAuth creds for close crm', result.data);
 
             const info = await axios({

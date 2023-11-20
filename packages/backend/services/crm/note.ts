@@ -132,7 +132,6 @@ const noteService = new NoteService(
                             accountFieldMappingConfig: account.accountFieldMappingConfig,
                         });
 
-                        // console.log(note);
                         res.send({ status: 'ok', result: note });
                         break;
                     }

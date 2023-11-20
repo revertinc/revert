@@ -53,6 +53,14 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 }
                 return { ...obj };
             },
+            [StandardObjects.deal]: (obj: T) => {
+                return {
+                    ...obj,
+                    isWon: obj['status_type'] === 'won' ? true : false,
+                    confidence: Number((parseInt(obj['confidence']) / 100).toFixed(4)),
+                    value: Number(obj['value']) / 100,
+                };
+            },
         },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
@@ -150,7 +158,15 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
-        [TP_ID.closecrm]: {},
+        [TP_ID.closecrm]: {
+            [StandardObjects.deal]: (obj: T) => {
+                return {
+                    ...obj,
+                    confidence: obj.confidence * 100,
+                    value: obj.value * 100,
+                };
+            },
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

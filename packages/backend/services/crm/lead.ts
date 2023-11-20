@@ -614,7 +614,6 @@ const leadService = new LeadService(
                             },
                             data: JSON.stringify(lead),
                         });
-                        console.log('DEBUG', response.data);
                         res.send({
                             status: 'ok',
                             message: 'Closecrm lead updated',
