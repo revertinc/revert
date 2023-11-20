@@ -2,7 +2,7 @@ import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import { ChannelsService } from '../../generated/typescript/api/resources/chat/resources/channels/service/ChannelsService';
 import { logError, logInfo } from '../../helpers/logger';
 import { isStandardError } from '../../helpers/error';
-import {InternalServerError} from '../../generated/typescript/api/resources/common/resources/errors/errors';
+import { InternalServerError } from '../../generated/typescript/api/resources/common/resources/errors/errors';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { unifyChannel } from '../../models/unified/channel';
@@ -10,7 +10,7 @@ import revertAuthMiddleware from '../../helpers/authMiddleware';
 
 const channelsService = new ChannelsService(
     {
-        async getChannels(req :any, res : any) {
+        async getChannels(req: any, res: any) {
             try {
                 const connection = res.locals.connection;
                 const pageSize = parseInt(String(req.query.pageSize));
@@ -19,7 +19,7 @@ const channelsService = new ChannelsService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const customorId = connection.tp_customer_id;
-                // const botToken = connection.app_bot_token;
+                const botToken = connection.app_bot_token;
                 logInfo(
                     'Revert::GET ALL CHANNELS',
                     connection.app?.env?.accountId,
@@ -58,7 +58,6 @@ const channelsService = new ChannelsService(
                             cursor ? `&after=${cursor}` : ''
                         }`;
 
-console.log(customorId, 'customorId')
                         const url = `https://discord.com/api/guilds/${customorId}/channels?${pagingString}`;
 
                         let channels: any = await axios({
@@ -66,7 +65,7 @@ console.log(customorId, 'customorId')
                             url: url,
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded',
-                                Authorization: `Bot MTE2Mzc3NjE3OTAwMjY4MzQwMg.GUIyEL.z6mGm5Kyt_6jI1Quqfy00ubS3dbEqqe6hDa8-Y`,
+                                Authorization: `Bot ${botToken}`,
                             },
                         });
 
@@ -76,7 +75,7 @@ console.log(customorId, 'customorId')
 
                         channels = channels.map((l: any) => unifyChannel(l));
 
-                        res.send({ status: 'ok',next: nextCursor,results: channels });
+                        res.send({ status: 'ok', next: nextCursor, results: channels });
                         break;
                     }
                 }
