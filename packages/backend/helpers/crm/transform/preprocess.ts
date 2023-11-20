@@ -1,6 +1,7 @@
 import { TP_ID } from '@prisma/client';
 import { CRM_TP_ID, StandardObjects } from '../../../constants/common';
 import { PipedriveDealStatus } from '../../../constants/pipedrive';
+import { convertToHHMMInUTC, getDuration, getFormattedDate } from '../../../helpers/timeZoneHelper';
 
 export const preprocessUnifyObject = <T extends Record<string, any>>({
     obj,
@@ -45,8 +46,18 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
     const preprocessMap: Record<CRM_TP_ID, Record<any, Function>> = {
         [TP_ID.pipedrive]: {
             [StandardObjects.event]: (obj: T) => {
+                let dateObj = {};
+                if (obj.due_time && obj.end_time) {
+                    dateObj = {
+                        due_time: convertToHHMMInUTC(obj.due_time),
+                        due_date: getFormattedDate(obj.due_time),
+                        duration: getDuration(obj.due_time, obj.end_time),
+                        end_time: undefined,
+                    };
+                }
                 return {
                     ...obj,
+                    ...dateObj,
                     type: 'meeting',
                 };
             },

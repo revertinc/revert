@@ -438,7 +438,7 @@ async function main() {
             {
                 source_field_name: {
                     [TP_ID.hubspot]: 'hs_meeting_start_time',
-                    [TP_ID.pipedrive]: 'add_time',
+                    [TP_ID.pipedrive]: 'due_time',
                     [TP_ID.sfdc]: 'StartDateTime',
                     [TP_ID.zohocrm]: 'Start_DateTime',
                 },
@@ -447,7 +447,7 @@ async function main() {
             {
                 source_field_name: {
                     [TP_ID.hubspot]: 'hs_meeting_end_time',
-                    [TP_ID.pipedrive]: 'due_time',
+                    [TP_ID.pipedrive]: 'end_time',
                     [TP_ID.sfdc]: 'EndDateTime',
                     [TP_ID.zohocrm]: 'End_DateTime',
                 },
