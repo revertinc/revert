@@ -468,6 +468,7 @@ const eventService = new EventService(
                         break;
                     }
                     case TP_ID.pipedrive: {
+                        // FIXME: start & end time of a meeting is not being updated correctly.
                         const eventUpdated = await axios.put<{ data: Partial<PipedriveEvent> }>(
                             `${connection.tp_account_url}/v1/activities/${eventId}`,
                             event,
@@ -484,6 +485,7 @@ const eventService = new EventService(
                                 ...eventUpdated.data.data,
                             },
                         });
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
