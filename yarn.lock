@@ -3212,7 +3212,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.15.4":
+"@babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.23.2":
   version: 7.23.2
   resolution: "@babel/runtime@npm:7.23.2"
   dependencies:
@@ -5044,11 +5044,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/icons-material@npm:^5.10.3":
-  version: 5.11.11
-  resolution: "@mui/icons-material@npm:5.11.11"
+"@mui/icons-material@npm:^5.14.18":
+  version: 5.14.18
+  resolution: "@mui/icons-material@npm:5.14.18"
   dependencies:
-    "@babel/runtime": ^7.21.0
+    "@babel/runtime": ^7.23.2
   peerDependencies:
     "@mui/material": ^5.0.0
     "@types/react": ^17.0.0 || ^18.0.0
@@ -5056,7 +5056,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 6ec89f3c68aaedd521f6a5106964394c410b08cec6875166d3ee97dcbaf2983c67d3b19cd58113d767d9f934cc0e9439fb5856e45471f5094656c0f87bbefecd
+  checksum: 719cd99f739a34fedf64bd718942611b12fb86a58a0401c58e2a90dad690e90e33f55cd973c3792c070449fcc44390e22f9319a9129712bc8b41fbfe4611dccc
   languageName: node
   linkType: hard
 
@@ -5697,7 +5697,7 @@ __metadata:
     "@clerk/clerk-react": 4.11.2
     "@emotion/react": ^11.11.1
     "@emotion/styled": ^11.11.0
-    "@mui/icons-material": ^5.10.3
+    "@mui/icons-material": ^5.14.18
     "@mui/lab": ^5.0.0-alpha.135
     "@mui/material": ^5.10.3
     "@sentry/react": ^7.73.0
