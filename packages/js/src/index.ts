@@ -1130,7 +1130,7 @@ const createIntegrationBlock = function (self, integration) {
                     );
                 }else if (selectedIntegration.integrationId === 'discord') {
                     window.open(
-                        `https://discord.com/api/oauth2/authorize?client_id=${selectedIntegration.clientId}&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A4001%2Fauth%2Fdiscord%2Fcallback&scope=identify%20messages.read%20applications.commands%20bot&state=${state}`
+                        `https://discord.com/api/oauth2/authorize?client_id=1163776179002683402&permissions=8&redirect_uri=http://localhost:4001/auth/discord/callback&scope=identify%20messages.read%20applications.commands%20bot&state=${state}`
                     );
                 }
                 this.clearInitialOrProcessingOrSuccessStage();

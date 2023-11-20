@@ -58,7 +58,7 @@ const channelsService = new ChannelsService(
                             cursor ? `&after=${cursor}` : ''
                         }`;
 
-
+console.log(customorId, 'customorId')
                         const url = `https://discord.com/api/guilds/${customorId}/channels?${pagingString}`;
 
                         let channels: any = await axios({
@@ -66,7 +66,7 @@ const channelsService = new ChannelsService(
                             url: url,
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded',
-                                Authorization: `Bot MTE2Mzc3NjE3OTAwMjY4MzQwMg.GJPLXM.RicdoQAHC5GDBIO0jeVqG1MaibHpxjfA8Nj4w4`,
+                                Authorization: `Bot MTE2Mzc3NjE3OTAwMjY4MzQwMg.GUIyEL.z6mGm5Kyt_6jI1Quqfy00ubS3dbEqqe6hDa8-Y`,
                             },
                         });
 
