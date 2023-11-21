@@ -153,6 +153,39 @@ class AuthService {
                                     tp_refresh_token: result.data.refresh_token,
                                 },
                             });
+                        } else if (connection.tp_id === TP_ID.closecrm) {
+                            // Refresh the close-crm token.
+                            const url = `https://api.close.com/oauth2/token/`;
+                            const formData = {
+                                grant_type: 'refresh_token',
+                                client_id: connection.app?.is_revert_app
+                                    ? config.CLOSECRM_CLIENT_ID
+                                    : connection.app_client_id || config.CLOSECRM_CLIENT_ID,
+                                client_secret: connection.app?.is_revert_app
+                                    ? config.CLOSECRM_CLIENT_SECRET
+                                    : connection.app_client_secret || config.CLOSECRM_CLIENT_SECRET,
+                                refresh_token: connection.tp_refresh_token,
+                            };
+                            const result = await axios({
+                                method: 'post',
+                                url: url,
+                                data: qs.stringify(formData),
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            });
+
+                            if (result.data && result.data.access_token) {
+                                await prisma.connections.update({
+                                    where: {
+                                        id: connection.id,
+                                    },
+                                    data: {
+                                        tp_access_token: result.data.access_token,
+                                        tp_refresh_token: result.data.refresh_token,
+                                    },
+                                });
+                            } else {
+                                logInfo('CLOSE CRM connection could not be refreshed', result);
+                            }
                         }
                     } catch (error: any) {
                         logError(error.response?.data);

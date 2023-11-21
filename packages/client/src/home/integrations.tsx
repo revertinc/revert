@@ -37,7 +37,6 @@ const Integrations = ({ environment }) => {
             method: 'POST',
             payload,
         });
-        console.log(payload);
     }, [fetch, user.user?.id]);
 
     useEffect(() => {
@@ -190,7 +189,7 @@ const Integrations = ({ environment }) => {
                                 >
                                     <img
                                         width={100}
-                                        alt="Hubspot logo"
+                                        alt="Zoho CRM logo"
                                         src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1688550788/Revert/image_10_xvb9h7.png"
                                     />
                                     <p className="font-bold mt-4">ZohoCRM</p>

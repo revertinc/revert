@@ -60,6 +60,19 @@ const proxyService = new ProxyService(
                     params: queryParams,
                 });
                 res.send({ result: result.data });
+            } else if (thirdPartyId === TP_ID.closecrm) {
+                const result = await axios({
+                    method: method,
+                    url: `https://api.close.com/${path}`,
+                    headers: {
+                        Authorization: `Bearer ${thirdPartyToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    data: JSON.stringify(body),
+                    params: queryParams,
+                });
+
+                res.send({ result: result.data });
             } else {
                 throw new NotFoundError({ error: 'Unrecognized CRM!' });
             }

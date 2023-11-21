@@ -12,6 +12,7 @@ enum TP_ID {
   zohocrm
   sfdc
   pipedrive
+  closecrm
   slack
 }
 

@@ -382,6 +382,7 @@ const createIntegrationBlock = function (self, integration) {
                     []
                 );
                 signInElement.appendChild(integrationsContainer);
+
                 for (let index = 0; index < this.#integrations.length; index++) {
                     const integration = this.#integrations[index];
                     let integrationConnectBlock = createIntegrationBlock(this, integration);
@@ -1121,6 +1122,12 @@ const createIntegrationBlock = function (self, integration) {
                         `https://oauth.pipedrive.com/oauth/authorize?client_id=${
                             selectedIntegration.clientId
                         }&redirect_uri=${this.#REDIRECT_URL_BASE}/pipedrive&state=${state}`
+                    );
+                } else if (selectedIntegration.integrationId === 'closecrm') {
+                    window.open(
+                        `https://app.close.com/oauth2/authorize/?client_id=${
+                            selectedIntegration.clientId
+                        }&response_type=code&state=${encodeURIComponent(state)}`
                     );
                 } else if (selectedIntegration.integrationId === 'slack') {
                     window.open(

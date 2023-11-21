@@ -19,6 +19,7 @@ const useApi = () => {
         setLoading(true);
         try {
             const result = await axiosInstance({ url, method, data: payload });
+
             setData(result.data);
             setStatus(result.status);
         } catch (err: any) {
