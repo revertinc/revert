@@ -148,5 +148,4 @@ app.listen(config.PORT, () => {
         await AuthService.refreshOAuthTokensForThirdParty();
         await AuthService.refreshOAuthTokensForThirdPartyChatServices();
     });
-}).setTimeout(3000);
-// 600000
+}).setTimeout(600000);

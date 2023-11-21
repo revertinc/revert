@@ -101,12 +101,11 @@ const metadataService = new MetadataService({
                     scopes: [],
                     clientId: '',
                 },
-                // @TODO add cloudinary link below
                 {
                     integrationId: TP_ID.closecrm,
                     name: 'Close',
                     imageSrc:
-                        'https://uploads-ssl.webflow.com/60f55c92cd59a31bf96663ec/62cfdd2326fd4967612bfe6e_close-logo-dark-2.png',
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/c_scale,w_136/Revert/o8kv3xqzoqioupz0jpnl.jpg',
                     status: 'active',
                     scopes: getScope(apps, TP_ID.closecrm),
                     clientId: getClientId(apps, TP_ID.closecrm) || config.CLOSECRM_CLIENT_ID,

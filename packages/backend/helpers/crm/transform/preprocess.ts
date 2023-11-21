@@ -57,8 +57,8 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 return {
                     ...obj,
                     isWon: obj['status_type'] === 'won' ? true : false,
-                    confidence: Number((parseInt(obj['confidence']) / 100).toFixed(4)),
-                    value: Number(obj['value']) / 100,
+                    confidence: obj['confidence'] ? Number((parseInt(obj['confidence']) / 100).toFixed(4)) : undefined,
+                    value: obj['value'] ? Number(obj['value']) / 100 : undefined,
                 };
             },
         },
@@ -162,8 +162,8 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
             [StandardObjects.deal]: (obj: T) => {
                 return {
                     ...obj,
-                    confidence: obj.confidence * 100,
-                    value: obj.value * 100,
+                    confidence: obj.confidence ? obj.confidence * 100 : undefined,
+                    value: obj.value ? obj.value * 100 : undefined,
                 };
             },
         },

@@ -17,10 +17,6 @@ const authRouter = express.Router({ mergeParams: true });
  * OAuth API
  */
 
-authRouter.get('/auth-test', async (_, res) => {
-    res.status(200).json({ msg: 'You are authed' });
-});
-
 authRouter.get('/oauth-callback', async (req, res) => {
     logInfo('OAuth callback', req.query);
     const integrationId = req.query.integrationId as CRM_TP_ID;
