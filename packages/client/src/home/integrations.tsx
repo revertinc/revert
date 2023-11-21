@@ -74,7 +74,7 @@ const Integrations = ({ environment }) => {
                     {account ? (
                         <div
                             className="flex justify-between flex-wrap items-start gap-4"
-                            style={{ padding: '0rem 5rem', width: '80%' }}
+                            style={{ padding: '3rem 5rem', width: '80%' }}
                         >
                             <Box
                                 sx={{
@@ -94,7 +94,7 @@ const Integrations = ({ environment }) => {
                                         display: 'flex',
                                         flexDirection: 'column',
                                         alignItems: 'flex-start',
-                                        minHeight: 200,
+                                        height: 200,
                                         justifyContent: 'flex-end',
                                         position: 'relative',
                                     }}
@@ -138,7 +138,7 @@ const Integrations = ({ environment }) => {
                                         display: 'flex',
                                         flexDirection: 'column',
                                         alignItems: 'flex-start',
-                                        minHeight: 200,
+                                        height: 200,
                                         justifyContent: 'flex-end',
                                         position: 'relative',
                                     }}
@@ -182,7 +182,7 @@ const Integrations = ({ environment }) => {
                                         display: 'flex',
                                         flexDirection: 'column',
                                         alignItems: 'flex-start',
-                                        minHeight: 200,
+                                        height: 200,
                                         justifyContent: 'flex-end',
                                         position: 'relative',
                                     }}
@@ -226,7 +226,7 @@ const Integrations = ({ environment }) => {
                                         display: 'flex',
                                         flexDirection: 'column',
                                         alignItems: 'flex-start',
-                                        minHeight: 200,
+                                        height: 200,
                                         justifyContent: 'flex-end',
                                         position: 'relative',
                                     }}
@@ -270,7 +270,7 @@ const Integrations = ({ environment }) => {
                                         display: 'flex',
                                         flexDirection: 'column',
                                         alignItems: 'flex-start',
-                                        minHeight: 200,
+                                        height: 200,
                                         justifyContent: 'flex-end',
                                         position: 'relative',
                                     }}
@@ -314,7 +314,7 @@ const Integrations = ({ environment }) => {
                                         display: 'flex',
                                         flexDirection: 'column',
                                         alignItems: 'flex-start',
-                                        minHeight: 200,
+                                        height: 200,
                                         justifyContent: 'flex-end',
                                         position: 'relative',
                                     }}
