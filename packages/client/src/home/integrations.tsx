@@ -74,7 +74,7 @@ const Integrations = ({ environment }) => {
                 <>
                     {account ? (
                         <div
-                            className="flex justify-between flex-wrap items-start"
+                            className="flex justify-between flex-wrap items-start gap-4"
                             style={{ padding: '0rem 5rem', width: '80%' }}
                         >
                             <Box
@@ -83,6 +83,8 @@ const Integrations = ({ environment }) => {
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
                                 }}
                             >
                                 <div
@@ -125,6 +127,8 @@ const Integrations = ({ environment }) => {
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
                                 }}
                             >
                                 <div
@@ -167,6 +171,8 @@ const Integrations = ({ environment }) => {
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
                                 }}
                             >
                                 <div
@@ -209,6 +215,8 @@ const Integrations = ({ environment }) => {
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
                                 }}
                             >
                                 <div
@@ -251,6 +259,8 @@ const Integrations = ({ environment }) => {
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
                                 }}
                             >
                                 <div
@@ -275,6 +285,50 @@ const Integrations = ({ environment }) => {
                                     <span>Configure your Slack Chat App from here.</span>
                                     <IconButton
                                         onClick={() => handleOpen('slack')}
+                                        style={{
+                                            color: '#6e6e6e',
+                                            fontSize: 12,
+                                            position: 'absolute',
+                                            top: 10,
+                                            right: 10,
+                                        }}
+                                    >
+                                        <SettingsIcon />
+                                    </IconButton>
+                                </div>
+                            </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        padding: 30,
+                                        border: '2px #00000029 solid',
+                                        borderRadius: 10,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        minHeight: 200,
+                                        justifyContent: 'flex-end',
+                                        position: 'relative',
+                                    }}
+                                >
+                                    <img
+                                        width={100}
+                                        alt="Close CRM logo"
+                                        src="https://res.cloudinary.com/dfcnic8wq/image/upload/c_scale,w_136/Revert/o8kv3xqzoqioupz0jpnl.jpg"
+                                    />
+                                    <p className="font-bold mt-4">Close CRM</p>
+                                    <span>Configure your Close CRM App from here.</span>
+                                    <IconButton
+                                        onClick={() => handleOpen('closecrm')}
                                         style={{
                                             color: '#6e6e6e',
                                             fontSize: 12,
