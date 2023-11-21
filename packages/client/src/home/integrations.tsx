@@ -73,7 +73,7 @@ const Integrations = ({ environment }) => {
                 <>
                     {account ? (
                         <div
-                            className="flex justify-between flex-wrap items-start"
+                            className="flex justify-between flex-wrap items-start gap-4"
                             style={{ padding: '0rem 5rem', width: '80%' }}
                         >
                             <Box
@@ -82,6 +82,8 @@ const Integrations = ({ environment }) => {
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
                                 }}
                             >
                                 <div
@@ -124,6 +126,8 @@ const Integrations = ({ environment }) => {
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
                                 }}
                             >
                                 <div
@@ -166,6 +170,8 @@ const Integrations = ({ environment }) => {
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
                                 }}
                             >
                                 <div
@@ -208,6 +214,8 @@ const Integrations = ({ environment }) => {
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
                                 }}
                             >
                                 <div
@@ -250,6 +258,8 @@ const Integrations = ({ environment }) => {
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
                                 }}
                             >
                                 <div
@@ -292,6 +302,8 @@ const Integrations = ({ environment }) => {
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
                                 }}
                             >
                                 <div
@@ -310,7 +322,7 @@ const Integrations = ({ environment }) => {
                                     <img
                                         width={100}
                                         alt="Close CRM logo"
-                                        src="https://uploads-ssl.webflow.com/60f55c92cd59a31bf96663ec/62cfdd2326fd4967612bfe6e_close-logo-dark-2.png"
+                                        src="https://res.cloudinary.com/dfcnic8wq/image/upload/c_scale,w_136/Revert/o8kv3xqzoqioupz0jpnl.jpg"
                                     />
                                     <p className="font-bold mt-4">Close CRM</p>
                                     <span>Configure your Close CRM App from here.</span>
