@@ -3,7 +3,11 @@ import { xprisma } from '../prisma/client';
 import { logInfo, logError } from './logger';
 
 const revertTenantMiddleware = () => async (req: Request, res: Response, next: () => any) => {
-    const { 'x-revert-t-id': tenantId, 'x-revert-api-token': token, 'x-revert-t-token': tenantSecretToken } = req.headers;
+    const {
+        'x-revert-t-id': tenantId,
+        'x-revert-api-token': token,
+        'x-revert-t-token': tenantSecretToken,
+    } = req.headers;
     if (tenantSecretToken && !token) {
         return next();
     }

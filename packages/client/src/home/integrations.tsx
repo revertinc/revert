@@ -37,7 +37,6 @@ const Integrations = ({ environment }) => {
             method: 'POST',
             payload,
         });
-        console.log(payload);
     }, [fetch, user.user?.id]);
 
     useEffect(() => {
@@ -184,7 +183,7 @@ const Integrations = ({ environment }) => {
                                 >
                                     <img
                                         width={100}
-                                        alt="Hubspot logo"
+                                        alt="Zoho CRM logo"
                                         src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1688550788/Revert/image_10_xvb9h7.png"
                                     />
                                     <p className="font-bold mt-4">ZohoCRM</p>
@@ -275,6 +274,48 @@ const Integrations = ({ environment }) => {
                                     <span>Configure your Slack Chat App from here.</span>
                                     <IconButton
                                         onClick={() => handleOpen('slack')}
+                                        style={{
+                                            color: '#6e6e6e',
+                                            fontSize: 12,
+                                            position: 'absolute',
+                                            top: 10,
+                                            right: 10,
+                                        }}
+                                    >
+                                        <SettingsIcon />
+                                    </IconButton>
+                                </div>
+                            </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '2rem 0rem',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        padding: 30,
+                                        border: '2px #00000029 solid',
+                                        borderRadius: 10,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        minHeight: 200,
+                                        justifyContent: 'flex-end',
+                                        position: 'relative',
+                                    }}
+                                >
+                                    <img
+                                        width={100}
+                                        alt="Close CRM logo"
+                                        src="https://uploads-ssl.webflow.com/60f55c92cd59a31bf96663ec/62cfdd2326fd4967612bfe6e_close-logo-dark-2.png"
+                                    />
+                                    <p className="font-bold mt-4">Close CRM</p>
+                                    <span>Configure your Close CRM App from here.</span>
+                                    <IconButton
+                                        onClick={() => handleOpen('closecrm')}
                                         style={{
                                             color: '#6e6e6e',
                                             fontSize: 12,

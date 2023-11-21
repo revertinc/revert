@@ -115,6 +115,26 @@ const noteService = new NoteService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        let note: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/activity/note/${noteId}/`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+                        note = await unifyObject<any, UnifiedNote>({
+                            obj: note.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({ status: 'ok', result: note });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -283,6 +303,46 @@ const noteService = new NoteService(
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedNotes });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        const pagingString = `${pageSize ? `&_limit=${pageSize}` : ''}${
+                            cursor ? `&_skip=${cursor}` : ''
+                        }`;
+                        let notes: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/activity/note/?${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        // @TODO handle hasMore while pagination
+                        const hasMore = notes.data?.has_more;
+                        notes = notes.data?.data as any[];
+                        notes = await Promise.all(
+                            notes?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedNote>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+                        let cursorVal = parseInt(String(cursor));
+                        if (isNaN(cursorVal)) cursorVal = 0;
+                        const nextSkipVal = hasMore ? cursorVal + pageSize : undefined;
+                        const prevSkipVal = cursorVal > 0 ? String(Math.max(cursorVal - pageSize, 0)) : undefined;
+                        res.send({
+                            status: 'ok',
+                            next: nextSkipVal ? String(nextSkipVal) : undefined,
+                            previous: prevSkipVal,
+                            results: notes,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -373,13 +433,32 @@ const noteService = new NoteService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        const response = await axios({
+                            method: 'post',
+                            url: `https://api.close.com/api/v1/activity/note/`,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Accept: 'application/json',
+                                authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(note),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'CloseCRM note created',
+                            result: { id: response.data.id, ...response.data },
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not create lead', error.response);
+                console.error('Could not create note', error.response);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -460,6 +539,24 @@ const noteService = new NoteService(
                             result: {
                                 ...noteUpdated.data.data,
                             },
+                        });
+                        break;
+                    }
+                    case TP_ID.closecrm: {
+                        const response = await axios({
+                            method: 'put',
+                            url: `https://api.close.com/api/v1/activity/note/${noteId}`,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(note),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Closecrm note updated',
+                            result: response.data,
                         });
                         break;
                     }
@@ -568,6 +665,36 @@ const noteService = new NoteService(
                         break;
                     }
                     case TP_ID.pipedrive: {
+                        throw new NotFoundError({ error: 'Method not allowed' });
+                    }
+                    // @TODO do search effectively
+                    case TP_ID.closecrm: {
+                        // const fields = ['id', 'note_html'];
+                        // const response: any = await axios({
+                        //     method: 'post',
+                        //     url: 'https://api.close.com/api/v1/data/search',
+                        //     headers: {
+                        //         'Content-Type': 'application/json',
+                        //         Authorization: `Bearer ${thirdPartyToken}`,
+                        //     },
+                        //     data: { ...searchCriteria },
+                        // });
+
+                        // const notes = await Promise.all(
+                        //     response.data.data.map(
+                        //         async (l: any) =>
+                        //             await unifyObject<any, UnifiedNote>({
+                        //                 obj: l,
+                        //                 tpId: thirdPartyId,
+                        //                 objType,
+                        //                 tenantSchemaMappingId: connection.schema_mapping_id,
+                        //                 accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        //             })
+                        //     )
+                        // );
+
+                        // res.send({ status: 'ok', results: notes });
+                        // break;
                         throw new NotFoundError({ error: 'Method not allowed' });
                     }
                     default: {

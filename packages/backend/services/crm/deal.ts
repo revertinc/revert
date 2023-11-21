@@ -124,6 +124,26 @@ const dealService = new DealService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        let deal: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/opportunity/${dealId}/`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        deal = await unifyObject<any, UnifiedDeal>({
+                            obj: deal.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: deal });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -303,6 +323,46 @@ const dealService = new DealService(
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedDeals });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        const pagingString = `${pageSize ? `&_limit=${pageSize}` : ''}${
+                            cursor ? `&_skip=${cursor}` : ''
+                        }`;
+                        let deals: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/opportunity/${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+                        const hasMore = deals.data?.has_more;
+                        deals = deals.data?.data as any[];
+                        deals = await Promise.all(
+                            deals?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedDeal>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        let cursorVal = parseInt(String(cursor));
+                        if (isNaN(cursorVal)) cursorVal = 0;
+                        const nextSkipVal = hasMore ? cursorVal + pageSize : undefined;
+                        const prevSkipVal = cursorVal > 0 ? String(Math.max(cursorVal - pageSize, 0)) : undefined;
+
+                        res.send({
+                            status: 'ok',
+                            next: nextSkipVal ? String(nextSkipVal) : undefined,
+                            previous: prevSkipVal,
+                            results: deals,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
                     }
@@ -402,6 +462,43 @@ const dealService = new DealService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        if (req.body.stage) {
+                            const status = await axios({
+                                method: 'get',
+                                url: 'https://api.close.com/api/v1/status/opportunity/',
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                    Accept: 'application/json',
+                                },
+                            });
+
+                            const validStatus = status.data.data.filter(
+                                (l: any) => l.label.toLowerCase() === req.body.stage.toLowerCase()
+                            );
+
+                            if (validStatus.length === 0) {
+                                throw new Error('Invalid stage value for close crm');
+                            }
+
+                            deal['status_id'] = validStatus[0].id;
+                        }
+                        const response = await axios({
+                            method: 'post',
+                            url: 'https://api.close.com/api/v1/opportunity/',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: deal,
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Closecrm deal created',
+                            result: response.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
                     }
@@ -493,6 +590,44 @@ const dealService = new DealService(
                             result: {
                                 ...dealUpdated.data.data,
                             },
+                        });
+                        break;
+                    }
+                    case TP_ID.closecrm: {
+                        if (req.body.stage) {
+                            const status = await axios({
+                                method: 'get',
+                                url: 'https://api.close.com/api/v1/status/opportunity/',
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                    Accept: 'application/json',
+                                },
+                            });
+
+                            const validStatus = status.data.data.filter(
+                                (l: any) => l.label.toLowerCase() === req.body.stage.toLowerCase()
+                            );
+
+                            if (validStatus.length === 0) {
+                                throw new Error('Invalid stage value for close crm');
+                            }
+
+                            deal['status_id'] = validStatus[0].id;
+                        }
+
+                        const response = await axios({
+                            method: 'put',
+                            url: `https://api.close.com/api/v1/opportunity/${dealId}/`,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(deal),
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Closecrm deal updated',
+                            result: response.data,
                         });
                         break;
                     }

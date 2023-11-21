@@ -29,6 +29,40 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.closecrm]: {
+            [StandardObjects.contact]: (obj: T) => {
+                if (obj.name) {
+                    const names = obj.name.split(' ');
+                    const modifiedObj = {
+                        ...obj,
+                        firstName: names[0],
+                        lastName: names[1],
+                    };
+                    return modifiedObj;
+                }
+                return { ...obj };
+            },
+            [StandardObjects.lead]: (obj: T) => {
+                if (obj.name) {
+                    const names = obj.name.split(' ');
+                    const modifiedObj = {
+                        ...obj,
+                        firstName: names[0],
+                        lastName: names[1],
+                    };
+                    return modifiedObj;
+                }
+                return { ...obj };
+            },
+            [StandardObjects.deal]: (obj: T) => {
+                return {
+                    ...obj,
+                    isWon: obj['status_type'] === 'won' ? true : false,
+                    confidence: obj['confidence'] ? Number((parseInt(obj['confidence']) / 100).toFixed(4)) : undefined,
+                    value: obj['value'] ? Number(obj['value']) / 100 : undefined,
+                };
+            },
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
@@ -132,6 +166,15 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
                 return {
                     ...obj,
                     hs_timestamp: Date.now().toString(),
+                };
+            },
+        },
+        [TP_ID.closecrm]: {
+            [StandardObjects.deal]: (obj: T) => {
+                return {
+                    ...obj,
+                    confidence: obj.confidence ? obj.confidence * 100 : undefined,
+                    value: obj.value ? obj.value * 100 : undefined,
                 };
             },
         },

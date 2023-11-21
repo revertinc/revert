@@ -53,3 +53,13 @@ yarn workspace @revertdotdev/backend db-seed
 -   **Enter the client_id and client_secret you copied in the previous step**
 -   **(Optional) Copy the scopes (from the Pipedrive app) and add them to the revert dashboard to get granular control over the scope of your app**
     -   You can skip this step and use the default revert scopes and permissions
+
+#### Connect to CLOSE CRM via Revert
+
+-   Open [CLOSE CRM](https://www.close.com/) and sigin or create an account
+-   Left Pane Setting > Developer > OAuth Apps > create apps . More details mentioned [here](https://help.close.com/docs/create-oauth-apps)
+-   **Get your client_id and client_secret**:
+    -   Select your app
+    -   Copy Client ID and Client Secret
+-   **Login to your revert dashboard**
+-   **Enter the Client ID and Client Secret you copied in the previous step and click submit**
