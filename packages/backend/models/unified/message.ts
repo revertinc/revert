@@ -8,14 +8,13 @@ export interface UnifiedMessage {
 }
 
 export function unifyMessage(message: any) {
-    console.log(message,"============")
     const unifiedMessage: UnifiedMessage = {
         content: message?.content,
         text: message?.message?.text || null,
         channelId: message.channel,
         additional: {},
     };
-    console.log("im not here")
+
     // Map additional fields
     Object.keys(message).forEach((key) => {
         if (!(key in unifiedMessage)) {
@@ -31,7 +30,6 @@ export function disunifyMessage(message: UnifiedMessage, integrationId: string):
         return toSlackMessage(message);
     }
     if (integrationId === TP_ID.discord) {
-        console.log("first")
         return todiscordMessage(message);
     }
 }

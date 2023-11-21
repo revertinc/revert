@@ -1,5 +1,4 @@
 import express, { Express, Request, Response } from 'express';
-// Note: Sentry should be initialized as early in your app as possible.
 import * as Sentry from '@sentry/node';
 import moesif from 'moesif-nodejs';
 import config from './config';
@@ -11,8 +10,7 @@ import os from 'os';
 import AuthService from './services/auth';
 import versionMiddleware, { manageRouterVersioning } from './helpers/versionMiddleware';
 import { ShortloopSDK } from '@shortloop/node';
-// import https from 'node:https';
-// import fs from 'node:fs';
+
 
 
 const rateLimit = require('express-rate-limit');

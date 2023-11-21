@@ -5,7 +5,7 @@ on:
         branches:
             - main
         paths:
-            - packages/prisma/**
+            - packages/backend/**
 
 jobs:
     deploy-prisma:

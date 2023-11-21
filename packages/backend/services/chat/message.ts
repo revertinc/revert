@@ -52,7 +52,7 @@ const messageService = new MessagesService(
                     }
 
                     case TP_ID.discord: {
-                        console.log("im here")
+                        
                         let disocrdRes: any = await axios({
                             method: 'post',
                             url: `https://discord.com/api/channels/${message.channel}/messages`,

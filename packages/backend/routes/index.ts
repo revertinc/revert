@@ -1,17 +1,15 @@
-import prisma from '../prisma/client';
-import axios from 'axios';
 import express from 'express';
 import cors from 'cors';
-
+import axios from 'axios';
+import prisma from '../prisma/client';
 import crmRouter from './v1/crm';
 import config from '../config';
 import revertAuthMiddleware from '../helpers/authMiddleware';
 import { register } from '../generated/typescript';
 import { metadataService } from '../services/metadata';
 import { accountService } from '../services/Internal/account';
-
-import AuthService from '../services/auth';
 import { logError } from '../helpers/logger';
+import AuthService from '../services/auth';
 import verifyRevertWebhook from '../helpers/verifyRevertWebhook';
 import {
     companyService,
@@ -68,20 +66,16 @@ router.post('/debug-svix', (req, res) => {
     }
 });
 
-router.post('/discord-alert', async (req, res) => {
+router.post('/slack-alert', async (req, res) => {
     try {
         const email = req.body.email;
         const name = req.body.name;
         const message = req.body.message;
-        
         await axios({
             method: 'post',
-            url: config.DISCORD_HOOK_URL,
-            headers: {
-                "Content-Type": "application/json",
-            },
+            url: config.SLACK_URL,
             data: JSON.stringify({
-                content: `Woot! :zap: ${name} @ ${email} signed up for Revert!\n\n*Additional message*: \n\n ${message}`,
+                text: `Woot! :zap: ${name} @ ${email} signed up for Revert!\n\n*Additional message*: \n\n ${message}`,
             }),
         });
         await prisma.waitlist.upsert({
@@ -106,6 +100,7 @@ router.post('/discord-alert', async (req, res) => {
         });
     }
 });
+
 
 router.post('/clerk/webhook', async (req, res) => {
     if (req.body) {
