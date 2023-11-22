@@ -13,11 +13,7 @@ import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
 
 const authRouter = express.Router();
 
-/**
- * OAuth API
- */
 
-// Below route is a quick test endpoint as client package was not working in my case
 
 
 authRouter.get('/oauth-callback', async (req, res) => {
