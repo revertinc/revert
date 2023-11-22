@@ -3,6 +3,9 @@ import Navbar from './navbar';
 import ApiKeys from './apiKeys';
 import KeyIcon from '@mui/icons-material/Key';
 import AppsIcon from '@mui/icons-material/Apps';
+import HomeIcon from '@mui/icons-material/Home';
+
+import Onboarding from './onboarding';
 import Integrations from './integrations';
 import { useUser } from '@clerk/clerk-react';
 import { REVERT_BASE_API_URL, DEFAULT_ENV } from '../constants';
@@ -70,8 +73,10 @@ const Home = () => {
 
     const renderTab = (tabValue: number) => {
         if (tabValue === 0) {
-            return <Integrations environment={environment} />;
+            return <Onboarding changeTabs={() => handleChange(1)} />;
         } else if (tabValue === 1) {
+            return <Integrations environment={environment} />;
+        } else if (tabValue === 2) {
             return <ApiKeys environment={environment} />;
         } else return undefined;
     };
@@ -91,13 +96,21 @@ const Home = () => {
                             style={tabValue === 0 ? selectedStyle : undefined}
                             onClick={() => handleChange(0)}
                         >
-                            <AppsIcon />
-                            <span className="p-2">Integrations</span>
+                            <HomeIcon />
+                            <span className="p-2">Home</span>
                         </li>
                         <li
                             className="p-2 cursor-pointer"
                             style={tabValue === 1 ? selectedStyle : undefined}
                             onClick={() => handleChange(1)}
+                        >
+                            <AppsIcon />
+                            <span className="p-2">Integrations</span>
+                        </li>
+                        <li
+                            className="p-2 cursor-pointer"
+                            style={tabValue === 2 ? selectedStyle : undefined}
+                            onClick={() => handleChange(2)}
                         >
                             <KeyIcon />
                             <span className="p-2">API Keys</span>
