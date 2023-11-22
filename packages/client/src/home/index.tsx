@@ -13,13 +13,28 @@ const selectedStyle = {
     borderRadius: 4,
 };
 
+declare global {
+    interface Window {
+        Intercom: any;
+    }
+}
+
 const Home = () => {
     const [tabValue, setTabValue] = React.useState(0);
     const [account, setAccount] = React.useState<any>();
     const [environment, setEnvironment] = React.useState<string>(DEFAULT_ENV);
     const user = useUser();
-
     useEffect(() => {
+        if (window.Intercom) {
+            window.Intercom('boot', {
+                api_base: 'https://api-iam.intercom.io',
+                app_id: process.env.REACT_APP_INTERCOM_APP_ID,
+                user_id: user.user?.id, //
+                name: user.user?.fullName, // Full name
+                email: user.user?.emailAddresses[0].emailAddress, // Email address
+                created_at: user.user?.createdAt, // Signup date as a Unix timestamp
+            });
+        }
         const headers = new Headers();
         headers.append('Content-Type', 'application/json');
 
@@ -48,6 +63,9 @@ const Home = () => {
 
     const handleChange = (newTabValue: number) => {
         setTabValue(newTabValue);
+        if (window.Intercom) {
+            window.Intercom('update');
+        }
     };
 
     const renderTab = (tabValue: number) => {
