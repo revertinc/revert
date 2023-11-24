@@ -72,6 +72,7 @@ const EditCredentials: React.FC<{
 }> = ({ app, handleClose }) => {
     const [clientId, setClientId] = React.useState<string>(app.app_client_id);
     const [clientSecret, setClientSecret] = React.useState<string>(app.app_client_secret);
+    const [botToken, setBotToken] = React.useState<string>(app.app_bot_token);
     const [scopes, setScopes] = React.useState<string[]>(app.scope);
     const [newScope, setNewScope] = React.useState<string>('');
     const [isRevertApp, setIsRevertApp] = React.useState(app.is_revert_app);
@@ -90,7 +91,7 @@ const EditCredentials: React.FC<{
             appId: app.id,
             tpId: app.tp_id,
             isRevertApp,
-            ...(!isRevertApp && { clientId, clientSecret, scopes }),
+            ...(!isRevertApp && { clientId, clientSecret, scopes, botToken }),
         };
         await fetch({
             url: '/internal/account/credentials',
@@ -138,6 +139,17 @@ const EditCredentials: React.FC<{
                             error={!clientSecret}
                         />
                     </Row>
+                    {app.tp_id === 'discord' && (
+                        <Row>
+                            <span className="font-bold">Bot Token: </span>
+                            <Input
+                                className="app_bot_token"
+                                value={botToken}
+                                onChange={(ev) => setBotToken((ev.target.value || '').trim())}
+                                error={!botToken}
+                            />
+                        </Row>
+                    )}
                     <Row>
                         <span className="font-bold">Scopes: </span>
                         {/* <p className="break-words">{scopes}</p> */}
@@ -171,7 +183,13 @@ const EditCredentials: React.FC<{
                     variant="contained"
                     onClick={handleSubmit}
                     loading={loading}
-                    disabled={isRevertApp ? false : !clientId || !clientSecret}
+                    disabled={
+                        isRevertApp
+                            ? false
+                            : app.tp_id === 'discord'
+                            ? !clientId || !clientSecret || !botToken
+                            : !clientId || !clientSecret
+                    }
                 >
                     Submit
                 </LoadingButton>

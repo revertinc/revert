@@ -287,6 +287,48 @@ const Integrations = ({ environment }) => {
                                     </IconButton>
                                 </div>
                             </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '2rem 0rem',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        padding: 30,
+                                        border: '2px #00000029 solid',
+                                        borderRadius: 10,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        minHeight: 200,
+                                        justifyContent: 'flex-end',
+                                        position: 'relative',
+                                    }}
+                                >
+                                    <img
+                                        width={100}
+                                        alt="Discord logo"
+                                        src="https://1000logos.net/wp-content/uploads/2021/06/Discord-logo-768x432.png"
+                                    />
+                                    <p className="font-bold mt-4">Discord Chat</p>
+                                    <span>Configure your Discord Chat App from here.</span>
+                                    <IconButton
+                                        onClick={() => handleOpen('discord')}
+                                        style={{
+                                            color: '#6e6e6e',
+                                            fontSize: 12,
+                                            position: 'absolute',
+                                            top: 10,
+                                            right: 10,
+                                        }}
+                                    >
+                                        <SettingsIcon />
+                                    </IconButton>
+                                </div>
+                            </Box>
                         </div>
                     ) : (
                         <>

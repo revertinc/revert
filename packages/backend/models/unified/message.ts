@@ -2,7 +2,7 @@ import { TP_ID } from '@prisma/client';
 
 export interface UnifiedMessage {
     text: string;
-    channelId: string;
+    channelId: string | undefined;
     additional?: any;
 }
 
@@ -26,6 +26,8 @@ export function unifyMessage(message: any) {
 export function disunifyMessage(message: UnifiedMessage, integrationId: string): any {
     if (integrationId === TP_ID.slack) {
         return toSlackMessage(message);
+    } else if (integrationId === TP_ID.discord) {
+        return toDiscordMessage(message);
     }
 }
 
@@ -43,4 +45,18 @@ function toSlackMessage(message: UnifiedMessage): any {
     }
 
     return slackMessage;
+}
+function toDiscordMessage(message: UnifiedMessage): any {
+    const discordMessage: any = {
+        content: message.text,
+    };
+
+    // Map custom fields, if any
+    if (message.additional) {
+        Object.keys(message.additional).forEach((key) => {
+            discordMessage[key] = message.additional?.[key];
+        });
+    }
+
+    return discordMessage;
 }

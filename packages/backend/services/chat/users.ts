@@ -18,7 +18,8 @@ const usersService = new UsersService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-
+                const customerId = connection.tp_customer_id;
+                const botToken = connection.app_bot_token;
                 logInfo(
                     'Revert::GET ALL USERS',
                     connection.app?.env?.accountId,
@@ -44,12 +45,23 @@ const usersService = new UsersService(
                             },
                         });
                         const nextCursor = users.data?.response_metadata?.next_cursor || undefined;
-
+                        console.log('DEBUG', 'users....', users);
                         users = users.data.members;
                         users = users?.map((l: any) => unifyChatUser(l));
 
                         res.send({ status: 'ok', next: nextCursor, results: users });
 
+                        break;
+                    }
+                    case TP_ID.discord: {
+                        const url = `https://discord.com/api/guilds/${customerId}/members`;
+                        let members: any = await axios.get(url, {
+                            headers: { Authorization: `Bot ${botToken}` },
+                        });
+
+                        members = members?.data.map((l: any) => unifyChatUser(l));
+
+                        res.send({ status: 'ok', next: undefined, results: members });
                         break;
                     }
                 }

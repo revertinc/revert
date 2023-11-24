@@ -38,6 +38,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.sfdc]: [], // https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_tokens_scopes.htm&type=5
     [TP_ID.pipedrive]: [],
     [TP_ID.slack]: ['users:read', 'users.profile:read'],
+    [TP_ID.discord]: ['identify', 'bot'],
 };
 
 export const mapIntegrationIdToIntegrationName = {
@@ -46,6 +47,7 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.sfdc]: 'Salesforce',
     [TP_ID.zohocrm]: 'Zoho',
     [TP_ID.slack]: 'Slack',
+    [TP_ID.discord]: 'Discord',
 };
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';

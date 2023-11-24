@@ -33,6 +33,7 @@ const connectionService = new ConnectionService({
                 t_id: true,
                 tp_account_url: true,
                 tp_customer_id: true,
+                app_bot_token: true,
             },
         });
         if (connection) {
@@ -59,6 +60,7 @@ const connectionService = new ConnectionService({
                 tp_refresh_token: true,
                 tp_customer_id: true,
                 t_id: true,
+                app_bot_token: true,
             },
         });
         if (connections.length > 0) {

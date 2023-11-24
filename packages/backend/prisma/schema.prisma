@@ -13,6 +13,7 @@ enum TP_ID {
   sfdc
   pipedrive
   slack
+  discord
 }
 
 enum ENV {
@@ -54,6 +55,7 @@ model apps {
   app_client_id              String?
   app_client_secret          String?
   owner_account_public_token String?
+  app_bot_token              String?
   environmentId              String
   env                        environments  @relation(fields: [environmentId], references: [id])
   connections                connections[]
@@ -83,6 +85,7 @@ model connections {
   owner_account_public_token String
   app_client_id              String?
   app_client_secret          String?
+  app_bot_token              String?
   app                        apps?           @relation(fields: [appId], references: [id])
   appId                      String?
   schema_mapping_id          String?

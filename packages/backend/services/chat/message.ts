@@ -1,7 +1,7 @@
 import { logError, logInfo } from '../../helpers/logger';
 import { MessagesService } from '../../generated/typescript/api/resources/chat/resources/messages/service/MessagesService';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
-import { UnifiedMessage, disunifyMessage, unifyMessage } from '../../models/unified/message';
+import { UnifiedMessage, disunifyMessage } from '../../models/unified/message';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { isStandardError } from '../../helpers/error';
@@ -17,6 +17,7 @@ const messageService = new MessagesService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const botToken = connection.app_bot_token;
                 const message = disunifyMessage(messageData, thirdPartyId);
                 logInfo(
                     'Revert::CREATE/SEND MESSAGE',
@@ -37,10 +38,26 @@ const messageService = new MessagesService(
                             },
                             data: JSON.stringify(message),
                         });
-                        slackRes = unifyMessage(slackRes.data);
+                        // slackRes = unifyMessage(slackRes.data); currently not unifying post response data
                         res.send({
                             status: 'ok',
-                            result: slackRes,
+                            result: slackRes.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.discord: {
+                        const url = `https://discord.com/api/channels/${messageData.channelId}/messages`;
+
+                        let response: any = await axios({
+                            method: 'post',
+                            url: url,
+                            data: message,
+                            headers: { Authorization: `Bot ${botToken}` },
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: response.data,
                         });
                         break;
                     }

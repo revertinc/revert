@@ -18,6 +18,8 @@ const channelsService = new ChannelsService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const customerId = connection.tp_customer_id;
+                const botToken = connection.app_bot_token;
                 logInfo(
                     'Revert::GET ALL CHANNELS',
                     connection.app?.env?.accountId,
@@ -48,6 +50,18 @@ const channelsService = new ChannelsService(
                         channels = channels?.map((l: any) => unifyChannel(l));
 
                         res.send({ status: 'ok', next: nextCursor, results: channels });
+                        break;
+                    }
+                    case TP_ID.discord: {
+                        console.log('DEBUG', customerId);
+                        const url = `https://discord.com/api/guilds/${customerId}/channels`;
+                        let channels = await axios.get(url, {
+                            headers: { Authorization: `Bot ${botToken}` },
+                        });
+                        console.log('DEBUG', 'channels...... ', channels);
+                        const unifiedChannels = channels?.data.map((l: any) => unifyChannel(l));
+
+                        res.send({ status: 'ok', next: undefined, results: unifiedChannels });
                         break;
                     }
                 }
