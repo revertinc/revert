@@ -48,8 +48,6 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.sfdc]: 'Salesforce',
     [TP_ID.zohocrm]: 'Zoho',
     [TP_ID.slack]: 'Slack',
-    [TP_ID.closecrm]: 'Close',
-    [TP_ID.discord]: 'Discord',
 };
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';

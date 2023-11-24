@@ -6,6 +6,7 @@ export interface UnifiedChatUser {
 }
 
 export function unifyChatUser(user: any): UnifiedChatUser {
+    console.log('DEBUG', 'user', user);
     const unifiedUser: UnifiedChatUser = {
         id: user.id || user.user.id,
         name: user.profile.real_name || user.user.global_name,
