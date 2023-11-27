@@ -930,9 +930,6 @@ async function main() {
             if (tpId === 'slack' || tpId === 'discord') return;
             const objSchema = allSchemas.find((s) => s.object === obj);
             const fieldMappings = objSchema?.fields.map((field) => ({
-            if (tpId === 'slack' || tpId === 'discord') return;
-            const objSchema = allSchemas.find((s: any) => s.object === obj);
-            const fieldMappings = objSchema?.fields.map((field: any) => ({
                 id: randomUUID(),
                 source_tp_id: tpId,
                 schema_id: objSchema.id,
