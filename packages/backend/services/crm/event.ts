@@ -124,6 +124,26 @@ const eventService = new EventService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        let meeting: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/activity/meeting/${eventId}/`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        meeting = await unifyObject<any, UnifiedEvent>({
+                            obj: meeting.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: meeting });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -301,6 +321,47 @@ const eventService = new EventService(
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedEvents });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        const pagingString = `${pageSize ? `&_limit=${pageSize}` : ''}${
+                            cursor ? `&_skip=${cursor}` : ''
+                        }`;
+
+                        let meetings: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/activity/meeting/?${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+                        const hasMore = meetings.data?.has_more;
+                        meetings = meetings.data?.data as any[];
+                        meetings = await Promise.all(
+                            meetings?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedEvent>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        let cursorVal = parseInt(String(cursor));
+                        if (isNaN(cursorVal)) cursorVal = 0;
+                        const nextSkipVal = hasMore ? cursorVal + pageSize : undefined;
+                        const prevSkipVal = cursorVal > 0 ? String(Math.max(cursorVal - pageSize, 0)) : undefined;
+
+                        res.send({
+                            status: 'ok',
+                            next: nextSkipVal ? String(nextSkipVal) : undefined,
+                            previous: prevSkipVal,
+                            results: meetings,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -396,6 +457,9 @@ const eventService = new EventService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        throw new NotFoundError({ error: 'Method not allowed' });
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -484,6 +548,10 @@ const eventService = new EventService(
                                 ...eventUpdated.data.data,
                             },
                         });
+                        break;
+                    }
+                    case TP_ID.closecrm: {
+                        throw new NotFoundError({ error: 'Method not allowed' });
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
@@ -674,6 +742,19 @@ const eventService = new EventService(
                                 },
                             }
                         );
+                        res.send({ status: 'ok', message: 'deleted' });
+                        break;
+                    }
+                    case TP_ID.closecrm: {
+                        await axios({
+                            method: 'delete',
+                            url: `https://api.close.com/api/v1/activity/meeting/${eventId}/`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
                         res.send({ status: 'ok', message: 'deleted' });
                         break;
                     }

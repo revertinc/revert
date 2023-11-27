@@ -122,6 +122,26 @@ const userService = new UserService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        let user: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/user/${userId}/`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        user = await unifyObject<any, UnifiedUser>({
+                            obj: user.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: user });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -297,6 +317,47 @@ const userService = new UserService(
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedUsers });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        const pagingString = `${pageSize ? `&_limit=${pageSize}` : ''}${
+                            cursor ? `&_skip=${cursor}` : ''
+                        }`;
+
+                        let users: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/user/?${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+                        const hasMore = users.data?.has_more;
+                        users = users.data?.data as any[];
+                        users = await Promise.all(
+                            users?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedUser>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        let cursorVal = parseInt(String(cursor));
+                        if (isNaN(cursorVal)) cursorVal = 0;
+                        const nextSkipVal = hasMore ? cursorVal + pageSize : undefined;
+                        const prevSkipVal = cursorVal > 0 ? String(Math.max(cursorVal - pageSize, 0)) : undefined;
+
+                        res.send({
+                            status: 'ok',
+                            next: nextSkipVal ? String(nextSkipVal) : undefined,
+                            previous: prevSkipVal,
+                            results: users,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -395,6 +456,9 @@ const userService = new UserService(
                             },
                         });
                         break;
+                    }
+                    case TP_ID.closecrm: {
+                        throw new NotFoundError({ error: 'Method not allowed' });
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });

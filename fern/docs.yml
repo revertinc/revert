@@ -60,7 +60,7 @@ navigation:
       layout:
           - api: API Reference
 colors:
-    accentPrimary: '#ffffff'
+    accentPrimary: '#2047d0'
 logo:
     dark: ./docs/assets/logo.png
     light: ./docs/assets/logo.png

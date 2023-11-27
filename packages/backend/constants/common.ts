@@ -1,6 +1,6 @@
 import { TP_ID } from '@prisma/client';
 
-export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot';
+export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot' | 'closecrm';
 export type CHAT_TP_ID = 'slack' | 'discord';
 
 export const DEFAULT_SCOPE = {
@@ -38,6 +38,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.sfdc]: [], // https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_tokens_scopes.htm&type=5
     [TP_ID.pipedrive]: [],
     [TP_ID.slack]: ['users:read', 'users.profile:read'],
+    [TP_ID.closecrm]: [],
     [TP_ID.discord]: ['identify', 'bot'],
 };
 
@@ -47,6 +48,7 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.sfdc]: 'Salesforce',
     [TP_ID.zohocrm]: 'Zoho',
     [TP_ID.slack]: 'Slack',
+    [TP_ID.closecrm]: 'Close',
     [TP_ID.discord]: 'Discord',
 };
 
@@ -75,47 +77,55 @@ export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefi
         [TP_ID.pipedrive]: 'organization',
         [TP_ID.sfdc]: 'Account',
         [TP_ID.zohocrm]: 'Accounts',
+        [TP_ID.closecrm]: 'organization',
     },
     [StandardObjects.contact]: {
         [TP_ID.hubspot]: 'contacts',
         [TP_ID.pipedrive]: 'person',
         [TP_ID.sfdc]: 'Contact',
         [TP_ID.zohocrm]: 'Contacts',
+        [TP_ID.closecrm]: 'contact',
     },
     [StandardObjects.deal]: {
         [TP_ID.hubspot]: 'deals',
         [TP_ID.pipedrive]: 'deal',
         [TP_ID.sfdc]: 'Opportunity',
         [TP_ID.zohocrm]: 'Deals',
+        [TP_ID.closecrm]: 'opportunity',
     },
     [StandardObjects.event]: {
         [TP_ID.hubspot]: 'meetings',
         [TP_ID.pipedrive]: 'activity',
         [TP_ID.sfdc]: 'Event',
         [TP_ID.zohocrm]: 'Events',
+        [TP_ID.closecrm]: '', // @TODO add equivalent cause there are activity, meeting and events options close crm api
     },
     [StandardObjects.lead]: {
         [TP_ID.hubspot]: 'contacts',
         [TP_ID.pipedrive]: 'lead',
         [TP_ID.sfdc]: 'Lead',
         [TP_ID.zohocrm]: 'Leads',
+        [TP_ID.closecrm]: 'lead',
     },
     [StandardObjects.note]: {
         [TP_ID.hubspot]: 'notes',
         [TP_ID.pipedrive]: 'note',
         [TP_ID.sfdc]: 'Note',
         [TP_ID.zohocrm]: 'Notes',
+        [TP_ID.closecrm]: 'note',
     },
     [StandardObjects.task]: {
         [TP_ID.hubspot]: 'tasks',
         [TP_ID.pipedrive]: 'activity',
         [TP_ID.sfdc]: 'Task',
         [TP_ID.zohocrm]: 'Tasks',
+        [TP_ID.closecrm]: 'task',
     },
     [StandardObjects.user]: {
         [TP_ID.hubspot]: 'users',
         [TP_ID.pipedrive]: undefined,
         [TP_ID.sfdc]: 'User',
         [TP_ID.zohocrm]: 'users',
+        [TP_ID.closecrm]: 'user',
     },
 };

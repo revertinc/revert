@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { TP_ID } from '@prisma/client';
-
 import { ContactService } from '../../generated/typescript/api/resources/crm/resources/contact/service/ContactService';
 import { BadRequestError, InternalServerError } from '../../generated/typescript/api/resources/common';
 import { NotFoundError } from '../../generated/typescript/api/resources/common';
@@ -135,6 +134,26 @@ const contactService = new ContactService(
                                 accountFieldMappingConfig: account.accountFieldMappingConfig,
                             }),
                         });
+                        break;
+                    }
+                    case TP_ID.closecrm: {
+                        let contact: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/contact/${contactId}/`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        contact = await unifyObject<any, UnifiedContact>({
+                            obj: contact.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: contact });
                         break;
                     }
                     default: {
@@ -323,6 +342,47 @@ const contactService = new ContactService(
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedContacts });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        const pagingString = `${pageSize ? `&_limit=${pageSize}` : ''}${
+                            cursor ? `&_skip=${cursor}` : ''
+                        }`;
+
+                        let contacts: any = await axios({
+                            method: 'get',
+                            url: `https://api.close.com/api/v1/contact/?${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+                        const hasMore = contacts.data?.has_more;
+                        contacts = contacts.data?.data as any[];
+                        contacts = await Promise.all(
+                            contacts?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedContact>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        let cursorVal = parseInt(String(cursor));
+                        if (isNaN(cursorVal)) cursorVal = 0;
+                        const nextSkipVal = hasMore ? cursorVal + pageSize : undefined;
+                        const prevSkipVal = cursorVal > 0 ? String(Math.max(cursorVal - pageSize, 0)) : undefined;
+
+                        res.send({
+                            status: 'ok',
+                            next: nextSkipVal ? String(nextSkipVal) : undefined,
+                            previous: prevSkipVal,
+                            results: contacts,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -459,6 +519,27 @@ const contactService = new ContactService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        // Manually setting the contact name since it couldn't be retrieved from fieldMappings
+                        if (!contactData.lastName || !contactData.firstName) {
+                            throw new Error('Both "firstName" and "lastName" fields are required.');
+                        }
+                        const response = await axios({
+                            method: 'post',
+                            url: 'https://api.close.com/api/v1/contact/',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: contact,
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Closecrm contact created',
+                            result: response.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -553,13 +634,35 @@ const contactService = new ContactService(
                         });
                         break;
                     }
+                    case TP_ID.closecrm: {
+                        // checks for name field
+                        if ((contact.lastName || contact.firstName) && (!contact.firstName || !contact.lastName)) {
+                            throw new Error('Both firstName and lastName fields are required for Close CRM.');
+                        }
+                        const response = await axios({
+                            method: 'put',
+                            url: `https://api.close.com/api/v1/contact/${contactId}`,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(contact),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Closecrm contact updated',
+                            result: response.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not update lead', error.response);
+                console.error('Could not update contact', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -708,6 +811,35 @@ const contactService = new ContactService(
                             )
                         );
                         res.send({ status: 'ok', results: unifiedContacts });
+                        break;
+                    }
+                    // @TODO
+                    case TP_ID.closecrm: {
+                        const fields = ['id', 'date_created', 'date_updated', 'name', 'phones', 'emails', 'lead_id'];
+                        const response: any = await axios({
+                            method: 'post',
+                            url: 'https://api.close.com/api/v1/data/search',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: { ...searchCriteria, _fields: { contact: fields } },
+                        });
+
+                        const contacts = await Promise.all(
+                            response.data.data.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedContact>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({ status: 'ok', results: contacts });
                         break;
                     }
                     default: {

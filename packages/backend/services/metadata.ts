@@ -109,6 +109,15 @@ const metadataService = new MetadataService({
                     scopes: [],
                     clientId: '',
                 },
+                {
+                    integrationId: TP_ID.closecrm,
+                    name: 'Close',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/c_scale,w_136/Revert/o8kv3xqzoqioupz0jpnl.jpg',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.closecrm),
+                    clientId: getClientId(apps, TP_ID.closecrm) || config.CLOSECRM_CLIENT_ID,
+                },
             ];
             res.send({
                 status: 'ok',
