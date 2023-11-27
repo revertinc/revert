@@ -150,29 +150,31 @@ const EditCredentials: React.FC<{
                             />
                         </Row>
                     )}
-                    <Row>
-                        <span className="font-bold">Scopes: </span>
-                        {/* <p className="break-words">{scopes}</p> */}
-                        <ScopesContainer>
-                            <Stack>
-                                {scopes.map((scope, i) => (
-                                    <Chip
-                                        label={scope}
-                                        key={i}
-                                        variant="outlined"
-                                        color="primary"
-                                        style={{ color: '#fff', background: '#000' }}
-                                        onDelete={(ev) => setScopes((ss) => [...ss.filter((s) => s !== scope)])}
-                                    />
-                                ))}
-                            </Stack>
-                            <Input
-                                value={newScope}
-                                onChange={(ev) => setNewScope((ev.target.value || '').trim())}
-                                onKeyDown={handleAddNewScope}
-                            />
-                        </ScopesContainer>
-                    </Row>
+                    {!(app.tp_id === 'closecrm' || app.tp_id === 'pipedrive') && (
+                        <Row>
+                            <span className="font-bold">Scopes: </span>
+                            {/* <p className="break-words">{scopes}</p> */}
+                            <ScopesContainer>
+                                <Stack>
+                                    {scopes.map((scope, i) => (
+                                        <Chip
+                                            label={scope}
+                                            key={i}
+                                            variant="outlined"
+                                            color="primary"
+                                            style={{ color: '#fff', background: '#000' }}
+                                            onDelete={(ev) => setScopes((ss) => [...ss.filter((s) => s !== scope)])}
+                                        />
+                                    ))}
+                                </Stack>
+                                <Input
+                                    value={newScope}
+                                    onChange={(ev) => setNewScope((ev.target.value || '').trim())}
+                                    onKeyDown={handleAddNewScope}
+                                />
+                            </ScopesContainer>
+                        </Row>
+                    )}
                 </>
             )}
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', gap: '15px' }}>

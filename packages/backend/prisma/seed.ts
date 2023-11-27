@@ -850,7 +850,7 @@ async function main() {
                 target_field_name: 'createdTimeStamp',
             },
         ],
-        [ChatStandardObjects.user]: [
+        [ChatStandardObjects.chatUser]: [
             {
                 source_field_name: {
                     [TP_ID.slack]: 'id',

@@ -346,6 +346,8 @@ const Integrations = ({ environment }) => {
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
                                     padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
                                 }}
                             >
                                 <div
