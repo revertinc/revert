@@ -5,14 +5,19 @@ import { isStandardError } from '../../helpers/error';
 import { logError, logInfo } from '../../helpers/logger';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import axios from 'axios';
-import { unifyChatUser } from '../../models/unified/chatUsers';
+import { UnifiedChatUser } from '../../models/unified/chatUsers';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
+import { unifyObject } from '../../helpers/crm/transform';
+import { ChatStandardObjects } from '../../constants/common';
+
+const objType = ChatStandardObjects.chatUser;
 
 const usersService = new UsersService(
     {
         async getUsers(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
                 const thirdPartyId = connection.tp_id;
@@ -45,9 +50,20 @@ const usersService = new UsersService(
                             },
                         });
                         const nextCursor = users.data?.response_metadata?.next_cursor || undefined;
-                        console.log('DEBUG', 'users....', users);
                         users = users.data.members;
-                        users = users?.map((l: any) => unifyChatUser(l));
+
+                        users = await Promise.all(
+                            users?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedChatUser>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
 
                         res.send({ status: 'ok', next: nextCursor, results: users });
 
@@ -59,7 +75,18 @@ const usersService = new UsersService(
                             headers: { Authorization: `Bot ${botToken}` },
                         });
 
-                        members = members?.data.map((l: any) => unifyChatUser(l));
+                        members = await Promise.all(
+                            members.data?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedChatUser>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
 
                         res.send({ status: 'ok', next: undefined, results: members });
                         break;

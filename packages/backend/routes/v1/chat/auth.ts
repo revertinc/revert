@@ -163,14 +163,14 @@ authRouter.get('/oauth-callback', async (req, res) => {
 
             const result = await axios.post('https://discord.com/api/oauth2/token', qs.stringify(formData));
 
-            console.log('OAuth creds for discord', result.data);
+            logInfo('OAuth creds for discord', result.data);
 
             const info = await axios.get('https://discord.com/api/users/@me', {
                 headers: {
                     authorization: `${result.data.token_type} ${result.data.access_token}`,
                 },
             });
-            console.log('OAuth token info', info.data);
+            logInfo('OAuth token info', info.data);
             const guildId = result.data?.guild?.id;
             try {
                 await xprisma.connections.upsert({

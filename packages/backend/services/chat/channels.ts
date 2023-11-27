@@ -5,14 +5,19 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
-import { unifyChannel } from '../../models/unified/channel';
+import { UnifiedChannel /*, unifyChannel*/ } from '../../models/unified/channel';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
+import { unifyObject } from '../../helpers/crm/transform';
+import { ChatStandardObjects } from '../../constants/common';
+
+const objType = ChatStandardObjects.channel;
 
 const channelsService = new ChannelsService(
     {
         async getChannels(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
                 const thirdPartyId = connection.tp_id;
@@ -47,21 +52,43 @@ const channelsService = new ChannelsService(
 
                         const nextCursor = channels.data?.response_metadata?.next_cursor || undefined;
                         channels = channels.data.channels;
-                        channels = channels?.map((l: any) => unifyChannel(l));
+                        channels = await Promise.all(
+                            channels?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedChannel>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+                        // channels = channels?.map((l: any) => unifyChannel(l));
 
                         res.send({ status: 'ok', next: nextCursor, results: channels });
                         break;
                     }
                     case TP_ID.discord: {
-                        console.log('DEBUG', customerId);
                         const url = `https://discord.com/api/guilds/${customerId}/channels`;
-                        let channels = await axios.get(url, {
+                        let channels: any = await axios.get(url, {
                             headers: { Authorization: `Bot ${botToken}` },
                         });
-                        console.log('DEBUG', 'channels...... ', channels);
-                        const unifiedChannels = channels?.data.map((l: any) => unifyChannel(l));
 
-                        res.send({ status: 'ok', next: undefined, results: unifiedChannels });
+                        channels = await Promise.all(
+                            channels.data?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedChannel>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({ status: 'ok', next: undefined, results: channels });
                         break;
                     }
                 }

@@ -1,7 +1,7 @@
 import { TP_ID } from '@prisma/client';
 
 export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot';
-// export type CHAT_TP_ID = 'slack';
+export type CHAT_TP_ID = 'slack' | 'discord';
 
 export const DEFAULT_SCOPE = {
     [TP_ID.hubspot]: [
@@ -61,6 +61,12 @@ export enum StandardObjects {
     note = 'note',
     task = 'task',
     user = 'user',
+}
+
+export enum ChatStandardObjects {
+    channel = 'channel',
+    chatUser = 'chatUser',
+    message = 'message',
 }
 
 export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefined>> = {

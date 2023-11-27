@@ -1,12 +1,16 @@
 import { logError, logInfo } from '../../helpers/logger';
 import { MessagesService } from '../../generated/typescript/api/resources/chat/resources/messages/service/MessagesService';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
-import { UnifiedMessage, disunifyMessage } from '../../models/unified/message';
+import { UnifiedMessage } from '../../models/unified/message';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { isStandardError } from '../../helpers/error';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
+import { disunifyChatObject } from '../../helpers/crm/transform';
+import { ChatStandardObjects } from '../../constants/common';
+
+const objType = ChatStandardObjects.message;
 
 const messageService = new MessagesService(
     {
@@ -14,11 +18,19 @@ const messageService = new MessagesService(
             try {
                 const messageData = req.body as UnifiedMessage;
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const botToken = connection.app_bot_token;
-                const message = disunifyMessage(messageData, thirdPartyId);
+                // const message = disunifyMessage(messageData, thirdPartyId);
+                const message = await disunifyChatObject<UnifiedMessage>({
+                    obj: messageData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
                 logInfo(
                     'Revert::CREATE/SEND MESSAGE',
                     connection.app?.env?.accountId,

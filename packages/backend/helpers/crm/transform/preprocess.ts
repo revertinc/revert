@@ -1,5 +1,5 @@
 import { TP_ID } from '@prisma/client';
-import { CRM_TP_ID, StandardObjects } from '../../../constants/common';
+import { CRM_TP_ID, ChatStandardObjects, StandardObjects } from '../../../constants/common';
 import { PipedriveDealStatus } from '../../../constants/pipedrive';
 
 export const preprocessUnifyObject = <T extends Record<string, any>>({
@@ -9,7 +9,7 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
 }: {
     obj: T;
     tpId: CRM_TP_ID;
-    objType: StandardObjects;
+    objType: StandardObjects | ChatStandardObjects;
 }) => {
     const preprocessMap: any = {
         [TP_ID.pipedrive]: {

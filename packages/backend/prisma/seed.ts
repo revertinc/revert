@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 import { ENV, PrismaClient, TP_ID, fieldMappings } from '@prisma/client';
-import { StandardObjects, rootSchemaMappingId } from '../constants/common';
+import { ChatStandardObjects, StandardObjects, rootSchemaMappingId } from '../constants/common';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -749,13 +749,89 @@ async function main() {
             },
         ],
     };
-    const allSchemas = Object.keys(allFields).map((obj) => {
+
+    const chatFields = {
+        [ChatStandardObjects.channel]: [
+            {
+                source_field_name: {
+                    [TP_ID.slack]: 'id',
+                    [TP_ID.discord]: 'id',
+                },
+                target_field_name: 'id',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.slack]: 'name',
+                    [TP_ID.discord]: 'name',
+                },
+                target_field_name: 'name',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.slack]: 'created',
+                    [TP_ID.discord]: undefined,
+                },
+                target_field_name: 'createdTimeStamp',
+            },
+        ],
+        [ChatStandardObjects.user]: [
+            {
+                source_field_name: {
+                    [TP_ID.slack]: 'id',
+                    [TP_ID.discord]: 'user.id',
+                },
+                target_field_name: 'id',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.slack]: 'profile.real_name',
+                    [TP_ID.discord]: 'user.global_name',
+                },
+                target_field_name: 'name',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.slack]: 'updated',
+                    [TP_ID.discord]: 'joined_at',
+                },
+                target_field_name: 'createdTimeStamp',
+            },
+        ],
+        [ChatStandardObjects.message]: [
+            {
+                source_field_name: {
+                    [TP_ID.slack]: 'text',
+                    [TP_ID.discord]: 'content',
+                },
+                target_field_name: 'text',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.slack]: 'channel',
+                    [TP_ID.discord]: undefined,
+                },
+                target_field_name: 'channelId',
+            },
+        ],
+    };
+
+    let allSchemas: any = Object.keys(allFields).map((obj) => {
         return {
             id: randomUUID(),
             fields: allFields[obj as keyof typeof allFields].map((n) => n.target_field_name),
             object: obj as StandardObjects,
         };
     });
+
+    const chatSchemas = Object.keys(chatFields).map((obj) => {
+        return {
+            id: randomUUID(),
+            fields: chatFields[obj as keyof typeof chatFields].map((n) => n.target_field_name),
+            object: obj as ChatStandardObjects,
+        };
+    });
+
+    const mergedSchema = [...allSchemas, ...chatSchemas];
     await prisma.schema_mapping.upsert({
         where: {
             id: rootSchemaMappingId,
@@ -765,10 +841,10 @@ async function main() {
             id: rootSchemaMappingId,
             object_schemas: {
                 createMany: {
-                    data: allSchemas,
+                    data: mergedSchema,
                 },
             },
-            object_schema_ids: allSchemas.map((s) => s.id),
+            object_schema_ids: mergedSchema.map((s) => s.id),
         },
     });
 
@@ -776,8 +852,8 @@ async function main() {
     Object.values(StandardObjects).forEach((obj) => {
         Object.values(TP_ID).forEach(async (tpId) => {
             if (tpId === 'slack' || tpId === 'discord') return;
-            const objSchema = allSchemas.find((s) => s.object === obj);
-            const fieldMappings = objSchema?.fields.map((field) => ({
+            const objSchema = allSchemas.find((s: any) => s.object === obj);
+            const fieldMappings = objSchema?.fields.map((field: any) => ({
                 id: randomUUID(),
                 source_tp_id: tpId,
                 schema_id: objSchema.id,
@@ -791,6 +867,25 @@ async function main() {
             }
         });
     });
+
+    Object.values(ChatStandardObjects).forEach((obj) => {
+        Object.values(TP_ID).forEach(async (tpId) => {
+            if (!(tpId === 'slack' || tpId === 'discord')) return;
+            const objSchema = chatSchemas.find((s: any) => s.object === obj);
+            const fieldMappings = objSchema?.fields.map((field: any) => ({
+                id: randomUUID(),
+                source_tp_id: tpId,
+                schema_id: objSchema.id,
+                source_field_name: chatFields[obj].find((a) => a.target_field_name === field)?.source_field_name[tpId]!,
+                target_field_name: field,
+                is_standard_field: true,
+            }));
+            if (fieldMappings) {
+                fieldMappingForAll.push(...fieldMappings);
+            }
+        });
+    });
+
     await prisma.fieldMappings.createMany({
         data: fieldMappingForAll,
     });

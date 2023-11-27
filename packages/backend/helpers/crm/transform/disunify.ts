@@ -1,5 +1,5 @@
 import { TP_ID, accountFieldMappingConfig } from '@prisma/client';
-import { CRM_TP_ID, StandardObjects } from '../../../constants/common';
+import { CHAT_TP_ID, CRM_TP_ID, ChatStandardObjects, StandardObjects } from '../../../constants/common';
 import { transformModelToFieldMapping } from '.';
 import { handleHubspotDisunify, handlePipedriveDisunify, handleSfdcDisunify, handleZohoDisunify } from '..';
 import { postprocessDisUnifyObject } from './preprocess';
@@ -39,6 +39,38 @@ export async function disunifyObject<T extends Record<string, any>>({
         }
         case TP_ID.sfdc: {
             return handleSfdcDisunify({ obj, objType, transformedObj: processedObj });
+        }
+    }
+}
+
+export async function disunifyChatObject<T extends Record<string, any>>({
+    obj,
+    tpId,
+    objType,
+    tenantSchemaMappingId,
+    accountFieldMappingConfig,
+}: {
+    obj: T;
+    tpId: CHAT_TP_ID;
+    objType: ChatStandardObjects;
+    tenantSchemaMappingId?: string;
+    accountFieldMappingConfig?: accountFieldMappingConfig;
+}) {
+    const flattenedObj = flattenObj(obj, ['additional']);
+    const transformedObj = await transformModelToFieldMapping({
+        unifiedObj: flattenedObj,
+        tpId,
+        objType,
+        tenantSchemaMappingId,
+        accountFieldMappingConfig,
+    });
+
+    switch (tpId) {
+        case TP_ID.slack: {
+            return transformedObj;
+        }
+        case TP_ID.discord: {
+            return transformedObj;
         }
     }
 }
