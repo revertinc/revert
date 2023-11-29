@@ -927,9 +927,17 @@ async function main() {
     const fieldMappingForAll: fieldMappings[] = [];
     Object.values(StandardObjects).forEach((obj) => {
         Object.values(TP_ID).forEach(async (tpId) => {
-            if (tpId === 'slack' || tpId === 'discord') return;
-            const objSchema = allSchemas.find((s) => s.object === obj);
-            const fieldMappings = objSchema?.fields.map((field) => ({
+            if (
+                tpId === 'slack' ||
+                tpId === 'discord' ||
+                tpId === 'linear' ||
+                tpId === 'clickup' ||
+                tpId === 'asana' ||
+                tpId === 'trello'
+            )
+                return;
+            const objSchema = allSchemas.find((s: any) => s.object === obj);
+            const fieldMappings = objSchema?.fields.map((field: any) => ({
                 id: randomUUID(),
                 source_tp_id: tpId,
                 schema_id: objSchema.id,
