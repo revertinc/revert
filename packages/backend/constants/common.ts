@@ -40,6 +40,10 @@ export const DEFAULT_SCOPE = {
     [TP_ID.slack]: ['users:read', 'users.profile:read'],
     [TP_ID.closecrm]: [],
     [TP_ID.discord]: ['identify', 'bot'],
+    [TP_ID.linear]: [],
+    [TP_ID.asana]: [],
+    [TP_ID.clickup]: [],
+    [TP_ID.trello]: [],
 };
 
 export const mapIntegrationIdToIntegrationName = {
@@ -50,6 +54,10 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.slack]: 'Slack',
     [TP_ID.closecrm]: 'Close',
     [TP_ID.discord]: 'Discord',
+    [TP_ID.linear]: 'Linear',
+    [TP_ID.asana]: 'Asana',
+    [TP_ID.clickup]: 'Clickup',
+    [TP_ID.trello]: 'Trello',
 };
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';

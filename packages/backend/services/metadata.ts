@@ -118,6 +118,22 @@ const metadataService = new MetadataService({
                     scopes: getScope(apps, TP_ID.closecrm),
                     clientId: getClientId(apps, TP_ID.closecrm) || config.CLOSECRM_CLIENT_ID,
                 },
+                {
+                    integrationId: TP_ID.linear,
+                    name: 'Linear',
+                    imageSrc: 'https://w7.pngwing.com/pngs/717/788/png-transparent-linear-app-logo-tech-companies.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.linear),
+                    clientId: getClientId(apps, TP_ID.linear) || config.LINEAR_CLIENT_ID,
+                },
+                {
+                    integrationId: TP_ID.clickup,
+                    name: 'Clickup',
+                    imageSrc: 'https://e7.pngegg.com/pngimages/780/892/png-clipart-clickup-app-logo-tech-companies.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.clickup),
+                    clientId: getClientId(apps, TP_ID.clickup) || config.CLICKUP_CLIENT_ID,
+                },
             ];
             res.send({
                 status: 'ok',

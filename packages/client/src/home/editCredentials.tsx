@@ -150,7 +150,7 @@ const EditCredentials: React.FC<{
                             />
                         </Row>
                     )}
-                    {!(app.tp_id === 'closecrm' || app.tp_id === 'pipedrive') && (
+                    {!(app.tp_id === 'closecrm' || app.tp_id === 'pipedrive' || app.tp_id === 'clickup') && (
                         <Row>
                             <span className="font-bold">Scopes: </span>
                             {/* <p className="break-words">{scopes}</p> */}

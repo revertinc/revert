@@ -384,6 +384,94 @@ const Integrations = ({ environment }) => {
                                     </IconButton>
                                 </div>
                             </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        padding: 30,
+                                        border: '2px #00000029 solid',
+                                        borderRadius: 10,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        minHeight: 200,
+                                        justifyContent: 'flex-end',
+                                        position: 'relative',
+                                    }}
+                                >
+                                    <img
+                                        width={100}
+                                        alt="Linear logo"
+                                        src="https://w7.pngwing.com/pngs/717/788/png-transparent-linear-app-logo-tech-companies.png"
+                                    />
+                                    <p className="font-bold mt-4">Linear</p>
+                                    <span>Configure your Linear Ticketing App from here.</span>
+                                    <IconButton
+                                        onClick={() => handleOpen('linear')}
+                                        style={{
+                                            color: '#6e6e6e',
+                                            fontSize: 12,
+                                            position: 'absolute',
+                                            top: 10,
+                                            right: 10,
+                                        }}
+                                    >
+                                        <SettingsIcon />
+                                    </IconButton>
+                                </div>
+                            </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        padding: 30,
+                                        border: '2px #00000029 solid',
+                                        borderRadius: 10,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        minHeight: 200,
+                                        justifyContent: 'flex-end',
+                                        position: 'relative',
+                                    }}
+                                >
+                                    <img
+                                        width={100}
+                                        alt="Clickup logo"
+                                        src="https://e7.pngegg.com/pngimages/780/892/png-clipart-clickup-app-logo-tech-companies.png"
+                                    />
+                                    <p className="font-bold mt-4">Clickup</p>
+                                    <span>Configure your Clickup Ticketing App from here.</span>
+                                    <IconButton
+                                        onClick={() => handleOpen('clickup')}
+                                        style={{
+                                            color: '#6e6e6e',
+                                            fontSize: 12,
+                                            position: 'absolute',
+                                            top: 10,
+                                            right: 10,
+                                        }}
+                                    >
+                                        <SettingsIcon />
+                                    </IconButton>
+                                </div>
+                            </Box>
                         </div>
                     ) : (
                         <>

@@ -36,6 +36,10 @@ const config = {
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID!,
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET!,
     DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN!,
+    LINEAR_CLIENT_ID: process.env.LINEAR_CLIENT_ID!,
+    LINEAR_CLIENT_SECRET: process.env.LINEAR_CLIENT_SECRET!,
+    CLICKUP_CLIENT_ID: process.env.CLICKUP_CLIENT_ID!,
+    CLICKUP_CLIENT_SECRET: process.env.CLICKUP_CLIENT_ID!,
 };
 
 export default config;
