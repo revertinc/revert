@@ -127,7 +127,6 @@ git clone --depth 1 https://github.com/revertinc/revert
 
 # Copy the example env file
 cp .env.example .env
-cp .env.example .env
 cp packages/backend/.env.example packages/backend/.env
 cp packages/client/.env.example packages/client/.env
 cp packages/js/.env.example packages/js/.env
