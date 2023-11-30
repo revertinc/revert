@@ -116,7 +116,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         eventType: 'connection.added',
                         connection: {
                             t_id: req.query.t_id as string,
-                            tp_id: TP_ID.sfdc,
+                            tp_id: TP_ID.slack,
                             tp_access_token: String(result.data?.access_token),
                             tp_customer_id: String(info.data.user?.id),
                         },
@@ -190,15 +190,35 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_id: integrationId,
                         tp_access_token: String(result.data?.access_token),
                         tp_refresh_token: String(result.data?.refresh_token),
-                        app_client_id: clientId || config.SLACK_CLIENT_ID,
-                        app_client_secret: clientSecret || config.SLACK_CLIENT_SECRET,
+                        app_client_id: clientId || config.DISCORD_CLIENT_ID,
+                        app_client_secret: clientSecret || config.DISCORD_CLIENT_SECRET,
                         app_bot_token: botToken || config.DISCORD_BOT_TOKEN,
                         tp_customer_id: guildId,
                         owner_account_public_token: revertPublicKey,
                         appId: account?.apps[0].id,
                     },
                 });
-                // Svix stuff goes here ****
+
+                config.svix?.message.create(svixAppId, {
+                    eventType: 'connection.added',
+                    payload: {
+                        eventType: 'connection.added',
+                        connection: {
+                            t_id: req.query.t_id as string,
+                            tp_id: TP_ID.discord,
+                            tp_access_token: result.data.access_token,
+                            tp_customer_id: guildId,
+                        },
+                    },
+                    channels: [req.query.t_id as string],
+                });
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
+                    publicToken: revertPublicKey,
+                    status: 'SUCCESS',
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                    tenantId: req.query.t_id,
+                    tenantSecretToken,
+                } as IntegrationStatusSseMessage);
 
                 res.send({ status: 'ok', tp_customer_id: info.data.id });
             } catch (error: any) {
@@ -221,6 +241,13 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 res.send({ status: 'error', error: error });
             }
         } else {
+            await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
+                publicToken: revertPublicKey,
+                status: 'FAILED',
+                integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                tenantId: req.query.t_id,
+                tenantSecretToken,
+            } as IntegrationStatusSseMessage);
             res.send({
                 status: 'noop',
             });
