@@ -75,6 +75,15 @@ const metadataService = new MetadataService({
                     clientId: getClientId(apps, TP_ID.pipedrive) || config.PIPEDRIVE_CLIENT_ID,
                 },
                 {
+                    integrationId: TP_ID.closecrm,
+                    name: 'Close',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/c_scale,w_136/Revert/o8kv3xqzoqioupz0jpnl.jpg',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.closecrm),
+                    clientId: getClientId(apps, TP_ID.closecrm) || config.CLOSECRM_CLIENT_ID,
+                },
+                {
                     integrationId: 'slack',
                     name: 'slack',
                     imageSrc:
@@ -86,7 +95,8 @@ const metadataService = new MetadataService({
                 {
                     integrationId: 'discord',
                     name: 'discord',
-                    imageSrc: 'https://1000logos.net/wp-content/uploads/2021/06/Discord-logo-768x432.png',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/c_scale,w_136/v1701337535/Revert/qorqmz5ggxbb5ckywmxm.png',
                     status: 'active',
                     scopes: getScope(apps, TP_ID.discord),
                     clientId: getClientId(apps, TP_ID.discord) || config.DISCORD_CLIENT_ID,
@@ -108,15 +118,6 @@ const metadataService = new MetadataService({
                     status: 'inactive',
                     scopes: [],
                     clientId: '',
-                },
-                {
-                    integrationId: TP_ID.closecrm,
-                    name: 'Close',
-                    imageSrc:
-                        'https://res.cloudinary.com/dfcnic8wq/image/upload/c_scale,w_136/Revert/o8kv3xqzoqioupz0jpnl.jpg',
-                    status: 'active',
-                    scopes: getScope(apps, TP_ID.closecrm),
-                    clientId: getClientId(apps, TP_ID.closecrm) || config.CLOSECRM_CLIENT_ID,
                 },
             ];
             res.send({

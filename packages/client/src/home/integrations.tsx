@@ -366,7 +366,7 @@ const Integrations = ({ environment }) => {
                                     <img
                                         width={100}
                                         alt="Discord logo"
-                                        src="https://1000logos.net/wp-content/uploads/2021/06/Discord-logo-768x432.png"
+                                        src="https://res.cloudinary.com/dfcnic8wq/image/upload/c_scale,w_136/v1701337535/Revert/qorqmz5ggxbb5ckywmxm.png"
                                     />
                                     <p className="font-bold mt-4">Discord Chat</p>
                                     <span>Configure your Discord Chat App from here.</span>

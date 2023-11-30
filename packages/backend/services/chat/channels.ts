@@ -5,7 +5,7 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
-import { UnifiedChannel /*, unifyChannel*/ } from '../../models/unified/channel';
+import { UnifiedChannel } from '../../models/unified/channel';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
 import { unifyObject } from '../../helpers/crm/transform';
 import { ChatStandardObjects } from '../../constants/common';
@@ -36,7 +36,7 @@ const channelsService = new ChannelsService(
                 switch (thirdPartyId) {
                     case TP_ID.slack: {
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
-                            cursor ? `&after=${cursor}` : ''
+                            cursor ? `&cursor=${cursor}` : ''
                         }`;
 
                         const url = `https://slack.com/api/conversations.list?${pagingString}`;
@@ -64,7 +64,6 @@ const channelsService = new ChannelsService(
                                     })
                             )
                         );
-                        // channels = channels?.map((l: any) => unifyChannel(l));
 
                         res.send({ status: 'ok', next: nextCursor, results: channels });
                         break;
@@ -74,7 +73,6 @@ const channelsService = new ChannelsService(
                         let channels: any = await axios.get(url, {
                             headers: { Authorization: `Bot ${botToken}` },
                         });
-
                         channels = await Promise.all(
                             channels.data?.map(
                                 async (l: any) =>

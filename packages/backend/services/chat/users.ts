@@ -36,7 +36,7 @@ const usersService = new UsersService(
                 switch (thirdPartyId) {
                     case TP_ID.slack: {
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
-                            cursor ? `&after=${cursor}` : ''
+                            cursor ? `&cursor=${cursor}` : ''
                         }`;
 
                         const url = `https://slack.com/api/users.list?${pagingString}`;
@@ -51,7 +51,6 @@ const usersService = new UsersService(
                         });
                         const nextCursor = users.data?.response_metadata?.next_cursor || undefined;
                         users = users.data.members;
-
                         users = await Promise.all(
                             users?.map(
                                 async (l: any) =>

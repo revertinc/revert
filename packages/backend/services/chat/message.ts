@@ -23,7 +23,6 @@ const messageService = new MessagesService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const botToken = connection.app_bot_token;
-                // const message = disunifyMessage(messageData, thirdPartyId);
                 const message = await disunifyChatObject<UnifiedMessage>({
                     obj: messageData,
                     tpId: thirdPartyId,
@@ -50,7 +49,6 @@ const messageService = new MessagesService(
                             },
                             data: JSON.stringify(message),
                         });
-                        // slackRes = unifyMessage(slackRes.data); currently not unifying post response data
                         res.send({
                             status: 'ok',
                             result: slackRes.data,
