@@ -1,7 +1,7 @@
 import { TP_ID } from '@prisma/client';
 
 export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot' | 'closecrm';
-// export type CHAT_TP_ID = 'slack';
+export type CHAT_TP_ID = 'slack' | 'discord';
 
 export const DEFAULT_SCOPE = {
     [TP_ID.hubspot]: [
@@ -39,6 +39,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.pipedrive]: [],
     [TP_ID.slack]: ['users:read', 'users.profile:read'],
     [TP_ID.closecrm]: [],
+    [TP_ID.discord]: ['identify', 'bot'],
 };
 
 export const mapIntegrationIdToIntegrationName = {
@@ -48,6 +49,7 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.zohocrm]: 'Zoho',
     [TP_ID.slack]: 'Slack',
     [TP_ID.closecrm]: 'Close',
+    [TP_ID.discord]: 'Discord',
 };
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';
@@ -61,6 +63,12 @@ export enum StandardObjects {
     note = 'note',
     task = 'task',
     user = 'user',
+}
+
+export enum ChatStandardObjects {
+    channel = 'channel',
+    chatUser = 'chatUser',
+    message = 'message',
 }
 
 export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefined>> = {

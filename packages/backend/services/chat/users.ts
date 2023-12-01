@@ -5,20 +5,26 @@ import { isStandardError } from '../../helpers/error';
 import { logError, logInfo } from '../../helpers/logger';
 import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import axios from 'axios';
-import { unifyChatUser } from '../../models/unified/chatUsers';
+import { UnifiedChatUser } from '../../models/unified/chatUsers';
 import revertAuthMiddleware from '../../helpers/authMiddleware';
+import { unifyObject } from '../../helpers/crm/transform';
+import { ChatStandardObjects } from '../../constants/common';
+
+const objType = ChatStandardObjects.chatUser;
 
 const usersService = new UsersService(
     {
         async getUsers(req, res) {
             try {
                 const connection = res.locals.connection;
+                const account = res.locals.account;
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-
+                const customerId = connection.tp_customer_id;
+                const botToken = connection.app_bot_token;
                 logInfo(
                     'Revert::GET ALL USERS',
                     connection.app?.env?.accountId,
@@ -30,7 +36,7 @@ const usersService = new UsersService(
                 switch (thirdPartyId) {
                     case TP_ID.slack: {
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
-                            cursor ? `&after=${cursor}` : ''
+                            cursor ? `&cursor=${cursor}` : ''
                         }`;
 
                         const url = `https://slack.com/api/users.list?${pagingString}`;
@@ -44,12 +50,44 @@ const usersService = new UsersService(
                             },
                         });
                         const nextCursor = users.data?.response_metadata?.next_cursor || undefined;
-
                         users = users.data.members;
-                        users = users?.map((l: any) => unifyChatUser(l));
+                        users = await Promise.all(
+                            users?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedChatUser>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
 
                         res.send({ status: 'ok', next: nextCursor, results: users });
 
+                        break;
+                    }
+                    case TP_ID.discord: {
+                        const url = `https://discord.com/api/guilds/${customerId}/members`;
+                        let members: any = await axios.get(url, {
+                            headers: { Authorization: `Bot ${botToken}` },
+                        });
+
+                        members = await Promise.all(
+                            members.data?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedChatUser>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({ status: 'ok', next: undefined, results: members });
                         break;
                     }
                 }

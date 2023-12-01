@@ -1,5 +1,5 @@
 import { accountFieldMappingConfig } from '@prisma/client';
-import { CRM_TP_ID, StandardObjects } from '../../../constants/common';
+import { CRM_TP_ID, ChatStandardObjects, StandardObjects } from '../../../constants/common';
 import { transformFieldMappingToModel } from '.';
 import { preprocessUnifyObject } from './preprocess';
 
@@ -12,7 +12,7 @@ export async function unifyObject<T extends Record<string, any>, K>({
 }: {
     obj: T;
     tpId: CRM_TP_ID;
-    objType: StandardObjects;
+    objType: StandardObjects | ChatStandardObjects;
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }): Promise<K> {

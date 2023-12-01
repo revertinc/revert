@@ -33,6 +33,9 @@ const config = {
     LOOPS_API_KEY: process.env.LOOPS_API_KEY,
     CLOSECRM_CLIENT_ID: process.env.CLOSECRM_CLIENT_ID!,
     CLOSECRM_CLIENT_SECRET: process.env.CLOSECRM_CLIENT_SECRET!,
+    DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID!,
+    DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET!,
+    DISCORD_BOT_TOKEN: process.env.DISCORD_BOT_TOKEN!,
 };
 
 export default config;

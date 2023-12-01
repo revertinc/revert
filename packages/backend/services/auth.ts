@@ -433,6 +433,7 @@ class AuthService {
         scopes = [],
         tpId,
         isRevertApp,
+        botToken,
     }: {
         appId: string;
         publicToken: string;
@@ -441,6 +442,7 @@ class AuthService {
         scopes?: string[];
         tpId: TP_ID;
         isRevertApp: boolean;
+        botToken?: string;
     }): Promise<any> {
         if (!publicToken || !tpId) {
             return { error: 'Bad request' };
@@ -454,6 +456,7 @@ class AuthService {
                 ...(clientSecret && { app_client_secret: clientSecret }),
                 is_revert_app: isRevertApp,
                 ...(scopes.filter(Boolean).length && { scope: scopes }),
+                ...(botToken && { app_bot_token: botToken }),
             },
         });
         if (!account) {

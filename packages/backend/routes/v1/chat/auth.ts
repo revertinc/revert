@@ -33,7 +33,13 @@ authRouter.get('/oauth-callback', async (req, res) => {
             },
             include: {
                 apps: {
-                    select: { id: true, app_client_id: true, app_client_secret: true, is_revert_app: true },
+                    select: {
+                        id: true,
+                        app_client_id: true,
+                        app_client_secret: true,
+                        is_revert_app: true,
+                        app_bot_token: true,
+                    },
                     where: { tp_id: integrationId },
                 },
                 accounts: true,
@@ -42,6 +48,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
 
         const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
+        const botToken = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_bot_token;
         const svixAppId = account!.accounts!.id;
 
         if (integrationId === TP_ID.slack && req.query.code && req.query.t_id && revertPublicKey) {
@@ -109,7 +116,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         eventType: 'connection.added',
                         connection: {
                             t_id: req.query.t_id as string,
-                            tp_id: TP_ID.sfdc,
+                            tp_id: TP_ID.slack,
                             tp_access_token: String(result.data?.access_token),
                             tp_customer_id: String(info.data.user?.id),
                         },
@@ -145,7 +152,102 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
+        } else if (integrationId === TP_ID.discord && req.query.code && req.query.t_id && revertPublicKey) {
+            const formData = {
+                client_id: clientId || config.DISCORD_CLIENT_ID,
+                client_secret: clientSecret || config.DISCORD_CLIENT_SECRET,
+                grant_type: 'authorization_code',
+                code: req.query.code,
+                redirect_uri: `${config.OAUTH_REDIRECT_BASE}/discord`,
+            };
+
+            const result = await axios.post('https://discord.com/api/oauth2/token', qs.stringify(formData));
+
+            logInfo('OAuth creds for discord', result.data);
+
+            const info = await axios.get('https://discord.com/api/users/@me', {
+                headers: {
+                    authorization: `${result.data.token_type} ${result.data.access_token}`,
+                },
+            });
+            logInfo('OAuth token info', info.data);
+            const guildId = result.data?.guild?.id;
+            try {
+                await xprisma.connections.upsert({
+                    where: {
+                        id: String(req.query.t_id),
+                    },
+                    update: {
+                        tp_access_token: result.data?.access_token,
+                        tp_refresh_token: result.data?.refresh_token,
+                        app_client_id: clientId || config.DISCORD_CLIENT_ID,
+                        app_client_secret: clientSecret || config.DISCORD_CLIENT_SECRET,
+                        app_bot_token: botToken || config.DISCORD_BOT_TOKEN,
+                    },
+                    create: {
+                        id: String(req.query.t_id),
+                        t_id: req.query.t_id as string,
+                        tp_id: integrationId,
+                        tp_access_token: String(result.data?.access_token),
+                        tp_refresh_token: String(result.data?.refresh_token),
+                        app_client_id: clientId || config.DISCORD_CLIENT_ID,
+                        app_client_secret: clientSecret || config.DISCORD_CLIENT_SECRET,
+                        app_bot_token: botToken || config.DISCORD_BOT_TOKEN,
+                        tp_customer_id: guildId,
+                        owner_account_public_token: revertPublicKey,
+                        appId: account?.apps[0].id,
+                    },
+                });
+
+                config.svix?.message.create(svixAppId, {
+                    eventType: 'connection.added',
+                    payload: {
+                        eventType: 'connection.added',
+                        connection: {
+                            t_id: req.query.t_id as string,
+                            tp_id: TP_ID.discord,
+                            tp_access_token: result.data.access_token,
+                            tp_customer_id: guildId,
+                        },
+                    },
+                    channels: [req.query.t_id as string],
+                });
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
+                    publicToken: revertPublicKey,
+                    status: 'SUCCESS',
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                    tenantId: req.query.t_id,
+                    tenantSecretToken,
+                } as IntegrationStatusSseMessage);
+
+                res.send({ status: 'ok', tp_customer_id: info.data.id });
+            } catch (error: any) {
+                logError(error);
+                if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                    if (error?.code === 'P2002') {
+                        console.error(
+                            'There is a unique constraint violation, a new user cannot be created with this email'
+                        );
+                    }
+                }
+                console.error('Could not update db', error);
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
+                    publicToken: revertPublicKey,
+                    status: 'FAILED',
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                    tenantId: req.query.t_id,
+                    tenantSecretToken,
+                } as IntegrationStatusSseMessage);
+                res.send({ status: 'error', error: error });
+            }
         } else {
+            await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
+                publicToken: revertPublicKey,
+                status: 'FAILED',
+                integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                tenantId: req.query.t_id,
+                tenantSecretToken,
+            } as IntegrationStatusSseMessage);
             res.send({
                 status: 'noop',
             });

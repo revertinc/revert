@@ -72,6 +72,7 @@ const EditCredentials: React.FC<{
 }> = ({ app, handleClose }) => {
     const [clientId, setClientId] = React.useState<string>(app.app_client_id);
     const [clientSecret, setClientSecret] = React.useState<string>(app.app_client_secret);
+    const [botToken, setBotToken] = React.useState<string>(app.app_bot_token);
     const [scopes, setScopes] = React.useState<string[]>(app.scope);
     const [newScope, setNewScope] = React.useState<string>('');
     const [isRevertApp, setIsRevertApp] = React.useState(app.is_revert_app);
@@ -90,7 +91,7 @@ const EditCredentials: React.FC<{
             appId: app.id,
             tpId: app.tp_id,
             isRevertApp,
-            ...(!isRevertApp && { clientId, clientSecret, scopes }),
+            ...(!isRevertApp && { clientId, clientSecret, scopes, botToken }),
         };
         await fetch({
             url: '/internal/account/credentials',
@@ -138,29 +139,42 @@ const EditCredentials: React.FC<{
                             error={!clientSecret}
                         />
                     </Row>
-                    <Row>
-                        <span className="font-bold">Scopes: </span>
-                        {/* <p className="break-words">{scopes}</p> */}
-                        <ScopesContainer>
-                            <Stack>
-                                {scopes.map((scope, i) => (
-                                    <Chip
-                                        label={scope}
-                                        key={i}
-                                        variant="outlined"
-                                        color="primary"
-                                        style={{ color: '#fff', background: '#000' }}
-                                        onDelete={(ev) => setScopes((ss) => [...ss.filter((s) => s !== scope)])}
-                                    />
-                                ))}
-                            </Stack>
+                    {app.tp_id === 'discord' && (
+                        <Row>
+                            <span className="font-bold">Bot Token: </span>
                             <Input
-                                value={newScope}
-                                onChange={(ev) => setNewScope((ev.target.value || '').trim())}
-                                onKeyDown={handleAddNewScope}
+                                className="app_bot_token"
+                                value={botToken}
+                                onChange={(ev) => setBotToken((ev.target.value || '').trim())}
+                                error={!botToken}
                             />
-                        </ScopesContainer>
-                    </Row>
+                        </Row>
+                    )}
+                    {!(app.tp_id === 'closecrm' || app.tp_id === 'pipedrive') && (
+                        <Row>
+                            <span className="font-bold">Scopes: </span>
+                            {/* <p className="break-words">{scopes}</p> */}
+                            <ScopesContainer>
+                                <Stack>
+                                    {scopes.map((scope, i) => (
+                                        <Chip
+                                            label={scope}
+                                            key={i}
+                                            variant="outlined"
+                                            color="primary"
+                                            style={{ color: '#fff', background: '#000' }}
+                                            onDelete={(ev) => setScopes((ss) => [...ss.filter((s) => s !== scope)])}
+                                        />
+                                    ))}
+                                </Stack>
+                                <Input
+                                    value={newScope}
+                                    onChange={(ev) => setNewScope((ev.target.value || '').trim())}
+                                    onKeyDown={handleAddNewScope}
+                                />
+                            </ScopesContainer>
+                        </Row>
+                    )}
                 </>
             )}
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', gap: '15px' }}>
@@ -171,7 +185,13 @@ const EditCredentials: React.FC<{
                     variant="contained"
                     onClick={handleSubmit}
                     loading={loading}
-                    disabled={isRevertApp ? false : !clientId || !clientSecret}
+                    disabled={
+                        isRevertApp
+                            ? false
+                            : app.tp_id === 'discord'
+                            ? !clientId || !clientSecret || !botToken
+                            : !clientId || !clientSecret
+                    }
                 >
                     Submit
                 </LoadingButton>

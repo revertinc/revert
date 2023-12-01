@@ -7,9 +7,9 @@ export interface UnifiedChatUser {
 
 export function unifyChatUser(user: any): UnifiedChatUser {
     const unifiedUser: UnifiedChatUser = {
-        id: user.id,
-        name: user.real_name,
-        createdTimeStamp: new Date(user.updated * 1000).toISOString(),
+        id: user.id || user.user.id,
+        name: user.profile.real_name || user.user.global_name,
+        createdTimeStamp: user.joined_at || new Date(user.updated * 1000).toISOString(),
         additional: {},
     };
 
