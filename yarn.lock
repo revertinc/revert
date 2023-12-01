@@ -5603,7 +5603,7 @@ __metadata:
     "@types/uuid": ^9.0.2
     axios: ^0.27.2
     babel-jest: ^29.2.2
-    better-sse: ^0.9.0
+    better-sse: ^0.10.0
     concurrently: ^8.2.1
     cors: ^2.8.5
     dotenv: ^16.3.1
@@ -12039,10 +12039,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"better-sse@npm:^0.9.0":
-  version: 0.9.0
-  resolution: "better-sse@npm:0.9.0"
-  checksum: 55213e0d7f0c593de256a9e5f1958657e4069c36ee6050656a20584456081d98044cb15eb3a6556feda859b18ce7801291f34a56b5740733e6d1b02b8e1df6a9
+"better-sse@npm:^0.10.0":
+  version: 0.10.0
+  resolution: "better-sse@npm:0.10.0"
+  checksum: 92ae12524e198c93443ca7fcaa4badb945f931496c0bc0adc0a726e28cf35221c47ea8333e0b86fb6e7fc4ebf511db6b3a037970a3a9523acd6689dbc298fc59
   languageName: node
   linkType: hard
 
