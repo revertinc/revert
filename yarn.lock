@@ -8483,8 +8483,8 @@ __metadata:
   linkType: hard
 
 "@types/d3@npm:^7.4.0":
-  version: 7.4.0
-  resolution: "@types/d3@npm:7.4.0"
+  version: 7.4.2
+  resolution: "@types/d3@npm:7.4.2"
   dependencies:
     "@types/d3-array": "*"
     "@types/d3-axis": "*"
@@ -8516,7 +8516,7 @@ __metadata:
     "@types/d3-timer": "*"
     "@types/d3-transition": "*"
     "@types/d3-zoom": "*"
-  checksum: d1383f5fca7c4a819d57eb4bccc387dccaa7cb4c24d56388e5247954db6c88f5fb7c74d156165dfe044f1da8d4d510796c8d8487b5956d8270a94a1182a6e00f
+  checksum: c87fefb3bbac4a591ea9b32e743a26a9de6ac4c856b6381e3692790438f4e44bc2b85190d789009d1ba5d5e156b483f49b3f53e1070b3725b687a16a51b7f299
   languageName: node
   linkType: hard
 
