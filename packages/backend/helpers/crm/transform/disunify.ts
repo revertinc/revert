@@ -78,35 +78,3 @@ export async function disunifyChatObject<T extends Record<string, any>>({
         }
     }
 }
-
-export async function disunifyChatObject<T extends Record<string, any>>({
-    obj,
-    tpId,
-    objType,
-    tenantSchemaMappingId,
-    accountFieldMappingConfig,
-}: {
-    obj: T;
-    tpId: CHAT_TP_ID;
-    objType: ChatStandardObjects;
-    tenantSchemaMappingId?: string;
-    accountFieldMappingConfig?: accountFieldMappingConfig;
-}) {
-    const flattenedObj = flattenObj(obj, ['additional']);
-    const transformedObj = await transformModelToFieldMapping({
-        unifiedObj: flattenedObj,
-        tpId,
-        objType,
-        tenantSchemaMappingId,
-        accountFieldMappingConfig,
-    });
-
-    switch (tpId) {
-        case TP_ID.slack: {
-            return transformedObj;
-        }
-        case TP_ID.discord: {
-            return transformedObj;
-        }
-    }
-}
