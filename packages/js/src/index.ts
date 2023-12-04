@@ -1154,8 +1154,6 @@ const createIntegrationBlock = function (self, integration) {
                         )}&state=${state}`
                     );
                 } else if (selectedIntegration.integrationId === 'clickup') {
-                    // const encodedRedirectURI = encodeURIComponent(this.#REDIRECT_URL_BASE);
-                    console.log(`${this.#REDIRECT_URL_BASE}/clickup`);
                     window.open(
                         `https://app.clickup.com/api?client_id=${selectedIntegration.clientId}&redirect_uri=${
                             this.#REDIRECT_URL_BASE

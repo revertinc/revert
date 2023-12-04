@@ -58,7 +58,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 },
             });
 
-            console.log('DEBUG', 'OAuth creds for Linear', result.data);
+            logInfo('OAuth creds for Linear', result.data);
             const query = `query Me {
                 viewer {
                   id
@@ -77,7 +77,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 data: JSON.stringify({ query: query }),
             });
 
-            console.log('DEBUG', 'Linear User info', info.data);
+            logInfo('OAuth token info', info.data);
 
             try {
                 await xprisma.connections.upsert({
@@ -146,7 +146,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 data: qs.stringify(formData),
             });
 
-            console.log('DEBUG', 'result of clickup...', result.data);
+            logInfo('OAuth creds for Clickup', result.data);
 
             const info = await axios({
                 method: 'get',
@@ -155,7 +155,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     Authorization: `${result.data?.token_type} ${result.data.access_token}`,
                 },
             });
-            console.log('DEBUG', 'user info clickup...', info.data);
+            logInfo('OAuth token info', info.data);
 
             try {
                 await xprisma.connections.upsert({
