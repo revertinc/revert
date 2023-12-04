@@ -33,6 +33,7 @@ import { channelsService } from '../services/chat/channels';
 import { messageService } from '../services/chat/message';
 import { telemetryService } from '../services/Internal/telemetry';
 import { analyticsService } from '../services/Internal/analytics';
+import ticketRouter from './v1/ticketing';
 
 const router = express.Router();
 
@@ -115,6 +116,8 @@ router.post('/clerk/webhook', async (req, res) => {
 router.use('/crm', cors(), revertAuthMiddleware(), crmRouter);
 
 router.use('/chat', cors(), revertAuthMiddleware(), chatRouter);
+
+router.use('/ticket', cors(), revertAuthMiddleware(), ticketRouter);
 
 register(router, {
     metadata: metadataService,

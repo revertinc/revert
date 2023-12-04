@@ -1144,6 +1144,21 @@ const createIntegrationBlock = function (self, integration) {
                             '%20'
                         )}&state=${state}`
                     );
+                } else if (selectedIntegration.integrationId === 'linear') {
+                    const encodedRedirectURI = encodeURIComponent(this.#REDIRECT_URL_BASE);
+                    window.open(
+                        `https://linear.app/oauth/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${encodedRedirectURI}/linear&response_type=code&scope=${scopes.join(
+                            ','
+                        )}&state=${state}`
+                    );
+                } else if (selectedIntegration.integrationId === 'clickup') {
+                    window.open(
+                        `https://app.clickup.com/api?client_id=${selectedIntegration.clientId}&redirect_uri=${
+                            this.#REDIRECT_URL_BASE
+                        }/clickup&state=${state}`
+                    );
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {
