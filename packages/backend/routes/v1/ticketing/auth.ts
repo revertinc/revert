@@ -133,8 +133,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             }
 
             res.send({ status: 'ok', tp_customer_id: info.data.viewer?.id });
-        }
-        if (integrationId === TP_ID.clickup && req.query.code && req.query.t_id && revertPublicKey) {
+        } else if (integrationId === TP_ID.clickup && req.query.code && req.query.t_id && revertPublicKey) {
             const formData = {
                 client_id: clientId || config.CLICKUP_CLIENT_ID,
                 client_secret: clientSecret || config.CLICKUP_CLIENT_SECRET,
