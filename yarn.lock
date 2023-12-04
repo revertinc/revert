@@ -5597,7 +5597,7 @@ __metadata:
     "@types/express": ^4.17.13
     "@types/jest": ^29.5.4
     "@types/lodash": ^4.14.199
-    "@types/morgan": ^1.9.5
+    "@types/morgan": ^1.9.9
     "@types/node": "*"
     "@types/node-cron": ^3.0.8
     "@types/uuid": ^9.0.2
@@ -8806,12 +8806,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/morgan@npm:^1.9.5":
-  version: 1.9.6
-  resolution: "@types/morgan@npm:1.9.6"
+"@types/morgan@npm:^1.9.9":
+  version: 1.9.9
+  resolution: "@types/morgan@npm:1.9.9"
   dependencies:
     "@types/node": "*"
-  checksum: 6525248325a74342f929c958be69c0840c8f3a288e003a8904319cae92e531f17a8aa2700701e66775adcca7f9506dd630fec2f95dc04a3e73add04fde42aab8
+  checksum: 54bcb432f6ddb82b94bc1970204bedb3465a9afdcced6c2c6b481cf5f276266663ba3edc2b728b0118aa9720bfe5d8561c0259daaad6b027017e35936b107db0
   languageName: node
   linkType: hard
 
