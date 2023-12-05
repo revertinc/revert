@@ -5626,7 +5626,7 @@ __metadata:
     node-cron: ^3.0.2
     prisma: ^4.16.0
     redis: ^4.6.8
-    svix: ^1.8.0
+    svix: ^1.14.0
     ts-node: ^10.9.1
     ts-node-dev: ^2.0.0
     typescript: ^4.8.4
@@ -27672,16 +27672,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svix@npm:^1.8.0":
-  version: 1.8.0
-  resolution: "svix@npm:1.8.0"
+"svix@npm:^1.14.0":
+  version: 1.14.0
+  resolution: "svix@npm:1.14.0"
   dependencies:
     "@stablelib/base64": ^1.0.0
     es6-promise: ^4.2.4
     fast-sha256: ^1.3.0
     svix-fetch: ^3.0.0
     url-parse: ^1.4.3
-  checksum: 19272df39d69112022fd5760bbcdc804e5e3017bdabfd03832951b981d91a7f5182cc91a515df1895b0c20aadbfa32dd61542f799a74072a950284e133bbc4d7
+  checksum: 5ef163ba233cbdf27548c877997cf6f904420ddbc2fe18afff239259801cdd0911c785d6bdd988bb4fd21d3cb89b81321be4fc58f9ccfc769b5b808c7061f8f0
   languageName: node
   linkType: hard
 
