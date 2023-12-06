@@ -510,6 +510,50 @@ const Integrations = ({ environment }) => {
                                     </IconButton>
                                 </div>
                             </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        padding: 30,
+                                        border: '2px #00000029 solid',
+                                        borderRadius: 10,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        minHeight: 200,
+                                        justifyContent: 'flex-end',
+                                        position: 'relative',
+                                    }}
+                                >
+                                    <img
+                                        width={100}
+                                        alt="Trello logo"
+                                        src="https://cdn-icons-png.flaticon.com/512/250/2504834.png"
+                                    />
+                                    <p className="font-bold mt-4">Trello</p>
+                                    <span>Configure your Trello Ticketing App from here.</span>
+                                    <IconButton
+                                        onClick={() => handleOpen('trello')}
+                                        style={{
+                                            color: '#6e6e6e',
+                                            fontSize: 12,
+                                            position: 'absolute',
+                                            top: 10,
+                                            right: 10,
+                                        }}
+                                    >
+                                        <SettingsIcon />
+                                    </IconButton>
+                                </div>
+                            </Box>
                         </div>
                     ) : (
                         <>

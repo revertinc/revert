@@ -33,7 +33,9 @@ import { channelsService } from '../services/chat/channels';
 import { messageService } from '../services/chat/message';
 import { telemetryService } from '../services/Internal/telemetry';
 import { analyticsService } from '../services/Internal/analytics';
-import ticketRouter from './v1/ticketing';
+import ticketRouter from './v1/ticket';
+import { taskServiceTicket } from '../services/ticket/task';
+import { userServiceTicket } from '../services/ticket/user';
 
 const router = express.Router();
 
@@ -146,6 +148,10 @@ register(router, {
         users: usersService,
         channels: channelsService,
         messages: messageService,
+    },
+    ticket: {
+        task: taskServiceTicket,
+        user: userServiceTicket,
     },
 });
 

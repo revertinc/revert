@@ -119,6 +119,14 @@ const metadataService = new MetadataService({
                     clientId: getClientId(apps, TP_ID.clickup) || config.CLICKUP_CLIENT_ID,
                 },
                 {
+                    integrationId: TP_ID.trello,
+                    name: 'Trello',
+                    imageSrc: 'https://cdn-icons-png.flaticon.com/512/2504/2504834.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.trello),
+                    clientId: getClientId(apps, TP_ID.trello) || config.TRELLO_CLIENT_ID,
+                },
+                {
                     integrationId: 'microsoft_dynamics',
                     name: 'microsoft dynamics 365',
                     imageSrc:

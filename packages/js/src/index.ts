@@ -1159,6 +1159,20 @@ const createIntegrationBlock = function (self, integration) {
                             this.#REDIRECT_URL_BASE
                         }/clickup&state=${state}`
                     );
+                } else if (selectedIntegration.integrationId === 'trello') {
+                    fetch(
+                        `${this.CORE_API_BASE_URL}ticket/trello-request-token?tenantId=${this.tenantId}&revertPublicToken=${this.API_REVERT_PUBLIC_TOKEN}`
+                    )
+                        .then((data) => data.json())
+                        .then((data) => {
+                            if (data.oauth_token) {
+                                window.open(
+                                    `${data.authorizeURL}?oauth_token=${data.oauth_token}&scope=${scopes.join(
+                                        ','
+                                    )}&expiration=${data.expiration}`
+                                );
+                            }
+                        });
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {

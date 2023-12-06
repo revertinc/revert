@@ -4,7 +4,7 @@ import { logError } from './logger';
 
 const revertAuthMiddleware = () => async (req: Request, res: Response, next: () => any) => {
     const nonSecurePaths = ['/oauth-callback', '/oauth/refresh'];
-    const nonSecurePathsPartialMatch = ['/integration-status'];
+    const nonSecurePathsPartialMatch = ['/integration-status', '/trello-request-token'];
     if (nonSecurePaths.includes(req.path) || nonSecurePathsPartialMatch.some((path) => req.path.includes(path)))
         return next();
     const { 'x-revert-api-token': token, 'x-revert-t-token': tenantSecretToken } = req.headers;

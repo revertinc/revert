@@ -41,6 +41,8 @@ const config = {
     LINEAR_CLIENT_SECRET: process.env.LINEAR_CLIENT_SECRET!,
     CLICKUP_CLIENT_ID: process.env.CLICKUP_CLIENT_ID!,
     CLICKUP_CLIENT_SECRET: process.env.CLICKUP_CLIENT_ID!,
+    TRELLO_CLIENT_ID: process.env.TRELLO_CLIENT_ID!,
+    TRELLO_CLIENT_SECRET: process.env.TRELLO_CLIENT_SECRET!,
 };
 
 export default config;

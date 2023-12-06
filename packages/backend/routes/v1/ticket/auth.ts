@@ -9,6 +9,7 @@ import prisma, { xprisma } from '../../../prisma/client';
 import config from '../../../config';
 import axios from 'axios';
 import qs from 'qs';
+import { OAuth } from 'oauth';
 
 const authRouter = express.Router();
 
@@ -211,6 +212,108 @@ authRouter.get('/oauth-callback', async (req, res) => {
             }
 
             res.send({ status: 'ok', tp_customer_id: info.data.user.id });
+        } else if (integrationId === TP_ID.trello && req.query.t_id && revertPublicKey) {
+            const requestURL = 'https://trello.com/1/OAuthGetRequestToken';
+            const accessURL = 'https://trello.com/1/OAuthGetAccessToken';
+            const oauth = new OAuth(
+                requestURL,
+                accessURL,
+                String(clientId),
+                String(clientSecret),
+                '1.0A',
+                null,
+                'HMAC-SHA1'
+            );
+            const token = String(req.query.oauth_token);
+            const verifier = String(req.query.oauth_verifier);
+            const tokenSecret = await redis.get(`trello_dev_oauth_token_${req.query.oauth_token}`);
+            let info: any = {};
+            try {
+                const { accessToken, accessTokenSecret }: { accessToken: string; accessTokenSecret: string } =
+                    await new Promise((resolve, reject) => {
+                        oauth.getOAuthAccessToken(
+                            token,
+                            String(tokenSecret),
+                            verifier,
+                            (error, accessToken, accessTokenSecret, _results) => {
+                                if (error) {
+                                    reject(error);
+                                } else {
+                                    resolve({ accessToken, accessTokenSecret });
+                                }
+                            }
+                        );
+                    });
+                await redis.setEx(`trello_dev_access_token_secret_${accessToken}`, 3600 * 24 * 10, accessTokenSecret);
+                const access_creds: { access_token: string; access_secret: string } = {
+                    access_token: accessToken,
+                    access_secret: accessTokenSecret,
+                };
+                logInfo('OAuth creds for Trello', access_creds);
+                oauth.getProtectedResource(
+                    'https://api.trello.com/1/members/me',
+                    'GET',
+                    accessToken,
+                    accessTokenSecret,
+                    (_error, data, _response) => {
+                        // @TODO error handling
+                        info = data;
+                    }
+                );
+                logInfo('OAuth token info', info);
+                await xprisma.connections.upsert({
+                    where: {
+                        id: String(req.query.t_id),
+                    },
+                    update: {
+                        tp_access_token: String(access_creds.access_token),
+                        app_client_id: clientId || config.TRELLO_CLIENT_ID,
+                        app_client_secret: clientSecret || config.TRELLO_CLIENT_SECRET,
+                    },
+                    create: {
+                        id: String(req.query.t_id),
+                        t_id: req.query.t_id as string,
+                        tp_id: integrationId,
+                        tp_access_token: String(access_creds.access_token),
+                        app_client_id: clientId || config.TRELLO_CLIENT_ID,
+                        app_client_secret: clientSecret || config.TRELLO_CLIENT_SECRET,
+                        tp_customer_id: String(info.id),
+                        owner_account_public_token: revertPublicKey,
+                        appId: account?.apps[0].id,
+                    },
+                });
+
+                // svix stuff here
+
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
+                    publicToken: revertPublicKey,
+                    status: 'SUCCESS',
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                    tenantId: req.query.t_id,
+                    tenantSecretToken,
+                } as IntegrationStatusSseMessage);
+            } catch (error: any) {
+                logError(error);
+                if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                    // The .code property can be accessed in a type-safe manner
+                    if (error?.code === 'P2002') {
+                        console.error(
+                            'There is a unique constraint violation, a new user cannot be created with this email'
+                        );
+                    }
+                }
+                console.error('Could not update db', error);
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
+                    publicToken: revertPublicKey,
+                    status: 'FAILED',
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                    tenantId: req.query.t_id,
+                    tenantSecretToken,
+                } as IntegrationStatusSseMessage);
+                res.send({ status: 'error', error: error });
+            }
+
+            res.send({ status: 'ok', tp_customer_id: info.id });
         } else {
             await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                 publicToken: revertPublicKey,

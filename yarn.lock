@@ -5690,6 +5690,7 @@ __metadata:
     "@types/morgan": ^1.9.9
     "@types/node": "*"
     "@types/node-cron": ^3.0.8
+    "@types/oauth": ^0.9.4
     "@types/uuid": ^9.0.2
     axios: ^1.6.2
     babel-jest: ^29.2.2
@@ -5706,6 +5707,7 @@ __metadata:
     moesif-nodejs: ^3.5.3
     morgan: ^1.10.0
     node-cron: ^3.0.2
+    oauth: ^0.10.0
     prisma: ^4.16.0
     redis: ^4.6.8
     svix: ^1.14.0
@@ -9107,6 +9109,15 @@ __metadata:
   version: 4.1.4
   resolution: "@types/npmlog@npm:4.1.4"
   checksum: 740f7431ccfc0e127aa8d162fe05c6ce8aa71290be020d179b2824806d19bd2c706c7e0c9a3c9963cefcdf2ceacb1dec6988c394c3694451387759dafe0aa927
+  languageName: node
+  linkType: hard
+
+"@types/oauth@npm:^0.9.4":
+  version: 0.9.4
+  resolution: "@types/oauth@npm:0.9.4"
+  dependencies:
+    "@types/node": "*"
+  checksum: eb82393214ddc4e5bff2177cecb80237a7e2562ee94872234dcf822118a6b8bff11efa37e26f98a836b675bc211689272cdecb7d9221a9990dbc5a4b363fc033
   languageName: node
   linkType: hard
 
@@ -22952,6 +22963,13 @@ __metadata:
   version: 2.2.2
   resolution: "nwsapi@npm:2.2.2"
   checksum: 43769106292bc95f776756ca2f3513dab7b4d506a97c67baec32406447841a35f65f29c1f95ab5d42785210fd41668beed33ca16fa058780be43b101ad73e205
+  languageName: node
+  linkType: hard
+
+"oauth@npm:^0.10.0":
+  version: 0.10.0
+  resolution: "oauth@npm:0.10.0"
+  checksum: 68fbcd9fc382985fd6a4856245bb9f78281c08ea238e814288c51e6cfb65e442c9c4eea67d54ec595384eb3f007e7b64ae3b8e67ec309228df44aba64cc9e0c7
   languageName: node
   linkType: hard
 
