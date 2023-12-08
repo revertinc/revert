@@ -4,21 +4,22 @@ on:
     push:
         branches:
             - main
-        # paths:
-        #     - packages/backend/**
+        paths:
+            - packages/backend/**
 
 jobs:
     deploy-prisma:
         runs-on: self-hosted
 
         steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v4
-
             - name: Set up Node.js
               uses: actions/setup-node@v2
               with:
                   node-version: 17
+
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
             - name: Install Yarn
               run: npm install -g yarn
 
