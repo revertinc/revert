@@ -9,8 +9,7 @@ on:
 
 jobs:
     deploy-prisma:
-        runs-on: self-hosted
-
+        runs-on: warp-ubuntu-latest-arm64-2x
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v4
