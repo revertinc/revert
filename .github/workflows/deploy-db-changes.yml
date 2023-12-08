@@ -27,7 +27,7 @@ jobs:
               run: npm install -g fern-api
 
             - name: Install Dependencies
-              run: yarn install
+              run: yarn workspace @revertdotdev/backend install
 
             - name: Deploy prisma migrations
               run: yarn workspace @revertdotdev/backend db-deploy
