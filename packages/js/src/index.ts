@@ -1173,6 +1173,17 @@ const createIntegrationBlock = function (self, integration) {
                                 );
                             }
                         });
+                } else if (selectedIntegration.integrationId === 'jira') {
+                    const encodedScopes = encodeURIComponent(scopes.join(' '));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/jira`);
+
+                    window.open(
+                        `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=${
+                            selectedIntegration.clientId
+                        }&scope=${encodedScopes}&redirect_uri=${encodedRedirectUri}&state=${encodeURIComponent(
+                            state
+                        )}&response_type=code&prompt=consent`
+                    );
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {

@@ -19,6 +19,7 @@ enum TP_ID {
   clickup
   asana
   trello
+  jira
 }
 
 enum ENV {

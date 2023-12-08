@@ -127,6 +127,14 @@ const metadataService = new MetadataService({
                     clientId: getClientId(apps, TP_ID.trello) || config.TRELLO_CLIENT_ID,
                 },
                 {
+                    integrationId: TP_ID.jira,
+                    name: 'Jira',
+                    imageSrc: 'https://www.groupe-asten.fr/wp-content/uploads/2020/06/logo-jira-653x321.gif',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.jira),
+                    clientId: getClientId(apps, TP_ID.jira) || config.JIRA_CLIENT_ID,
+                },
+                {
                     integrationId: 'microsoft_dynamics',
                     name: 'microsoft dynamics 365',
                     imageSrc:

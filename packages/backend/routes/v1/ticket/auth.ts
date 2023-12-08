@@ -37,7 +37,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
 
         const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
-        // const svixAppId = account!.accounts!.id;
+        const svixAppId = account!.accounts!.id;
 
         if (integrationId === TP_ID.linear && req.query.code && req.query.t_id && revertPublicKey) {
             // Handle the received code
@@ -104,6 +104,19 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 });
 
                 // svix stuff here
+                config.svix?.message.create(svixAppId, {
+                    eventType: 'connection.added',
+                    payload: {
+                        eventType: 'connection.added',
+                        connection: {
+                            t_id: req.query.t_id as string,
+                            tp_id: TP_ID.linear,
+                            tp_access_token: result.data.access_token,
+                            tp_customer_id: info.data.viewer?.id,
+                        },
+                    },
+                    channels: [req.query.t_id as string],
+                });
 
                 await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                     publicToken: revertPublicKey,
@@ -112,6 +125,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     tenantId: req.query.t_id,
                     tenantSecretToken,
                 } as IntegrationStatusSseMessage);
+                res.send({ status: 'ok', tp_customer_id: info.data.viewer?.id });
             } catch (error: any) {
                 logError(error);
                 if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -132,8 +146,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
-
-            res.send({ status: 'ok', tp_customer_id: info.data.viewer?.id });
         } else if (integrationId === TP_ID.clickup && req.query.code && req.query.t_id && revertPublicKey) {
             const formData = {
                 client_id: clientId || config.CLICKUP_CLIENT_ID,
@@ -182,6 +194,19 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 });
 
                 // svix stuff here
+                config.svix?.message.create(svixAppId, {
+                    eventType: 'connection.added',
+                    payload: {
+                        eventType: 'connection.added',
+                        connection: {
+                            t_id: req.query.t_id as string,
+                            tp_id: TP_ID.clickup,
+                            tp_access_token: result.data.access_token,
+                            tp_customer_id: info.data?.user?.id,
+                        },
+                    },
+                    channels: [req.query.t_id as string],
+                });
 
                 await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                     publicToken: revertPublicKey,
@@ -190,6 +215,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     tenantId: req.query.t_id,
                     tenantSecretToken,
                 } as IntegrationStatusSseMessage);
+
+                res.send({ status: 'ok', tp_customer_id: info.data.user.id });
             } catch (error: any) {
                 logError(error);
                 if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -210,8 +237,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
-
-            res.send({ status: 'ok', tp_customer_id: info.data.user.id });
         } else if (integrationId === TP_ID.trello && req.query.t_id && revertPublicKey) {
             const requestURL = 'https://trello.com/1/OAuthGetRequestToken';
             const accessURL = 'https://trello.com/1/OAuthGetAccessToken';
@@ -283,7 +308,19 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                 });
 
-                // svix stuff here
+                config.svix?.message.create(svixAppId, {
+                    eventType: 'connection.added',
+                    payload: {
+                        eventType: 'connection.added',
+                        connection: {
+                            t_id: req.query.t_id as string,
+                            tp_id: TP_ID.trello,
+                            tp_access_token: access_creds.access_token,
+                            tp_customer_id: info.id,
+                        },
+                    },
+                    channels: [req.query.t_id as string],
+                });
 
                 await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                     publicToken: revertPublicKey,
@@ -292,6 +329,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     tenantId: req.query.t_id,
                     tenantSecretToken,
                 } as IntegrationStatusSseMessage);
+                res.send({ status: 'ok', tp_customer_id: info.id });
             } catch (error: any) {
                 logError(error);
                 if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -312,8 +350,115 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
+        } else if (integrationId === TP_ID.jira && req.query.t_id && req.query.code && revertPublicKey) {
+            const formData = {
+                grant_type: 'authorization_code',
+                client_id: clientId || config.JIRA_CLIENT_ID,
+                client_secret: clientSecret || config.JIRA_CLIENT_SECRET,
+                code: req.query.code,
+                redirect_uri: `${config.OAUTH_REDIRECT_BASE}/jira`,
+            };
 
-            res.send({ status: 'ok', tp_customer_id: info.id });
+            const result: any = await axios({
+                method: 'post',
+                url: 'https://auth.atlassian.com/oauth/token',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                data: formData,
+            });
+            const auth = 'Bearer ' + result.data.access_token;
+            logInfo('OAuth creds for jira', result.data);
+
+            // fetch the cloud id, required for further requests
+            const resources = await axios({
+                method: 'get',
+                url: 'https://api.atlassian.com/oauth/token/accessible-resources',
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: auth,
+                },
+            });
+
+            const cloud_id = resources.data[0].id;
+            const jiraBaseUrl = `https://api.atlassian.com/ex/jira/${cloud_id}`;
+
+            // fetch user info
+            const info = await axios({
+                method: 'get',
+                url: `${jiraBaseUrl}/rest/api/2/myself`,
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: auth,
+                },
+            });
+            logInfo('User info', info.data);
+            const accountId = info.data?.accountId;
+
+            try {
+                await xprisma.connections.upsert({
+                    where: {
+                        id: String(req.query.t_id),
+                    },
+                    create: {
+                        id: String(req.query.t_id),
+                        t_id: req.query.t_id as string,
+                        tp_id: integrationId,
+                        tp_access_token: result.data.access_token,
+                        tp_customer_id: accountId,
+                        tp_account_url: jiraBaseUrl as string,
+                        app_client_id: clientId || config.JIRA_CLIENT_ID,
+                        app_client_secret: clientSecret || config.JIRA_CLIENT_SECRET,
+                        owner_account_public_token: revertPublicKey,
+                        appId: account?.apps[0].id,
+                    },
+                    update: {
+                        tp_access_token: result.data.access_token,
+                    },
+                });
+
+                config.svix?.message.create(svixAppId, {
+                    eventType: 'connection.added',
+                    payload: {
+                        eventType: 'connection.added',
+                        connection: {
+                            t_id: req.query.t_id as string,
+                            tp_id: TP_ID.trello,
+                            tp_access_token: result.data.access_token,
+                            tp_customer_id: accountId,
+                        },
+                    },
+                    channels: [req.query.t_id as string],
+                });
+
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
+                    publicToken: revertPublicKey,
+                    status: 'SUCCESS',
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                    tenantId: req.query.t_id,
+                    tenantSecretToken,
+                } as IntegrationStatusSseMessage);
+                res.send({ status: 'ok', tp_customer_id: accountId });
+            } catch (error: any) {
+                logError(error);
+                if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                    // The .code property can be accessed in a type-safe manner
+                    if (error?.code === 'P2002') {
+                        console.error(
+                            'There is a unique constraint violation, a new user cannot be created with this email'
+                        );
+                    }
+                }
+                console.error('Could not update db', error);
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
+                    publicToken: revertPublicKey,
+                    status: 'FAILED',
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                    tenantId: req.query.t_id,
+                    tenantSecretToken,
+                } as IntegrationStatusSseMessage);
+                res.send({ status: 'error', error: error });
+            }
         } else {
             await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                 publicToken: revertPublicKey,

@@ -43,6 +43,8 @@ const config = {
     CLICKUP_CLIENT_SECRET: process.env.CLICKUP_CLIENT_ID!,
     TRELLO_CLIENT_ID: process.env.TRELLO_CLIENT_ID!,
     TRELLO_CLIENT_SECRET: process.env.TRELLO_CLIENT_SECRET!,
+    JIRA_CLIENT_ID: process.env.JIRA_CLIENT_ID!,
+    JIRA_CLIENT_SECRET: process.env.JIRA_CLIENT_ID!,
 };
 
 export default config;

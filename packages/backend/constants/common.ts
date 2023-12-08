@@ -44,6 +44,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.asana]: [],
     [TP_ID.clickup]: [],
     [TP_ID.trello]: [],
+    [TP_ID.jira]: [],
 };
 
 export const mapIntegrationIdToIntegrationName = {
@@ -58,6 +59,7 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.asana]: 'Asana',
     [TP_ID.clickup]: 'Clickup',
     [TP_ID.trello]: 'Trello',
+    [TP_ID.jira]: 'Jira',
 };
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';
