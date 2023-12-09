@@ -78,6 +78,22 @@ const taskServiceTicket = new TaskService(
                         });
                         break;
                     }
+                    case TP_ID.jira: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/rest/api/2/issue/${taskId}`,
+                            headers: {
+                                Accept: 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+                        console.log('DEBUG', 'resutl...', result);
+                        res.send({
+                            status: 'ok',
+                            result: result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -173,6 +189,24 @@ const taskServiceTicket = new TaskService(
                         });
                         break;
                     }
+                    case TP_ID.jira: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/rest/api/2/search`,
+                            headers: {
+                                Accept: 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            next: 'NEXT_CURSOR',
+                            previous: 'PREV_CURSOR',
+                            results: result.data.issues,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -180,6 +214,63 @@ const taskServiceTicket = new TaskService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not fetch users', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async createTask(req, res) {
+            try {
+                const taskData = req.body;
+                const connection = res.locals.connection;
+                // const account = res.locals.account;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                logInfo('Revert::CREATE TASK', connection.app?.env?.accountId, tenantId, taskData);
+
+                switch (thirdPartyId) {
+                    case TP_ID.linear: {
+                        break;
+                    }
+                    case TP_ID.clickup: {
+                        break;
+                    }
+                    case TP_ID.jira: {
+                        const jiraPost = {
+                            fields: {
+                                assignee: {
+                                    id: '5d53f3cbc6b9320d9ea5bdc2',
+                                },
+                                project: {
+                                    key: 'KAN',
+                                },
+                                summary: taskData.task,
+                                issuetype: {
+                                    id: 10001,
+                                },
+                            },
+                        };
+                        const result = await axios({
+                            method: 'post',
+                            url: `${connection.tp_account_url}/rest/api/2/issue`,
+                            headers: {
+                                'Content-Type': ' application/json',
+                                Accept: 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(jiraPost),
+                        });
+                        console.log('DEBUG', 'post task', result);
+                        res.send({ status: 'ok', message: 'Jira task created', result: result.data });
+
+                        break;
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not create task', error.response);
                 if (isStandardError(error)) {
                     throw error;
                 }

@@ -15,6 +15,14 @@ types:
             next: optional<string>
             previous: optional<string>
             results: unknown
+    CreateOrUpdateTaskRequest:
+        properties:
+            task: optional<string>
+    CreateOrUpdateTaskResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
+            result: unknown
 
 service:
     base-path: /ticket/tasks
@@ -58,6 +66,17 @@ service:
                     pageSize: optional<string>
                     cursor: optional<string>
             response: GetTasksResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createTask:
+            method: POST
+            path: ''
+            request:
+                name: CreateTaskRequest
+                body: CreateOrUpdateTaskRequest
+            response: CreateOrUpdateTaskResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

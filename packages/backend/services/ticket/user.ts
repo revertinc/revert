@@ -57,6 +57,26 @@ const userServiceTicket = new UserService(
                         });
                         break;
                     }
+                    case TP_ID.clickup: {
+                        break;
+                    }
+                    case TP_ID.jira: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/rest/api/2/user?accountId=${userId}`,
+                            headers: {
+                                Accept: 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: result.data,
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -124,6 +144,25 @@ const userServiceTicket = new UserService(
                         break;
                     }
                     case TP_ID.clickup: {
+                        break;
+                    }
+                    case TP_ID.jira: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/rest/api/2/users/search`,
+                            headers: {
+                                Accept: 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            next: 'NEXT_CURSOR',
+                            previous: 'PREVIOUS_CURSOR',
+                            results: result.data,
+                        });
+
                         break;
                     }
                     default: {
