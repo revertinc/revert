@@ -5740,7 +5740,7 @@ __metadata:
   dependencies:
     "@babel/core": 7.23.5
     "@storybook/addon-a11y": 6.5.0-alpha.50
-    "@storybook/addon-actions": 6.5.0-alpha.50
+    "@storybook/addon-actions": 7.6.4
     "@storybook/addon-docs": 6.5.0-alpha.50
     "@storybook/addon-essentials": 6.5.0-alpha.50
     "@storybook/addon-links": 7.4.5
@@ -6271,6 +6271,20 @@ __metadata:
     react-dom:
       optional: true
   checksum: ea405116b430e720c955d37c69968dd3e3c65c4228d25a14b410b4595c6309c76ad493f5d7fb759f60e7def92cb97b848d32af0ffc696da308b6c7fcdb8695c8
+  languageName: node
+  linkType: hard
+
+"@storybook/addon-actions@npm:7.6.4":
+  version: 7.6.4
+  resolution: "@storybook/addon-actions@npm:7.6.4"
+  dependencies:
+    "@storybook/core-events": 7.6.4
+    "@storybook/global": ^5.0.0
+    "@types/uuid": ^9.0.1
+    dequal: ^2.0.2
+    polished: ^4.2.2
+    uuid: ^9.0.0
+  checksum: 305070099dbc6db0e00c5b329433c332202042ee6a86b545cd79899c116edeed5421c6eb23aec7af25bac57a657632657acd9b2d41f10a42b4623f0db41a2906
   languageName: node
   linkType: hard
 
@@ -7167,6 +7181,15 @@ __metadata:
   dependencies:
     ts-dedent: ^2.0.0
   checksum: b13a5c415e63dcbd2edf569601b30f3f80f8d1c03440fe869371da88bb1f9fb87e3da18670b62aa4acb87bec21433e2dba112d93a8293ab798be3e11f850217e
+  languageName: node
+  linkType: hard
+
+"@storybook/core-events@npm:7.6.4":
+  version: 7.6.4
+  resolution: "@storybook/core-events@npm:7.6.4"
+  dependencies:
+    ts-dedent: ^2.0.0
+  checksum: 8983ca8df99707b5805bef3cfe4eff24afd0c5c9fd5f3ed4e2a81b8d86a295d95bb180a1fca4cb748310162a4c4386bbf40d3b6b1fe7e5ad3e9fcb40440fdd78
   languageName: node
   linkType: hard
 
@@ -9217,6 +9240,13 @@ __metadata:
   version: 2.0.6
   resolution: "@types/unist@npm:2.0.6"
   checksum: 25cb860ff10dde48b54622d58b23e66214211a61c84c0f15f88d38b61aa1b53d4d46e42b557924a93178c501c166aa37e28d7f6d994aba13d24685326272d5db
+  languageName: node
+  linkType: hard
+
+"@types/uuid@npm:^9.0.1":
+  version: 9.0.7
+  resolution: "@types/uuid@npm:9.0.7"
+  checksum: c7321194aeba9ea173efd1e721403bdf4e7ae6945f8f8cdbc87c791f4b505ccf3dbc4a8883d90b394ef13b7c2dc778045792b05dbb23b3c746f8ea347804d448
   languageName: node
   linkType: hard
 
@@ -23505,7 +23535,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"polished@npm:^4.0.5":
+"polished@npm:^4.0.5, polished@npm:^4.2.2":
   version: 4.2.2
   resolution: "polished@npm:4.2.2"
   dependencies:
@@ -29274,6 +29304,15 @@ __metadata:
   bin:
     uuid: ./bin/uuid
   checksum: 58de2feed61c59060b40f8203c0e4ed7fd6f99d42534a499f1741218a1dd0c129f4aa1de797bcf822c8ea5da7e4137aa3673431a96dae729047f7aca7b27866f
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^9.0.0":
+  version: 9.0.1
+  resolution: "uuid@npm:9.0.1"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 39931f6da74e307f51c0fb463dc2462807531dc80760a9bff1e35af4316131b4fc3203d16da60ae33f07fdca5b56f3f1dd662da0c99fea9aaeab2004780cc5f4
   languageName: node
   linkType: hard
 
