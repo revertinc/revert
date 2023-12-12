@@ -81,6 +81,11 @@ export enum ChatStandardObjects {
     message = 'message',
 }
 
+export enum TicketStandardObjects {
+    ticketUser = 'ticketUser',
+    ticketTask = 'ticketTask',
+}
+
 export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefined>> = {
     [StandardObjects.company]: {
         [TP_ID.hubspot]: 'companies',
