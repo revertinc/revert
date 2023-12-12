@@ -405,6 +405,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         t_id: req.query.t_id as string,
                         tp_id: integrationId,
                         tp_access_token: result.data.access_token,
+                        tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: accountId,
                         tp_account_url: jiraBaseUrl as string,
                         app_client_id: clientId || config.JIRA_CLIENT_ID,
@@ -414,6 +415,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     update: {
                         tp_access_token: result.data.access_token,
+                        tp_refresh_token: result.data.refresh_token,
                     },
                 });
 
@@ -425,6 +427,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                             t_id: req.query.t_id as string,
                             tp_id: TP_ID.trello,
                             tp_access_token: result.data.access_token,
+                            tp_refresh_token: result.data.refresh_token,
                             tp_customer_id: accountId,
                         },
                     },

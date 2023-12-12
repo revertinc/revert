@@ -6,6 +6,7 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import { TaskService } from '../../generated/typescript/api/resources/ticket/resources/task/service/TaskService';
 import axios from 'axios';
+import { unifyTicketTask } from '../../models/unified/ticketTask';
 
 const taskServiceTicket = new TaskService(
     {
@@ -55,10 +56,11 @@ const taskServiceTicket = new TaskService(
                             },
                             data: JSON.stringify({ query: query, variables: { taskId } }),
                         });
+                        const unifiedTask: any = unifyTicketTask(result.data.data.issue, thirdPartyId);
 
                         res.send({
                             status: 'ok',
-                            result: result.data,
+                            result: unifiedTask,
                         });
                         break;
                     }
@@ -87,7 +89,7 @@ const taskServiceTicket = new TaskService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
-                        console.log('DEBUG', 'resutl...', result);
+
                         res.send({
                             status: 'ok',
                             result: result.data,
@@ -154,11 +156,15 @@ const taskServiceTicket = new TaskService(
                             data: JSON.stringify({ query: query }),
                         });
 
+                        const unifiedTasks: any = result.data.data.issues.nodes.map((task: any) => {
+                            return unifyTicketTask(task, thirdPartyId);
+                        });
+
                         res.send({
                             status: 'ok',
                             next: 'NEXT_CURSOR',
                             previous: 'PREVIOUS_CURSOR',
-                            results: result.data,
+                            results: unifiedTasks,
                         });
 
                         break;
@@ -174,7 +180,9 @@ const taskServiceTicket = new TaskService(
                                 'Content-Type': 'application/json',
                             },
                         });
-
+                        const unifiedTasks: any = result.data.tasks.map((task: any) => {
+                            return unifyTicketTask(task, thirdPartyId);
+                        });
                         const pageNumber = !result.data?.last_page
                             ? cursor
                                 ? (parseInt(String(cursor)) + 1).toString()
@@ -185,7 +193,7 @@ const taskServiceTicket = new TaskService(
                             status: 'ok',
                             next: pageNumber,
                             previous: undefined,
-                            results: result.data.tasks,
+                            results: unifiedTasks,
                         });
                         break;
                     }
@@ -256,13 +264,13 @@ const taskServiceTicket = new TaskService(
                             method: 'post',
                             url: `${connection.tp_account_url}/rest/api/2/issue`,
                             headers: {
-                                'Content-Type': ' application/json',
+                                'Content-Type': 'application/json',
                                 Accept: 'application/json',
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
                             data: JSON.stringify(jiraPost),
                         });
-                        console.log('DEBUG', 'post task', result);
+
                         res.send({ status: 'ok', message: 'Jira task created', result: result.data });
 
                         break;

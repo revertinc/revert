@@ -6,6 +6,7 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import { UserService } from '../../generated/typescript/api/resources/ticket/resources/user/service/UserService';
 import axios from 'axios';
+import { unifyTicketUser } from '../../models/unified/ticketUsers';
 
 const userServiceTicket = new UserService(
     {
@@ -50,10 +51,11 @@ const userServiceTicket = new UserService(
                             },
                             data: JSON.stringify({ query: query, variables: { userId } }),
                         });
+                        const user: any = unifyTicketUser(result.data.data.user, thirdPartyId);
 
                         res.send({
                             status: 'ok',
-                            result: result.data,
+                            result: user,
                         });
                         break;
                     }
@@ -70,9 +72,11 @@ const userServiceTicket = new UserService(
                             },
                         });
 
+                        const unifiedUser: any = unifyTicketUser(result.data, thirdPartyId);
+
                         res.send({
                             status: 'ok',
-                            result: result.data,
+                            result: unifiedUser,
                         });
 
                         break;
@@ -90,7 +94,7 @@ const userServiceTicket = new UserService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
-        async getUsers(req, res) {
+        async getUsers(_req, res) {
             try {
                 const connection = res.locals.connection;
                 // const account = res.locals.account;
@@ -107,7 +111,6 @@ const userServiceTicket = new UserService(
                     thirdPartyId,
                     thirdPartyToken
                 );
-                console.log(req.query);
                 switch (thirdPartyId) {
                     case TP_ID.linear: {
                         const query = `query UsersQuery {
@@ -134,11 +137,15 @@ const userServiceTicket = new UserService(
                             data: JSON.stringify({ query: query }),
                         });
 
+                        const unifiedUsers = result.data.data.users.nodes.map((user: any) => {
+                            return unifyTicketUser(user, thirdPartyId);
+                        });
+
                         res.send({
                             status: 'ok',
                             next: 'NEXT_CURSOR',
                             previous: 'PREVIOUS_CURSOR',
-                            results: result.data,
+                            results: unifiedUsers,
                         });
 
                         break;
@@ -156,11 +163,15 @@ const userServiceTicket = new UserService(
                             },
                         });
 
+                        const unifiedUsers: any = result.data.map((user: any) => {
+                            return unifyTicketUser(user, thirdPartyId);
+                        });
+
                         res.send({
                             status: 'ok',
                             next: 'NEXT_CURSOR',
                             previous: 'PREVIOUS_CURSOR',
-                            results: result.data,
+                            results: unifiedUsers,
                         });
 
                         break;
