@@ -52,3 +52,48 @@ export function unifyTicketTask(task: any, thirdPartyId: any): UnifiedTicketTask
         }
     }
 }
+
+export function disunifyTicketTask(task: any, thirdPartyId: any) {
+    switch (thirdPartyId) {
+        case TP_ID.linear: {
+            const disUnifiedTask: any = {
+                title: task.name,
+                description: task.description,
+                assigneeId: task.assignees[0],
+                dueDate: task.dueDate,
+            };
+            if (task.associations) {
+                Object.keys(task.associations).forEach((key) => {
+                    disUnifiedTask[key] = task.associations[key];
+                });
+            }
+
+            return disUnifiedTask;
+        }
+        case TP_ID.clickup: {
+            let dueDate_int = undefined;
+            if (task.dueDate) {
+                dueDate_int = new Date(task.dueDate).getTime();
+            }
+
+            const disUnifiedTask: any = {
+                name: task.name,
+                description: task.description,
+                assignees: task.assignees,
+                due_date: dueDate_int,
+                additional: task.additional,
+            };
+
+            if (task.associations) {
+                Object.keys(task.associations).forEach((key) => {
+                    disUnifiedTask[key] = task.associations[key];
+                });
+            }
+
+            return disUnifiedTask;
+        }
+        default: {
+            throw new Error('Ticketing app not found');
+        }
+    }
+}

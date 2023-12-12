@@ -6,7 +6,7 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import { TaskService } from '../../generated/typescript/api/resources/ticket/resources/task/service/TaskService';
 import axios from 'axios';
-import { unifyTicketTask } from '../../models/unified/ticketTask';
+import { disunifyTicketTask, unifyTicketTask } from '../../models/unified/ticketTask';
 
 const taskServiceTicket = new TaskService(
     {
@@ -56,6 +56,7 @@ const taskServiceTicket = new TaskService(
                             },
                             data: JSON.stringify({ query: query, variables: { taskId } }),
                         });
+                        console.log('DEBUG', 'tasks meow....', result);
                         const unifiedTask: any = unifyTicketTask(result.data.data.issue, thirdPartyId);
 
                         res.send({
@@ -129,7 +130,6 @@ const taskServiceTicket = new TaskService(
 
                 switch (thirdPartyId) {
                     case TP_ID.linear: {
-                        // const pageSize = 10;
                         const query = `query IssueQuery {
                             issues {
                               nodes {
@@ -142,6 +142,7 @@ const taskServiceTicket = new TaskService(
                                 updatedAt
                                 id
                                 title
+                                dueDate
                               }
                             }
                           }`;
@@ -236,13 +237,51 @@ const taskServiceTicket = new TaskService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const task: any = disunifyTicketTask(taskData, thirdPartyId);
                 logInfo('Revert::CREATE TASK', connection.app?.env?.accountId, tenantId, taskData);
 
                 switch (thirdPartyId) {
                     case TP_ID.linear: {
+                        const mutation = `mutation IssueCreate($input: IssueCreateInput!) {
+                            issueCreate(input: $input) {
+                              success
+                              issue {
+                                title
+                                description
+                                assignee {
+                                  id
+                                }
+                                dueDate
+                              }
+                            }
+                          }`;
+
+                        const result: any = await axios({
+                            method: 'post',
+                            url: 'https://api.linear.app/graphql',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify({ query: mutation, variables: { input: task } }),
+                        });
+
+                        res.send({ status: 'ok', message: 'Linear task created', result: result.data });
                         break;
                     }
                     case TP_ID.clickup: {
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `https://api.clickup.com/api/v2/list/${task.additional.listId}/task`,
+                            headers: {
+                                Authorization: `${thirdPartyToken}`,
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(task),
+                        });
+
+                        res.send({ status: 'ok', message: 'Clickup task created', result: result.data });
+
                         break;
                     }
                     case TP_ID.jira: {
