@@ -6,14 +6,18 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import { UserService } from '../../generated/typescript/api/resources/ticket/resources/user/service/UserService';
 import axios from 'axios';
-import { unifyTicketUser } from '../../models/unified/ticketUsers';
+import { UnifiedTicketUser, unifyTicketUser } from '../../models/unified/ticketUsers';
+import { unifyObject } from '../../helpers/crm/transform';
+import { TicketStandardObjects } from '../../constants/common';
+
+const objType = TicketStandardObjects.ticketUser;
 
 const userServiceTicket = new UserService(
     {
         async getUser(req, res) {
             try {
                 const connection = res.locals.connection;
-                // const account = res.locals.account;
+                const account = res.locals.account;
                 const userId = req.params.id;
                 // const fields = req.query.fields;
                 const thirdPartyId = connection.tp_id;
@@ -51,11 +55,19 @@ const userServiceTicket = new UserService(
                             },
                             data: JSON.stringify({ query: query, variables: { userId } }),
                         });
-                        const user: any = unifyTicketUser(result.data.data.user, thirdPartyId);
+                        // const user: any = unifyTicketUser(result.data.data.user, thirdPartyId);
+
+                        const unifiedUser = await unifyObject<any, UnifiedTicketUser>({
+                            obj: result.data.data.user,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
 
                         res.send({
                             status: 'ok',
-                            result: user,
+                            result: unifiedUser,
                         });
                         break;
                     }

@@ -116,6 +116,9 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
             if (obj.assignees && obj.assignees.length > 0) {
                 transformedObj['assigneeId'] = obj.assignees[0];
             }
+            if (obj.additional) {
+                Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
+            }
 
             return transformedObj;
         }
@@ -123,13 +126,16 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
             if (obj.associations) {
                 Object.keys(obj.associations).forEach((key: any) => (transformedObj[key] = obj.associations[key]));
             }
+            if (obj.additional) {
+                Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
+            }
             transformedObj['listId'] = obj.additional.listId;
             transformedObj['assignees'] = obj.assignees;
 
             return {
                 ...transformedObj,
-                date_done: obj.completedDate ? Date.parse(obj.completedDate) : null,
-                due_date: obj.dueDate ? Date.parse(obj.dueDate) : null,
+                date_done: obj.completedDate ? Date.parse(obj.completedDate) : undefined,
+                due_date: obj.dueDate ? Date.parse(obj.dueDate) : undefined,
             };
         }
         case TP_ID.jira: {

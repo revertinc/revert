@@ -283,7 +283,6 @@ const taskServiceTicket = new TaskService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                // const task: any = disunifyTicketTask(taskData, thirdPartyId);
                 const task: any = await disunifyTicketObject<UnifiedTicketTask>({
                     obj: taskData,
                     tpId: thirdPartyId,
@@ -332,7 +331,6 @@ const taskServiceTicket = new TaskService(
                             },
                             data: JSON.stringify(task),
                         });
-                        console.log('DEBUG', 'result...', result);
                         res.send({ status: 'ok', message: 'Clickup task created', result: result.data });
 
                         break;
@@ -371,6 +369,85 @@ const taskServiceTicket = new TaskService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not create task', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async updateTask(req, res) {
+            try {
+                const connection = res.locals.connection;
+                const account = res.locals.account;
+                const taskData = req.body as UnifiedTicketTask;
+                const taskId = req.params.id;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                const task: any = await disunifyTicketObject<UnifiedTicketTask>({
+                    obj: taskData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+                logInfo('Revert::UPDATE TASK', connection.app?.env?.accountId, tenantId, taskData);
+
+                switch (thirdPartyId) {
+                    case TP_ID.linear: {
+                        const mutation = `mutation Mutation($input: IssueUpdateInput!, $issueUpdateId: String!) {
+                            issueUpdate(input: $input, id: $issueUpdateId) {
+                              success
+                              issue {
+                                ${Object.keys(task).join('\n')}
+                              }
+                            }
+                          }`;
+
+                        const result: any = await axios({
+                            method: 'post',
+                            url: 'https://api.linear.app/graphql',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify({
+                                query: mutation,
+                                variables: { input: task, issueUpdateId: taskId },
+                            }),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Linear Task updated',
+                            result: result.data,
+                        });
+
+                        break;
+                    }
+                    case TP_ID.clickup: {
+                        const result = await axios({
+                            method: 'put',
+                            url: `https://api.clickup.com/api/v2/task/${taskId}`,
+                            headers: {
+                                Authorization: `${thirdPartyToken}`,
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(task),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Clickup Task updated',
+                            result: result.data,
+                        });
+
+                        break;
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not update contact', error);
                 if (isStandardError(error)) {
                     throw error;
                 }

@@ -81,3 +81,18 @@ service:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
+        updateTask:
+            docs: Update a task
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateTaskRequest
+                body: CreateOrUpdateTaskRequest
+            response: CreateOrUpdateTaskResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+                - errors.BadRequestError
