@@ -28,9 +28,6 @@ export function unifyTicketUser(user: any, thirdPartyId: any): UnifiedTicketUser
             };
             return unifiedUser;
         }
-        // case TP_ID.clickup: {
-        //     break;
-        // }
         case TP_ID.jira: {
             const unifiedUser: UnifiedTicketUser = {
                 id: String(user.accountId),

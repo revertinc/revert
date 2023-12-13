@@ -1,5 +1,12 @@
 import { TP_ID, accountFieldMappingConfig } from '@prisma/client';
-import { CHAT_TP_ID, CRM_TP_ID, ChatStandardObjects, StandardObjects } from '../../../constants/common';
+import {
+    CHAT_TP_ID,
+    CRM_TP_ID,
+    ChatStandardObjects,
+    StandardObjects,
+    TICKET_TP_ID,
+    TicketStandardObjects,
+} from '../../../constants/common';
 import { transformModelToFieldMapping } from '.';
 import { handleHubspotDisunify, handlePipedriveDisunify, handleSfdcDisunify, handleZohoDisunify } from '..';
 import { postprocessDisUnifyObject } from './preprocess';
@@ -74,6 +81,67 @@ export async function disunifyChatObject<T extends Record<string, any>>({
             return transformedObj;
         }
         case TP_ID.discord: {
+            return transformedObj;
+        }
+    }
+}
+
+export async function disunifyTicketObject<T extends Record<string, any>>({
+    obj,
+    tpId,
+    objType,
+    tenantSchemaMappingId,
+    accountFieldMappingConfig,
+}: {
+    obj: T;
+    tpId: TICKET_TP_ID;
+    objType: TicketStandardObjects;
+    tenantSchemaMappingId?: string;
+    accountFieldMappingConfig?: accountFieldMappingConfig;
+}) {
+    const flattenedObj = flattenObj(obj, ['additional', 'associations']);
+    const transformedObj = await transformModelToFieldMapping({
+        unifiedObj: flattenedObj,
+        tpId,
+        objType,
+        tenantSchemaMappingId,
+        accountFieldMappingConfig,
+    });
+
+    switch (tpId) {
+        case TP_ID.linear: {
+            if (obj.associations) {
+                Object.keys(obj.associations).forEach((key: any) => (transformedObj[key] = obj.associations[key]));
+            }
+            if (obj.assignees && obj.assignees.length > 0) {
+                transformedObj['assigneeId'] = obj.assignees[0];
+            }
+
+            return transformedObj;
+        }
+        case TP_ID.clickup: {
+            if (obj.associations) {
+                Object.keys(obj.associations).forEach((key: any) => (transformedObj[key] = obj.associations[key]));
+            }
+            transformedObj['listId'] = obj.additional.listId;
+            transformedObj['assignees'] = obj.assignees;
+
+            return {
+                ...transformedObj,
+                date_done: obj.completedDate ? Date.parse(obj.completedDate) : null,
+                due_date: obj.dueDate ? Date.parse(obj.dueDate) : null,
+            };
+        }
+        case TP_ID.jira: {
+            return transformedObj;
+        }
+        case TP_ID.asana: {
+            return transformedObj;
+        }
+        case TP_ID.trello: {
+            return transformedObj;
+        }
+        case TP_ID.jira: {
             return transformedObj;
         }
     }

@@ -58,6 +58,13 @@ async function main() {
             },
             {
                 source_field_name: {
+                    [TP_ID.linear]: 'id',
+                    [TP_ID.clickup]: 'id',
+                },
+                target_field_name: 'remoteId',
+            },
+            {
+                source_field_name: {
                     [TP_ID.linear]: 'title',
                     [TP_ID.clickup]: 'name',
                 },
@@ -79,10 +86,10 @@ async function main() {
             },
             {
                 source_field_name: {
-                    [TP_ID.linear]: 'creator',
+                    [TP_ID.linear]: 'creator.id',
                     [TP_ID.clickup]: 'creator.id',
                 },
-                target_field_name: 'createdBy',
+                target_field_name: 'creatorId',
             },
             {
                 source_field_name: {
@@ -112,6 +119,13 @@ async function main() {
                 },
                 target_field_name: 'completedDate',
             },
+            {
+                source_field_name: {
+                    [TP_ID.linear]: 'parent.id',
+                    [TP_ID.clickup]: 'parent',
+                },
+                target_field_name: 'parentId',
+            },
         ],
         [TicketStandardObjects.ticketUser]: [
             {
@@ -120,6 +134,13 @@ async function main() {
                     [TP_ID.clickup]: undefined,
                 },
                 target_field_name: 'id',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.linear]: 'id',
+                    [TP_ID.clickup]: undefined,
+                },
+                target_field_name: 'remoteId',
             },
             {
                 source_field_name: {
@@ -148,6 +169,13 @@ async function main() {
                     [TP_ID.clickup]: undefined,
                 },
                 target_field_name: 'avatar',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.linear]: 'createdAt',
+                    [TP_ID.clickup]: undefined,
+                },
+                target_field_name: 'createdTimeStamp',
             },
             {
                 source_field_name: {

@@ -1,5 +1,11 @@
 import { TP_ID } from '@prisma/client';
-import { CRM_TP_ID, ChatStandardObjects, StandardObjects } from '../../../constants/common';
+import {
+    CRM_TP_ID,
+    ChatStandardObjects,
+    StandardObjects,
+    TICKET_TP_ID,
+    TicketStandardObjects,
+} from '../../../constants/common';
 import { PipedriveDealStatus } from '../../../constants/pipedrive';
 import { convertToHHMMInUTC, getDuration, getFormattedDate } from '../../../helpers/timeZoneHelper';
 
@@ -9,8 +15,8 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
     objType,
 }: {
     obj: T;
-    tpId: CRM_TP_ID;
-    objType: StandardObjects | ChatStandardObjects;
+    tpId: CRM_TP_ID | TICKET_TP_ID;
+    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects;
 }) => {
     const preprocessMap: any = {
         [TP_ID.pipedrive]: {
@@ -60,6 +66,26 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                     isWon: obj['status_type'] === 'won' ? true : false,
                     confidence: obj['confidence'] ? Number((parseInt(obj['confidence']) / 100).toFixed(4)) : undefined,
                     value: obj['value'] ? Number(obj['value']) / 100 : undefined,
+                };
+            },
+        },
+        [TP_ID.linear]: {
+            [TicketStandardObjects.ticketTask]: (obj: T) => {
+                return {
+                    ...obj,
+                    assignee: obj.assignee ? [obj.assignee.id] : null,
+                };
+            },
+        },
+        [TP_ID.clickup]: {
+            [TicketStandardObjects.ticketTask]: (obj: T) => {
+                return {
+                    ...obj,
+                    assignees: obj.assignees.length > 0 ? obj.assignees.map((assignee: any) => assignee.id) : [],
+                    date_created: obj.date_created ? new Date(Number(obj.date_created)).toISOString() : null,
+                    date_updated: obj.date_updated ? new Date(Number(obj.date_updated)).toISOString() : null,
+                    date_done: obj.date_done ? new Date(Number(obj.date_done)).toISOString() : null,
+                    due_date: obj.due_date ? new Date(Number(obj.due_date)).toISOString() : null,
                 };
             },
         },

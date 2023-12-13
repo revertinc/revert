@@ -6,14 +6,18 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import { TaskService } from '../../generated/typescript/api/resources/ticket/resources/task/service/TaskService';
 import axios from 'axios';
-import { disunifyTicketTask, unifyTicketTask } from '../../models/unified/ticketTask';
+import { UnifiedTicketTask } from '../../models/unified/ticketTask';
+import { disunifyTicketObject, unifyObject } from '../../helpers/crm/transform';
+import { TicketStandardObjects } from '../../constants/common';
+
+const objType = TicketStandardObjects.ticketTask;
 
 const taskServiceTicket = new TaskService(
     {
         async getTask(req, res) {
             try {
                 const connection = res.locals.connection;
-                // const account = res.locals.account;
+                const account = res.locals.account;
                 const taskId = req.params.id;
                 // const fields = req.query.fields;
                 const thirdPartyId = connection.tp_id;
@@ -38,12 +42,15 @@ const taskServiceTicket = new TaskService(
                               description
                               creator {
                                 id
-                                name
                               }
                               assignee {
-                                name
                                 id
                               }
+                              parent {
+                                id
+                              }
+                              createdAt
+                              updatedAt
                             }
                           }`;
 
@@ -56,8 +63,14 @@ const taskServiceTicket = new TaskService(
                             },
                             data: JSON.stringify({ query: query, variables: { taskId } }),
                         });
-                        console.log('DEBUG', 'tasks meow....', result);
-                        const unifiedTask: any = unifyTicketTask(result.data.data.issue, thirdPartyId);
+
+                        const unifiedTask = await unifyObject<any, UnifiedTicketTask>({
+                            obj: result.data.data.issue,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
 
                         res.send({
                             status: 'ok',
@@ -75,9 +88,17 @@ const taskServiceTicket = new TaskService(
                             },
                         });
 
+                        const unifiedTask = await unifyObject<any, UnifiedTicketTask>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
                         res.send({
                             status: 'ok',
-                            result: result.data,
+                            result: unifiedTask,
                         });
                         break;
                     }
@@ -113,7 +134,7 @@ const taskServiceTicket = new TaskService(
         async getTasks(req, res) {
             try {
                 const connection = res.locals.connection;
-                // const account = res.locals.account;
+                const account = res.locals.account;
                 // const fields = req.query.fields;
                 // const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
@@ -133,16 +154,21 @@ const taskServiceTicket = new TaskService(
                         const query = `query IssueQuery {
                             issues {
                               nodes {
-                                assignee {
-                                  id
-                                  email
-                                  name
-                                }
-                                createdAt
-                                updatedAt
                                 id
-                                title
-                                dueDate
+                              title
+                              dueDate
+                              description
+                              creator {
+                                id
+                              }
+                              assignee {
+                                id
+                              }
+                              parent {
+                                id
+                              }
+                              createdAt
+                              updatedAt
                               }
                             }
                           }`;
@@ -157,9 +183,18 @@ const taskServiceTicket = new TaskService(
                             data: JSON.stringify({ query: query }),
                         });
 
-                        const unifiedTasks: any = result.data.data.issues.nodes.map((task: any) => {
-                            return unifyTicketTask(task, thirdPartyId);
-                        });
+                        const unifiedTasks: any = await Promise.all(
+                            result.data.data.issues.nodes.map(
+                                async (task: any) =>
+                                    await unifyObject<any, UnifiedTicketTask>({
+                                        obj: task,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
 
                         res.send({
                             status: 'ok',
@@ -175,15 +210,26 @@ const taskServiceTicket = new TaskService(
 
                         const result = await axios({
                             method: 'get',
-                            url: `https://api.clickup.com/api/v2/list/901600412756/task?${pagingString}`,
+                            url: `https://api.clickup.com/api/v2/list/901600406578/task?${pagingString}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'Content-Type': 'application/json',
                             },
                         });
-                        const unifiedTasks: any = result.data.tasks.map((task: any) => {
-                            return unifyTicketTask(task, thirdPartyId);
-                        });
+
+                        const unifiedTasks: any = await Promise.all(
+                            result.data.tasks.map(
+                                async (task: any) =>
+                                    await unifyObject<any, UnifiedTicketTask>({
+                                        obj: task,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
                         const pageNumber = !result.data?.last_page
                             ? cursor
                                 ? (parseInt(String(cursor)) + 1).toString()
@@ -231,13 +277,20 @@ const taskServiceTicket = new TaskService(
         },
         async createTask(req, res) {
             try {
-                const taskData = req.body;
+                const taskData = req.body as UnifiedTicketTask;
                 const connection = res.locals.connection;
-                // const account = res.locals.account;
+                const account = res.locals.account;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const task: any = disunifyTicketTask(taskData, thirdPartyId);
+                // const task: any = disunifyTicketTask(taskData, thirdPartyId);
+                const task: any = await disunifyTicketObject<UnifiedTicketTask>({
+                    obj: taskData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
                 logInfo('Revert::CREATE TASK', connection.app?.env?.accountId, tenantId, taskData);
 
                 switch (thirdPartyId) {
@@ -272,14 +325,14 @@ const taskServiceTicket = new TaskService(
                     case TP_ID.clickup: {
                         const result: any = await axios({
                             method: 'post',
-                            url: `https://api.clickup.com/api/v2/list/${task.additional.listId}/task`,
+                            url: `https://api.clickup.com/api/v2/list/${task.listId}/task`,
                             headers: {
                                 Authorization: `${thirdPartyToken}`,
                                 'Content-Type': 'application/json',
                             },
                             data: JSON.stringify(task),
                         });
-
+                        console.log('DEBUG', 'result...', result);
                         res.send({ status: 'ok', message: 'Clickup task created', result: result.data });
 
                         break;
@@ -293,7 +346,7 @@ const taskServiceTicket = new TaskService(
                                 project: {
                                     key: 'KAN',
                                 },
-                                summary: taskData.task,
+                                summary: taskData,
                                 issuetype: {
                                     id: 10001,
                                 },
