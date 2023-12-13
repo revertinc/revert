@@ -126,6 +126,7 @@ The easiest way to start Revert is to run it via docker-compose:
 git clone --depth 1 https://github.com/revertinc/revert
 
 # Copy the example env file
+cd revert
 cp .env.example .env
 cp packages/backend/.env.example packages/backend/.env
 cp packages/client/.env.example packages/client/.env
