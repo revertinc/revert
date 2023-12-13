@@ -355,7 +355,7 @@ class AuthService {
                 });
                 // Send onboarding campaign email
                 try {
-                    const res = await axios({
+                    await axios({
                         method: 'post',
                         url: 'https://app.loops.so/api/v1/transactional',
                         data: JSON.stringify({
@@ -367,7 +367,17 @@ class AuthService {
                             Authorization: `Bearer ${config.LOOPS_API_KEY}`,
                         },
                     });
-                    logInfo('Sent onboarding email', res);
+                    logInfo('Sent onboarding email');
+                    // Alert on slack if configured.
+                    if (config.SLACK_URL) {
+                        await axios({
+                            method: 'post',
+                            url: config.SLACK_URL,
+                            data: JSON.stringify({
+                                text: `Woot! :zap: ${userEmail} created an account on Revert!\n\n`,
+                            }),
+                        });
+                    }
                 } catch (error: any) {
                     logError(error);
                 }
