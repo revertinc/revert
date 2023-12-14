@@ -34,6 +34,7 @@ const taskServiceTicket = new TaskService(
 
                 switch (thirdPartyId) {
                     case TP_ID.linear: {
+                        // @TODO Query won't fetch data for fields provided in additional column
                         const query = `query IssueQuery($taskId: String!) {
                             issue(id: $taskId) {
                               id
@@ -135,8 +136,8 @@ const taskServiceTicket = new TaskService(
             try {
                 const connection = res.locals.connection;
                 const account = res.locals.account;
-                // const fields = req.query.fields;
-                // const pageSize = parseInt(String(req.query.pageSize));
+                const fields: any = req.query.fields;
+                const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
@@ -150,9 +151,10 @@ const taskServiceTicket = new TaskService(
                 );
 
                 switch (thirdPartyId) {
+                    // @TODO Query won't fetch data for fields provided in additional column
                     case TP_ID.linear: {
-                        const query = `query IssueQuery {
-                            issues {
+                        const query = `query IssueQuery ($first: Int, $after: String, $before: String, $last: Int) {
+                            issues (first: $first, after: $after, before: $before, last: $last) {
                               nodes {
                                 id
                               title
@@ -170,19 +172,34 @@ const taskServiceTicket = new TaskService(
                               createdAt
                               updatedAt
                               }
+                              pageInfo {
+                                hasNextPage
+                                hasPreviousPage
+                                startCursor
+                                endCursor
+                              }
                             }
                           }`;
+                        /*
+                            In GraphQL, either 'first' & 'after' or 'last' & 'before' can exist but not both simultaneously.
+                            To determine the appropriate pagination direction, an additional flag parameter is required.
+                        */
+                        const variables = {
+                            first: pageSize ? pageSize : null,
+                            after: cursor ? cursor : null,
+                            last: null,
+                            Before: null,
+                        };
 
-                        const result = await axios({
+                        const result: any = await axios({
                             method: 'post',
                             url: 'https://api.linear.app/graphql',
                             headers: {
                                 'Content-Type': 'application/json',
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
-                            data: JSON.stringify({ query: query }),
+                            data: JSON.stringify({ query: query, variables }),
                         });
-
                         const unifiedTasks: any = await Promise.all(
                             result.data.data.issues.nodes.map(
                                 async (task: any) =>
@@ -195,22 +212,32 @@ const taskServiceTicket = new TaskService(
                                     })
                             )
                         );
+                        const pageInfo = result.data.data.issues.pageInfo;
+                        let next_cursor = undefined;
+                        if (pageInfo.hasNextPage && pageInfo.endCursor) {
+                            next_cursor = pageInfo.endCursor;
+                        }
+
+                        let previous_cursor = undefined;
+                        if (pageInfo.hasPreviousPage && pageInfo.startCursor) {
+                            previous_cursor = pageInfo.startCursor;
+                        }
 
                         res.send({
                             status: 'ok',
-                            next: 'NEXT_CURSOR',
-                            previous: 'PREVIOUS_CURSOR',
+                            next: next_cursor,
+                            previous: previous_cursor,
                             results: unifiedTasks,
                         });
 
                         break;
                     }
                     case TP_ID.clickup: {
+                        const parsedFields: any = JSON.parse(fields);
                         const pagingString = `${cursor ? `page=${cursor}` : ''}`;
-
                         const result = await axios({
                             method: 'get',
-                            url: `https://api.clickup.com/api/v2/list/901600406578/task?${pagingString}`,
+                            url: `https://api.clickup.com/api/v2/list/${parsedFields.listId}/task?${pagingString}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'Content-Type': 'application/json',
@@ -293,6 +320,7 @@ const taskServiceTicket = new TaskService(
                 logInfo('Revert::CREATE TASK', connection.app?.env?.accountId, tenantId, taskData);
 
                 switch (thirdPartyId) {
+                    // @TODO Query will fail if additional fields are posted
                     case TP_ID.linear: {
                         const mutation = `mutation IssueCreate($input: IssueCreateInput!) {
                             issueCreate(input: $input) {
@@ -365,6 +393,9 @@ const taskServiceTicket = new TaskService(
 
                         break;
                     }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
                 }
             } catch (error: any) {
                 logError(error);
@@ -394,6 +425,8 @@ const taskServiceTicket = new TaskService(
                 logInfo('Revert::UPDATE TASK', connection.app?.env?.accountId, tenantId, taskData);
 
                 switch (thirdPartyId) {
+                    /* @TODO This might encounter issues with unrecognized patterns or schema, for instance, attempting to set 'issueID' within the request body of the 'revert' API 
+                    might not conform to the expected GraphQL syntax, such as {issue: {id}}. */
                     case TP_ID.linear: {
                         const mutation = `mutation Mutation($input: IssueUpdateInput!, $issueUpdateId: String!) {
                             issueUpdate(input: $input, id: $issueUpdateId) {
@@ -443,6 +476,9 @@ const taskServiceTicket = new TaskService(
                         });
 
                         break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
                     }
                 }
             } catch (error: any) {
