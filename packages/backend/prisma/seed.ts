@@ -64,6 +64,13 @@ async function main() {
     });
 
     const mergedSchema = [...allSchemas, ...chatSchemas];
+
+    await prisma.schema_mapping.deleteMany({
+        where: {
+            id: rootSchemaMappingId,
+        },
+    });
+
     // Ensures that for the updated or newly generated schemas, their IDs are associated with rootSchemaMappingId in schema_mapping -> object_schema_ids.
     await prisma.schema_mapping.upsert({
         where: {
