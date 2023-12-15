@@ -25,6 +25,8 @@
     src="https://hackernews-badge.vercel.app/api?id=37995761"
   />
 </a>
+<a href="https://www.producthunt.com/posts/revert-3?utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-revert&#0045;3" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=425023&theme=light&period=weekly&topic_id=267" alt="Revert - Open&#0045;source&#0032;unified&#0032;API&#0032;to&#0032;build&#0032;product&#0032;integrations | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+<a href="https://www.producthunt.com/posts/revert-3?utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-revert&#0045;3" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=425023&theme=light&period=daily" alt="Revert - Open&#0045;source&#0032;unified&#0032;API&#0032;to&#0032;build&#0032;product&#0032;integrations | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
 ### ⭐ About Revert
 
@@ -35,15 +37,6 @@ Revert makes it incredibly easy to build integrations with any third party API s
 -   Ticketing tools like (Jira, Asana)
 
 > We believe an **open source unified API** enables us to cover the long tail of third party APIs while empowering engineers to customise the integration code we offer out of the box. This way engineers can use us over building everything from scratch.
-
-### 📺 Demo
-
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=1aXXx66LKnY
-" target="_blank">
-<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1694089822/Revert/Screenshot_2023-09-07_at_6.00.00_PM_xz7edr.png" 
-alt="Revert Quick demo"  border="2"/>
-<em>Revert Quick demo</em>
-</a>
 
 ### Why Revert?
 
@@ -80,7 +73,7 @@ CRMs:
 Communication tools:
 
 -   [x] Slack
--   [ ] Discord
+-   [x] Discord
 -   [ ] Microsoft Teams
 
 Accounting software:
@@ -91,7 +84,7 @@ Accounting software:
 ...[and more](https://github.com/revertinc/revert/issues?q=is%3Aissue+is%3Aopen+label%3AIntegration)
 
 -   [ ] Ability to self-host Revert inside your own cloud
--   [ ] SOC 2
+-   [ ] SOC 2 (In Progress)
 
 Feel free to create an issue if you'd like an integration we're missing [here](https://github.com/revertinc/revert)
 
