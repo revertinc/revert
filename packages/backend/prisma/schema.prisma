@@ -111,7 +111,7 @@ model schemas {
   fields             String[]
   object             String
   schema_mapping_id  String
-  schema_mapping     schema_mapping  @relation(fields: [schema_mapping_id], references: [id])
+  schema_mapping     schema_mapping  @relation(fields: [schema_mapping_id], references: [id], onDelete: Cascade)
   fields_mapping_ids String[]
   fieldMappings      fieldMappings[]
 }
@@ -123,7 +123,7 @@ model fieldMappings {
   target_field_name String
   is_standard_field Boolean
   schema_id         String
-  schema            schemas @relation(fields: [schema_id], references: [id])
+  schema            schemas @relation(fields: [schema_id], references: [id], onDelete: Cascade)
 }
 
 model waitlist {

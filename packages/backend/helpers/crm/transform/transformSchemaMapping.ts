@@ -20,11 +20,24 @@ export const transformFieldMappingToModel = async ({
 }) => {
     logDebug('transformFieldMappingToModel obj:', obj);
     const connectionSchema = await prisma.schemas.findFirst({
-        where: { object: objType, schema_mapping_id: !!tenantSchemaMappingId ? tenantSchemaMappingId : undefined },
+        where: {
+            AND: [
+                { object: objType },
+                { schema_mapping_id: !!tenantSchemaMappingId ? tenantSchemaMappingId : undefined },
+            ],
+        },
         include: { fieldMappings: { where: { source_tp_id: tpId } } },
     });
     const rootSchema = await prisma.schemas.findFirst({
-        where: { object: objType, schema_mapping_id: rootSchemaMappingId },
+        where: {
+            AND: [
+                {
+                    object: objType,
+                },
+                { schema_mapping_id: rootSchemaMappingId },
+            ],
+        },
+
         include: { fieldMappings: { where: { source_tp_id: tpId } } },
     });
     let transformedObj: Record<string, any> = {};
