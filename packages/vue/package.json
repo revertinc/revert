@@ -42,7 +42,7 @@
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^5.4.0",
         "@typescript-eslint/parser": "^6.13.2",
-        "@vitejs/plugin-vue": "^4.3.4",
+        "@vitejs/plugin-vue": "^4.5.2",
         "@vue/cli-plugin-babel": "~5.0.0",
         "@vue/cli-plugin-eslint": "~5.0.0",
         "@vue/cli-plugin-typescript": "~5.0.0",

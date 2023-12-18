@@ -5819,7 +5819,7 @@ __metadata:
   dependencies:
     "@typescript-eslint/eslint-plugin": ^5.4.0
     "@typescript-eslint/parser": ^6.13.2
-    "@vitejs/plugin-vue": ^4.3.4
+    "@vitejs/plugin-vue": ^4.5.2
     "@vue/cli-plugin-babel": ~5.0.0
     "@vue/cli-plugin-eslint": ~5.0.0
     "@vue/cli-plugin-typescript": ~5.0.0
@@ -9864,13 +9864,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-vue@npm:^4.3.4":
-  version: 4.3.4
-  resolution: "@vitejs/plugin-vue@npm:4.3.4"
+"@vitejs/plugin-vue@npm:^4.5.2":
+  version: 4.5.2
+  resolution: "@vitejs/plugin-vue@npm:4.5.2"
   peerDependencies:
-    vite: ^4.0.0
+    vite: ^4.0.0 || ^5.0.0
     vue: ^3.2.25
-  checksum: 95bf6c85c0a7812a96a07faf3c28155624c74584448a8fe46ac93e08ebc13520fdc9eb96e2fa95bccacf23028277a9cd3210e00120dadaab25b116456ee2cc43
+  checksum: 8b150d3a717b4c3d9ee524e840dff8d2e94785bb2fb54829a423d4421559932c717e4be36a038b5b3012ca9b332885744a6310eaf22c52d7ffc58d3298e41797
   languageName: node
   linkType: hard
 
