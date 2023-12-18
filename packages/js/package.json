@@ -20,7 +20,7 @@
         "@babel/cli": "^7.12.10",
         "@babel/core": "^7.23.5",
         "@babel/plugin-proposal-class-properties": "^7.12.1",
-        "@babel/preset-env": "^7.12.11",
+        "@babel/preset-env": "^7.23.6",
         "browserify": "^17.0.0",
         "concurrently": "^8.2.1",
         "dotenv": "^16.3.1",
