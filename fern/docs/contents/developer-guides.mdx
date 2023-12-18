@@ -77,7 +77,7 @@ cp packages/client/.env.example packages/client/.env
 
 1. Generate a Tunnel URL
 
-- First, generate a tunnel URL using `ngrok http 3000`
+- First, generate a tunnel URL using `ngrok http <4001 or YOUR_SERVER_PORT>`
 - Copy this URL to your clipboard as you'll need it in the next steps.
 
 2. Configure Clerk Webhook Endpoint
@@ -85,11 +85,20 @@ cp packages/client/.env.example packages/client/.env
 - Access your Clerk dashboard (Sign up on https://clerk.com/ if you have note already).
 - Navigate to the webhook settings or configuration section.
 - Ensure that the webhook endpoint is set to `<YOUR_LOCALHOST_OR_PUBLIC_URL>/clerk/webhook`
+- Ensure that you are listening to the `user.created` event by ticking the `user`object under `Message Filtering`
+
+
+
+<img
+src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1702896296/Revert/Docs/ioj7i0dj97dzcmgb95p2.png"
+/>
+
+
 
 3. Sign Up in Your Application
 
  - Use your application to sign up a new user. This action will trigger a user creation event.
- - In your Clerk dashboard, you should now see a user.created object associated with the newly signed-up user.
+ - In your Clerk dashboard, you should now see a `user.created` object associated with the newly signed-up user.
 
 4. Testing with Postman
 
@@ -101,5 +110,5 @@ cp packages/client/.env.example packages/client/.env
 
  - In the request's URL field, use http://localhost:4001/clerk/webhook. This is the endpoint Clerk will send webhook events to.
 
- - In the request body, paste the user.created object that you copied from your Clerk dashboard.
+ - In the request body, paste the `user.created` object that you copied from your Clerk dashboard.
 
