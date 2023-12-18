@@ -127,7 +127,9 @@ cp packages/js/.env.example packages/js/.env
 cp packages/react/.env.example packages/react/.env
 cp packages/vue/.env.example packages/vue/.env
 
-# Update these .env files with your own secrets if you'd like to.
+# Ensure that clerk is setup in `client` and a user is created by following the instructions here: https://docs.revert.dev/overview/developer-guide/developer-guide#-revertdotdev-client
+
+# Update these .env files with any of your own secrets if you'd like to.
 
 # Then In the root directory run
 
