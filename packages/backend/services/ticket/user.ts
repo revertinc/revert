@@ -83,7 +83,7 @@ const userServiceTicket = new UserService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not fetch users', error);
+                console.error('Could not fetch user', error);
                 if (isStandardError(error)) {
                     throw error;
                 }

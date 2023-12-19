@@ -114,7 +114,7 @@ const taskServiceTicket = new TaskService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not fetch users', error);
+                console.error('Could not fetch task', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -273,7 +273,7 @@ const taskServiceTicket = new TaskService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not fetch users', error);
+                console.error('Could not fetch tasks', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -432,7 +432,7 @@ const taskServiceTicket = new TaskService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not update contact', error);
+                console.error('Could not update task', error);
                 if (isStandardError(error)) {
                     throw error;
                 }

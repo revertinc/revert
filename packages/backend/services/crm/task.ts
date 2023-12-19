@@ -151,7 +151,7 @@ const taskService = new TaskService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not fetch lead', error);
+                console.error('Could not fetch task', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -367,7 +367,7 @@ const taskService = new TaskService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not fetch leads', error);
+                console.error('Could not fetch tasks', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -596,7 +596,7 @@ const taskService = new TaskService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not update lead', error.response);
+                console.error('Could not update task', error.response);
                 if (isStandardError(error)) {
                     throw error;
                 }

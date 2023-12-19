@@ -162,7 +162,7 @@ const contactService = new ContactService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not fetch lead', error);
+                console.error('Could not fetch contact', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -389,7 +389,7 @@ const contactService = new ContactService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not fetch leads', error);
+                console.error('Could not fetch contacts', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
