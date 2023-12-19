@@ -19,7 +19,7 @@
         "@storybook/addon-a11y": "6.5.0-alpha.50",
         "@storybook/addon-actions": "7.6.4",
         "@storybook/addon-docs": "6.5.0-alpha.50",
-        "@storybook/addon-essentials": "6.5.0-alpha.50",
+        "@storybook/addon-essentials": "7.6.5",
         "@storybook/addon-links": "7.4.5",
         "@storybook/react": "6.5.0-alpha.49",
         "@types/node": "20.8.2",
