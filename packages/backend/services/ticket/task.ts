@@ -306,11 +306,11 @@ const taskServiceTicket = new TaskService(
                               issue {
                                 title
                                 description
-                                priorityLabel
                                 assignee {
                                   id
                                 }
                                 dueDate
+                                priority
                               }
                             }
                           }`;
