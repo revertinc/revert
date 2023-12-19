@@ -118,40 +118,6 @@ const metadataService = new MetadataService({
                     scopes: getScope(apps, TP_ID.clickup),
                     clientId: getClientId(apps, TP_ID.clickup) || config.CLICKUP_CLIENT_ID,
                 },
-                {
-                    integrationId: TP_ID.trello,
-                    name: 'Trello',
-                    imageSrc: 'https://cdn-icons-png.flaticon.com/512/2504/2504834.png',
-                    status: 'active',
-                    scopes: getScope(apps, TP_ID.trello),
-                    clientId: getClientId(apps, TP_ID.trello) || config.TRELLO_CLIENT_ID,
-                },
-                {
-                    integrationId: TP_ID.jira,
-                    name: 'Jira',
-                    imageSrc: 'https://www.groupe-asten.fr/wp-content/uploads/2020/06/logo-jira-653x321.gif',
-                    status: 'active',
-                    scopes: getScope(apps, TP_ID.jira),
-                    clientId: getClientId(apps, TP_ID.jira) || config.JIRA_CLIENT_ID,
-                },
-                {
-                    integrationId: 'microsoft_dynamics',
-                    name: 'microsoft dynamics 365',
-                    imageSrc:
-                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1691139212/Revert/image_60_whit0z.png',
-                    status: 'inactive',
-                    scopes: [],
-                    clientId: '',
-                },
-                {
-                    integrationId: 'zendesk',
-                    name: 'Zendesk',
-                    imageSrc:
-                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1691139212/Revert/image_58_ighbwk.png',
-                    status: 'inactive',
-                    scopes: [],
-                    clientId: '',
-                },
             ];
             res.send({
                 status: 'ok',

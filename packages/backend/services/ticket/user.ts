@@ -6,7 +6,7 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import { UserService } from '../../generated/typescript/api/resources/ticket/resources/user/service/UserService';
 import axios from 'axios';
-import { UnifiedTicketUser, unifyTicketUser } from '../../models/unified/ticketUsers';
+import { UnifiedTicketUser } from '../../models/unified/ticketUsers';
 import { unifyObject } from '../../helpers/crm/transform';
 import { TicketStandardObjects } from '../../constants/common';
 
@@ -77,25 +77,6 @@ const userServiceTicket = new UserService(
                         });
                         break;
                     }
-                    case TP_ID.jira: {
-                        const result = await axios({
-                            method: 'get',
-                            url: `${connection.tp_account_url}/rest/api/2/user?accountId=${userId}`,
-                            headers: {
-                                Accept: 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                        });
-
-                        const unifiedUser: any = unifyTicketUser(result.data, thirdPartyId);
-
-                        res.send({
-                            status: 'ok',
-                            result: unifiedUser,
-                        });
-
-                        break;
-                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -113,7 +94,6 @@ const userServiceTicket = new UserService(
             try {
                 const connection = res.locals.connection;
                 const account = res.locals.account;
-                // const fields = req.query.fields;
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
                 const thirdPartyId = connection.tp_id;
@@ -207,29 +187,6 @@ const userServiceTicket = new UserService(
                             status: 'ok',
                             results: 'This endpoint is currently not supported',
                         });
-                        break;
-                    }
-                    case TP_ID.jira: {
-                        const result = await axios({
-                            method: 'get',
-                            url: `${connection.tp_account_url}/rest/api/2/users/search`,
-                            headers: {
-                                Accept: 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                        });
-
-                        const unifiedUsers: any = result.data.map((user: any) => {
-                            return unifyTicketUser(user, thirdPartyId);
-                        });
-
-                        res.send({
-                            status: 'ok',
-                            next: 'NEXT_CURSOR',
-                            previous: 'PREVIOUS_CURSOR',
-                            results: unifiedUsers,
-                        });
-
                         break;
                     }
                     default: {
