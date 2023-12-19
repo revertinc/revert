@@ -1,5 +1,5 @@
 import { TP_ID } from '@prisma/client';
-import { ChatStandardObjects, StandardObjects } from '../constants/common';
+import { ChatStandardObjects, StandardObjects, TicketStandardObjects } from '../constants/common';
 
 // root schema mapping
 export const allFields = {
@@ -842,6 +842,167 @@ export const chatFields = {
                 [TP_ID.discord]: undefined,
             },
             target_field_name: 'channelId',
+        },
+    ],
+};
+
+export const ticketingFields = {
+    [TicketStandardObjects.ticketTask]: [
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'id',
+                [TP_ID.clickup]: 'id',
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'id',
+                [TP_ID.clickup]: 'id',
+            },
+            target_field_name: 'remoteId',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'title',
+                [TP_ID.clickup]: 'name',
+            },
+            target_field_name: 'name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'assignee',
+                [TP_ID.clickup]: 'assignees',
+            },
+            target_field_name: 'assignees',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'description',
+                [TP_ID.clickup]: 'description',
+            },
+            target_field_name: 'description',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'state',
+                [TP_ID.clickup]: 'status',
+            },
+            target_field_name: 'status',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'priorityLabel',
+                [TP_ID.clickup]: 'priority',
+            },
+            target_field_name: 'priority',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'creator.id',
+                [TP_ID.clickup]: 'creator.id',
+            },
+            target_field_name: 'creatorId',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'createdAt',
+                [TP_ID.clickup]: 'date_created',
+            },
+            target_field_name: 'createdTimeStamp',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'updatedAt',
+                [TP_ID.clickup]: 'date_updated',
+            },
+            target_field_name: 'updatedTimeStamp',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'dueDate',
+                [TP_ID.clickup]: 'due_date',
+            },
+            target_field_name: 'dueDate',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'completedDate',
+                [TP_ID.clickup]: 'date_done',
+            },
+            target_field_name: 'completedDate',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'parent.id',
+                [TP_ID.clickup]: 'parent',
+            },
+            target_field_name: 'parentId',
+        },
+    ],
+    [TicketStandardObjects.ticketUser]: [
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'id',
+                [TP_ID.clickup]: undefined,
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'id',
+                [TP_ID.clickup]: undefined,
+            },
+            target_field_name: 'remoteId',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'email',
+                [TP_ID.clickup]: undefined,
+            },
+            target_field_name: 'email',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'name',
+                [TP_ID.clickup]: undefined,
+            },
+            target_field_name: 'name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'active',
+                [TP_ID.clickup]: undefined,
+            },
+            target_field_name: 'isActive',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'avatarUrl',
+                [TP_ID.clickup]: undefined,
+            },
+            target_field_name: 'avatar',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'createdAt',
+                [TP_ID.clickup]: undefined,
+            },
+            target_field_name: 'createdTimeStamp',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: null,
+                [TP_ID.clickup]: undefined,
+            },
+            target_field_name: 'updatedTimeStamp',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'admin',
+                [TP_ID.clickup]: undefined,
+            },
+            target_field_name: 'isAdmin',
         },
     ],
 };
