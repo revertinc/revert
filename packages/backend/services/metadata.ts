@@ -105,7 +105,8 @@ const metadataService = new MetadataService({
                 {
                     integrationId: TP_ID.linear,
                     name: 'Linear',
-                    imageSrc: 'https://w7.pngwing.com/pngs/717/788/png-transparent-linear-app-logo-tech-companies.png',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/c_scale,w_100/v1702974919/Revert/v5e5z6afm5iepiy3cvex.png',
                     status: 'active',
                     scopes: getScope(apps, TP_ID.linear),
                     clientId: getClientId(apps, TP_ID.linear) || config.LINEAR_CLIENT_ID,
@@ -113,10 +114,20 @@ const metadataService = new MetadataService({
                 {
                     integrationId: TP_ID.clickup,
                     name: 'Clickup',
-                    imageSrc: 'https://e7.pngegg.com/pngimages/780/892/png-clipart-clickup-app-logo-tech-companies.png',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/c_scale,w_100/v1702974919/Revert/zckjrxorttrrmyuxf1hu.png',
                     status: 'active',
                     scopes: getScope(apps, TP_ID.clickup),
                     clientId: getClientId(apps, TP_ID.clickup) || config.CLICKUP_CLIENT_ID,
+                },
+                {
+                    integrationId: TP_ID.jira,
+                    name: 'Jira',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1702983006/Revert/szfzkoagws7h3miptezo.png',
+                    status: 'inactive',
+                    scopes: getScope(apps, TP_ID.jira),
+                    clientId: getClientId(apps, TP_ID.jira) || config.JIRA_CLIENT_ID,
                 },
             ];
             res.send({

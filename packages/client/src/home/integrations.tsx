@@ -448,7 +448,7 @@ const Integrations = ({ environment }) => {
                                     <img
                                         width={100}
                                         alt="Linear logo"
-                                        src="https://w7.pngwing.com/pngs/717/788/png-transparent-linear-app-logo-tech-companies.png"
+                                        src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1702974919/Revert/v5e5z6afm5iepiy3cvex.png"
                                     />
                                     <p className="font-bold mt-4">Linear</p>
                                     <span>Configure your Linear Ticketing App from here.</span>
@@ -492,7 +492,7 @@ const Integrations = ({ environment }) => {
                                     <img
                                         width={100}
                                         alt="Clickup logo"
-                                        src="https://e7.pngegg.com/pngimages/780/892/png-clipart-clickup-app-logo-tech-companies.png"
+                                        src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1702974919/Revert/zckjrxorttrrmyuxf1hu.png"
                                     />
                                     <p className="font-bold mt-4">Clickup</p>
                                     <span>Configure your Clickup Ticketing App from here.</span>
