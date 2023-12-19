@@ -1,23 +1,21 @@
 imports:
     errors: ../common/errors.yml
     types: ../common/types.yml
-    # unified: ../common/unified.yml
+    unified: ../common/unified.yml
     associations: ../common/associations.yml
 
 types:
     GetTaskResponse:
         properties:
             status: types.ResponseStatus
-            result: unknown
+            result: unified.Ticket
     GetTasksResponse:
         properties:
             status: types.ResponseStatus
             next: optional<string>
             previous: optional<string>
-            results: unknown
-    CreateOrUpdateTaskRequest:
-        properties:
-            task: optional<string>
+            results: list<unified.Ticket>
+    CreateOrUpdateTaskRequest: unified.TicketWrite
     CreateOrUpdateTaskResponse:
         properties:
             status: types.ResponseStatus

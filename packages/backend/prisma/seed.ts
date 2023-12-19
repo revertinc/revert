@@ -86,6 +86,20 @@ async function main() {
             },
             {
                 source_field_name: {
+                    [TP_ID.linear]: 'state',
+                    [TP_ID.clickup]: 'status',
+                },
+                target_field_name: 'status',
+            },
+            {
+                source_field_name: {
+                    [TP_ID.linear]: 'priorityLabel',
+                    [TP_ID.clickup]: 'priority',
+                },
+                target_field_name: 'priority',
+            },
+            {
+                source_field_name: {
                     [TP_ID.linear]: 'creator.id',
                     [TP_ID.clickup]: 'creator.id',
                 },

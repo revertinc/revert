@@ -19,7 +19,6 @@ const taskServiceTicket = new TaskService(
                 const connection = res.locals.connection;
                 const account = res.locals.account;
                 const taskId = req.params.id;
-                // const fields = req.query.fields;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
@@ -41,6 +40,12 @@ const taskServiceTicket = new TaskService(
                               title
                               dueDate
                               description
+                              state {
+                                id
+                                name
+                              }
+                              priorityLabel
+                              priority
                               creator {
                                 id
                               }
@@ -65,7 +70,7 @@ const taskServiceTicket = new TaskService(
                             data: JSON.stringify({ query: query, variables: { taskId } }),
                         });
 
-                        const unifiedTask = await unifyObject<any, UnifiedTicketTask>({
+                        const unifiedTask: any = await unifyObject<any, UnifiedTicketTask>({
                             obj: result.data.data.issue,
                             tpId: thirdPartyId,
                             objType,
@@ -89,7 +94,7 @@ const taskServiceTicket = new TaskService(
                             },
                         });
 
-                        const unifiedTask = await unifyObject<any, UnifiedTicketTask>({
+                        const unifiedTask: any = await unifyObject<any, UnifiedTicketTask>({
                             obj: result.data,
                             tpId: thirdPartyId,
                             objType,
@@ -100,22 +105,6 @@ const taskServiceTicket = new TaskService(
                         res.send({
                             status: 'ok',
                             result: unifiedTask,
-                        });
-                        break;
-                    }
-                    case TP_ID.jira: {
-                        const result = await axios({
-                            method: 'get',
-                            url: `${connection.tp_account_url}/rest/api/2/issue/${taskId}`,
-                            headers: {
-                                Accept: 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                        });
-
-                        res.send({
-                            status: 'ok',
-                            result: result.data,
                         });
                         break;
                     }
@@ -163,6 +152,12 @@ const taskServiceTicket = new TaskService(
                               creator {
                                 id
                               }
+                              state {
+                                id
+                                name
+                              }
+                              priorityLabel
+                              priority
                               assignee {
                                 id
                               }
@@ -233,8 +228,9 @@ const taskServiceTicket = new TaskService(
                         break;
                     }
                     case TP_ID.clickup: {
-                        const parsedFields: any = JSON.parse(fields);
+                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
                         const pagingString = `${cursor ? `page=${cursor}` : ''}`;
+                        // &statuses[]=complete
                         const result = await axios({
                             method: 'get',
                             url: `https://api.clickup.com/api/v2/list/${parsedFields.listId}/task?${pagingString}`,
@@ -271,24 +267,6 @@ const taskServiceTicket = new TaskService(
                         });
                         break;
                     }
-                    case TP_ID.jira: {
-                        const result = await axios({
-                            method: 'get',
-                            url: `${connection.tp_account_url}/rest/api/2/search`,
-                            headers: {
-                                Accept: 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                        });
-
-                        res.send({
-                            status: 'ok',
-                            next: 'NEXT_CURSOR',
-                            previous: 'PREV_CURSOR',
-                            results: result.data.issues,
-                        });
-                        break;
-                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -304,7 +282,7 @@ const taskServiceTicket = new TaskService(
         },
         async createTask(req, res) {
             try {
-                const taskData = req.body as UnifiedTicketTask;
+                const taskData: any = req.body as unknown as UnifiedTicketTask;
                 const connection = res.locals.connection;
                 const account = res.locals.account;
                 const thirdPartyId = connection.tp_id;
@@ -328,6 +306,7 @@ const taskServiceTicket = new TaskService(
                               issue {
                                 title
                                 description
+                                priorityLabel
                                 assignee {
                                   id
                                 }
@@ -363,36 +342,6 @@ const taskServiceTicket = new TaskService(
 
                         break;
                     }
-                    case TP_ID.jira: {
-                        const jiraPost = {
-                            fields: {
-                                assignee: {
-                                    id: '5d53f3cbc6b9320d9ea5bdc2',
-                                },
-                                project: {
-                                    key: 'KAN',
-                                },
-                                summary: taskData,
-                                issuetype: {
-                                    id: 10001,
-                                },
-                            },
-                        };
-                        const result = await axios({
-                            method: 'post',
-                            url: `${connection.tp_account_url}/rest/api/2/issue`,
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Accept: 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                            data: JSON.stringify(jiraPost),
-                        });
-
-                        res.send({ status: 'ok', message: 'Jira task created', result: result.data });
-
-                        break;
-                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -410,7 +359,7 @@ const taskServiceTicket = new TaskService(
             try {
                 const connection = res.locals.connection;
                 const account = res.locals.account;
-                const taskData = req.body as UnifiedTicketTask;
+                const taskData = req.body as unknown as UnifiedTicketTask;
                 const taskId = req.params.id;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;

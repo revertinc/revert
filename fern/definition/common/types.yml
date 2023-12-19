@@ -87,3 +87,15 @@ types:
             connectedApps: optional<list<ConnectedApps>>
             recentConnections: optional<list<RecentConnections>>
             recentApiCalls: optional<list<RecentApiCalls>>
+    TicketStatus:
+        enum:
+            - open
+            - close
+            - in_progress
+    TicketPriority:
+        enum:
+            - urgent
+            - high
+            - medium
+            - low
+            - lowest

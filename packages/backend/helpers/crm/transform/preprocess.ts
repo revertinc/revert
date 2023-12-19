@@ -71,14 +71,36 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
         },
         [TP_ID.linear]: {
             [TicketStandardObjects.ticketTask]: (obj: T) => {
+                let status: string;
+                if (obj.state.name === 'Todo') status = 'open';
+                else if (obj.state.name === 'Done') status = 'closed';
+                else if (obj.state.name === 'In Progress') status = 'in_progress';
+                else status = obj.state.name.toLowerCase();
                 return {
                     ...obj,
                     assignee: obj.assignee ? [obj.assignee.id] : null,
+                    priorityLabel:
+                        obj['priorityLabel'] === 'No priority' ? 'lowest' : obj['priorityLabel'].toLowerCase(),
+                    state: status ? status : String().toLowerCase(),
                 };
             },
         },
         [TP_ID.clickup]: {
             [TicketStandardObjects.ticketTask]: (obj: T) => {
+                let status: string;
+                if (obj.status && obj.status.status === 'to do') status = 'open';
+                else if (obj.status && obj.status.status === 'in progress') status = 'in_progress';
+                else if (obj.status && obj.status.status === 'complete') status = 'closed';
+                else status = obj.status;
+
+                let priority: any;
+                if (obj.priority && obj.priority.priority === 'urgent' && obj.priority.id === 1) priority = 'urgent';
+                else if (obj.priority && obj.priority.priority === 'high' && obj.priority.id === 2) priority = 'high';
+                else if (obj.priority && obj.priority.priority === 'normal' && obj.priority.id === 3)
+                    priority = 'medium';
+                else if (obj.priority && obj.priority.priority === 'low' && obj.priority.id === 4) priority = 'low';
+                else priority = 'lowest';
+
                 return {
                     ...obj,
                     assignees: obj.assignees.length > 0 ? obj.assignees.map((assignee: any) => assignee.id) : [],
@@ -86,6 +108,8 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                     date_updated: obj.date_updated ? new Date(Number(obj.date_updated)).toISOString() : null,
                     date_done: obj.date_done ? new Date(Number(obj.date_done)).toISOString() : null,
                     due_date: obj.due_date ? new Date(Number(obj.due_date)).toISOString() : null,
+                    status,
+                    priority,
                 };
             },
         },

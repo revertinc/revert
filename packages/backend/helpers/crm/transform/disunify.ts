@@ -129,13 +129,28 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
             if (obj.additional) {
                 Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
             }
-            transformedObj['listId'] = obj.additional.listId;
+            transformedObj['listId'] = obj.associations.listId;
             transformedObj['assignees'] = obj.assignees;
+
+            let status: any;
+            if (obj.status === 'open') status = 'to do';
+            else if (obj.status === 'in_progress') status = 'in progress';
+            else if (obj.status === 'closed') status = 'complete';
+            else status = undefined;
+
+            let priority: any;
+            if (obj.priority === 'urgent') priority = '1';
+            else if (obj.priority === 'high') priority = '2';
+            else if (obj.priority === 'medium') priority = '3';
+            else if (obj.priority === 'low') priority = '4';
+            else priority = undefined;
 
             return {
                 ...transformedObj,
                 date_done: obj.completedDate ? Date.parse(obj.completedDate) : undefined,
                 due_date: obj.dueDate ? Date.parse(obj.dueDate) : undefined,
+                status,
+                priority,
             };
         }
         case TP_ID.jira: {

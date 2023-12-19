@@ -1,5 +1,6 @@
 imports:
     associations: ./associations.yml
+    types: ./types.yml
 
 types:
     CommonUnifiedFields:
@@ -225,3 +226,36 @@ types:
             channelId:
                 type: string
                 docs: Id of channel to which message was sent
+    TicketWrite:
+        properties:
+            name:
+                type: string
+                docs: Name of the task.
+            assignees:
+                type: list<string>
+                docs: collection of IDs belonging to assignees.
+            description:
+                type: string
+                docs: Description of the task.
+            status:
+                type: types.TicketStatus
+                docs: Current status of the task.
+            priority:
+                type: types.TicketPriority
+                docs: Priority of the task.
+            creatorId:
+                type: string
+                docs: ID of the task creator.
+            dueDate:
+                type: string
+                docs: Due date for the given task.
+            completedDate:
+                type: string
+                docs: Date at which task was completed.
+            parentId:
+                type: string
+                docs: Id of the parent task.
+    Ticket:
+        extends:
+            - CommonUnifiedFields
+            - TicketWrite

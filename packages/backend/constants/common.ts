@@ -41,7 +41,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.slack]: ['users:read', 'users.profile:read'],
     [TP_ID.closecrm]: [],
     [TP_ID.discord]: ['identify', 'bot'],
-    [TP_ID.linear]: [],
+    [TP_ID.linear]: ['issues:create', 'write'],
     [TP_ID.asana]: [],
     [TP_ID.clickup]: [],
     [TP_ID.trello]: [],
