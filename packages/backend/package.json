@@ -55,6 +55,7 @@
         "typescript": "^4.8.4"
     },
     "dependencies": {
+        "@linear/sdk": "^13.0.0",
         "@prisma/client": "^4.16.0",
         "@sentry/node": "^7.55.2",
         "@shortloop/node": "0.0.12",

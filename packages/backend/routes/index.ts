@@ -36,6 +36,7 @@ import { analyticsService } from '../services/Internal/analytics';
 import ticketRouter from './v1/ticket';
 import { taskServiceTicket } from '../services/ticket/task';
 import { userServiceTicket } from '../services/ticket/user';
+import { collectionServiceTicket } from '../services/ticket/collection';
 
 const router = express.Router();
 
@@ -152,6 +153,7 @@ register(router, {
     ticket: {
         task: taskServiceTicket,
         user: userServiceTicket,
+        collection: collectionServiceTicket,
     },
 });
 
