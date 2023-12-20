@@ -72,6 +72,13 @@ async function main() {
     });
 
     const mergedSchema = [...allSchemas, ...chatSchemas, ...ticketSchemas];
+
+    await prisma.schema_mapping.deleteMany({
+        where: {
+            id: rootSchemaMappingId,
+        },
+    });
+
     await prisma.schema_mapping.upsert({
         where: {
             id: rootSchemaMappingId,

@@ -944,28 +944,28 @@ export const ticketingFields = {
         {
             source_field_name: {
                 [TP_ID.linear]: 'id',
-                [TP_ID.clickup]: undefined,
+                [TP_ID.clickup]: 'id',
             },
             target_field_name: 'id',
         },
         {
             source_field_name: {
                 [TP_ID.linear]: 'id',
-                [TP_ID.clickup]: undefined,
+                [TP_ID.clickup]: 'id',
             },
             target_field_name: 'remoteId',
         },
         {
             source_field_name: {
                 [TP_ID.linear]: 'email',
-                [TP_ID.clickup]: undefined,
+                [TP_ID.clickup]: 'email',
             },
             target_field_name: 'email',
         },
         {
             source_field_name: {
                 [TP_ID.linear]: 'name',
-                [TP_ID.clickup]: undefined,
+                [TP_ID.clickup]: 'username',
             },
             target_field_name: 'name',
         },
@@ -979,7 +979,7 @@ export const ticketingFields = {
         {
             source_field_name: {
                 [TP_ID.linear]: 'avatarUrl',
-                [TP_ID.clickup]: undefined,
+                [TP_ID.clickup]: 'profilePicture',
             },
             target_field_name: 'avatar',
         },

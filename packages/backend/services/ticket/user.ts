@@ -94,6 +94,7 @@ const userServiceTicket = new UserService(
             try {
                 const connection = res.locals.connection;
                 const account = res.locals.account;
+                const fields: any = req.query.fields;
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
                 const thirdPartyId = connection.tp_id;
@@ -183,9 +184,40 @@ const userServiceTicket = new UserService(
                         break;
                     }
                     case TP_ID.clickup: {
+                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
+                        const pagingString = `${cursor ? `page=${cursor}` : ''}`;
+                        console.log('DEBUG', 'listID from clickup..... ', parsedFields.listId);
+                        const result: any = await axios({
+                            method: 'get',
+                            url: `https://api.clickup.com/api/v2/list/${parsedFields.listId}/member?${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'Content-Type': 'application/json',
+                            },
+                        });
+                        const unnifiedMembers: any = await Promise.all(
+                            result.data.members.map(
+                                async (user: any) =>
+                                    await unifyObject<any, UnifiedTicketUser>({
+                                        obj: user,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        const pageNumber = !result.data?.last_page
+                            ? cursor
+                                ? (parseInt(String(cursor)) + 1).toString()
+                                : '1'
+                            : undefined;
                         res.send({
                             status: 'ok',
-                            results: 'This endpoint is currently not supported',
+                            next: pageNumber,
+                            previous: undefined,
+                            results: unnifiedMembers,
                         });
                         break;
                     }
