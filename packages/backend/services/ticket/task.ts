@@ -9,6 +9,7 @@ import axios from 'axios';
 import { UnifiedTicketTask } from '../../models/unified/ticketTask';
 import { disunifyTicketObject, unifyObject } from '../../helpers/crm/transform';
 import { TicketStandardObjects } from '../../constants/common';
+import { LinearClient } from '@linear/sdk';
 
 const objType = TicketStandardObjects.ticketTask;
 
@@ -33,45 +34,15 @@ const taskServiceTicket = new TaskService(
 
                 switch (thirdPartyId) {
                     case TP_ID.linear: {
-                        // @TODO Query won't fetch data for fields provided in additional column
-                        const query = `query IssueQuery($taskId: String!) {
-                            issue(id: $taskId) {
-                              id
-                              title
-                              dueDate
-                              description
-                              state {
-                                id
-                                name
-                              }
-                              priorityLabel
-                              priority
-                              creator {
-                                id
-                              }
-                              assignee {
-                                id
-                              }
-                              parent {
-                                id
-                              }
-                              createdAt
-                              updatedAt
-                            }
-                          }`;
-
-                        const result = await axios({
-                            method: 'post',
-                            url: 'https://api.linear.app/graphql',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                            data: JSON.stringify({ query: query, variables: { taskId } }),
+                        const linear = new LinearClient({
+                            accessToken: thirdPartyToken,
                         });
+                        const task: any = await linear.issue(taskId);
+                        const state = await linear.workflowState(task._state.id);
+                        let modifiedTask = { ...task, state: { name: state.name } };
 
                         const unifiedTask: any = await unifyObject<any, UnifiedTicketTask>({
-                            obj: result.data.data.issue,
+                            obj: modifiedTask,
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -142,39 +113,9 @@ const taskServiceTicket = new TaskService(
                 switch (thirdPartyId) {
                     // @TODO Query won't fetch data for fields provided in additional column
                     case TP_ID.linear: {
-                        const query = `query IssueQuery ($first: Int, $after: String, $before: String, $last: Int) {
-                            issues (first: $first, after: $after, before: $before, last: $last) {
-                              nodes {
-                                id
-                              title
-                              dueDate
-                              description
-                              creator {
-                                id
-                              }
-                              state {
-                                id
-                                name
-                              }
-                              priorityLabel
-                              priority
-                              assignee {
-                                id
-                              }
-                              parent {
-                                id
-                              }
-                              createdAt
-                              updatedAt
-                              }
-                              pageInfo {
-                                hasNextPage
-                                hasPreviousPage
-                                startCursor
-                                endCursor
-                              }
-                            }
-                          }`;
+                        const linear = new LinearClient({
+                            accessToken: thirdPartyToken,
+                        });
                         /*
                             In GraphQL, either 'first' & 'after' or 'last' & 'before' can exist but not both simultaneously.
                             To determine the appropriate pagination direction, an additional flag parameter is required.
@@ -185,29 +126,22 @@ const taskServiceTicket = new TaskService(
                             last: null,
                             Before: null,
                         };
+                        const result: any = await linear.issues(variables);
 
-                        const result: any = await axios({
-                            method: 'post',
-                            url: 'https://api.linear.app/graphql',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                            data: JSON.stringify({ query: query, variables }),
-                        });
                         const unifiedTasks: any = await Promise.all(
-                            result.data.data.issues.nodes.map(
-                                async (task: any) =>
-                                    await unifyObject<any, UnifiedTicketTask>({
-                                        obj: task,
-                                        tpId: thirdPartyId,
-                                        objType,
-                                        tenantSchemaMappingId: connection.schema_mapping_id,
-                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                            result.nodes.map(async (task: any) => {
+                                const state = await linear.workflowState(task._state.id);
+                                let modifiedTask = { ...task, state: { name: state.name } };
+                                return await unifyObject<any, UnifiedTicketTask>({
+                                    obj: modifiedTask,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
                         );
-                        const pageInfo = result.data.data.issues.pageInfo;
+                        const pageInfo = result.pageInfo;
                         let next_cursor = undefined;
                         if (pageInfo.hasNextPage && pageInfo.endCursor) {
                             next_cursor = pageInfo.endCursor;

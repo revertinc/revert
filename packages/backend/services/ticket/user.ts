@@ -9,6 +9,7 @@ import axios from 'axios';
 import { UnifiedTicketUser } from '../../models/unified/ticketUsers';
 import { unifyObject } from '../../helpers/crm/transform';
 import { TicketStandardObjects } from '../../constants/common';
+import { LinearClient } from '@linear/sdk';
 
 const objType = TicketStandardObjects.ticketUser;
 
@@ -34,30 +35,13 @@ const userServiceTicket = new UserService(
 
                 switch (thirdPartyId) {
                     case TP_ID.linear: {
-                        const query = `query UsersQuery($userId: String!) {
-                            user(id: $userId) {
-                              id
-                              name
-                              email
-                              admin
-                              active
-                              createdAt
-                              avatarUrl
-                            }
-                          }`;
-
-                        const result = await axios({
-                            method: 'post',
-                            url: 'https://api.linear.app/graphql',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                            data: JSON.stringify({ query: query, variables: { userId } }),
+                        const linear = new LinearClient({
+                            accessToken: thirdPartyToken,
                         });
+                        const user = await linear.user(userId);
 
                         const unifiedUser = await unifyObject<any, UnifiedTicketUser>({
-                            obj: result.data.data.user,
+                            obj: user,
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -109,25 +93,9 @@ const userServiceTicket = new UserService(
                 );
                 switch (thirdPartyId) {
                     case TP_ID.linear: {
-                        const query = `query UsersQuery ($first: Int, $after: String, $before: String, $last: Int){
-                            users (first: $first, after: $after, before: $before, last: $last){
-                              nodes {
-                                name
-                                id
-                                email
-                                admin
-                                active
-                                createdAt
-                                avatarUrl
-                              }
-                              pageInfo {
-                                hasNextPage
-                                hasPreviousPage
-                                startCursor
-                                endCursor
-                              }
-                            }
-                          }`;
+                        const linear = new LinearClient({
+                            accessToken: thirdPartyToken,
+                        });
 
                         /*
                             In GraphQL, either 'first' & 'after' or 'last' & 'before' can exist but not both simultaneously.
@@ -140,18 +108,10 @@ const userServiceTicket = new UserService(
                             Before: null,
                         };
 
-                        const result = await axios({
-                            method: 'post',
-                            url: 'https://api.linear.app/graphql',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                            data: JSON.stringify({ query: query, variables }),
-                        });
+                        const result = await linear.users(variables);
 
                         const unifiedUsers = await Promise.all(
-                            result.data.data.users.nodes.map(
+                            result.nodes.map(
                                 async (user: any) =>
                                     await unifyObject<any, UnifiedTicketUser>({
                                         obj: user,
@@ -163,7 +123,7 @@ const userServiceTicket = new UserService(
                             )
                         );
 
-                        const pageInfo = result.data.data.users.pageInfo;
+                        const pageInfo = result.pageInfo;
                         let next_cursor = undefined;
                         if (pageInfo.hasNextPage && pageInfo.endCursor) {
                             next_cursor = pageInfo.endCursor;
@@ -185,11 +145,9 @@ const userServiceTicket = new UserService(
                     }
                     case TP_ID.clickup: {
                         let parsedFields: any = fields ? JSON.parse(fields) : undefined;
-                        const pagingString = `${cursor ? `page=${cursor}` : ''}`;
-                        console.log('DEBUG', 'listID from clickup..... ', parsedFields.listId);
                         const result: any = await axios({
                             method: 'get',
-                            url: `https://api.clickup.com/api/v2/list/${parsedFields.listId}/member?${pagingString}`,
+                            url: `https://api.clickup.com/api/v2/list/${parsedFields.listId}/member`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'Content-Type': 'application/json',
@@ -207,15 +165,9 @@ const userServiceTicket = new UserService(
                                     })
                             )
                         );
-
-                        const pageNumber = !result.data?.last_page
-                            ? cursor
-                                ? (parseInt(String(cursor)) + 1).toString()
-                                : '1'
-                            : undefined;
                         res.send({
                             status: 'ok',
-                            next: pageNumber,
+                            next: undefined,
                             previous: undefined,
                             results: unnifiedMembers,
                         });

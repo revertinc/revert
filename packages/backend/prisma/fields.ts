@@ -899,7 +899,7 @@ export const ticketingFields = {
         },
         {
             source_field_name: {
-                [TP_ID.linear]: 'creator.id',
+                [TP_ID.linear]: '_creator.id',
                 [TP_ID.clickup]: 'creator.id',
             },
             target_field_name: 'creatorId',
@@ -934,7 +934,7 @@ export const ticketingFields = {
         },
         {
             source_field_name: {
-                [TP_ID.linear]: 'parent.id',
+                [TP_ID.linear]: '_parent.id',
                 [TP_ID.clickup]: 'parent',
             },
             target_field_name: 'parentId',

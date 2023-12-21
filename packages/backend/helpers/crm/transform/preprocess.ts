@@ -72,16 +72,22 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
         [TP_ID.linear]: {
             [TicketStandardObjects.ticketTask]: (obj: T) => {
                 let status: string;
-                if (obj.state.name === 'Todo') status = 'open';
-                else if (obj.state.name === 'Done') status = 'closed';
+                if (obj.state.name === 'Todo' || obj.state.name === 'Backlog') status = 'open';
+                else if (
+                    obj.state.name === 'Done' ||
+                    obj.state.name === 'Canceled' ||
+                    obj.state.name === 'Cancelled' ||
+                    obj.state.name === 'Duplicate'
+                )
+                    status = 'closed';
                 else if (obj.state.name === 'In Progress') status = 'in_progress';
-                else status = obj.state.name.toLowerCase();
+                else status = obj.state.name;
                 return {
                     ...obj,
-                    assignee: obj.assignee ? [obj.assignee.id] : null,
+                    assignee: obj._assignee ? [obj._assignee.id] : null,
                     priorityLabel:
-                        obj['priorityLabel'] === 'No priority' ? 'lowest' : obj['priorityLabel'].toLowerCase(),
-                    state: status ? status : String().toLowerCase(),
+                        obj['priorityLabel'] === 'No priority' ? 'lowest' : String(obj['priorityLabel']).toLowerCase(),
+                    state: status ? status : null,
                 };
             },
         },
