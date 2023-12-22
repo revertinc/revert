@@ -38,6 +38,7 @@ import { taskServiceTicket } from '../services/ticket/task';
 import { userServiceTicket } from '../services/ticket/user';
 import { collectionServiceTicket } from '../services/ticket/collection';
 import { commentServiceTicket } from '../services/ticket/comment';
+import { proxyServiceTicket } from '../services/ticket/proxy';
 
 const router = express.Router();
 
@@ -156,6 +157,7 @@ register(router, {
         user: userServiceTicket,
         comment: commentServiceTicket,
         collection: collectionServiceTicket,
+        proxy: proxyServiceTicket,
     },
 });
 
