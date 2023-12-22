@@ -140,8 +140,8 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
             if (obj.additional) {
                 Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
             }
-            transformedObj['listId'] = obj.associations.listId;
-            transformedObj['assignees'] = obj.assignees;
+            if (obj.associations && obj.associations.listId) transformedObj['listId'] = obj.associations.listId;
+            if (obj.assignees) transformedObj['assignees'] = obj.assignees;
 
             let status: any;
             if (obj.status === 'open') status = 'to do';
