@@ -110,9 +110,16 @@ This repo contains a set of packages under `@reverdotdev/` namespace such as:
 
 ## Quickstart
 
+#### Revert Cloud
+
+The easiest way to get started is to create a [Revert Cloud account](https://app.revert.dev/sign-up). The cloud version offers the same functionality as the self-hosted one.  
+
+
+If you want to self-host Revert though, you can do that today with docker-compose as instructed below. 
+
 #### Spinning up Revert with docker-compose
 
-The easiest way to start Revert is to run it via docker-compose:
+The easiest way to start with self-hosted Revert is to run it via docker-compose:
 
 ```shell
 # Get the code

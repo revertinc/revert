@@ -35,7 +35,7 @@ function App() {
         <Wrapper>
             <RevertConnect
                 config={{
-                    revertToken: 'YOUR_TOKEN',
+                    revertToken: 'YOUR_PUBLIC_TOKEN',
                     tenantId: 'CUSTOMER_TENANT_ID',
                 }}
             />
