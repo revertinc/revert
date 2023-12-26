@@ -71,9 +71,17 @@ const userServiceTicket = new UserService(
                             },
                         });
 
+                        const unifiedUser = await unifyObject<any, UnifiedTicketUser>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
                         res.send({
                             status: 'ok',
-                            result: result.data,
+                            result: unifiedUser,
                         });
 
                         break;

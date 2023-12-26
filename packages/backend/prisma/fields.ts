@@ -958,6 +958,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'id',
                 [TP_ID.clickup]: 'id',
+                [TP_ID.jira]: 'accountId',
             },
             target_field_name: 'id',
         },
@@ -965,6 +966,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'id',
                 [TP_ID.clickup]: 'id',
+                [TP_ID.jira]: 'accountId',
             },
             target_field_name: 'remoteId',
         },
@@ -972,6 +974,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'email',
                 [TP_ID.clickup]: 'email',
+                [TP_ID.jira]: 'emailAddress',
             },
             target_field_name: 'email',
         },
@@ -979,6 +982,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'name',
                 [TP_ID.clickup]: 'username',
+                [TP_ID.jira]: 'displayName',
             },
             target_field_name: 'name',
         },
@@ -986,6 +990,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'active',
                 [TP_ID.clickup]: undefined,
+                [TP_ID.jira]: 'active',
             },
             target_field_name: 'isActive',
         },
@@ -993,6 +998,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'avatarUrl',
                 [TP_ID.clickup]: 'profilePicture',
+                [TP_ID.jira]: 'avatarUrls."48x48"',
             },
             target_field_name: 'avatar',
         },
@@ -1000,6 +1006,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'createdAt',
                 [TP_ID.clickup]: undefined,
+                [TP_ID.jira]: undefined,
             },
             target_field_name: 'createdTimeStamp',
         },
@@ -1007,6 +1014,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: null,
                 [TP_ID.clickup]: undefined,
+                [TP_ID.jira]: undefined,
             },
             target_field_name: 'updatedTimeStamp',
         },
@@ -1014,6 +1022,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'admin',
                 [TP_ID.clickup]: undefined,
+                [TP_ID.jira]: undefined,
             },
             target_field_name: 'isAdmin',
         },
