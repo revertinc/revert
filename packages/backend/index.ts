@@ -160,12 +160,12 @@ app.use(endpointLogger());
 app.use(Sentry.Handlers.errorHandler());
 
 // Optional fallthrough error handler
-// app.use((_err: any, _req: any, res: any, _next: any) => {
-//     // The error id is attached to `res.sentry` to be returned
-//     // and optionally displayed to the user for support.
-//     res.statusCode = 500;
-//     res.end(res.sentry + '\n');
-// });
+app.use((_err: any, _req: any, res: any, _next: any) => {
+    // The error id is attached to `res.sentry` to be returned
+    // and optionally displayed to the user for support.
+    res.statusCode = 500;
+    res.end(res.sentry + '\n');
+});
 
 app.listen(config.PORT, () => {
     console.log(`⚡️[server]: Revert server is running at http://localhost:${config.PORT}`);
