@@ -79,6 +79,30 @@ const taskServiceTicket = new TaskService(
                         });
                         break;
                     }
+                    case TP_ID.jira: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/rest/api/2/issue/${taskId}`,
+                            headers: {
+                                Accept: 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+
+                        const unifiedTask: any = await unifyObject<any, UnifiedTicketTask>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedTask,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -199,6 +223,37 @@ const taskServiceTicket = new TaskService(
                             previous: undefined,
                             results: unifiedTasks,
                         });
+                        break;
+                    }
+                    case TP_ID.jira: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/rest/api/2/search?jql=project=KAN&maxResults=`,
+                            headers: {
+                                Accept: 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+
+                        const unifiedTasks = await Promise.all(
+                            result.data.issues.map(async (issue: any) => {
+                                return await unifyObject<any, UnifiedTicketTask>({
+                                    obj: issue,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: 'NEXT_CURSOR',
+                            previous: 'PREVIOUS_CURSOR',
+                            results: unifiedTasks,
+                        });
+
                         break;
                     }
                     default: {

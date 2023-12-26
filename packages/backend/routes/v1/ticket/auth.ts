@@ -379,8 +379,14 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     Authorization: auth,
                 },
             });
+            let cloud_id = undefined;
+            
+            if(resources.data && Array.isArray(resources.data) && resources.data.length > 0){
+                cloud_id = resources.data[0].id;
+            }else{
+                throw new Error('Unable to fetch cloud_id for jira token')
+            }
 
-            const cloud_id = resources.data[0].id;
             const jiraBaseUrl = `https://api.atlassian.com/ex/jira/${cloud_id}`;
 
             // fetch user info

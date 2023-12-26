@@ -510,6 +510,50 @@ const Integrations = ({ environment }) => {
                                     </IconButton>
                                 </div>
                             </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        padding: 30,
+                                        border: '2px #00000029 solid',
+                                        borderRadius: 10,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        minHeight: 200,
+                                        justifyContent: 'flex-end',
+                                        position: 'relative',
+                                    }}
+                                >
+                                    <img
+                                        width={100}
+                                        alt="Jira logo"
+                                        src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1702983006/Revert/szfzkoagws7h3miptezo.png"
+                                    />
+                                    <p className="font-bold mt-4">Jira</p>
+                                    <span>Configure your Jira Ticketing App from here.</span>
+                                    <IconButton
+                                        onClick={() => handleOpen('jira')}
+                                        style={{
+                                            color: '#6e6e6e',
+                                            fontSize: 12,
+                                            position: 'absolute',
+                                            top: 10,
+                                            right: 10,
+                                        }}
+                                    >
+                                        <SettingsIcon />
+                                    </IconButton>
+                                </div>
+                            </Box>
                         </div>
                     ) : (
                         <>

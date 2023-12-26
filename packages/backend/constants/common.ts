@@ -45,7 +45,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.asana]: [],
     [TP_ID.clickup]: [],
     [TP_ID.trello]: [],
-    [TP_ID.jira]: [],
+    [TP_ID.jira]: ['read:jira-work', 'read:jira-user', 'write:jira-work'],
 };
 
 export const mapIntegrationIdToIntegrationName = {

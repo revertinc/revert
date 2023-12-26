@@ -151,7 +151,7 @@ async function main() {
 
     Object.values(TicketStandardObjects).forEach((obj) => {
         Object.values(TP_ID).forEach(async (tpId) => {
-            if (!(tpId === 'linear' || tpId === 'clickup')) return;
+            if (!(tpId === 'linear' || tpId === 'clickup' || tpId === 'jira')) return;
             const objSchema = ticketSchemas.find((s: any) => s.object === obj);
             const fieldMappings = objSchema?.fields.map((field: any) => {
                 const sourceFields: any = (ticketingFields[obj] as { target_field_name: string }[]).find(

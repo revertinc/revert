@@ -125,7 +125,7 @@ const metadataService = new MetadataService({
                     name: 'Jira',
                     imageSrc:
                         'https://res.cloudinary.com/dfcnic8wq/image/upload/v1702983006/Revert/szfzkoagws7h3miptezo.png',
-                    status: 'inactive',
+                    status: 'active',
                     scopes: getScope(apps, TP_ID.jira),
                     clientId: getClientId(apps, TP_ID.jira) || config.JIRA_CLIENT_ID,
                 },
