@@ -32,6 +32,8 @@ jobs:
 
             - name: Set environment variables
               run: |
+                  ls 
+                  pwd
                   cd revert
                   cp .env.example .env
                   cp packages/backend/.env.example packages/backend/.env
