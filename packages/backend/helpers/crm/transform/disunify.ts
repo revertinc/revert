@@ -172,7 +172,17 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
                 Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
             }
 
-            return transformedObj;
+            return {
+                fields: {
+                    ...transformedObj,
+                    assignee:
+                        obj.assignees && Array.isArray(obj.assignees) && obj.assignees.length > 0
+                            ? {
+                                  id: obj.assignees[0],
+                              }
+                            : undefined,
+                },
+            };
         }
         case TP_ID.asana: {
             return transformedObj;

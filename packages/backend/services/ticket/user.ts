@@ -208,11 +208,23 @@ const userServiceTicket = new UserService(
                             },
                         });
 
+                        const unifiedUsers = await Promise.all(
+                            result.data.map(async (user: any) => {
+                                return await unifyObject<any, UnifiedTicketUser>({
+                                    obj: user,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
+                        );
+
                         res.send({
                             status: 'ok',
                             next: 'NEXT_CURSOR',
                             previous: 'PREVIOUS_CURSOR',
-                            results: result.data,
+                            results: unifiedUsers,
                         });
 
                         break;

@@ -121,8 +121,7 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
         },
         [TP_ID.jira]: {
             [TicketStandardObjects.ticketTask]: (obj: T) => {
-                if (obj.fields.assignee) obj.fields.assigneeId = [obj.fields.assignee.accountId];
-                return obj;
+                return { ...obj, assignee: obj.assignee ? [obj.assignee.accountId] : undefined };
             },
         },
     };

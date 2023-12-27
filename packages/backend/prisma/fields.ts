@@ -868,7 +868,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'title',
                 [TP_ID.clickup]: 'name',
-                [TP_ID.jira]: 'fields.summary',
+                [TP_ID.jira]: 'summary',
             },
             target_field_name: 'name',
         },
@@ -876,7 +876,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'assignee',
                 [TP_ID.clickup]: 'assignees',
-                [TP_ID.jira]: 'fields.assigneeId',
+                [TP_ID.jira]: 'assignee',
             },
             target_field_name: 'assignees',
         },
@@ -884,7 +884,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'description',
                 [TP_ID.clickup]: 'description',
-                [TP_ID.jira]: 'fields.description',
+                [TP_ID.jira]: 'description',
             },
             target_field_name: 'description',
         },
@@ -892,7 +892,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'state',
                 [TP_ID.clickup]: 'status',
-                [TP_ID.jira]: 'fields.status.name',
+                [TP_ID.jira]: 'status.name',
             },
             target_field_name: 'status',
         },
@@ -900,7 +900,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'priorityLabel',
                 [TP_ID.clickup]: 'priority',
-                [TP_ID.jira]: 'fields.priority.name',
+                [TP_ID.jira]: 'priority.name',
             },
             target_field_name: 'priority',
         },
@@ -908,7 +908,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: '_creator.id',
                 [TP_ID.clickup]: 'creator.id',
-                [TP_ID.jira]: 'fields.creator.accountId',
+                [TP_ID.jira]: 'creator.accountId',
             },
             target_field_name: 'creatorId',
         },
@@ -916,7 +916,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'createdAt',
                 [TP_ID.clickup]: 'date_created',
-                [TP_ID.jira]: 'fields.created',
+                [TP_ID.jira]: 'created',
             },
             target_field_name: 'createdTimeStamp',
         },
@@ -924,7 +924,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'updatedAt',
                 [TP_ID.clickup]: 'date_updated',
-                [TP_ID.jira]: 'fields.updated',
+                [TP_ID.jira]: 'updated',
             },
             target_field_name: 'updatedTimeStamp',
         },
@@ -932,7 +932,7 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: 'dueDate',
                 [TP_ID.clickup]: 'due_date',
-                [TP_ID.jira]: 'fields.duedate',
+                [TP_ID.jira]: 'duedate',
             },
             target_field_name: 'dueDate',
         },
@@ -948,19 +948,19 @@ export const ticketingFields = {
             source_field_name: {
                 [TP_ID.linear]: '_parent.id',
                 [TP_ID.clickup]: 'parent',
-                [TP_ID.jira]: 'fields.parent.id',
+                [TP_ID.jira]: 'parent.id',
             },
             target_field_name: 'parentId',
         },
         {
             source_field_name: {
-                [TP_ID.jira]: 'fields.project.id',
+                [TP_ID.jira]: 'project.id',
             },
             target_field_name: 'projectId',
         },
         {
             source_field_name: {
-                [TP_ID.jira]: 'fields.issuetype.id',
+                [TP_ID.jira]: 'issuetype.id',
             },
             target_field_name: 'issueTypeId',
         },

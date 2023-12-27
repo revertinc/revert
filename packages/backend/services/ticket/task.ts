@@ -88,9 +88,9 @@ const taskServiceTicket = new TaskService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
-
+                        result.data.fields.id = result.data.id;
                         const unifiedTask: any = await unifyObject<any, UnifiedTicketTask>({
-                            obj: result.data,
+                            obj: result.data.fields,
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -237,8 +237,9 @@ const taskServiceTicket = new TaskService(
 
                         const unifiedTasks = await Promise.all(
                             result.data.issues.map(async (issue: any) => {
+                                issue.fields.id = issue.id;
                                 return await unifyObject<any, UnifiedTicketTask>({
-                                    obj: issue,
+                                    obj: issue.fields,
                                     tpId: thirdPartyId,
                                     objType,
                                     tenantSchemaMappingId: connection.schema_mapping_id,
