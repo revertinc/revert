@@ -14,6 +14,7 @@ const commentServiceTicket = new CommentService(
             try {
                 const connection = res.locals.connection;
                 // const account = res.locals.account;
+                const fields: any = req.query.fields;
                 const commentId = req.params.id;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
@@ -45,6 +46,25 @@ const commentServiceTicket = new CommentService(
                         res.send({
                             status: 'ok',
                             result: 'This endpoint is not supported by clickup',
+                        });
+                        break;
+                    }
+                    case TP_ID.jira: {
+                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
+                        if (!parsedFields.taskId) {
+                            throw new Error('Issue Id or Issue key required for fetching comments');
+                        }
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/rest/api/2/issue/${parsedFields.taskId}/comment/${commentId}`,
+                            headers: {
+                                Accept: 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+                        res.send({
+                            status: 'ok',
+                            result: result.data,
                         });
                         break;
                     }
@@ -133,6 +153,27 @@ const commentServiceTicket = new CommentService(
                         });
                         break;
                     }
+                    case TP_ID.jira: {
+                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
+                        if (!parsedFields.taskId) {
+                            throw new Error('Issue Id or Issue key required for fetching comments');
+                        }
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/rest/api/2/issue/${parsedFields.taskId}/comment`,
+                            headers: {
+                                Accept: 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+                        res.send({
+                            status: 'ok',
+                            next: undefined,
+                            previous: undefined,
+                            results: result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -188,6 +229,28 @@ const commentServiceTicket = new CommentService(
                         res.send({
                             status: 'ok',
                             message: 'Clickup comment posted',
+                            result: result.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.jira: {
+                        const fields = commentData.fields;
+                        delete commentData.fields;
+
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `${connection.tp_account_url}/rest/api/2/issue/${fields.issueId}/comment`,
+                            headers: {
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(commentData),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Jira comment posted',
                             result: result.data,
                         });
                         break;
