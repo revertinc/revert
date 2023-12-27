@@ -1,9 +1,9 @@
 name: Deploy latest docker image build to hub
 
 on:
-    push:
-        branches:
-            - main
+    # push:
+    #     branches:
+    #         - main
 
     workflow_dispatch:
         inputs:
