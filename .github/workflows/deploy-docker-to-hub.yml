@@ -34,7 +34,6 @@ jobs:
               run: |
                   ls 
                   pwd
-                  cd revert
                   cp .env.example .env
                   cp packages/backend/.env.example packages/backend/.env
                   cp packages/client/.env.example packages/client/.env
