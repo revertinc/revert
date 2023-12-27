@@ -952,6 +952,18 @@ export const ticketingFields = {
             },
             target_field_name: 'parentId',
         },
+        {
+            source_field_name: {
+                [TP_ID.jira]: 'fields.project.id',
+            },
+            target_field_name: 'projectId',
+        },
+        {
+            source_field_name: {
+                [TP_ID.jira]: 'fields.issuetype.id',
+            },
+            target_field_name: 'issueTypeId',
+        },
     ],
     [TicketStandardObjects.ticketUser]: [
         {

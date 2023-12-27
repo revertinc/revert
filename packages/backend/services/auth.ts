@@ -10,7 +10,6 @@ import { DEFAULT_SCOPE } from '../constants/common';
 
 class AuthService {
     async refreshOAuthTokensForThirdParty() {
-        console.log('DEBUG', 'refreshOAuthTokensForThirdPartyServices', 'yopooooooo');
         try {
             const connections = await prisma.connections.findMany({
                 include: { app: true },
@@ -258,7 +257,6 @@ class AuthService {
     }
 
     async refreshOAuthTokensForThirdPartyTicketServices() {
-        console.log('DEBUG', 'refreshOAuthTokensForThirdPartyTicketServices', 'yopooooooo');
         try {
             const connections = await prisma.connections.findMany({
                 include: { app: true },
@@ -288,16 +286,6 @@ class AuthService {
                                     'Content-Type': 'application/json',
                                 },
                             });
-                            console.log(
-                                'DEBUG',
-                                'check refresh token status',
-                                connection.tp_refresh_token === result.data.refresh_token
-                            );
-                            console.log(
-                                'DEBUG',
-                                'check access token status',
-                                connection.tp_access_token === result.data.access_token
-                            );
                             await prisma.connections.update({
                                 where: {
                                     id: connection.id,

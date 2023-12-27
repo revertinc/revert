@@ -331,6 +331,26 @@ const taskServiceTicket = new TaskService(
 
                         break;
                     }
+                    case TP_ID.jira: {
+                        const result = await axios({
+                            method: 'post',
+                            url: `${connection.tp_account_url}/rest/api/2/issue`,
+                            headers: {
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(task),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Task created in jira',
+                            result: result.data,
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -413,6 +433,25 @@ const taskServiceTicket = new TaskService(
                             result: result.data,
                         });
 
+                        break;
+                    }
+                    case TP_ID.jira: {
+                        const result: any = await axios({
+                            method: 'put',
+                            url: `${connection.tp_account_url}/rest/api/2/issue/${taskId}`,
+                            headers: {
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(task),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Jira task updated',
+                            result: result.data,
+                        });
                         break;
                     }
                     default: {

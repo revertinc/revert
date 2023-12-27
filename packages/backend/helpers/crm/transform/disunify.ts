@@ -165,6 +165,13 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
             };
         }
         case TP_ID.jira: {
+            if (obj.associations) {
+                Object.keys(obj.associations).forEach((key: any) => (transformedObj[key] = obj.associations[key]));
+            }
+            if (obj.additional) {
+                Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
+            }
+
             return transformedObj;
         }
         case TP_ID.asana: {
