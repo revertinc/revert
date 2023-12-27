@@ -30,6 +30,16 @@ jobs:
                   username: ${{ secrets.DOCKER_USERNAME }}
                   password: ${{ secrets.DOCKER_TOKEN }}
 
+            - name: Set environment variables
+              run: |
+                  cd revert
+                  cp .env.example .env
+                  cp packages/backend/.env.example packages/backend/.env
+                  cp packages/client/.env.example packages/client/.env
+                  cp packages/js/.env.example packages/js/.env
+                  cp packages/react/.env.example packages/react/.env
+                  cp packages/vue/.env.example packages/vue/.env
+
             - name: Build docker images
               run: docker-compose build
 
