@@ -61,6 +61,24 @@ const proxyServiceTicket = new ProxyService(
                         });
                         break;
                     }
+                    case TP_ID.jira: {
+                        const result = await axios({
+                            method: method,
+                            url: `${connection.tp_account_url}/${path}`,
+                            headers: {
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(body),
+                            params: queryParams,
+                        });
+
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app!' });
                     }
