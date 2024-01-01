@@ -8,7 +8,7 @@
         "@emotion/react": "^11.11.1",
         "@emotion/styled": "^11.11.0",
         "@mui/icons-material": "^5.14.18",
-        "@mui/lab": "^5.0.0-alpha.135",
+        "@mui/lab": "^5.0.0-alpha.158",
         "@mui/material": "^5.14.19",
         "@sentry/react": "^7.73.0",
         "@testing-library/jest-dom": "^6.1.3",
