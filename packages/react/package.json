@@ -22,7 +22,7 @@
         "@storybook/addon-essentials": "6.5.0-alpha.50",
         "@storybook/addon-links": "7.4.5",
         "@storybook/react": "6.5.0-alpha.49",
-        "@types/node": "20.8.2",
+        "@types/node": "20.10.6",
         "@types/react": "17.0.43",
         "@types/react-dom": "17.0.2",
         "@types/styled-components": "5.1.24",
