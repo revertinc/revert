@@ -283,9 +283,10 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     (_error, data, _response) => {
                         // @TODO error handling
                         info = data;
+                        logInfo('OAuth token info', data);
                     }
                 );
-                logInfo('OAuth token info', info);
+
                 await xprisma.connections.upsert({
                     where: {
                         id: String(req.query.t_id),
@@ -380,11 +381,11 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 },
             });
             let cloud_id = undefined;
-            
-            if(resources.data && Array.isArray(resources.data) && resources.data.length > 0){
+
+            if (resources.data && Array.isArray(resources.data) && resources.data.length > 0) {
                 cloud_id = resources.data[0].id;
-            }else{
-                throw new Error('Unable to fetch cloud_id for jira token')
+            } else {
+                throw new Error('Unable to fetch cloud_id for jira token');
             }
 
             const jiraBaseUrl = `https://api.atlassian.com/ex/jira/${cloud_id}`;

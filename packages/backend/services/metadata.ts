@@ -129,6 +129,14 @@ const metadataService = new MetadataService({
                     scopes: getScope(apps, TP_ID.jira),
                     clientId: getClientId(apps, TP_ID.jira) || config.JIRA_CLIENT_ID,
                 },
+                {
+                    integrationId: TP_ID.trello,
+                    name: 'Trello',
+                    imageSrc: 'https://cdn-icons-png.flaticon.com/512/2504/2504834.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.trello),
+                    clientId: getClientId(apps, TP_ID.trello) || config.TRELLO_CLIENT_ID,
+                },
             ];
             res.send({
                 status: 'ok',

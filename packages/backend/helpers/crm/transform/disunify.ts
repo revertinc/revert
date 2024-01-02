@@ -188,10 +188,20 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
             return transformedObj;
         }
         case TP_ID.trello: {
-            return transformedObj;
-        }
-        case TP_ID.jira: {
-            return transformedObj;
+            if (obj.associations) {
+                Object.keys(obj.associations).forEach((key: any) => (transformedObj[key] = obj.associations[key]));
+            }
+            if (obj.additional) {
+                Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
+            }
+
+            return {
+                ...transformedObj,
+                idMembers:
+                    obj.assignees && Array.isArray(obj.assignees) && obj.assignees.length > 0
+                        ? obj.assignees
+                        : undefined,
+            };
         }
     }
 }

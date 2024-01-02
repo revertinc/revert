@@ -103,6 +103,29 @@ const taskServiceTicket = new TaskService(
                         });
                         break;
                     }
+                    case TP_ID.trello: {
+                        const card = await axios({
+                            method: 'get',
+                            url: `https://api.trello.com/1/cards/${taskId}?key=${connection.app_client_id}&token=${thirdPartyToken}`,
+                            headers: {
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedTask: any = await unifyObject<any, UnifiedTicketTask>({
+                            obj: card.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedTask,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -257,6 +280,40 @@ const taskServiceTicket = new TaskService(
 
                         break;
                     }
+                    case TP_ID.trello: {
+                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
+                        if (fields.listId || fields.boardId) {
+                            throw new Error('boardId is required');
+                        }
+                        const cards = await axios({
+                            method: 'get',
+                            url: `https://api.trello.com/1/boards/${parsedFields.boardId}/cards?key=${connection.app_client_id}&token=${thirdPartyToken}`,
+                            headers: {
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedTasks: any = await Promise.all(
+                            cards.data.map(
+                                async (task: any) =>
+                                    await unifyObject<any, UnifiedTicketTask>({
+                                        obj: task,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: 'NEXT_CURSOR',
+                            previous: 'PREVIOUS_CURSOR',
+                            results: unifiedTasks,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -347,6 +404,24 @@ const taskServiceTicket = new TaskService(
                         res.send({
                             status: 'ok',
                             message: 'Task created in jira',
+                            result: result.data,
+                        });
+
+                        break;
+                    }
+                    case TP_ID.trello: {
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `https://api.trello.com/1/cards?key=${connection.app_client_id}&token=${thirdPartyToken}`,
+                            headers: {
+                                Accept: 'application/json',
+                            },
+                            data: task,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Task created in trello',
                             result: result.data,
                         });
 
@@ -451,6 +526,23 @@ const taskServiceTicket = new TaskService(
                         res.send({
                             status: 'ok',
                             message: 'Jira task updated',
+                            result: result.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.trello: {
+                        const result = await axios({
+                            method: 'put',
+                            url: `https://api.trello.com/1/cards/${taskId}?key=${connection.app_client_id}&token=${thirdPartyToken}`,
+                            headers: {
+                                Accept: 'application/json',
+                            },
+                            data: task,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Trello Task updated',
                             result: result.data,
                         });
                         break;
