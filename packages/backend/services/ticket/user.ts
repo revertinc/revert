@@ -86,6 +86,30 @@ const userServiceTicket = new UserService(
 
                         break;
                     }
+                    case TP_ID.trello: {
+                        const member: any = await axios({
+                            method: 'get',
+                            url: `https://api.trello.com/1/members/${'656731ac45b0954c7f8f066c'}?key=${
+                                connection.app_client_id
+                            }&token=${thirdPartyToken}`,
+                            headers: {
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedUser = await unifyObject<any, UnifiedTicketUser>({
+                            obj: member.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({
+                            status: 'ok',
+                            result: unifiedUser,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -227,6 +251,40 @@ const userServiceTicket = new UserService(
                             results: unifiedUsers,
                         });
 
+                        break;
+                    }
+                    case TP_ID.trello: {
+                        const parsedFields: any = fields ? JSON.parse(fields) : undefined;
+                        if (!parsedFields.boardId) {
+                            throw new Error('boardId is required to access this trello endpoint');
+                        }
+                        const result: any = await axios({
+                            method: 'get',
+                            url: `https://api.trello.com/1/boards/${parsedFields.boardId}/members?key=${connection.app_client_id}&token=${thirdPartyToken}`,
+                            headers: {
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedUsers = await Promise.all(
+                            result.data.map(
+                                async (user: any) =>
+                                    await unifyObject<any, UnifiedTicketUser>({
+                                        obj: user,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: undefined,
+                            previous: undefined,
+                            results: unifiedUsers,
+                        });
                         break;
                     }
                     default: {
