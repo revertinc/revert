@@ -5797,7 +5797,7 @@ __metadata:
     "@types/react-dom": ^18.2.17
     autoprefixer: ^10.4.16
     axios: ^1.6.2
-    postcss: ^8.4.16
+    postcss: ^8.4.32
     react: ^18.2.0
     react-dom: ^18.2.0
     react-flow-renderer: ^10.3.16
@@ -24734,7 +24734,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.0.9, postcss@npm:^8.3.5, postcss@npm:^8.4.16, postcss@npm:^8.4.19, postcss@npm:^8.4.4":
+"postcss@npm:^8.0.9, postcss@npm:^8.3.5, postcss@npm:^8.4.19, postcss@npm:^8.4.4":
   version: 8.4.21
   resolution: "postcss@npm:8.4.21"
   dependencies:
