@@ -285,9 +285,20 @@ const taskServiceTicket = new TaskService(
                         if (fields.listId || fields.boardId) {
                             throw new Error('boardId is required');
                         }
+
+                        let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}`;
+
+                        if (cursor?.startsWith('next_')) {
+                            const sinceCursor = cursor.substring(5);
+                            pagingString = pagingString + `&since=${sinceCursor}`;
+                        } else if (cursor?.startsWith('prev_')) {
+                            const beforeCursor = cursor.substring(5);
+                            pagingString = pagingString + `&before=${beforeCursor}`;
+                        }
+
                         const cards = await axios({
                             method: 'get',
-                            url: `https://api.trello.com/1/boards/${parsedFields.boardId}/cards?key=${connection.app_client_id}&token=${thirdPartyToken}`,
+                            url: `https://api.trello.com/1/boards/${parsedFields.boardId}/cards?key=${connection.app_client_id}&token=${thirdPartyToken}&${pagingString}`,
                             headers: {
                                 Accept: 'application/json',
                             },
@@ -306,10 +317,13 @@ const taskServiceTicket = new TaskService(
                             )
                         );
 
+                        const nextCursor = `next_${unifiedTasks[unifiedTasks.length - 1].id}`;
+                        const previousCursor = `prev_${unifiedTasks[0].id}`;
+
                         res.send({
                             status: 'ok',
-                            next: 'NEXT_CURSOR',
-                            previous: 'PREVIOUS_CURSOR',
+                            next: nextCursor,
+                            previous: previousCursor,
                             results: unifiedTasks,
                         });
                         break;
