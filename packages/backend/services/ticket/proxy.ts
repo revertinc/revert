@@ -79,6 +79,21 @@ const proxyServiceTicket = new ProxyService(
                         });
                         break;
                     }
+                    case TP_ID.trello: {
+                        const result: any = await axios({
+                            method: method,
+                            url: `https://api.trello.com/1/${path}?key=${connection.app_client_id}&token=${thirdPartyToken}`,
+                            headers: {
+                                Accept: 'application/json',
+                            },
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app!' });
                     }
