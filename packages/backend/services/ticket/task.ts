@@ -249,9 +249,13 @@ const taskServiceTicket = new TaskService(
                         break;
                     }
                     case TP_ID.jira: {
+                        let pagingString = `${pageSize ? `&maxResults=${pageSize}` : ''}${
+                            pageSize && cursor ? `&startAt=${cursor}` : ''
+                        }`;
+
                         const result = await axios({
                             method: 'get',
-                            url: `${connection.tp_account_url}/rest/api/2/search?jql=project=KAN&maxResults=`,
+                            url: `${connection.tp_account_url}/rest/api/2/search?jql=project=KAN&${pagingString}`,
                             headers: {
                                 Accept: 'application/json',
                                 Authorization: `Bearer ${thirdPartyToken}`,
@@ -270,11 +274,16 @@ const taskServiceTicket = new TaskService(
                                 });
                             })
                         );
+                        const limit = Number(result.data.maxResults);
+                        const startAt = Number(result.data.startAt);
+                        const total = Number(result.data.total);
+                        const nextCursor = limit + startAt <= total ? String(limit + startAt) : undefined;
+                        const previousCursor = startAt - limit >= 0 ? String(startAt - limit) : undefined;
 
                         res.send({
                             status: 'ok',
-                            next: 'NEXT_CURSOR',
-                            previous: 'PREVIOUS_CURSOR',
+                            next: nextCursor,
+                            previous: previousCursor,
                             results: unifiedTasks,
                         });
 
