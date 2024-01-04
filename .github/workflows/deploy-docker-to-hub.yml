@@ -42,7 +42,7 @@ jobs:
                   cp packages/vue/.env.example packages/vue/.env
 
             - name: Build docker images
-              run: docker-compose build
+              run: docker-compose build --no-cache
 
             - name: Push docker images to docker hub
               run: docker-compose push
