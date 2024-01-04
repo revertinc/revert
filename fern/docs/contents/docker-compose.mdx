@@ -1,0 +1,59 @@
+#### Spinning up Revert with docker-compose locally
+
+The easiest way to start with self-hosted Revert is to run it via docker-compose:
+
+```shell
+# Get the code
+git clone --depth 1 https://github.com/revertinc/revert
+
+# Copy the example env file
+cd revert
+cp .env.example .env
+cp packages/backend/.env.example packages/backend/.env
+cp packages/client/.env.example packages/client/.env
+cp packages/js/.env.example packages/js/.env
+cp packages/react/.env.example packages/react/.env
+cp packages/vue/.env.example packages/vue/.env
+
+# Ensure that clerk is setup in `client` and a user is created by following the instructions here: https://docs.revert.dev/overview/developer-guide/developer-guide#-revertdotdev-client
+
+# Update these .env files with any of your own secrets if you'd like to.
+
+# Then In the root directory run
+
+# When running for the first time to seed the database. (RUN ONLY ONCE)
+docker-compose run db-seed
+
+# For subsequent runs
+docker-compose up -d
+
+```
+
+The UI is now available at http://localhost:3000 and the backend is available at http://localhost:4001. This also contains a postgres database alongside the API. 
+
+
+#### Run Revert with your own database & redis
+
+The above steps allow you to spin up a postgres & redis instance alongside the API and UI. 
+
+To use your own postgres & redis instance run the following set of commands: 
+
+
+```shell
+
+# Seed the database
+
+docker run \ 
+    -e PGSQL_URL=postgresql://<PG_USER>:<PG_PASSWORD>@<PG_HOST>:<PG_PORT>/<PG_DB> \
+    revertengg/revert-db-seed:latest
+
+# To run Revert API:
+
+docker run \
+  -v cache:/data \
+  -v pgdata:/var/lib/postgresql/data \
+  -e PGSQL_URL=postgresql://<PG_USER>:<PG_PASSWORD>@<PG_HOST>:<PG_PORT>/<PG_DB> \
+  -e REDIS_SERVER_URL=redis://<REDIS_USER>:<REDIS_PASSWORD>@<REDIS_HOST>:<REDIS_PORT> \
+  revertengg/revert-api-ce:latest
+
+```

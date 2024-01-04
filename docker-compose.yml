@@ -30,6 +30,7 @@ services:
       context: "./"
       args:
         PGSQL_URL: postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DATABASE}
+    image: revertengg/revert-db-seed
     depends_on:
       - db
     profiles: [ "tools" ]
