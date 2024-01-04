@@ -11,6 +11,7 @@ ARG PGSQL_URL
 ENV PGSQL_URL $PGSQL_URL
 
 RUN echo "PGSQL_URL=$PGSQL_URL" >> .env
+RUN echo "PGSQL_URL=$PGSQL_URL" >> /app/packages/backend/.env
 
 RUN yarn install --check-cache
 
