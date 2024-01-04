@@ -48,6 +48,8 @@ navigation:
             contents:
                 - page: Developer Guide
                   path: ./docs/contents/developer-guides.mdx
+                - page: Self Host Revert
+                  path: ./docs/contents/docker-compose.mdx
           - section: CRM Support
             contents:
                 - page: CRM Support
