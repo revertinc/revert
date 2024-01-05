@@ -5752,6 +5752,7 @@ __metadata:
   resolution: "@revertdotdev/revert-react@workspace:packages/react"
   dependencies:
     "@babel/core": 7.23.5
+    "@scarf/scarf": ^1.3.0
     "@storybook/addon-a11y": 6.5.0-alpha.50
     "@storybook/addon-actions": 7.6.4
     "@storybook/addon-docs": 6.5.0-alpha.50
@@ -5816,6 +5817,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@revertdotdev/revert-vue@workspace:packages/vue"
   dependencies:
+    "@scarf/scarf": ^1.3.0
     "@typescript-eslint/eslint-plugin": ^5.4.0
     "@typescript-eslint/parser": ^6.13.2
     "@vitejs/plugin-vue": ^4.3.4
@@ -6058,6 +6060,13 @@ __metadata:
     colors: ~1.2.1
     string-argv: ~0.3.1
   checksum: 3938e533e08d5cf4007a651d1aab658a7a60d6136a56414e2370b64434657a5d5a9eff442da4ddc260d5e6dc90f82428de64dbcfa1285e9ae176629f7fcd821d
+  languageName: node
+  linkType: hard
+
+"@scarf/scarf@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "@scarf/scarf@npm:1.3.0"
+  checksum: 652c1248c8e1b5a4ba64333c1b2e9847e314d4cd78beb4bab51b3825bcd2b45dc20d185d3b99b11b18753a9e64113475067852ac898910ad73aa0559e24f0d6d
   languageName: node
   linkType: hard
 

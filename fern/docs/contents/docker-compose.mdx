@@ -45,15 +45,15 @@ To use your own postgres & redis instance run the following set of commands:
 
 docker run \ 
     -e PGSQL_URL=postgresql://<PG_USER>:<PG_PASSWORD>@<PG_HOST>:<PG_PORT>/<PG_DB> \
-    revertengg/revert-db-seed:latest
+    docker.revert.dev/revertengg/revert-db-seed:latest
 
 # To run Revert API:
 
 docker run \
-  -v cache:/data \
+  -v cache:/data \ 
   -v pgdata:/var/lib/postgresql/data \
   -e PGSQL_URL=postgresql://<PG_USER>:<PG_PASSWORD>@<PG_HOST>:<PG_PORT>/<PG_DB> \
   -e REDIS_SERVER_URL=redis://<REDIS_USER>:<REDIS_PASSWORD>@<REDIS_HOST>:<REDIS_PORT> \
-  revertengg/revert-api-ce:latest
+  docker.revert.dev/revertengg/revert-api-ce:latest
 
 ```
