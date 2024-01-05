@@ -100,11 +100,14 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 else status = obj.status;
 
                 let priority: any;
-                if (obj.priority && obj.priority.priority === 'urgent' && obj.priority.id === 1) priority = 'urgent';
-                else if (obj.priority && obj.priority.priority === 'high' && obj.priority.id === 2) priority = 'high';
-                else if (obj.priority && obj.priority.priority === 'normal' && obj.priority.id === 3)
+                if (obj.priority && obj.priority.priority === 'urgent' && Number(obj.priority.id) === 1)
+                    priority = 'urgent';
+                else if (obj.priority && obj.priority.priority === 'high' && Number(obj.priority.id) === 2)
+                    priority = 'high';
+                else if (obj.priority && obj.priority.priority === 'normal' && Number(obj.priority.id) === 3)
                     priority = 'medium';
-                else if (obj.priority && obj.priority.priority === 'low' && obj.priority.id === 4) priority = 'low';
+                else if (obj.priority && obj.priority.priority === 'low' && Number(obj.priority.id) === 4)
+                    priority = 'low';
                 else priority = 'lowest';
 
                 return {
