@@ -124,6 +124,20 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
         },
         [TP_ID.jira]: {
             [TicketStandardObjects.ticketTask]: (obj: T) => {
+                if (obj.priority) {
+                    if (obj.priority.id === '1' && obj.priority.name === 'Highest') obj.priority.name = 'urgent';
+                    else if (obj.priority.id === '2' && obj.priority.name === 'High') obj.priority.name = 'high';
+                    else if (obj.priority.id === '3' && obj.priority.name === 'Medium') obj.priority.name = 'medium';
+                    else if (obj.priority.id === '4' && obj.priority.name === 'Low') obj.priority.name = 'low';
+                    else obj.priority.name = 'lowest';
+                }
+
+                if (obj.status) {
+                    if (String(obj.status.name).toLowerCase() === 'to do') obj.status.name = 'open';
+                    else if (String(obj.status.name).toLowerCase() === 'in progress') obj.status.name = 'in_progress';
+                    else if (String(obj.status.name).toLowerCase() === 'done') obj.status.name = 'closed';
+                }
+
                 return { ...obj, assignee: obj.assignee ? [obj.assignee.accountId] : undefined };
             },
         },

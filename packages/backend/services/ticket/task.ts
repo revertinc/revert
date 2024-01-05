@@ -413,6 +413,13 @@ const taskServiceTicket = new TaskService(
                         break;
                     }
                     case TP_ID.jira: {
+                        // if status exists set it to undefined or jira create will fail
+                        let statusval = null;
+                        if (taskData.status && task.fields.status && task.fields.status.name) {
+                            statusval = task.fields.status.name;
+                            task.fields.status = undefined;
+                        }
+
                         const result = await axios({
                             method: 'post',
                             url: `${connection.tp_account_url}/rest/api/2/issue`,
@@ -423,6 +430,47 @@ const taskServiceTicket = new TaskService(
                             },
                             data: JSON.stringify(task),
                         });
+
+                        // status provided in request body
+                        if (statusval) {
+                            // since creating a transition requires id, get call for validation. Not sure if id's are same
+                            const allTransitions = await axios({
+                                method: 'get',
+                                url: `${connection.tp_account_url}/rest/api/2/issue/${result.data.id}/transitions`,
+                                headers: {
+                                    Accept: 'application/json',
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            });
+                            let transition = null;
+                            if (statusval === 'open') {
+                                transition = allTransitions.data.transitions.find(
+                                    (item: any) => item.name.toLowerCase() === 'to do'
+                                );
+                            } else if (statusval === 'in_progress') {
+                                transition = allTransitions.data.transitions.find(
+                                    (item: any) => item.name.toLowerCase() === 'in progress'
+                                );
+                            } else if (statusval === 'closed') {
+                                transition = allTransitions.data.transitions.find(
+                                    (item: any) => item.name.toLowerCase() === 'done'
+                                );
+                            }
+                            await axios({
+                                method: 'post',
+                                url: `${connection.tp_account_url}/rest/api/2/issue/${result.data.id}/transitions`,
+                                headers: {
+                                    Accept: 'application/json',
+                                    'Content-Type': 'application/json',
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                                data: JSON.stringify({
+                                    transition: {
+                                        id: transition.id,
+                                    },
+                                }),
+                            });
+                        }
 
                         res.send({
                             status: 'ok',
@@ -535,6 +583,13 @@ const taskServiceTicket = new TaskService(
                         break;
                     }
                     case TP_ID.jira: {
+                        // if status exists set it to undefined or jira create will fail
+                        let statusval = null;
+                        if (task.fields.status && task.fields.status.name) {
+                            statusval = task.fields.status.name;
+                            task.fields.status = undefined;
+                        }
+
                         const result: any = await axios({
                             method: 'put',
                             url: `${connection.tp_account_url}/rest/api/2/issue/${taskId}`,
@@ -545,6 +600,47 @@ const taskServiceTicket = new TaskService(
                             },
                             data: JSON.stringify(task),
                         });
+
+                        // status provided in request body
+                        if (statusval) {
+                            // since creating a transition requires id, get call for validation. Not sure if id's are same
+                            const allTransitions = await axios({
+                                method: 'get',
+                                url: `${connection.tp_account_url}/rest/api/2/issue/${taskId}/transitions`,
+                                headers: {
+                                    Accept: 'application/json',
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            });
+                            let transition = null;
+                            if (statusval === 'open') {
+                                transition = allTransitions.data.transitions.find(
+                                    (item: any) => item.name.toLowerCase() === 'to do'
+                                );
+                            } else if (statusval === 'in_progress') {
+                                transition = allTransitions.data.transitions.find(
+                                    (item: any) => item.name.toLowerCase() === 'in progress'
+                                );
+                            } else if (statusval === 'closed') {
+                                transition = allTransitions.data.transitions.find(
+                                    (item: any) => item.name.toLowerCase() === 'done'
+                                );
+                            }
+                            await axios({
+                                method: 'post',
+                                url: `${connection.tp_account_url}/rest/api/2/issue/${taskId}/transitions`,
+                                headers: {
+                                    Accept: 'application/json',
+                                    'Content-Type': 'application/json',
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                                data: JSON.stringify({
+                                    transition: {
+                                        id: transition.id,
+                                    },
+                                }),
+                            });
+                        }
 
                         res.send({
                             status: 'ok',

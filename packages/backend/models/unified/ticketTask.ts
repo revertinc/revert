@@ -4,6 +4,7 @@ export interface UnifiedTicketTask {
     name: string;
     assignees: Object[];
     description: string;
+    status: string;
     creatorId: string;
     createdTimeStamp: string;
     updatedTimeStamp: string;

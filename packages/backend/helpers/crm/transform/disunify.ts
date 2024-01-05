@@ -171,6 +171,11 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
             if (obj.additional) {
                 Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
             }
+            let priorityId = undefined;
+            if (obj.priority === 'urgent') priorityId = '1';
+            else if (obj.priority === 'high') priorityId = '2';
+            else if (obj.priority === 'medium') priorityId = '3';
+            else if (obj.priority === 'lowest') priorityId = '5';
 
             return {
                 fields: {
@@ -181,6 +186,9 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
                                   id: obj.assignees[0],
                               }
                             : undefined,
+                    priority: {
+                        id: priorityId,
+                    },
                 },
             };
         }
