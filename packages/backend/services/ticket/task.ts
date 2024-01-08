@@ -370,32 +370,38 @@ const taskServiceTicket = new TaskService(
                 switch (thirdPartyId) {
                     // @TODO Query will fail if additional fields are posted
                     case TP_ID.linear: {
-                        const mutation = `mutation IssueCreate($input: IssueCreateInput!) {
-                            issueCreate(input: $input) {
-                              success
-                              issue {
-                                title
-                                description
-                                assignee {
-                                  id
-                                }
-                                dueDate
-                                priority
-                              }
-                            }
-                          }`;
-
-                        const result: any = await axios({
-                            method: 'post',
-                            url: 'https://api.linear.app/graphql',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                            data: JSON.stringify({ query: mutation, variables: { input: task } }),
+                        const linear = new LinearClient({
+                            accessToken: thirdPartyToken,
                         });
 
-                        res.send({ status: 'ok', message: 'Linear task created', result: result.data });
+                        if (task.state && task.teamId) {
+                            const linearGraphqlClient = linear.client;
+                            let states: any = await linearGraphqlClient.rawRequest(
+                                `query Query($teamId: String!) {
+                                    team(id: $teamId) {
+                                        states {
+                                            nodes {
+                                            id
+                                            name
+                                            }
+                                        }
+                                    }
+                                }`,
+                                { teamId: task.teamId }
+                            );
+                            states = states.data.team.states.nodes;
+
+                            const state = states.find(
+                                (state: any) => String(state.name).toLowerCase() === task.state.toLowerCase()
+                            );
+
+                            task.stateId = state.id;
+                            delete task.state;
+                        }
+
+                        const issueCreated = await linear.createIssue(task);
+
+                        res.send({ status: 'ok', message: 'Linear task created', result: issueCreated });
                         break;
                     }
                     case TP_ID.clickup: {
@@ -533,32 +539,55 @@ const taskServiceTicket = new TaskService(
                     /* @TODO This might encounter issues with unrecognized patterns or schema, for instance, attempting to set 'issueID' within the request body of the 'revert' API 
                     might not conform to the expected GraphQL syntax, such as {issue: {id}}. */
                     case TP_ID.linear: {
-                        const mutation = `mutation Mutation($input: IssueUpdateInput!, $issueUpdateId: String!) {
-                            issueUpdate(input: $input, id: $issueUpdateId) {
-                              success
-                              issue {
-                                ${Object.keys(task).join('\n')}
-                              }
-                            }
-                          }`;
-
-                        const result: any = await axios({
-                            method: 'post',
-                            url: 'https://api.linear.app/graphql',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                            data: JSON.stringify({
-                                query: mutation,
-                                variables: { input: task, issueUpdateId: taskId },
-                            }),
+                        const linear = new LinearClient({
+                            accessToken: thirdPartyToken,
                         });
+
+                        if (task.state) {
+                            const linearGraphqlClient = linear.client;
+                            let teamId: any = await linearGraphqlClient.rawRequest(
+                                `query Issue($issueId: String!) {
+                                    issue(id: $issueId) {
+                                      team {
+                                        id
+                                      }
+                                    }
+                                  }`,
+                                { issueId: taskId }
+                            );
+                            teamId = teamId.data.issue.team.id;
+                            // fetch states for a teamId
+                            let states: any = await linearGraphqlClient.rawRequest(
+                                `query Query($teamId: String!) {
+                                team(id: $teamId) {
+                                  states {
+                                    nodes {
+                                      id
+                                      name
+                                    }
+                                  }
+                                }
+                              }
+                              `,
+                                { teamId: teamId }
+                            );
+
+                            states = states.data.team.states.nodes;
+
+                            const state = states.find(
+                                (state: any) => String(state.name).toLowerCase() === task.state.toLowerCase()
+                            );
+
+                            task.stateId = state.id;
+                            delete task.state;
+                        }
+
+                        const updatedTask = await linear.updateIssue(taskId, task);
 
                         res.send({
                             status: 'ok',
                             message: 'Linear Task updated',
-                            result: result.data,
+                            result: updatedTask,
                         });
 
                         break;
