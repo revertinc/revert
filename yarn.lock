@@ -5833,7 +5833,7 @@ __metadata:
     vite-plugin-dts: latest
     vue: ^3.2.13
     vue-tsc: ^1.8.10
-    workspace-tools: ^0.30.0
+    workspace-tools: ^0.36.4
   peerDependencies:
     vue: ^3.0.0
   languageName: unknown
@@ -16916,6 +16916,19 @@ __metadata:
     merge2: ^1.3.0
     micromatch: ^4.0.4
   checksum: 0b1990f6ce831c7e28c4d505edcdaad8e27e88ab9fa65eedadb730438cfc7cde4910d6c975d6b7b8dc8a73da4773702ebcfcd6e3518e73938bb1383badfe01c2
+  languageName: node
+  linkType: hard
+
+"fast-glob@npm:^3.3.1":
+  version: 3.3.2
+  resolution: "fast-glob@npm:3.3.2"
+  dependencies:
+    "@nodelib/fs.stat": ^2.0.2
+    "@nodelib/fs.walk": ^1.2.3
+    glob-parent: ^5.1.2
+    merge2: ^1.3.0
+    micromatch: ^4.0.4
+  checksum: 900e4979f4dbc3313840078419245621259f349950411ca2fa445a2f9a1a6d98c3b5e7e0660c5ccd563aa61abe133a21765c6c0dec8e57da1ba71d8000b05ec1
   languageName: node
   linkType: hard
 
@@ -30841,17 +30854,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"workspace-tools@npm:^0.30.0":
-  version: 0.30.0
-  resolution: "workspace-tools@npm:0.30.0"
+"workspace-tools@npm:^0.36.4":
+  version: 0.36.4
+  resolution: "workspace-tools@npm:0.36.4"
   dependencies:
     "@yarnpkg/lockfile": ^1.1.0
+    fast-glob: ^3.3.1
     git-url-parse: ^13.0.0
     globby: ^11.0.0
     jju: ^1.4.0
     js-yaml: ^4.1.0
     micromatch: ^4.0.0
-  checksum: 183a09800f71a1d5f375a6922abe767767d6b148aa6460b544d1f478d9c8fe7fbbe5d57cf41b124119f5ee12363eded24e87a90445fa6d8d22a9560d3b0ac0da
+  checksum: 6b67f8067538686ad415e5fc333c394b06d64dbd8c5f8459645a0a1965438e2edb97e43e740564d170982814fc3f37711df61cb7cd63f1bd92bf2d561a85a417
   languageName: node
   linkType: hard
 
