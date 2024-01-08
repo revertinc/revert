@@ -68,6 +68,13 @@ const commentServiceTicket = new CommentService(
                         });
                         break;
                     }
+                    case TP_ID.trello: {
+                        res.send({
+                            status: 'ok',
+                            result: 'This endpoint is not supported by trello',
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -174,6 +181,41 @@ const commentServiceTicket = new CommentService(
                         });
                         break;
                     }
+                    case TP_ID.trello: {
+                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
+                        if (!parsedFields.boardId) {
+                            throw new Error('boardId is required');
+                        }
+
+                        let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}`;
+
+                        if (cursor?.startsWith('next_')) {
+                            const sinceCursor = cursor.substring(5);
+                            pagingString = pagingString + `&since=${sinceCursor}`;
+                        } else if (cursor?.startsWith('prev_')) {
+                            const beforeCursor = cursor.substring(5);
+                            pagingString = pagingString + `&before=${beforeCursor}`;
+                        }
+
+                        let comments: any = await axios({
+                            method: 'get',
+                            url: `https://api.trello.com/1/boards/${parsedFields.boardId}/actions?filter=commentCard&key=${connection.app_client_id}&token=${thirdPartyToken}&${pagingString}`,
+                            headers: {
+                                Accept: 'application/json',
+                            },
+                        });
+                        comments = comments.data;
+                        const nextCursor = `next_${comments[comments.length - 1].id}`;
+                        const previousCursor = `prev_${comments[0].id}`;
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: previousCursor,
+                            results: comments,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -252,6 +294,26 @@ const commentServiceTicket = new CommentService(
                             status: 'ok',
                             message: 'Jira comment posted',
                             result: result.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.trello: {
+                        const fields = commentData.fields;
+                        const cardId = fields.cardId;
+                        delete commentData.fields;
+
+                        const commentCreated = await axios({
+                            method: 'post',
+                            url: `https://api.trello.com/1/cards/${cardId}/actions/comments?text=${commentData.text}&key=${connection.app_client_id}&token=${thirdPartyToken}`,
+                            headers: {
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Trello comment posted',
+                            result: commentCreated.data,
                         });
                         break;
                     }
