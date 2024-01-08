@@ -174,6 +174,74 @@ const collectionServiceTicket = new CollectionService(
                         });
                         break;
                     }
+                    case TP_ID.jira: {
+                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
+                        let result: any;
+                        if (parsedFields && parsedFields.collection_type === 'boards') {
+                            const boards = await axios({
+                                method: 'get',
+                                url: `${connection.tp_account_url}/rest/agile/1.0/board`,
+                                headers: {
+                                    Accept: 'application/json',
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            });
+                            result = boards.data.values;
+                        } else if (parsedFields && parsedFields.collection_type === 'projects') {
+                            const projects = await axios({
+                                method: 'get',
+                                url: `${connection.tp_account_url}/rest/api/2/project/search`,
+                                headers: {
+                                    Accept: 'application/json',
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            });
+                            result = projects.data.values;
+                        }
+
+                        res.send({
+                            status: 'ok',
+                            next: 'nextCursor',
+                            previous: 'previousCursor',
+                            results: result,
+                        });
+                        break;
+                    }
+                    case TP_ID.trello: {
+                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
+                        let result: any;
+                        if (parsedFields && parsedFields.collection_type === 'boards') {
+                            const boards = await axios({
+                                method: 'get',
+                                url: `https://api.trello.com/1/members/me/boards?key=${connection.app_client_id}&token=${thirdPartyToken}`,
+                                headers: {
+                                    Accept: 'application/json',
+                                },
+                            });
+                            result = boards.data;
+                        } else if (parsedFields && parsedFields.collection_type === 'lists') {
+                            if (!parsedFields.boardId) {
+                                throw new Error('To retrieve all lists in Trello, boardId is required.');
+                            }
+                            const lists = await axios({
+                                method: 'get',
+                                url: `https://api.trello.com/1/boards/${parsedFields.boardId}?lists=all&key=${connection.app_client_id}&token=${thirdPartyToken}`,
+                                headers: {
+                                    Accept: 'application/json',
+                                },
+                            });
+
+                            result = lists.data.lists;
+                        }
+
+                        res.send({
+                            status: 'ok',
+                            next: 'next_cursor',
+                            previous: 'previous_cursor',
+                            results: result,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
