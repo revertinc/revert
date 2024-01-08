@@ -127,10 +127,16 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
             else if (obj.priority === 'low') priority = 4;
             else priority = 0;
 
+            let status: any;
+            if (obj.state === 'open') status = 'Todo';
+            else if (obj.state === 'in_progress') status = 'In Progress';
+            else if (obj.state === 'closed') status = 'Done';
+
             return {
                 ...transformedObj,
                 priority: priority,
                 priorityLabel: undefined,
+                state: status,
             };
         }
         case TP_ID.clickup: {
