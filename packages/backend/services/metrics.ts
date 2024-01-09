@@ -17,7 +17,7 @@ class MetricsService {
             };
             logger.info('collected metrics', metadata);
             await axios({
-                url: 'https://api-gateway.revert.dev/telemetry',
+                url: 'https://api.revert.dev/internal/telemetry',
                 method: 'POST',
                 data: JSON.stringify(metadata),
             });
