@@ -21,7 +21,7 @@
         "@storybook/addon-docs": "6.5.0-alpha.50",
         "@storybook/addon-essentials": "6.5.0-alpha.50",
         "@storybook/addon-links": "7.4.5",
-        "@storybook/react": "6.5.0-alpha.49",
+        "@storybook/react": "7.6.7",
         "@types/node": "20.10.6",
         "@types/react": "17.0.43",
         "@types/react-dom": "17.0.2",
