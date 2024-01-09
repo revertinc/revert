@@ -137,3 +137,10 @@ model accountFieldMappingConfig {
   allow_connection_override_custom_fields Boolean  @default(true)
   mappable_by_connection_field_list       Json? // [{ objectName, fieldName }]
 }
+
+model telemetry {
+  id        String   @id @default(uuid())
+  metadata  Json? // CreateTelemetryEntryRequest in telemetry.yml
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}

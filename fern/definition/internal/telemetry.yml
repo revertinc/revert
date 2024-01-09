@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+
+types:
+    CreateTelemetryEntryResponse:
+        properties:
+            status: string
+
+service:
+    base-path: /internal/telemetry
+    auth: false
+    headers:
+        x-revert-api-token: string
+    audiences:
+        - internal
+    endpoints:
+        createTelemetryEntry:
+            docs: Create telemetry entry for a deployment
+            method: POST
+            path: ''
+            request:
+                name: CreateTelemetryEntryRequest
+                body:
+                    properties:
+                        numberOfUsers: integer
+                        numberOfAccounts: integer
+                        numberOfConnections: integer
+                        numberOfApiCalls: integer
+            response: CreateTelemetryEntryResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError

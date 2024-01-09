@@ -31,6 +31,7 @@ import chatRouter from './v1/chat';
 import { usersService } from '../services/chat/users';
 import { channelsService } from '../services/chat/channels';
 import { messageService } from '../services/chat/message';
+import { telemetryService } from '../services/Internal/telemetry';
 
 const router = express.Router();
 
@@ -118,6 +119,7 @@ register(router, {
     metadata: metadataService,
     internal: {
         account: accountService,
+        telemetry: telemetryService,
     },
     crm: {
         lead: leadService,
