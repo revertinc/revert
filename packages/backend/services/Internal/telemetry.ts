@@ -4,7 +4,7 @@ import config from '../../config';
 import logger from '../../helpers/logger';
 
 const telemetryService = new TelemetryService({
-    async createTelemetryEntry(req, _res) {
+    async createTelemetryEntry(req, res) {
         const telemetryData = req.body;
         logger.info('telemetry data received: ', telemetryData);
         if (config.DISABLE_REVERT_TELEMETRY) {
@@ -16,6 +16,7 @@ const telemetryService = new TelemetryService({
                 metadata: JSON.stringify(telemetryData),
             },
         });
+        res.send({ status: 'ok' });
     },
 });
 
