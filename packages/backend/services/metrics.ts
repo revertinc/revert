@@ -1,23 +1,22 @@
 import axios from 'axios';
 import prisma from '../prisma/client';
 import { logError } from '../helpers/logger';
-
+import ip from 'ip';
 class MetricsService {
     async collectAndPublishMetrics() {
         try {
-            /**
-             *  TODO: Add `numberOfApiCalls` & other metrics here.
-             */
             const numberOfConnections = await prisma.connections.count();
             const numberOfAccounts = await prisma.accounts.count();
             const numberOfUsers = await prisma.users.count();
+            const ipAddress = ip.address('public');
             const metadata = {
                 numberOfConnections,
                 numberOfAccounts,
                 numberOfUsers,
+                ipAddress,
             };
             await axios({
-                url: 'https://api.revert.dev/internal/telemetry',
+                url: 'https://api-gateway.revert.dev/telemetry',
                 method: 'POST',
                 data: JSON.stringify(metadata),
             });

@@ -11,7 +11,6 @@ const telemetryService = new TelemetryService({
             logger.info('Telemetry has been disabled, not recording any stats');
             return;
         }
-        // TODO: check for valid source/some kind of auth here.
         prisma.telemetry.create({
             data: {
                 metadata: JSON.stringify(telemetryData),
