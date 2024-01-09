@@ -1,6 +1,6 @@
-import prisma from 'prisma/client';
+import prisma from '../../prisma/client';
 import { TelemetryService } from '../../generated/typescript/api/resources/internal/resources/telemetry/service/TelemetryService';
-import config from 'config';
+import config from '../../config';
 import logger from '../../helpers/logger';
 
 const telemetryService = new TelemetryService({
