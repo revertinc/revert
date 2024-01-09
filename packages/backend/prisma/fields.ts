@@ -1061,4 +1061,60 @@ export const ticketingFields = {
             target_field_name: 'isAdmin',
         },
     ],
+    [TicketStandardObjects.ticketComment]: [
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'id',
+                [TP_ID.clickup]: 'id',
+                [TP_ID.jira]: 'id',
+                [TP_ID.trello]: 'id',
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'id',
+                [TP_ID.clickup]: 'id',
+                [TP_ID.jira]: 'id',
+                [TP_ID.trello]: 'id',
+            },
+            target_field_name: 'remoteId',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'body',
+                [TP_ID.clickup]: 'comment_text',
+                [TP_ID.jira]: 'body',
+                [TP_ID.trello]: 'data.text',
+            },
+            target_field_name: 'body',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: '_user.id',
+                [TP_ID.clickup]: 'user.id',
+                [TP_ID.jira]: 'author.accountId',
+                [TP_ID.trello]: 'idMemberCreator',
+            },
+            target_field_name: 'createdBy',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'createdAt',
+                [TP_ID.clickup]: 'date',
+                [TP_ID.jira]: 'created',
+                [TP_ID.trello]: 'date',
+            },
+            target_field_name: 'createdTimestamp',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'updatedAt',
+                [TP_ID.clickup]: undefined,
+                [TP_ID.jira]: 'updated',
+                [TP_ID.trello]: 'data.dateLastEdited',
+            },
+            target_field_name: 'updatedTimeStamp',
+        },
+    ],
 };

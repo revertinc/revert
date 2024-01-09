@@ -9,7 +9,7 @@ import {
 } from '../../../constants/common';
 import { transformModelToFieldMapping } from '.';
 import { handleHubspotDisunify, handlePipedriveDisunify, handleSfdcDisunify, handleZohoDisunify } from '..';
-import { postprocessDisUnifyObject } from './preprocess';
+import { postprocessDisUnifyObject, postprocessDisUnifyTicketObject } from './preprocess';
 import { flattenObj } from '../../../helpers/flattenObj';
 import handleCloseCRMDisunify from '../closecrm';
 
@@ -108,114 +108,113 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
         accountFieldMappingConfig,
     });
 
+    if (obj.associations) {
+        Object.keys(obj.associations).forEach((key: any) => (transformedObj[key] = obj.associations[key]));
+    }
+
+    if (obj.additional) {
+        Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
+    }
+
+    const processedObj = postprocessDisUnifyTicketObject({ obj: transformedObj, tpId, objType });
     switch (tpId) {
         case TP_ID.linear: {
-            if (obj.associations) {
-                Object.keys(obj.associations).forEach((key: any) => (transformedObj[key] = obj.associations[key]));
-            }
-            if (obj.assignees && obj.assignees.length > 0) {
-                transformedObj['assigneeId'] = obj.assignees[0];
-            }
-            if (obj.additional) {
-                Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
-            }
+            if (objType === 'ticketTask') {
+                if (obj.assignees && obj.assignees.length > 0) {
+                    transformedObj['assigneeId'] = obj.assignees[0];
+                }
 
-            let priority: any;
-            if (obj.priority === 'urgent') priority = 1;
-            else if (obj.priority === 'high') priority = 2;
-            else if (obj.priority === 'medium') priority = 3;
-            else if (obj.priority === 'low') priority = 4;
-            else priority = 0;
+                let priority: any;
+                if (obj.priority === 'urgent') priority = 1;
+                else if (obj.priority === 'high') priority = 2;
+                else if (obj.priority === 'medium') priority = 3;
+                else if (obj.priority === 'low') priority = 4;
+                else priority = 0;
 
-            let status: any;
-            if (obj.state === 'open') status = 'Todo';
-            else if (obj.state === 'in_progress') status = 'In Progress';
-            else if (obj.state === 'closed') status = 'Done';
+                let status: any;
+                if (obj.state === 'open') status = 'Todo';
+                else if (obj.state === 'in_progress') status = 'In Progress';
+                else if (obj.state === 'closed') status = 'Done';
 
-            return {
-                ...transformedObj,
-                priority: priority,
-                priorityLabel: undefined,
-                state: status,
-            };
+                return {
+                    ...transformedObj,
+                    priority: priority,
+                    priorityLabel: undefined,
+                    state: status,
+                    issueId: obj.issueId,
+                };
+            }
+            return processedObj;
         }
         case TP_ID.clickup: {
-            if (obj.associations) {
-                Object.keys(obj.associations).forEach((key: any) => (transformedObj[key] = obj.associations[key]));
+            if (objType === 'ticketTask') {
+                if (obj.associations && obj.associations.listId) transformedObj['listId'] = obj.associations.listId;
+                if (obj.assignees) transformedObj['assignees'] = obj.assignees;
+
+                let status: any;
+                if (obj.status === 'open') status = 'to do';
+                else if (obj.status === 'in_progress') status = 'in progress';
+                else if (obj.status === 'closed') status = 'complete';
+                else status = undefined;
+
+                let priority: any;
+                if (obj.priority === 'urgent') priority = '1';
+                else if (obj.priority === 'high') priority = '2';
+                else if (obj.priority === 'medium') priority = '3';
+                else if (obj.priority === 'low') priority = '4';
+                else priority = undefined;
+
+                return {
+                    ...transformedObj,
+                    date_done: obj.completedDate ? Date.parse(obj.completedDate) : undefined,
+                    due_date: obj.dueDate ? Date.parse(obj.dueDate) : undefined,
+                    status,
+                    priority,
+                };
             }
-            if (obj.additional) {
-                Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
-            }
-            if (obj.associations && obj.associations.listId) transformedObj['listId'] = obj.associations.listId;
-            if (obj.assignees) transformedObj['assignees'] = obj.assignees;
-
-            let status: any;
-            if (obj.status === 'open') status = 'to do';
-            else if (obj.status === 'in_progress') status = 'in progress';
-            else if (obj.status === 'closed') status = 'complete';
-            else status = undefined;
-
-            let priority: any;
-            if (obj.priority === 'urgent') priority = '1';
-            else if (obj.priority === 'high') priority = '2';
-            else if (obj.priority === 'medium') priority = '3';
-            else if (obj.priority === 'low') priority = '4';
-            else priority = undefined;
-
-            return {
-                ...transformedObj,
-                date_done: obj.completedDate ? Date.parse(obj.completedDate) : undefined,
-                due_date: obj.dueDate ? Date.parse(obj.dueDate) : undefined,
-                status,
-                priority,
-            };
+            return processedObj;
         }
         case TP_ID.jira: {
-            if (obj.associations) {
-                Object.keys(obj.associations).forEach((key: any) => (transformedObj[key] = obj.associations[key]));
-            }
-            if (obj.additional) {
-                Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
-            }
-            let priorityId = undefined;
-            if (obj.priority === 'urgent') priorityId = '1';
-            else if (obj.priority === 'high') priorityId = '2';
-            else if (obj.priority === 'medium') priorityId = '3';
-            else if (obj.priority === 'lowest') priorityId = '5';
+            if (objType === 'ticketTask') {
+                let priorityId = undefined;
+                if (obj.priority === 'urgent') priorityId = '1';
+                else if (obj.priority === 'high') priorityId = '2';
+                else if (obj.priority === 'medium') priorityId = '3';
+                else if (obj.priority === 'lowest') priorityId = '5';
 
-            return {
-                fields: {
-                    ...transformedObj,
-                    assignee:
-                        obj.assignees && Array.isArray(obj.assignees) && obj.assignees.length > 0
-                            ? {
-                                  id: obj.assignees[0],
-                              }
-                            : undefined,
-                    priority: {
-                        id: priorityId,
+                return {
+                    fields: {
+                        ...transformedObj,
+                        assignee:
+                            obj.assignees && Array.isArray(obj.assignees) && obj.assignees.length > 0
+                                ? {
+                                      id: obj.assignees[0],
+                                  }
+                                : undefined,
+                        priority: {
+                            id: priorityId,
+                        },
                     },
-                },
-            };
+                };
+            }
+
+            return processedObj;
         }
         case TP_ID.asana: {
             return transformedObj;
         }
         case TP_ID.trello: {
-            if (obj.associations) {
-                Object.keys(obj.associations).forEach((key: any) => (transformedObj[key] = obj.associations[key]));
-            }
-            if (obj.additional) {
-                Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
+            if (objType === 'ticketTask') {
+                return {
+                    ...transformedObj,
+                    idMembers:
+                        obj.assignees && Array.isArray(obj.assignees) && obj.assignees.length > 0
+                            ? obj.assignees
+                            : undefined,
+                };
             }
 
-            return {
-                ...transformedObj,
-                idMembers:
-                    obj.assignees && Array.isArray(obj.assignees) && obj.assignees.length > 0
-                        ? obj.assignees
-                        : undefined,
-            };
+            return processedObj;
         }
     }
 }

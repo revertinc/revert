@@ -85,6 +85,7 @@ export enum ChatStandardObjects {
 export enum TicketStandardObjects {
     ticketUser = 'ticketUser',
     ticketTask = 'ticketTask',
+    ticketComment = 'ticketComment',
 }
 
 export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefined>> = {

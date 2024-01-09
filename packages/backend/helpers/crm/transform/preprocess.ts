@@ -121,6 +121,13 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                     priority,
                 };
             },
+            [TicketStandardObjects.ticketComment]: (obj: T) => {
+                const date = new Date(Number(obj.date));
+                return {
+                    ...obj,
+                    date: date.toISOString(),
+                };
+            },
         },
         [TP_ID.jira]: {
             [TicketStandardObjects.ticketTask]: (obj: T) => {
@@ -256,6 +263,30 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+    };
+    const transformFn = (preprocessMap[tpId] || {})[objType];
+    return transformFn ? transformFn(obj) : obj;
+};
+
+export const postprocessDisUnifyTicketObject = <T extends Record<string, any>>({
+    obj,
+    tpId,
+    objType,
+}: {
+    obj: T;
+    tpId: TICKET_TP_ID;
+    objType: TicketStandardObjects;
+}) => {
+    const preprocessMap: Record<TICKET_TP_ID, Record<any, Function>> = {
+        [TP_ID.linear]: {
+            // [TicketStandardObjects.ticketComment]: (obj: T) => {
+            //     return obj;
+            // },
+        },
+        [TP_ID.clickup]: {},
+        [TP_ID.jira]: {},
+        [TP_ID.trello]: {},
+        [TP_ID.asana]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

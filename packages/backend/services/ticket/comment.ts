@@ -7,13 +7,18 @@ import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { CommentService } from '../../generated/typescript/api/resources/ticket/resources/comment/service/CommentService';
 import { LinearClient } from '@linear/sdk';
+import { disunifyTicketObject, unifyObject } from '../../helpers/crm/transform';
+import { UnifiedTicketComment } from '../../models/unified/ticketComment';
+import { TicketStandardObjects } from '../../constants/common';
+
+const objType = TicketStandardObjects.ticketComment;
 
 const commentServiceTicket = new CommentService(
     {
         async getComment(req, res) {
             try {
                 const connection = res.locals.connection;
-                // const account = res.locals.account;
+                const account = res.locals.account;
                 const fields: any = req.query.fields;
                 const commentId = req.params.id;
                 const thirdPartyId = connection.tp_id;
@@ -36,9 +41,17 @@ const commentServiceTicket = new CommentService(
 
                         const comment = await linear.comment(commentId);
 
+                        const unifiedComment = await unifyObject<any, UnifiedTicketComment>({
+                            obj: comment,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
                         res.send({
                             status: 'ok',
-                            result: comment,
+                            result: unifiedComment,
                         });
                         break;
                     }
@@ -62,9 +75,18 @@ const commentServiceTicket = new CommentService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
+
+                        const unifiedComment = await unifyObject<any, UnifiedTicketComment>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
                         res.send({
                             status: 'ok',
-                            result: result.data,
+                            result: unifiedComment,
                         });
                         break;
                     }
@@ -92,7 +114,7 @@ const commentServiceTicket = new CommentService(
         async getComments(req, res) {
             try {
                 const connection = res.locals.connection;
-                // const account = res.locals.account;
+                const account = res.locals.account;
                 const fields: any = req.query.fields;
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
@@ -122,6 +144,19 @@ const commentServiceTicket = new CommentService(
 
                         const comments = await linear.comments(variables);
 
+                        const unifiedComments = await Promise.all(
+                            comments.nodes.map(
+                                async (comment: any) =>
+                                    await unifyObject<any, UnifiedTicketComment>({
+                                        obj: comment,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
                         const pageInfo = comments.pageInfo;
                         let next_cursor = undefined;
                         if (pageInfo.hasNextPage && pageInfo.endCursor) {
@@ -137,7 +172,7 @@ const commentServiceTicket = new CommentService(
                             status: 'ok',
                             next: next_cursor,
                             previous: previous_cursor,
-                            results: comments.nodes,
+                            results: unifiedComments,
                         });
                         break;
                     }
@@ -152,11 +187,24 @@ const commentServiceTicket = new CommentService(
                             },
                         });
 
+                        const unifiedComments = await Promise.all(
+                            result.data.comments.map(
+                                async (comment: any) =>
+                                    await unifyObject<any, UnifiedTicketComment>({
+                                        obj: comment,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
                         res.send({
                             status: 'ok',
                             next: undefined,
                             previous: undefined,
-                            results: result.data.comments,
+                            results: unifiedComments,
                         });
                         break;
                     }
@@ -173,11 +221,25 @@ const commentServiceTicket = new CommentService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
+
+                        const unifiedComments = await Promise.all(
+                            result.data.comments.map(
+                                async (comment: any) =>
+                                    await unifyObject<any, UnifiedTicketComment>({
+                                        obj: comment,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
                         res.send({
                             status: 'ok',
                             next: undefined,
                             previous: undefined,
-                            results: result.data,
+                            results: unifiedComments,
                         });
                         break;
                     }
@@ -205,14 +267,28 @@ const commentServiceTicket = new CommentService(
                             },
                         });
                         comments = comments.data;
+
                         const nextCursor = `next_${comments[comments.length - 1].id}`;
                         const previousCursor = `prev_${comments[0].id}`;
+
+                        const unifiedComments = await Promise.all(
+                            comments.map(
+                                async (comment: any) =>
+                                    await unifyObject<any, UnifiedTicketComment>({
+                                        obj: comment,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
 
                         res.send({
                             status: 'ok',
                             next: nextCursor,
                             previous: previousCursor,
-                            results: comments,
+                            results: unifiedComments,
                         });
                         break;
                     }
@@ -234,11 +310,18 @@ const commentServiceTicket = new CommentService(
             try {
                 let commentData: any = req.body;
                 const connection = res.locals.connection;
-                // const account = res.locals.account;
+                const account = res.locals.account;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                logInfo('Revert::CREATE COMMENT', connection.app?.env?.accountId, tenantId, commentData);
+                const comment: any = await disunifyTicketObject<UnifiedTicketComment>({
+                    obj: commentData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+                logInfo('Revert::CREATE COMMENT', connection.app?.env?.accountId, tenantId, comment);
 
                 switch (thirdPartyId) {
                     case TP_ID.linear: {
@@ -246,26 +329,24 @@ const commentServiceTicket = new CommentService(
                             accessToken: thirdPartyToken,
                         });
 
-                        const comment = await linear.createComment(commentData);
+                        const result = await linear.createComment(comment);
 
                         res.send({
                             status: 'ok',
                             message: 'Linear Comment posted',
-                            result: comment,
+                            result: result,
                         });
                         break;
                     }
                     case TP_ID.clickup: {
-                        const fields = commentData.fields;
-                        delete commentData.fields;
                         const result: any = await axios({
                             method: 'post',
-                            url: `https://api.clickup.com/api/v2/${fields.entity}/${fields.entityId}/comment`,
+                            url: `https://api.clickup.com/api/v2/${comment.entity}/${comment.entityId}/comment`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'Content-Type': 'application/json',
                             },
-                            data: JSON.stringify(commentData),
+                            data: JSON.stringify(comment),
                         });
 
                         res.send({
@@ -276,18 +357,15 @@ const commentServiceTicket = new CommentService(
                         break;
                     }
                     case TP_ID.jira: {
-                        const fields = commentData.fields;
-                        delete commentData.fields;
-
                         const result: any = await axios({
                             method: 'post',
-                            url: `${connection.tp_account_url}/rest/api/2/issue/${fields.issueId}/comment`,
+                            url: `${connection.tp_account_url}/rest/api/2/issue/${comment.issueId}/comment`,
                             headers: {
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
-                            data: JSON.stringify(commentData),
+                            data: JSON.stringify(comment),
                         });
 
                         res.send({
@@ -298,13 +376,9 @@ const commentServiceTicket = new CommentService(
                         break;
                     }
                     case TP_ID.trello: {
-                        const fields = commentData.fields;
-                        const cardId = fields.cardId;
-                        delete commentData.fields;
-
                         const commentCreated = await axios({
                             method: 'post',
-                            url: `https://api.trello.com/1/cards/${cardId}/actions/comments?text=${commentData.text}&key=${connection.app_client_id}&token=${thirdPartyToken}`,
+                            url: `https://api.trello.com/1/cards/${comment.cardId}/actions/comments?text=${comment.data.text}&key=${connection.app_client_id}&token=${thirdPartyToken}`,
                             headers: {
                                 Accept: 'application/json',
                             },
