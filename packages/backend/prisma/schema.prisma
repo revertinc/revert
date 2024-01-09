@@ -139,7 +139,7 @@ model accountFieldMappingConfig {
 }
 
 model telemetry {
-  id        String   @id
+  id        String   @id @default(uuid())
   metadata  Json? // CreateTelemetryEntryRequest in telemetry.yml
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt

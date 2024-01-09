@@ -9,6 +9,8 @@ import cron from 'node-cron';
 import morgan from 'morgan';
 import os from 'os';
 import AuthService from './services/auth';
+import MetricsService from './services/metrics';
+
 import versionMiddleware, { manageRouterVersioning } from './helpers/versionMiddleware';
 import { ShortloopSDK } from '@shortloop/node';
 
@@ -171,5 +173,8 @@ app.listen(config.PORT, () => {
     cron.schedule(`*/2 * * * *`, async () => {
         await AuthService.refreshOAuthTokensForThirdParty();
         await AuthService.refreshOAuthTokensForThirdPartyChatServices();
+    });
+    cron.schedule(`*/30 * * * *`, async () => {
+        await MetricsService.collectAndPublishMetrics();
     });
 }).setTimeout(600000);
