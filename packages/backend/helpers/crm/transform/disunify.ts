@@ -132,16 +132,14 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
                 else priority = 0;
 
                 let status: any;
-                if (obj.state === 'open') status = 'Todo';
-                else if (obj.state === 'in_progress') status = 'In Progress';
-                else if (obj.state === 'closed') status = 'Done';
-
+                if (obj.status === 'open') status = 'Todo';
+                else if (obj.status === 'in_progress') status = 'In Progress';
+                else if (obj.status === 'closed') status = 'Done';
+                delete transformedObj.priorityLabel;
                 return {
                     ...transformedObj,
                     priority: priority,
-                    priorityLabel: undefined,
                     state: status,
-                    issueId: obj.issueId,
                 };
             }
             return processedObj;
@@ -163,11 +161,12 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
                 else if (obj.priority === 'medium') priority = '3';
                 else if (obj.priority === 'low') priority = '4';
                 else priority = undefined;
-
+                const dueDateUTC = new Date(obj.dueDate).toUTCString();
+                const dateDoneUTC = new Date(obj.due_date).toUTCString();
                 return {
                     ...transformedObj,
-                    date_done: obj.completedDate ? Date.parse(obj.completedDate) : undefined,
-                    due_date: obj.dueDate ? Date.parse(obj.dueDate) : undefined,
+                    date_done: obj.completedDate ? Date.parse(dateDoneUTC) : undefined,
+                    due_date: obj.dueDate ? Date.parse(dueDateUTC) : undefined,
                     status,
                     priority,
                 };

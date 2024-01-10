@@ -40,7 +40,7 @@ ticketRouter.get('/trello-request-token', async (req, res) => {
     const requestURL = 'https://trello.com/1/OAuthGetRequestToken';
     const accessURL = 'https://trello.com/1/OAuthGetAccessToken';
     const authorizeURL = 'https://trello.com/1/OAuthAuthorizeToken';
-    const expiration = '1hour';
+    const expiration = 'never';
     const { tenantId, revertPublicToken } = req.query;
     const loginCallback = `${config.OAUTH_REDIRECT_BASE}/trello?tenantId=${tenantId}&revertPublicToken=${revertPublicToken}`;
     const account = await prisma.environments.findFirst({

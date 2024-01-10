@@ -261,14 +261,9 @@ const commentServiceTicket = new CommentService(
 
                         let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}`;
 
-                        if (cursor?.startsWith('next_')) {
-                            const sinceCursor = cursor.substring(5);
-                            pagingString = pagingString + `&since=${sinceCursor}`;
-                        } else if (cursor?.startsWith('prev_')) {
-                            const beforeCursor = cursor.substring(5);
-                            pagingString = pagingString + `&before=${beforeCursor}`;
+                        if (cursor) {
+                            pagingString = pagingString + `&before=${cursor}`;
                         }
-
                         let comments: any = await axios({
                             method: 'get',
                             url: `https://api.trello.com/1/boards/${parsedFields.boardId}/actions?filter=commentCard&key=${connection.app_client_id}&token=${thirdPartyToken}&${pagingString}`,
@@ -278,8 +273,7 @@ const commentServiceTicket = new CommentService(
                         });
                         comments = comments.data;
 
-                        const nextCursor = `next_${comments[comments.length - 1].id}`;
-                        const previousCursor = `prev_${comments[0].id}`;
+                        const nextCursor = pageSize ? `${comments[comments.length - 1].id}` : undefined;
 
                         const unifiedComments = await Promise.all(
                             comments.map(
@@ -297,7 +291,7 @@ const commentServiceTicket = new CommentService(
                         res.send({
                             status: 'ok',
                             next: nextCursor,
-                            previous: previousCursor,
+                            previous: undefined,
                             results: unifiedComments,
                         });
                         break;

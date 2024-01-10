@@ -252,10 +252,10 @@ const taskServiceTicket = new TaskService(
                         let pagingString = `${pageSize ? `&maxResults=${pageSize}` : ''}${
                             pageSize && cursor ? `&startAt=${cursor}` : ''
                         }`;
-
+                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
                         const result = await axios({
                             method: 'get',
-                            url: `${connection.tp_account_url}/rest/api/2/search?jql=project=KAN&${pagingString}`,
+                            url: `${connection.tp_account_url}/rest/api/2/search?jql=project=${parsedFields.projectKey}&${pagingString}`,
                             headers: {
                                 Accept: 'application/json',
                                 Authorization: `Bearer ${thirdPartyToken}`,
@@ -297,24 +297,21 @@ const taskServiceTicket = new TaskService(
 
                         let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}`;
 
-                        if (cursor?.startsWith('next_')) {
-                            const sinceCursor = cursor.substring(5);
-                            pagingString = pagingString + `&since=${sinceCursor}`;
-                        } else if (cursor?.startsWith('prev_')) {
-                            const beforeCursor = cursor.substring(5);
-                            pagingString = pagingString + `&before=${beforeCursor}`;
+                        if (cursor) {
+                            pagingString = pagingString + `&before=${cursor}`;
                         }
 
-                        const cards = await axios({
+                        let cards: any = await axios({
                             method: 'get',
                             url: `https://api.trello.com/1/boards/${parsedFields.boardId}/cards?key=${connection.app_client_id}&token=${thirdPartyToken}&${pagingString}`,
                             headers: {
                                 Accept: 'application/json',
                             },
                         });
-
+                        cards = cards.data;
+                        const nextCursor = pageSize ? `${cards[cards.length - 1].id}` : undefined;
                         const unifiedTasks: any = await Promise.all(
-                            cards.data.map(
+                            cards.map(
                                 async (task: any) =>
                                     await unifyObject<any, UnifiedTicketTask>({
                                         obj: task,
@@ -326,13 +323,10 @@ const taskServiceTicket = new TaskService(
                             )
                         );
 
-                        const nextCursor = `next_${unifiedTasks[unifiedTasks.length - 1].id}`;
-                        const previousCursor = `prev_${unifiedTasks[0].id}`;
-
                         res.send({
                             status: 'ok',
                             next: nextCursor,
-                            previous: previousCursor,
+                            previous: undefined,
                             results: unifiedTasks,
                         });
                         break;
@@ -365,7 +359,7 @@ const taskServiceTicket = new TaskService(
                     tenantSchemaMappingId: connection.schema_mapping_id,
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
-                logInfo('Revert::CREATE TASK', connection.app?.env?.accountId, tenantId, taskData);
+                logInfo('Revert::CREATE TASK', connection.app?.env?.accountId, tenantId, task);
 
                 switch (thirdPartyId) {
                     // @TODO Query will fail if additional fields are posted
@@ -400,7 +394,6 @@ const taskServiceTicket = new TaskService(
                         }
 
                         const issueCreated = await linear.createIssue(task);
-
                         res.send({ status: 'ok', message: 'Linear task created', result: issueCreated });
                         break;
                     }
@@ -409,7 +402,7 @@ const taskServiceTicket = new TaskService(
                             method: 'post',
                             url: `https://api.clickup.com/api/v2/list/${task.listId}/task`,
                             headers: {
-                                Authorization: `${thirdPartyToken}`,
+                                Authorization: `Bearer ${thirdPartyToken}`,
                                 'Content-Type': 'application/json',
                             },
                             data: JSON.stringify(task),
@@ -597,7 +590,7 @@ const taskServiceTicket = new TaskService(
                             method: 'put',
                             url: `https://api.clickup.com/api/v2/task/${taskId}`,
                             headers: {
-                                Authorization: `${thirdPartyToken}`,
+                                Authorization: `Bearer ${thirdPartyToken}`,
                                 'Content-Type': 'application/json',
                             },
                             data: JSON.stringify(task),
@@ -618,7 +611,8 @@ const taskServiceTicket = new TaskService(
                             statusval = task.fields.status.name;
                             task.fields.status = undefined;
                         }
-
+                        // delete task.fields.assignee;
+                        // delete task.fields.priority;
                         const result: any = await axios({
                             method: 'put',
                             url: `${connection.tp_account_url}/rest/api/2/issue/${taskId}`,
