@@ -15,7 +15,7 @@ types:
             next: optional<string>
             previous: optional<string>
             results: unknown
-    CreateOrUpdateCommentRequest: unknown
+    CreateOrUpdateCommentRequest: unified.CommentTicketWrite
     CreateOrUpdateCommentResponse:
         properties:
             status: types.ResponseStatus
@@ -74,6 +74,20 @@ service:
             path: ''
             request:
                 name: CreateCommentRequest
+                body: CreateOrUpdateCommentRequest
+            response: CreateOrUpdateCommentResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateComment:
+            docs: Update comment
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateCommentRequest
                 body: CreateOrUpdateCommentRequest
             response: CreateOrUpdateCommentResponse
             errors:

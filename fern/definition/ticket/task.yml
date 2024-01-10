@@ -8,14 +8,14 @@ types:
     GetTaskResponse:
         properties:
             status: types.ResponseStatus
-            result: unified.Ticket
+            result: unified.TaskTicket
     GetTasksResponse:
         properties:
             status: types.ResponseStatus
             next: optional<string>
             previous: optional<string>
-            results: list<unified.Ticket>
-    CreateOrUpdateTaskRequest: unified.TicketWrite
+            results: list<unified.TaskTicket>
+    CreateOrUpdateTaskRequest: unified.TaskTicketWrite
     CreateOrUpdateTaskResponse:
         properties:
             status: types.ResponseStatus

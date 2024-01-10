@@ -226,7 +226,7 @@ types:
             channelId:
                 type: string
                 docs: Id of channel to which message was sent
-    TicketWrite:
+    TaskTicketWrite:
         properties:
             name:
                 type: string
@@ -255,7 +255,19 @@ types:
             parentId:
                 type: string
                 docs: Id of the parent task.
-    Ticket:
+    TaskTicket:
         extends:
             - CommonUnifiedFields
-            - TicketWrite
+            - TaskTicketWrite
+    CommentTicketWrite:
+        properties:
+            body:
+                type: string
+                docs: The contents of the comment in plain text or HTML format.
+            createdBy:
+                type: string
+                docs: The ID of the user who created the comment.
+    CommentTicket:
+        extends:
+            - CommonUnifiedFields
+            - CommentTicketWrite

@@ -186,7 +186,6 @@ const commentServiceTicket = new CommentService(
                                 'Content-Type': 'application/json',
                             },
                         });
-
                         const unifiedComments = await Promise.all(
                             result.data.comments.map(
                                 async (comment: any) =>
@@ -213,9 +212,14 @@ const commentServiceTicket = new CommentService(
                         if (!parsedFields.taskId) {
                             throw new Error('Issue Id or Issue key required for fetching comments');
                         }
+
+                        let pagingString = `${pageSize ? `&maxResults=${pageSize}` : ''}${
+                            pageSize && cursor ? `&startAt=${cursor}` : ''
+                        }`;
+
                         const result = await axios({
                             method: 'get',
-                            url: `${connection.tp_account_url}/rest/api/2/issue/${parsedFields.taskId}/comment`,
+                            url: `${connection.tp_account_url}/rest/api/2/issue/${parsedFields.taskId}/comment?${pagingString}`,
                             headers: {
                                 Accept: 'application/json',
                                 Authorization: `Bearer ${thirdPartyToken}`,
@@ -235,10 +239,16 @@ const commentServiceTicket = new CommentService(
                             )
                         );
 
+                        const limit = Number(result.data.maxResults);
+                        const startAt = Number(result.data.startAt);
+                        const total = Number(result.data.total);
+                        const nextCursor = limit + startAt <= total ? String(limit + startAt) : undefined;
+                        const previousCursor = startAt - limit >= 0 ? String(startAt - limit) : undefined;
+
                         res.send({
                             status: 'ok',
-                            next: undefined,
-                            previous: undefined,
+                            next: nextCursor,
+                            previous: previousCursor,
                             results: unifiedComments,
                         });
                         break;
@@ -308,7 +318,7 @@ const commentServiceTicket = new CommentService(
 
         async createComment(req, res) {
             try {
-                let commentData: any = req.body;
+                let commentData: any = req.body as UnifiedTicketComment;
                 const connection = res.locals.connection;
                 const account = res.locals.account;
                 const thirdPartyId = connection.tp_id;
@@ -398,6 +408,105 @@ const commentServiceTicket = new CommentService(
             } catch (error: any) {
                 logError(error);
                 console.error('Could not create comment', error.response);
+                console.error('Could not create comment', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async updateComment(req, res) {
+            try {
+                const connection = res.locals.connection;
+                const account = res.locals.account;
+                const commentData = req.body as UnifiedTicketComment;
+                const commentId = req.params.id;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                const comment: any = await disunifyTicketObject<UnifiedTicketComment>({
+                    obj: commentData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+                logInfo('REVERT::UPDATE COMMENT', connection.app?.env?.accountId, tenantId, comment);
+
+                switch (thirdPartyId) {
+                    case TP_ID.linear: {
+                        const linear = new LinearClient({
+                            accessToken: thirdPartyToken,
+                        });
+
+                        const commentCreated = await linear.updateComment(commentId, comment);
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Linear Comment Updated',
+                            result: commentCreated,
+                        });
+                        break;
+                    }
+                    case TP_ID.clickup: {
+                        const result: any = await axios({
+                            method: 'put',
+                            url: `https://api.clickup.com/api/v2/comment/${commentId}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(comment),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Clickup comment updated',
+                            result: result.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.jira: {
+                        const result: any = await axios({
+                            method: 'put',
+                            url: `${connection.tp_account_url}/rest/api/2/issue/${comment.issueId}/comment/${commentId}`,
+                            headers: {
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(comment),
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Jira comment updated',
+                            result: result.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.trello: {
+                        const result = await axios({
+                            method: 'put',
+                            url: `https://api.trello.com/1/cards/${comment.cardId}/actions/${commentId}/comments?text=${comment.data.text}&key=${connection.app_client_id}&token=${thirdPartyToken}`,
+                            headers: {
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Trello comment updated',
+                            result: result.data,
+                        });
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not update comment', error.response);
                 if (isStandardError(error)) {
                     throw error;
                 }
