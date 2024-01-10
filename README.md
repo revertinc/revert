@@ -9,7 +9,7 @@
 </center>
 
 [![Star us on GitHub](https://img.shields.io/github/stars/revertinc/revert?color=FFD700&label=Stars&logo=Github)](https://github.com/revertinc/revert)
-![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=revert-client-git-main-revertdev) [![](https://dcbadge.vercel.app/api/server/q5K5cRhymW?style=flat)](https://discord.gg/q5K5cRhymW) [![twitter](https://img.shields.io/twitter/follow/Revertdotdev?style=social)](https://twitter.com/intent/follow?screen_name=RevertdotDev) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.revert.dev/) <a href="https://github.com/revertinc/revert/pulse"><img src="https://img.shields.io/github/commit-activity/m/revertinc/revert" alt="Commits-per-month"></a>
+![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=revert-client-git-main-revertdev) [![](https://dcbadge.vercel.app/api/server/q5K5cRhymW?style=flat)](https://discord.gg/q5K5cRhymW) [![twitter](https://img.shields.io/twitter/follow/Revertdotdev?style=social)](https://twitter.com/intent/follow?screen_name=RevertdotDev) ![Revert API](https://cronitor.io/badges/HnK0d9/production/OR5NlgURLI1wAT148KU6ycCBSSk.svg) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.revert.dev/) <a href="https://github.com/revertinc/revert/pulse"><img src="https://img.shields.io/github/commit-activity/m/revertinc/revert" alt="Commits-per-month"></a>
 <a href="https://github.com/revertinc/revert/tree/main/LICENSE.txt" target="_blank">
 <img src="https://img.shields.io/static/v1?label=license&message=AGPL-3.0&color=white" alt="License">
 </a>
@@ -58,55 +58,6 @@ You might want to check us out if
 -   **SDKs for Popular Frameworks**: Ready-to-use SDKs available for React, Vue, and Angular, enabling quick and easy integration.
 -   **Self-Hosted**: Provides the flexibility to self-host the integration solution, giving you full control over deployment and data.
 
-## 🗺️ Roadmap
-
-CRMs:
-
--   [x] **Salesforce**
--   [x] **Hubspot**
-
--   [x] **Zoho CRM**
-
--   [x] **Pipedrive**
--   [ ] Other CRMs such as Close.io, Zendesk Sell, MS 365
-
-Communication tools:
-
--   [x] Slack
--   [x] Discord
--   [ ] Microsoft Teams
-
-Accounting software:
-
--   [ ] Xero
--   [ ] Quickbooks
-
-...[and more](https://github.com/revertinc/revert/issues?q=is%3Aissue+is%3Aopen+label%3AIntegration)
-
--   [ ] Ability to self-host Revert inside your own cloud
--   [ ] SOC 2 (In Progress)
-
-Feel free to create an issue if you'd like an integration we're missing [here](https://github.com/revertinc/revert)
-
-## Packages
-
-This repo contains a set of packages under `@reverdotdev/` namespace such as:
-
--   [`@revertdotdev/backend`](./packages/backend): The core Revert API that powers the frontend SDKs.
--   [`@revertdotdev/revert-react`](./packages/react): Official SDK for React.
--   [`@revertdotdev/revert-vue`](./packages/vue): Official SDK for Vue.
--   [`@revertdotdev/js`](./packages/js): Official SDK for Javascript.
--   ...
-
-## Architecture
-
-### Connection flow for your app's users with Revert
-
-<img src="./public/connection_flow.png"/>
-
-### Architecture Overview
-
-<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1697107526/Revert/how4gj3vp2wch4kw2akb.png" />
 
 ## Quickstart
 
@@ -150,6 +101,27 @@ docker-compose up -d
 
 The UI is now available at http://localhost:3000 and the backend is available at http://localhost:4001.
 
+## Architecture
+
+### Connection flow for your app's users with Revert
+
+<img src="./public/connection_flow.png"/>
+
+### Architecture Overview
+
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1697107526/Revert/how4gj3vp2wch4kw2akb.png" />
+
+
+## Packages
+
+This repo contains a set of packages under `@reverdotdev/` namespace such as:
+
+-   [`@revertdotdev/backend`](./packages/backend): The core Revert API that powers the frontend SDKs.
+-   [`@revertdotdev/revert-react`](./packages/react): Official SDK for React.
+-   [`@revertdotdev/revert-vue`](./packages/vue): Official SDK for Vue.
+-   [`@revertdotdev/js`](./packages/js): Official SDK for Javascript.
+-   ...
+
 ## Examples
 
 The repo [`revert-example-apps`](https://github.com/revertinc/revert-example-apps) contains a set of examples how to use revert with different frameworks.
@@ -172,6 +144,38 @@ We take security seriously.
 **Please do not file GitHub issues or post on our public forum for security vulnerabilities**.
 
 Email `security@revert.dev` if you believe you have uncovered a vulnerability. In the message, try to provide a description of the issue and a way of reproducing it.
+
+## 🗺️ Roadmap
+
+CRMs:
+
+-   [x] **Salesforce**
+-   [x] **Hubspot**
+
+-   [x] **Zoho CRM**
+
+-   [x] **Pipedrive**
+
+-   [x] **Close CRM**
+-   [ ] Other CRMs such as Zendesk Sell, MS 365
+
+Communication tools:
+
+-   [x] Slack
+-   [x] Discord
+-   [ ] Microsoft Teams
+
+Accounting software:
+
+-   [ ] Xero
+-   [ ] Quickbooks
+
+...[and more](https://github.com/revertinc/revert/issues?q=is%3Aissue+is%3Aopen+label%3AIntegration)
+
+-   [ ] Ability to self-host Revert inside your own cloud
+-   [ ] SOC 2 (In Progress)
+
+Feel free to create an issue if you'd like an integration we're missing [here](https://github.com/revertinc/revert)
 
 ## 💪 Contributors
 
