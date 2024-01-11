@@ -5718,6 +5718,7 @@ __metadata:
     better-sse: ^0.10.0
     concurrently: ^8.2.1
     cors: ^2.8.5
+    dayjs: ^1.11.10
     dotenv: ^16.3.1
     eslint-plugin-deprecation: ^1.3.2
     express: ^4.18.1
@@ -14814,6 +14815,13 @@ __metadata:
   dependencies:
     "@babel/runtime": ^7.21.0
   checksum: f7be01523282e9bb06c0cd2693d34f245247a29098527d4420628966a2d9aad154bd0e90a6b1cf66d37adcb769cd108cf8a7bd49d76db0fb119af5cdd13644f4
+  languageName: node
+  linkType: hard
+
+"dayjs@npm:^1.11.10":
+  version: 1.11.10
+  resolution: "dayjs@npm:1.11.10"
+  checksum: a6b5a3813b8884f5cd557e2e6b7fa569f4c5d0c97aca9558e38534af4f2d60daafd3ff8c2000fed3435cfcec9e805bcebd99f90130c6d1c5ef524084ced588c4
   languageName: node
   linkType: hard
 

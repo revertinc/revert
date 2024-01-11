@@ -8,6 +8,7 @@ import {
 } from '../../../constants/common';
 import { PipedriveDealStatus } from '../../../constants/pipedrive';
 import { convertToHHMMInUTC, getDuration, getFormattedDate } from '../../../helpers/timeZoneHelper';
+import dayjs from 'dayjs';
 
 export const preprocessUnifyObject = <T extends Record<string, any>>({
     obj,
@@ -109,14 +110,13 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 else if (obj.priority && obj.priority.priority === 'low' && Number(obj.priority.id) === 4)
                     priority = 'low';
                 else priority = 'lowest';
-
                 return {
                     ...obj,
                     assignees: obj.assignees.length > 0 ? obj.assignees.map((assignee: any) => assignee.id) : [],
                     date_created: obj.date_created ? new Date(Number(obj.date_created)).toISOString() : null,
                     date_updated: obj.date_updated ? new Date(Number(obj.date_updated)).toISOString() : null,
-                    date_done: obj.date_done ? new Date(Number(obj.date_done)).toISOString() : null,
-                    due_date: obj.due_date ? new Date(Number(obj.due_date)).toISOString() : null,
+                    date_done: obj.date_done ? dayjs(Number(obj.due_date)).format('YYYY-MM-DD') : null,
+                    due_date: obj.due_date ? dayjs(Number(obj.due_date)).format('YYYY-MM-DD') : null,
                     status,
                     priority,
                 };
