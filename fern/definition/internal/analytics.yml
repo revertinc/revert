@@ -1,0 +1,22 @@
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+
+service:
+    base-path: /internal/analytics
+    auth: false
+    headers:
+        x-revert-api-token: string
+    audiences:
+        - internal
+    endpoints:
+        getAnalytics:
+            docs: Get Analytics of your revert account
+            method: GET
+            path: ''
+            request:
+                name: GetAnalyticsRequest
+            response: unknown
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
