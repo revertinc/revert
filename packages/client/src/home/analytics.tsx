@@ -2,15 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { useUser } from '@clerk/clerk-react';
 import { TailSpin } from 'react-loader-spinner';
-import { toast } from 'react-hot-toast';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { REVERT_BASE_API_URL } from '../constants';
 import * as Sentry from '@sentry/react';
 
 const Analytics = ({ environment }) => {
     const user = useUser();
-    const [account, setAccount] = useState<any>();
+    const [metrics, setMetrics] = useState<any>();
     const [isLoading, setLoading] = useState<boolean>(false);
     const [viewSecret, setViewSecret] = useState<boolean>(false);
 
@@ -31,7 +28,36 @@ const Analytics = ({ environment }) => {
         fetch(`${REVERT_BASE_API_URL}/internal/account`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
-                setAccount(result?.account?.environments.find((e) => e.env === environment));
+                // TODO(@ashutosh): replace with analytics endpoint.
+                setMetrics({
+                    totalConnections: 168,
+                    recentConnections: [
+                        { id: '62878b4e647d7bd25db029a3', time: 'Jan 10, 14:48' },
+                        { id: '20788b4e647d7bd25db029ax', time: 'Jan 10, 14:48' },
+                        { id: '62878b4e647d7bd25db029a3', time: 'Jan 10, 14:48' },
+                        { id: '20788b4e647d7bd25db029ax', time: 'Jan 10, 14:48' },
+                        { id: '62878b4e647d7bd25db029a3', time: 'Jan 10, 14:48' },
+                    ],
+                    recentApiCalls: [
+                        { method: 'GET', apiName: '/v1/crm/contacts/', status: '200' },
+                        { method: 'POST', apiName: '/v1/crm/deals/', status: '200' },
+                        { method: 'POST', apiName: '/v1/crm/deals/', status: '200' },
+                        { method: 'POST', apiName: '/v1/crm/deals/', status: '200' },
+                        { method: 'POST', apiName: '/v1/crm/deals/', status: '200' },
+                    ],
+                    connectedApps: [
+                        {
+                            appName: 'Hubspot',
+                            imageSrc:
+                                'https://res.cloudinary.com/dfcnic8wq/image/upload/v1688550714/Revert/image_9_1_vilmhw.png',
+                        },
+                        {
+                            appName: 'Salesforce',
+                            imageSrc:
+                                'https://res.cloudinary.com/dfcnic8wq/image/upload/v1688550774/Revert/image_8_2_peddol.png',
+                        },
+                    ],
+                });
                 setLoading(false);
             })
             .catch((error) => {
@@ -70,11 +96,11 @@ const Analytics = ({ environment }) => {
                 </div>
             ) : (
                 <>
-                    {account ? (
+                    {metrics ? (
                         <>
                             <div
-                                className="flex justify-between flex-wrap items-start gap-4"
-                                style={{ padding: '3rem 5rem', width: '80%' }}
+                                className="flex justify-between flex-wrap items-start gap-2"
+                                style={{ padding: '2rem 5rem', width: '80%' }}
                             >
                                 <Box
                                     sx={{
@@ -82,7 +108,7 @@ const Analytics = ({ environment }) => {
                                         justifyContent: 'space-between',
                                         alignItems: 'center',
                                         padding: '2rem 0rem',
-                                        maxWidth: '340px',
+                                        width: '30%',
                                         maxHeight: '208px',
                                     }}
                                 >
@@ -94,14 +120,16 @@ const Analytics = ({ environment }) => {
                                             display: 'flex',
                                             flexDirection: 'column',
                                             alignItems: 'flex-start',
-                                            height: 150,
+                                            height: 204,
                                             justifyContent: 'flex-start',
                                             position: 'relative',
-                                            minWidth: 250,
+                                            width: '100%',
                                         }}
                                     >
-                                        <p className="font-bold mt-4">Total connections</p>
-                                        <span>No data</span>
+                                        <p>Total connections</p>
+                                        <span className="font-bold mt-4 text-lg">
+                                            {metrics.totalConnections || 'No data'}
+                                        </span>
                                     </div>
                                 </Box>
                                 <Box
@@ -110,7 +138,7 @@ const Analytics = ({ environment }) => {
                                         justifyContent: 'space-between',
                                         alignItems: 'center',
                                         padding: '2rem 0rem',
-                                        maxWidth: '340px',
+                                        width: '65%',
                                         maxHeight: '208px',
                                     }}
                                 >
@@ -122,14 +150,23 @@ const Analytics = ({ environment }) => {
                                             display: 'flex',
                                             flexDirection: 'column',
                                             alignItems: 'flex-start',
-                                            height: 150,
                                             justifyContent: 'flex-start',
                                             position: 'relative',
-                                            minWidth: 250,
+                                            width: '100%',
+                                            height: 204,
                                         }}
                                     >
-                                        <p className="font-bold mt-4">Connected Apps</p>
-                                        <span>No data</span>
+                                        <p>Recent connections</p>
+                                        <ul className="mt-4 w-full text-sm  text-[#737373]">
+                                            {metrics.recentConnections
+                                                ? metrics.recentConnections.map((connection) => (
+                                                      <li className="flex justify-between">
+                                                          <span>{connection.id}</span>
+                                                          <span>{connection.time}</span>
+                                                      </li>
+                                                  ))
+                                                : 'No data'}
+                                        </ul>
                                     </div>
                                 </Box>
                                 <Box
@@ -138,8 +175,9 @@ const Analytics = ({ environment }) => {
                                         justifyContent: 'space-between',
                                         alignItems: 'center',
                                         padding: '2rem 0rem',
-                                        maxWidth: '340px',
+                                        width: '100%',
                                         maxHeight: '208px',
+                                        marginTop: 2,
                                     }}
                                 >
                                     <div
@@ -150,14 +188,23 @@ const Analytics = ({ environment }) => {
                                             display: 'flex',
                                             flexDirection: 'column',
                                             alignItems: 'flex-start',
-                                            height: 150,
                                             justifyContent: 'flex-start',
                                             position: 'relative',
-                                            minWidth: 250,
+                                            width: '100%',
                                         }}
                                     >
-                                        <p className="font-bold mt-4">Recent API calls</p>
-                                        <span>No data</span>
+                                        <p>Recent API calls</p>
+                                        <ul className="mt-4 w-full text-sm text-[#737373]">
+                                            {metrics.recentApiCalls
+                                                ? metrics.recentApiCalls.map((call) => (
+                                                      <li className="flex justify-between">
+                                                          <span>{call.method}</span>
+                                                          <span>{call.apiName}</span>
+                                                          <span>{call.status}</span>
+                                                      </li>
+                                                  ))
+                                                : 'No data'}
+                                        </ul>
                                     </div>
                                 </Box>
                                 <Box
@@ -166,7 +213,7 @@ const Analytics = ({ environment }) => {
                                         justifyContent: 'space-between',
                                         alignItems: 'center',
                                         padding: '2rem 0rem',
-                                        maxWidth: '340px',
+                                        width: '100%',
                                         maxHeight: '208px',
                                     }}
                                 >
@@ -178,14 +225,27 @@ const Analytics = ({ environment }) => {
                                             display: 'flex',
                                             flexDirection: 'column',
                                             alignItems: 'flex-start',
-                                            height: 150,
                                             justifyContent: 'flex-start',
                                             position: 'relative',
-                                            minWidth: 250,
+                                            width: '100%',
                                         }}
                                     >
-                                        <p className="font-bold mt-4">Recent connections</p>
-                                        <span>No data</span>
+                                        <p>Connected Apps</p>
+                                        <ul className="mt-4 w-full text-sm text-[#737373]">
+                                            {metrics.connectedApps
+                                                ? metrics.connectedApps.map((app) => (
+                                                      <li className="flex justify-between m-2">
+                                                          <img
+                                                              width={50}
+                                                              className="object-scale-down"
+                                                              alt={app.appName}
+                                                              src={app.imageSrc}
+                                                          />
+                                                          <span>{app.appName}</span>
+                                                      </li>
+                                                  ))
+                                                : 'No data'}
+                                        </ul>
                                     </div>
                                 </Box>
                             </div>
