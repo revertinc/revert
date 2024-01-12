@@ -74,7 +74,7 @@ const Integrations = ({ environment }) => {
                     {account ? (
                         <div
                             className="flex justify-between flex-wrap items-start gap-4"
-                            style={{ padding: '3rem 5rem', width: '80%' }}
+                            style={{ padding: '2rem 5rem', width: '80%' }}
                         >
                             <Box
                                 sx={{
