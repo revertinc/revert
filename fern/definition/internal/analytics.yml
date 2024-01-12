@@ -2,6 +2,12 @@ imports:
     errors: ../common/errors.yml
     types: ../common/types.yml
 
+types:
+    GetAnalyticsResponse:
+        properties:
+            status: types.ResponseStatus
+            result: types.Analytics
+
 service:
     base-path: /internal/analytics
     auth: false
@@ -12,11 +18,15 @@ service:
     endpoints:
         getAnalytics:
             docs: Get Analytics of your revert account
-            method: GET
+            method: POST
             path: ''
             request:
                 name: GetAnalyticsRequest
-            response: unknown
+                body:
+                    properties:
+                        userId: string
+                        environment: string
+            response: GetAnalyticsResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
