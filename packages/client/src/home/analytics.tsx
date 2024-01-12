@@ -25,38 +25,16 @@ const Analytics = ({ environment }) => {
             headers: headers,
         };
         setLoading(true);
-        fetch(`${REVERT_BASE_API_URL}/internal/account`, requestOptions)
+        fetch(`${REVERT_BASE_API_URL}/internal/analytics`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
                 // TODO(@ashutosh): replace with analytics endpoint.
+                const data = result.result;
                 setMetrics({
-                    totalConnections: 168,
-                    recentConnections: [
-                        { id: '62878b4e647d7bd25db029a3', time: 'Jan 10, 14:48' },
-                        { id: '20788b4e647d7bd25db029ax', time: 'Jan 10, 14:48' },
-                        { id: '62878b4e647d7bd25db029a3', time: 'Jan 10, 14:48' },
-                        { id: '20788b4e647d7bd25db029ax', time: 'Jan 10, 14:48' },
-                        { id: '62878b4e647d7bd25db029a3', time: 'Jan 10, 14:48' },
-                    ],
-                    recentApiCalls: [
-                        { method: 'GET', apiName: '/v1/crm/contacts/', status: '200' },
-                        { method: 'POST', apiName: '/v1/crm/deals/', status: '200' },
-                        { method: 'POST', apiName: '/v1/crm/deals/', status: '200' },
-                        { method: 'POST', apiName: '/v1/crm/deals/', status: '200' },
-                        { method: 'POST', apiName: '/v1/crm/deals/', status: '200' },
-                    ],
-                    connectedApps: [
-                        {
-                            appName: 'Hubspot',
-                            imageSrc:
-                                'https://res.cloudinary.com/dfcnic8wq/image/upload/v1688550714/Revert/image_9_1_vilmhw.png',
-                        },
-                        {
-                            appName: 'Salesforce',
-                            imageSrc:
-                                'https://res.cloudinary.com/dfcnic8wq/image/upload/v1688550774/Revert/image_8_2_peddol.png',
-                        },
-                    ],
+                    totalConnections: data.totalConnections,
+                    recentConnections: data.recentConnections,
+                    recentApiCalls: data.recentApiCalls,
+                    connectedApps: data.connectedApps,
                 });
                 setLoading(false);
             })
@@ -162,7 +140,7 @@ const Analytics = ({ environment }) => {
                                                 ? metrics.recentConnections.map((connection) => (
                                                       <li className="flex justify-between">
                                                           <span>{connection.id}</span>
-                                                          <span>{connection.time}</span>
+                                                          <span>{connection.createdAt}</span>
                                                       </li>
                                                   ))
                                                 : 'No data'}
@@ -199,7 +177,7 @@ const Analytics = ({ environment }) => {
                                                 ? metrics.recentApiCalls.map((call) => (
                                                       <li className="flex justify-between">
                                                           <span>{call.method}</span>
-                                                          <span>{call.apiName}</span>
+                                                          <span>{call.path}</span>
                                                           <span>{call.status}</span>
                                                       </li>
                                                   ))

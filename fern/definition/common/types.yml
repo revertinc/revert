@@ -64,3 +64,26 @@ types:
         enum:
             - ok
             - error
+
+    ConnectedApps:
+        properties:
+            appName: string
+            imageSrc: string
+
+    RecentConnections:
+        properties:
+            id: string
+            createdAt: string
+
+    RecentApiCalls:
+        properties:
+            method: string
+            path: string
+            status: integer
+
+    Analytics:
+        properties:
+            totalConnections: integer
+            connectedApps: optional<list<ConnectedApps>>
+            recentConnections: optional<list<RecentConnections>>
+            recentApiCalls: optional<list<RecentApiCalls>>
