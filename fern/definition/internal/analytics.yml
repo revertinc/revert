@@ -1,0 +1,32 @@
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+
+types:
+    GetAnalyticsResponse:
+        properties:
+            status: types.ResponseStatus
+            result: types.Analytics
+
+service:
+    base-path: /internal/analytics
+    auth: false
+    headers:
+        x-revert-api-token: string
+    audiences:
+        - internal
+    endpoints:
+        getAnalytics:
+            docs: Get Analytics of your revert account
+            method: POST
+            path: ''
+            request:
+                name: GetAnalyticsRequest
+                body:
+                    properties:
+                        userId: string
+                        environment: string
+            response: GetAnalyticsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError

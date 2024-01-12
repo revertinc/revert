@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import Navbar from './navbar';
 import ApiKeys from './apiKeys';
+import Analytics from './analytics';
 import KeyIcon from '@mui/icons-material/Key';
 import AppsIcon from '@mui/icons-material/Apps';
+import EqualizerIcon from '@mui/icons-material/Equalizer';
 import HomeIcon from '@mui/icons-material/Home';
 
 import Onboarding from './onboarding';
@@ -77,6 +79,8 @@ const Home = () => {
         } else if (tabValue === 1) {
             return <Integrations environment={environment} />;
         } else if (tabValue === 2) {
+            return <Analytics environment={environment} />;
+        } else if (tabValue === 3) {
             return <ApiKeys environment={environment} />;
         } else return undefined;
     };
@@ -111,6 +115,14 @@ const Home = () => {
                             className="p-2 cursor-pointer"
                             style={tabValue === 2 ? selectedStyle : undefined}
                             onClick={() => handleChange(2)}
+                        >
+                            <EqualizerIcon />
+                            <span className="p-2">Analytics</span>
+                        </li>
+                        <li
+                            className="p-2 cursor-pointer"
+                            style={tabValue === 3 ? selectedStyle : undefined}
+                            onClick={() => handleChange(3)}
                         >
                             <KeyIcon />
                             <span className="p-2">API Keys</span>

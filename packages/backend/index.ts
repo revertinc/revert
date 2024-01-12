@@ -13,6 +13,7 @@ import MetricsService from './services/metrics';
 
 import versionMiddleware, { manageRouterVersioning } from './helpers/versionMiddleware';
 import { ShortloopSDK } from '@shortloop/node';
+import endpointLogger from './helpers/endPointLoggerMiddleWare';
 
 const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
@@ -154,7 +155,7 @@ app.use(
         v2: testv2Router,
     })
 );
-
+app.use(endpointLogger());
 // The error handler must be before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());
 

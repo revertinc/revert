@@ -74,7 +74,7 @@ const Integrations = ({ environment }) => {
                     {account ? (
                         <div
                             className="flex justify-between flex-wrap items-start gap-4"
-                            style={{ padding: '3rem 5rem', width: '80%' }}
+                            style={{ padding: '2rem 5rem', width: '80%' }}
                         >
                             <Box
                                 sx={{
@@ -382,6 +382,44 @@ const Integrations = ({ environment }) => {
                                     >
                                         <SettingsIcon />
                                     </IconButton>
+                                </div>
+                            </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        padding: 30,
+                                        border: '2px #00000029 solid',
+                                        borderRadius: 10,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        minHeight: 200,
+                                        justifyContent: 'flex-start',
+                                        position: 'relative',
+                                    }}
+                                >
+                                    <p className="font-bold mt-4 mb-2">Request Integration</p>
+                                    <span>
+                                        Don't see an integration here? Let us{' '}
+                                        <a
+                                            href="https://discord.gg/q5K5cRhymW"
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="font-bold underline"
+                                        >
+                                            know
+                                        </a>{' '}
+                                        and we'd have it in less than 48 hours.
+                                    </span>
                                 </div>
                             </Box>
                         </div>
