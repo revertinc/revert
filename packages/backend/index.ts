@@ -155,7 +155,7 @@ app.use(
         v2: testv2Router,
     })
 );
-
+app.use(endpointLogger());
 // The error handler must be before any other error middleware and after all controllers
 app.use(Sentry.Handlers.errorHandler());
 
@@ -166,7 +166,6 @@ app.use((_err: any, _req: any, res: any, _next: any) => {
     res.statusCode = 500;
     res.end(res.sentry + '\n');
 });
-app.use(endpointLogger);
 
 app.listen(config.PORT, () => {
     console.log(`⚡️[server]: Revert server is running at http://localhost:${config.PORT}`);
