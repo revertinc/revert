@@ -13,6 +13,7 @@ import MetricsService from './services/metrics';
 
 import versionMiddleware, { manageRouterVersioning } from './helpers/versionMiddleware';
 import { ShortloopSDK } from '@shortloop/node';
+import endpointLogger from './helpers/endPointLoggerMiddleWare';
 
 const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
@@ -165,6 +166,7 @@ app.use((_err: any, _req: any, res: any, _next: any) => {
     res.statusCode = 500;
     res.end(res.sentry + '\n');
 });
+app.use(endpointLogger);
 
 app.listen(config.PORT, () => {
     console.log(`⚡️[server]: Revert server is running at http://localhost:${config.PORT}`);
