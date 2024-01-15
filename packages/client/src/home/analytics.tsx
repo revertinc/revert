@@ -9,7 +9,6 @@ const Analytics = ({ environment }) => {
     const user = useUser();
     const [metrics, setMetrics] = useState<any>();
     const [isLoading, setLoading] = useState<boolean>(false);
-    const [viewSecret, setViewSecret] = useState<boolean>(false);
 
     useEffect(() => {
         const headers = new Headers();
@@ -44,14 +43,6 @@ const Analytics = ({ environment }) => {
                 setLoading(false);
             });
     }, [user.user?.id, environment]);
-
-    let secretOverlay = {};
-    if (!viewSecret) {
-        secretOverlay = {
-            textShadow: 'white 0px 0px 6px',
-            color: '#00000000',
-        };
-    }
 
     return (
         <div className="w-[80%]">

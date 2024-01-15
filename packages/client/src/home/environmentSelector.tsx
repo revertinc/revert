@@ -4,14 +4,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 export default function EnvironmentSelector({ environmentProp, setEnvironmentProp, environmentList }) {
-    const [environment, setEnvironment] = React.useState(environmentProp);
-
-    React.useEffect(() => {
-        setEnvironment(environmentProp);
-    }, [environmentProp]);
-
     const handleChange = (event: SelectChangeEvent) => {
-        setEnvironment(event.target.value);
         setEnvironmentProp(event.target.value);
     };
     return (
@@ -19,9 +12,9 @@ export default function EnvironmentSelector({ environmentProp, setEnvironmentPro
             <Select
                 labelId="environment-selector"
                 id="environment-selector"
-                value={environment}
+                value={environmentProp}
                 label="environment"
-                defaultValue={environment}
+                defaultValue={environmentProp}
                 onChange={handleChange}
                 SelectDisplayProps={{
                     style: {
