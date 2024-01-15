@@ -143,12 +143,19 @@ const taskServiceTicket = new TaskService(
             try {
                 const connection = res.locals.connection;
                 const account = res.locals.account;
-                const fields: any = req.query.fields;
+                const fields: any = JSON.parse(req.query.fields as string);
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+
+                if (!fields || (fields && !fields.listId)) {
+                    throw new NotFoundError({
+                        error: 'The query parameter "listId" is required and should be included in the "fields" parameter.',
+                    });
+                }
+
                 logInfo(
                     'Revert::GET ALL TASKS',
                     connection.app?.env?.accountId,
@@ -172,6 +179,13 @@ const taskServiceTicket = new TaskService(
                             after: cursor ? cursor : null,
                             last: null,
                             Before: null,
+                            filter: {
+                                team: {
+                                    id: {
+                                        eq: fields.listId,
+                                    },
+                                },
+                            },
                         };
                         const result: any = await linear.issues(variables);
 
@@ -209,12 +223,11 @@ const taskServiceTicket = new TaskService(
                         break;
                     }
                     case TP_ID.clickup: {
-                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
                         const pagingString = `${cursor ? `page=${cursor}` : ''}`;
                         // &statuses[]=complete
                         const result = await axios({
                             method: 'get',
-                            url: `https://api.clickup.com/api/v2/list/${parsedFields.listId}/task?${pagingString}`,
+                            url: `https://api.clickup.com/api/v2/list/${fields.listId}/task?${pagingString}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'Content-Type': 'application/json',
@@ -252,10 +265,10 @@ const taskServiceTicket = new TaskService(
                         let pagingString = `${pageSize ? `&maxResults=${pageSize}` : ''}${
                             pageSize && cursor ? `&startAt=${cursor}` : ''
                         }`;
-                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
+
                         const result = await axios({
                             method: 'get',
-                            url: `${connection.tp_account_url}/rest/api/2/search?jql=project=${parsedFields.projectKey}&${pagingString}`,
+                            url: `${connection.tp_account_url}/rest/api/2/search?jql=project=${fields.listId}&${pagingString}`,
                             headers: {
                                 Accept: 'application/json',
                                 Authorization: `Bearer ${thirdPartyToken}`,
@@ -290,11 +303,7 @@ const taskServiceTicket = new TaskService(
                         break;
                     }
                     case TP_ID.trello: {
-                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
-                        if (fields.listId || fields.boardId) {
-                            throw new Error('boardId is required');
-                        }
-
+                        // Treating board as list here
                         let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}`;
 
                         if (cursor) {
@@ -303,7 +312,7 @@ const taskServiceTicket = new TaskService(
 
                         let cards: any = await axios({
                             method: 'get',
-                            url: `https://api.trello.com/1/boards/${parsedFields.boardId}/cards?key=${connection.app_client_id}&token=${thirdPartyToken}&${pagingString}`,
+                            url: `https://api.trello.com/1/boards/${fields.listId}/cards?key=${connection.app_client_id}&token=${thirdPartyToken}&${pagingString}`,
                             headers: {
                                 Accept: 'application/json',
                             },
