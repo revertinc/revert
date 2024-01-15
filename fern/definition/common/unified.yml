@@ -255,6 +255,9 @@ types:
             parentId:
                 type: string
                 docs: Id of the parent task.
+            listId:
+                type: string
+                docs: Id of the list
     TaskTicket:
         extends:
             - CommonUnifiedFields

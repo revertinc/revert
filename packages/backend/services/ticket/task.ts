@@ -361,6 +361,9 @@ const taskServiceTicket = new TaskService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                if (taskData && !taskData.listId) {
+                    throw new Error('The parameter "listId" is required in request body.');
+                }
                 const task: any = await disunifyTicketObject<UnifiedTicketTask>({
                     obj: taskData,
                     tpId: thirdPartyId,
@@ -368,6 +371,7 @@ const taskServiceTicket = new TaskService(
                     tenantSchemaMappingId: connection.schema_mapping_id,
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
+
                 logInfo('Revert::CREATE TASK', connection.app?.env?.accountId, tenantId, task);
 
                 switch (thirdPartyId) {
@@ -421,6 +425,12 @@ const taskServiceTicket = new TaskService(
                         break;
                     }
                     case TP_ID.jira: {
+                        if (!taskData.issueTypeId) {
+                            throw new NotFoundError({
+                                error: 'Jira requires issueTypeId parameter in request body.',
+                            });
+                        }
+
                         // if status exists set it to undefined or jira create will fail
                         let statusval = null;
                         if (taskData.status && task.fields.status && task.fields.status.name) {
@@ -620,8 +630,6 @@ const taskServiceTicket = new TaskService(
                             statusval = task.fields.status.name;
                             task.fields.status = undefined;
                         }
-                        // delete task.fields.assignee;
-                        // delete task.fields.priority;
                         const result: any = await axios({
                             method: 'put',
                             url: `${connection.tp_account_url}/rest/api/2/issue/${taskId}`,

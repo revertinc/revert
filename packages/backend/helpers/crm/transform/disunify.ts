@@ -108,10 +108,6 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
         accountFieldMappingConfig,
     });
 
-    if (obj.associations) {
-        Object.keys(obj.associations).forEach((key: any) => (transformedObj[key] = obj.associations[key]));
-    }
-
     if (obj.additional) {
         Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
     }
@@ -140,13 +136,13 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
                     ...transformedObj,
                     priority: priority,
                     state: status,
+                    teamId: obj['listId'],
                 };
             }
             return processedObj;
         }
         case TP_ID.clickup: {
             if (objType === 'ticketTask') {
-                if (obj.associations && obj.associations.listId) transformedObj['listId'] = obj.associations.listId;
                 if (obj.assignees) transformedObj['assignees'] = obj.assignees;
 
                 let status: any;
@@ -169,6 +165,7 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
                     due_date: obj.dueDate ? Date.parse(dueDateUTC) : undefined,
                     status,
                     priority,
+                    listId: obj.listId,
                 };
             }
             return processedObj;
@@ -196,6 +193,12 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
                                   id: priorityId,
                               }
                             : undefined,
+                        project: {
+                            key: obj.listId,
+                        },
+                        issuetype: {
+                            id: obj.issueTypeId,
+                        },
                     },
                 };
             }
@@ -207,6 +210,8 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
         }
         case TP_ID.trello: {
             if (objType === 'ticketTask') {
+                transformedObj['idList'] = obj.listId;
+
                 return {
                     ...transformedObj,
                     idMembers:
