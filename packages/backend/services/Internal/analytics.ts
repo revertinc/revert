@@ -76,6 +76,22 @@ const analyticsService = new AnalyticsService({
                     appName = 'Discord chat';
                     imageSrc =
                         'https://res.cloudinary.com/dfcnic8wq/image/upload/c_scale,w_136/v1701337535/Revert/qorqmz5ggxbb5ckywmxm.png';
+                } else if (connection.tp_id === 'linear') {
+                    appName = 'Linear';
+                    imageSrc =
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1702974919/Revert/v5e5z6afm5iepiy3cvex.png';
+                } else if (connection.tp_id === 'clickup') {
+                    appName = 'Clickup';
+                    imageSrc =
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1702974919/Revert/zckjrxorttrrmyuxf1hu.png';
+                } else if (connection.tp_id === 'jira') {
+                    appName = 'Jira';
+                    imageSrc =
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1702983006/Revert/szfzkoagws7h3miptezo.png';
+                } else if (connection.tp_id === 'trello') {
+                    appName = 'Trello';
+                    imageSrc =
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1705315257/Revert/abt6asvtvdqhzgadanwx.png';
                 }
                 appName = connection.tp_id.charAt(0).toUpperCase() + connection.tp_id.slice(1);
                 return {

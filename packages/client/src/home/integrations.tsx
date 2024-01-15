@@ -403,44 +403,6 @@ const Integrations = ({ environment }) => {
                                         flexDirection: 'column',
                                         alignItems: 'flex-start',
                                         minHeight: 200,
-                                        justifyContent: 'flex-start',
-                                        position: 'relative',
-                                    }}
-                                >
-                                    <p className="font-bold mt-4 mb-2">Request Integration</p>
-                                    <span>
-                                        Don't see an integration here? Let us{' '}
-                                        <a
-                                            href="https://discord.gg/q5K5cRhymW"
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className="font-bold underline"
-                                        >
-                                            know
-                                        </a>{' '}
-                                        and we'd have it in less than 48 hours.
-                                    </span>
-                                </div>
-                            </Box>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    padding: '2rem 0rem',
-                                    maxWidth: '340px',
-                                    maxHeight: '208px',
-                                }}
-                            >
-                                <div
-                                    style={{
-                                        padding: 30,
-                                        border: '2px #00000029 solid',
-                                        borderRadius: 10,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'flex-start',
-                                        minHeight: 200,
                                         justifyContent: 'flex-end',
                                         position: 'relative',
                                     }}
@@ -580,7 +542,7 @@ const Integrations = ({ environment }) => {
                                     <img
                                         width={100}
                                         alt="Trello logo"
-                                        src="https://cdn-icons-png.flaticon.com/512/250/2504834.png"
+                                        src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1705315257/Revert/abt6asvtvdqhzgadanwx.png"
                                     />
                                     <p className="font-bold mt-4">Trello</p>
                                     <span>Configure your Trello Ticketing App from here.</span>
@@ -596,6 +558,44 @@ const Integrations = ({ environment }) => {
                                     >
                                         <SettingsIcon />
                                     </IconButton>
+                                </div>
+                            </Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '2rem 0rem',
+                                    maxWidth: '340px',
+                                    maxHeight: '208px',
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        padding: 30,
+                                        border: '2px #00000029 solid',
+                                        borderRadius: 10,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        minHeight: 200,
+                                        justifyContent: 'flex-start',
+                                        position: 'relative',
+                                    }}
+                                >
+                                    <p className="font-bold mt-4 mb-2">Request Integration</p>
+                                    <span>
+                                        Don't see an integration here? Let us{' '}
+                                        <a
+                                            href="https://discord.gg/q5K5cRhymW"
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="font-bold underline"
+                                        >
+                                            know
+                                        </a>{' '}
+                                        and we'd have it in less than 48 hours.
+                                    </span>
                                 </div>
                             </Box>
                         </div>
