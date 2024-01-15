@@ -24,11 +24,46 @@ declare global {
     }
 }
 
+const renderNavbar = (workspaceName, environmentList, environment, setEnvironment) => {
+    return (
+        <Navbar
+            workspaceName={workspaceName}
+            environment={environment}
+            setEnvironment={(env) => {
+                setEnvironment(env);
+            }}
+            environmentList={environmentList}
+        />
+    );
+};
+
+const renderTab = (tabValue: number, handleChange, environment) => {
+    if (tabValue === 0) {
+        return <Onboarding changeTabs={() => handleChange(1)} />;
+    } else if (tabValue === 1) {
+        return <Integrations environment={environment} />;
+    } else if (tabValue === 2) {
+        return <Analytics environment={environment} />;
+    } else if (tabValue === 3) {
+        return <ApiKeys environment={environment} />;
+    } else return undefined;
+};
+const getInitialEnvironment = () => {
+    var selectedOption = localStorage.getItem('revert_environment_selected') || DEFAULT_ENV;
+
+    return selectedOption;
+};
+
 const Home = () => {
     const [tabValue, setTabValue] = React.useState(0);
     const [account, setAccount] = React.useState<any>();
-    const [environment, setEnvironment] = React.useState<string>(DEFAULT_ENV);
+    const [environment, setEnvironment] = React.useState<string>(getInitialEnvironment());
     const user = useUser();
+
+    const setSelectedEnvironment = (option) => {
+        localStorage.setItem('revert_environment_selected', option);
+        setEnvironment(option);
+    };
     useEffect(() => {
         if (window.Intercom) {
             window.Intercom('boot', {
@@ -57,12 +92,12 @@ const Home = () => {
                 setAccount(result?.account);
                 const environments: string[] = result?.account?.environments?.map((env) => env.env) || [];
                 if (!environments.includes(DEFAULT_ENV)) {
-                    setEnvironment(environments?.[0]);
+                    setSelectedEnvironment(environments?.[0]);
                 }
             })
             .catch((error) => {
                 Sentry.captureException(error);
-                console.log('error', error);
+                console.error('error', error);
             });
     }, [user.user?.id]);
 
@@ -73,25 +108,9 @@ const Home = () => {
         }
     };
 
-    const renderTab = (tabValue: number) => {
-        if (tabValue === 0) {
-            return <Onboarding changeTabs={() => handleChange(1)} />;
-        } else if (tabValue === 1) {
-            return <Integrations environment={environment} />;
-        } else if (tabValue === 2) {
-            return <Analytics environment={environment} />;
-        } else if (tabValue === 3) {
-            return <ApiKeys environment={environment} />;
-        } else return undefined;
-    };
     return (
         <>
-            <Navbar
-                workspaceName={account?.workspaceName}
-                environment={environment}
-                setEnvironment={setEnvironment}
-                environmentList={account?.environments}
-            />
+            {renderNavbar(account?.workspaceName, account?.environments, environment, setSelectedEnvironment)}
             <div className="flex h-[100%]">
                 <div className="w-[20%] flex flex-col items-center pt-[120px] text-[#6e6e6e]">
                     <ul>
@@ -129,7 +148,7 @@ const Home = () => {
                         </li>
                     </ul>
                 </div>
-                {renderTab(tabValue)}
+                {renderTab(tabValue, handleChange, environment)}
             </div>
         </>
     );
