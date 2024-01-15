@@ -138,6 +138,17 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
                     state: status,
                     teamId: obj['listId'],
                 };
+            } else if (objType === 'ticketComment') {
+                let parentId = undefined;
+                if (transformedObj._parent && obj.parentId) {
+                    parentId = obj.parentId;
+                    delete transformedObj._parent;
+                }
+                return {
+                    ...transformedObj,
+                    issueId: obj.taskId ? obj.taskId : undefined,
+                    parentId: parentId ? parentId : undefined,
+                };
             }
             return processedObj;
         }

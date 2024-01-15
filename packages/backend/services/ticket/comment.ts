@@ -65,7 +65,9 @@ const commentServiceTicket = new CommentService(
                     case TP_ID.jira: {
                         let parsedFields: any = fields ? JSON.parse(fields) : undefined;
                         if (!parsedFields.taskId) {
-                            throw new Error('Issue Id or Issue key required for fetching comments');
+                            throw new Error(
+                                'taskId is required for fetching Jira comments. You can also pass taskKey to taskId.'
+                            );
                         }
                         const result = await axios({
                             method: 'get',
@@ -115,12 +117,19 @@ const commentServiceTicket = new CommentService(
             try {
                 const connection = res.locals.connection;
                 const account = res.locals.account;
-                const fields: any = req.query.fields;
+                const fields: any = JSON.parse(req.query.fields as string);
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+
+                if (!fields || (fields && !fields.taskId)) {
+                    throw new NotFoundError({
+                        error: 'The query parameter "taskId" is required and should be included in the "fields" parameter.',
+                    });
+                }
+
                 logInfo(
                     'Revert::GET ALL COMMENTS',
                     connection.app?.env?.accountId,
@@ -134,12 +143,18 @@ const commentServiceTicket = new CommentService(
                         const linear = new LinearClient({
                             accessToken: thirdPartyToken,
                         });
-
                         const variables = {
                             first: pageSize ? pageSize : null,
                             after: cursor ? cursor : null,
                             last: null,
                             Before: null,
+                            filter: {
+                                issue: {
+                                    id: {
+                                        eq: fields.taskId,
+                                    },
+                                },
+                            },
                         };
 
                         const comments = await linear.comments(variables);
@@ -177,10 +192,9 @@ const commentServiceTicket = new CommentService(
                         break;
                     }
                     case TP_ID.clickup: {
-                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
                         let result: any = await axios({
                             method: 'get',
-                            url: `https://api.clickup.com/api/v2/${parsedFields.entity}/${parsedFields.entityId}/comment`,
+                            url: `https://api.clickup.com/api/v2/task/${fields.taskId}/comment`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'Content-Type': 'application/json',
@@ -208,18 +222,13 @@ const commentServiceTicket = new CommentService(
                         break;
                     }
                     case TP_ID.jira: {
-                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
-                        if (!parsedFields.taskId) {
-                            throw new Error('Issue Id or Issue key required for fetching comments');
-                        }
-
                         let pagingString = `${pageSize ? `&maxResults=${pageSize}` : ''}${
                             pageSize && cursor ? `&startAt=${cursor}` : ''
                         }`;
 
                         const result = await axios({
                             method: 'get',
-                            url: `${connection.tp_account_url}/rest/api/2/issue/${parsedFields.taskId}/comment?${pagingString}`,
+                            url: `${connection.tp_account_url}/rest/api/2/issue/${fields.taskId}/comment?${pagingString}`,
                             headers: {
                                 Accept: 'application/json',
                                 Authorization: `Bearer ${thirdPartyToken}`,
@@ -254,11 +263,6 @@ const commentServiceTicket = new CommentService(
                         break;
                     }
                     case TP_ID.trello: {
-                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
-                        if (!parsedFields.boardId) {
-                            throw new Error('boardId is required');
-                        }
-
                         let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}`;
 
                         if (cursor) {
@@ -266,7 +270,7 @@ const commentServiceTicket = new CommentService(
                         }
                         let comments: any = await axios({
                             method: 'get',
-                            url: `https://api.trello.com/1/boards/${parsedFields.boardId}/actions?filter=commentCard&key=${connection.app_client_id}&token=${thirdPartyToken}&${pagingString}`,
+                            url: `https://api.trello.com/1/cards/${fields.taskId}/actions?filter=commentCard&key=${connection.app_client_id}&token=${thirdPartyToken}&${pagingString}`,
                             headers: {
                                 Accept: 'application/json',
                             },
@@ -312,12 +316,15 @@ const commentServiceTicket = new CommentService(
 
         async createComment(req, res) {
             try {
-                let commentData: any = req.body as UnifiedTicketComment;
+                let commentData: any = req.body as unknown as UnifiedTicketComment;
                 const connection = res.locals.connection;
                 const account = res.locals.account;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                if (commentData && !commentData.taskId) {
+                    throw new Error('The parameter "taskId" is required in request body.');
+                }
                 const comment: any = await disunifyTicketObject<UnifiedTicketComment>({
                     obj: commentData,
                     tpId: thirdPartyId,
@@ -345,7 +352,7 @@ const commentServiceTicket = new CommentService(
                     case TP_ID.clickup: {
                         const result: any = await axios({
                             method: 'post',
-                            url: `https://api.clickup.com/api/v2/${comment.entity}/${comment.entityId}/comment`,
+                            url: `https://api.clickup.com/api/v2/task/${commentData.taskId}/comment`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'Content-Type': 'application/json',
@@ -363,7 +370,7 @@ const commentServiceTicket = new CommentService(
                     case TP_ID.jira: {
                         const result: any = await axios({
                             method: 'post',
-                            url: `${connection.tp_account_url}/rest/api/2/issue/${comment.issueId}/comment`,
+                            url: `${connection.tp_account_url}/rest/api/2/issue/${commentData.taskId}/comment`,
                             headers: {
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
@@ -382,7 +389,7 @@ const commentServiceTicket = new CommentService(
                     case TP_ID.trello: {
                         const commentCreated = await axios({
                             method: 'post',
-                            url: `https://api.trello.com/1/cards/${comment.cardId}/actions/comments?text=${comment.data.text}&key=${connection.app_client_id}&token=${thirdPartyToken}`,
+                            url: `https://api.trello.com/1/cards/${commentData.taskId}/actions/comments?text=${comment.data.text}&key=${connection.app_client_id}&token=${thirdPartyToken}`,
                             headers: {
                                 Accept: 'application/json',
                             },
@@ -413,7 +420,7 @@ const commentServiceTicket = new CommentService(
             try {
                 const connection = res.locals.connection;
                 const account = res.locals.account;
-                const commentData = req.body as UnifiedTicketComment;
+                const commentData: any = req.body as unknown as UnifiedTicketComment;
                 const commentId = req.params.id;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
@@ -461,9 +468,14 @@ const commentServiceTicket = new CommentService(
                         break;
                     }
                     case TP_ID.jira: {
+                        if (!commentData.taskId) {
+                            throw new NotFoundError({
+                                error: 'taskId is required in request body for updating Jira comment.',
+                            });
+                        }
                         const result: any = await axios({
                             method: 'put',
-                            url: `${connection.tp_account_url}/rest/api/2/issue/${comment.issueId}/comment/${commentId}`,
+                            url: `${connection.tp_account_url}/rest/api/2/issue/${commentData.taskId}/comment/${commentId}`,
                             headers: {
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
@@ -479,9 +491,14 @@ const commentServiceTicket = new CommentService(
                         break;
                     }
                     case TP_ID.trello: {
+                        if (!commentData.taskId) {
+                            throw new NotFoundError({
+                                error: 'taskId is required in request body for updating trello comment.',
+                            });
+                        }
                         const result = await axios({
                             method: 'put',
-                            url: `https://api.trello.com/1/cards/${comment.cardId}/actions/${commentId}/comments?text=${comment.data.text}&key=${connection.app_client_id}&token=${thirdPartyToken}`,
+                            url: `https://api.trello.com/1/cards/${commentData.taskId}/actions/${commentId}/comments?text=${comment.data.text}&key=${connection.app_client_id}&token=${thirdPartyToken}`,
                             headers: {
                                 Accept: 'application/json',
                             },

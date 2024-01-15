@@ -1116,5 +1116,14 @@ export const ticketingFields = {
             },
             target_field_name: 'updatedTimeStamp',
         },
+        {
+            source_field_name: {
+                [TP_ID.linear]: '_parent.id',
+                [TP_ID.clickup]: undefined,
+                [TP_ID.jira]: undefined,
+                [TP_ID.trello]: undefined,
+            },
+            target_field_name: 'parentId',
+        },
     ],
 };

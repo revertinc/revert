@@ -267,9 +267,9 @@ types:
             body:
                 type: string
                 docs: The contents of the comment in plain text or HTML format.
-            createdBy:
+            taskId:
                 type: string
-                docs: The ID of the user who created the comment.
+                docs: Task or Issue to which comment must belong
     CommentTicket:
         extends:
             - CommonUnifiedFields
