@@ -1,6 +1,6 @@
 import express from 'express';
 import { randomUUID } from 'crypto';
-import { logDebug, logError, logInfo } from '../../../helpers/logger';
+import { logError, logInfo } from '../../../helpers/logger';
 import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
 import redis from '../../../redis/client';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../redis/client/pubsub';
@@ -152,7 +152,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 client_secret: clientSecret || config.CLICKUP_CLIENT_SECRET,
                 code: req.query.code,
             };
-            logDebug('client credentials ', formData);
+            logInfo('client credentials ', formData);
             const result = await axios({
                 method: 'post',
                 url: 'https://api.clickup.com/api/v2/oauth/token',
