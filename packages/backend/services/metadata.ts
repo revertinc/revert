@@ -138,6 +138,15 @@ const metadataService = new MetadataService({
                     scopes: getScope(apps, TP_ID.trello),
                     clientId: getClientId(apps, TP_ID.trello) || config.TRELLO_CLIENT_ID,
                 },
+                {
+                    integrationId: 'microsoft_dynamics',
+                    name: 'microsoft dynamics 365',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1691139212/Revert/image_60_whit0z.png',
+                    status: 'inactive',
+                    scopes: [],
+                    clientId: '',
+                },
             ];
             res.send({
                 status: 'ok',
