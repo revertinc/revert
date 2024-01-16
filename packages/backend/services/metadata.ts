@@ -101,23 +101,42 @@ const metadataService = new MetadataService({
                     scopes: getScope(apps, TP_ID.discord),
                     clientId: getClientId(apps, TP_ID.discord) || config.DISCORD_CLIENT_ID,
                 },
+                // @TODO add cloudinary links
                 {
-                    integrationId: 'microsoft_dynamics',
-                    name: 'microsoft dynamics 365',
+                    integrationId: TP_ID.linear,
+                    name: 'Linear',
                     imageSrc:
-                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1691139212/Revert/image_60_whit0z.png',
-                    status: 'inactive',
-                    scopes: [],
-                    clientId: '',
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/c_scale,w_100/v1702974919/Revert/v5e5z6afm5iepiy3cvex.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.linear),
+                    clientId: getClientId(apps, TP_ID.linear) || config.LINEAR_CLIENT_ID,
                 },
                 {
-                    integrationId: 'zendesk',
-                    name: 'Zendesk',
+                    integrationId: TP_ID.clickup,
+                    name: 'Clickup',
                     imageSrc:
-                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1691139212/Revert/image_58_ighbwk.png',
-                    status: 'inactive',
-                    scopes: [],
-                    clientId: '',
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/c_scale,w_100/v1702974919/Revert/zckjrxorttrrmyuxf1hu.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.clickup),
+                    clientId: getClientId(apps, TP_ID.clickup) || config.CLICKUP_CLIENT_ID,
+                },
+                {
+                    integrationId: TP_ID.jira,
+                    name: 'Jira',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1702983006/Revert/szfzkoagws7h3miptezo.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.jira),
+                    clientId: getClientId(apps, TP_ID.jira) || config.JIRA_CLIENT_ID,
+                },
+                {
+                    integrationId: TP_ID.trello,
+                    name: 'Trello',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1705315257/Revert/abt6asvtvdqhzgadanwx.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.trello),
+                    clientId: getClientId(apps, TP_ID.trello) || config.TRELLO_CLIENT_ID,
                 },
             ];
             res.send({

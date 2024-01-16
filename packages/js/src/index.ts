@@ -1144,6 +1144,46 @@ const createIntegrationBlock = function (self, integration) {
                             '%20'
                         )}&state=${state}`
                     );
+                } else if (selectedIntegration.integrationId === 'linear') {
+                    const encodedRedirectURI = encodeURIComponent(this.#REDIRECT_URL_BASE);
+                    window.open(
+                        `https://linear.app/oauth/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${encodedRedirectURI}/linear&response_type=code&scope=${scopes.join(
+                            ','
+                        )}&state=${state}`
+                    );
+                } else if (selectedIntegration.integrationId === 'clickup') {
+                    window.open(
+                        `https://app.clickup.com/api?client_id=${selectedIntegration.clientId}&redirect_uri=${
+                            this.#REDIRECT_URL_BASE
+                        }/clickup&state=${state}`
+                    );
+                } else if (selectedIntegration.integrationId === 'trello') {
+                    fetch(
+                        `${this.CORE_API_BASE_URL}ticket/trello-request-token?tenantId=${this.tenantId}&revertPublicToken=${this.API_REVERT_PUBLIC_TOKEN}`
+                    )
+                        .then((data) => data.json())
+                        .then((data) => {
+                            if (data.oauth_token) {
+                                window.open(
+                                    `${data.authorizeURL}?oauth_token=${data.oauth_token}&scope=${scopes.join(
+                                        ','
+                                    )}&expiration=${data.expiration}`
+                                );
+                            }
+                        });
+                } else if (selectedIntegration.integrationId === 'jira') {
+                    const encodedScopes = encodeURIComponent(scopes.join(' '));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/jira`);
+
+                    window.open(
+                        `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=${
+                            selectedIntegration.clientId
+                        }&scope=${encodedScopes}&redirect_uri=${encodedRedirectUri}&state=${encodeURIComponent(
+                            state
+                        )}&response_type=code&prompt=consent`
+                    );
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {

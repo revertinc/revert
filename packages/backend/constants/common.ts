@@ -2,6 +2,7 @@ import { TP_ID } from '@prisma/client';
 
 export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot' | 'closecrm';
 export type CHAT_TP_ID = 'slack' | 'discord';
+export type TICKET_TP_ID = 'linear' | 'clickup' | 'asana' | 'jira' | 'trello';
 
 export const DEFAULT_SCOPE = {
     [TP_ID.hubspot]: [
@@ -40,6 +41,11 @@ export const DEFAULT_SCOPE = {
     [TP_ID.slack]: ['users:read', 'users.profile:read'],
     [TP_ID.closecrm]: [],
     [TP_ID.discord]: ['identify', 'bot'],
+    [TP_ID.linear]: ['issues:create', 'write'],
+    [TP_ID.asana]: [],
+    [TP_ID.clickup]: [],
+    [TP_ID.trello]: [],
+    [TP_ID.jira]: ['read:jira-work', 'read:jira-user', 'write:jira-work', 'offline_access'],
 };
 
 export const mapIntegrationIdToIntegrationName = {
@@ -50,6 +56,11 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.slack]: 'Slack',
     [TP_ID.closecrm]: 'Close',
     [TP_ID.discord]: 'Discord',
+    [TP_ID.linear]: 'Linear',
+    [TP_ID.asana]: 'Asana',
+    [TP_ID.clickup]: 'Clickup',
+    [TP_ID.trello]: 'Trello',
+    [TP_ID.jira]: 'Jira',
 };
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';
@@ -69,6 +80,12 @@ export enum ChatStandardObjects {
     channel = 'channel',
     chatUser = 'chatUser',
     message = 'message',
+}
+
+export enum TicketStandardObjects {
+    ticketUser = 'ticketUser',
+    ticketTask = 'ticketTask',
+    ticketComment = 'ticketComment',
 }
 
 export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefined>> = {

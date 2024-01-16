@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import { ENV, PrismaClient, TP_ID, fieldMappings } from '@prisma/client';
-import { ChatStandardObjects, StandardObjects, rootSchemaMappingId } from '../constants/common';
-import { allFields, chatFields } from './fields';
+import { ChatStandardObjects, StandardObjects, TicketStandardObjects, rootSchemaMappingId } from '../constants/common';
+import { allFields, chatFields, ticketingFields } from './fields';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -63,7 +63,15 @@ async function main() {
         };
     });
 
-    const mergedSchema = [...allSchemas, ...chatSchemas];
+    const ticketSchemas = Object.keys(ticketingFields).map((obj) => {
+        return {
+            id: randomUUID(),
+            fields: ticketingFields[obj as keyof typeof ticketingFields].map((n) => n.target_field_name),
+            object: obj as TicketStandardObjects,
+        };
+    });
+
+    const mergedSchema = [...allSchemas, ...chatSchemas, ...ticketSchemas];
 
     await prisma.schema_mapping.deleteMany({
         where: {
@@ -71,7 +79,6 @@ async function main() {
         },
     });
 
-    // Ensures that for the updated or newly generated schemas, their IDs are associated with rootSchemaMappingId in schema_mapping -> object_schema_ids.
     await prisma.schema_mapping.upsert({
         where: {
             id: rootSchemaMappingId,
@@ -136,6 +143,29 @@ async function main() {
                 target_field_name: field,
                 is_standard_field: true,
             }));
+            if (fieldMappings) {
+                fieldMappingForAll.push(...fieldMappings);
+            }
+        });
+    });
+
+    Object.values(TicketStandardObjects).forEach((obj) => {
+        Object.values(TP_ID).forEach(async (tpId) => {
+            if (!(tpId === 'linear' || tpId === 'clickup' || tpId === 'jira' || tpId === 'trello')) return;
+            const objSchema = ticketSchemas.find((s: any) => s.object === obj);
+            const fieldMappings = objSchema?.fields.map((field: any) => {
+                const sourceFields: any = (ticketingFields[obj] as { target_field_name: string }[]).find(
+                    (a) => a.target_field_name === field
+                );
+                return {
+                    id: randomUUID(),
+                    source_tp_id: tpId,
+                    schema_id: objSchema.id,
+                    source_field_name: sourceFields?.source_field_name[tpId]!,
+                    target_field_name: field,
+                    is_standard_field: true,
+                };
+            });
             if (fieldMappings) {
                 fieldMappingForAll.push(...fieldMappings);
             }

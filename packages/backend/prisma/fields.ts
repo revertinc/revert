@@ -1,5 +1,5 @@
 import { TP_ID } from '@prisma/client';
-import { ChatStandardObjects, StandardObjects } from '../constants/common';
+import { ChatStandardObjects, StandardObjects, TicketStandardObjects } from '../constants/common';
 
 // root schema mapping
 export const allFields = {
@@ -842,6 +842,288 @@ export const chatFields = {
                 [TP_ID.discord]: undefined,
             },
             target_field_name: 'channelId',
+        },
+    ],
+};
+
+export const ticketingFields = {
+    [TicketStandardObjects.ticketTask]: [
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'id',
+                [TP_ID.clickup]: 'id',
+                [TP_ID.jira]: 'id',
+                [TP_ID.trello]: 'id',
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'id',
+                [TP_ID.clickup]: 'id',
+                [TP_ID.jira]: 'id',
+                [TP_ID.trello]: 'id',
+            },
+            target_field_name: 'remoteId',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'title',
+                [TP_ID.clickup]: 'name',
+                [TP_ID.jira]: 'summary',
+                [TP_ID.trello]: 'name',
+            },
+            target_field_name: 'name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'assignee',
+                [TP_ID.clickup]: 'assignees',
+                [TP_ID.jira]: 'assignee',
+                [TP_ID.trello]: 'idMembers',
+            },
+            target_field_name: 'assignees',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'description',
+                [TP_ID.clickup]: 'description',
+                [TP_ID.jira]: 'description',
+                [TP_ID.trello]: 'desc',
+            },
+            target_field_name: 'description',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'state',
+                [TP_ID.clickup]: 'status',
+                [TP_ID.jira]: 'status.name',
+                [TP_ID.trello]: undefined,
+            },
+            target_field_name: 'status',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'priorityLabel',
+                [TP_ID.clickup]: 'priority',
+                [TP_ID.jira]: 'priority.name',
+                [TP_ID.trello]: undefined,
+            },
+            target_field_name: 'priority',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: '_creator.id',
+                [TP_ID.clickup]: 'creator.id',
+                [TP_ID.jira]: 'creator.accountId',
+                [TP_ID.trello]: undefined,
+            },
+            target_field_name: 'creatorId',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'createdAt',
+                [TP_ID.clickup]: 'date_created',
+                [TP_ID.jira]: 'created',
+                [TP_ID.trello]: undefined,
+            },
+            target_field_name: 'createdTimeStamp',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'updatedAt',
+                [TP_ID.clickup]: 'date_updated',
+                [TP_ID.jira]: 'updated',
+                [TP_ID.trello]: 'dateLastActivity',
+            },
+            target_field_name: 'updatedTimeStamp',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'dueDate',
+                [TP_ID.clickup]: 'due_date',
+                [TP_ID.jira]: 'duedate',
+                [TP_ID.trello]: 'due',
+            },
+            target_field_name: 'dueDate',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'completedDate',
+                [TP_ID.clickup]: 'date_done',
+                [TP_ID.jira]: undefined,
+                [TP_ID.trello]: undefined,
+            },
+            target_field_name: 'completedDate',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: '_parent.id',
+                [TP_ID.clickup]: 'parent',
+                [TP_ID.jira]: 'parent.id',
+                [TP_ID.trello]: undefined,
+            },
+            target_field_name: 'parentId',
+        },
+        {
+            source_field_name: {
+                [TP_ID.jira]: 'project.id',
+            },
+            target_field_name: 'projectId',
+        },
+        {
+            source_field_name: {
+                [TP_ID.jira]: 'issuetype.id',
+            },
+            target_field_name: 'issueTypeId',
+        },
+    ],
+    [TicketStandardObjects.ticketUser]: [
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'id',
+                [TP_ID.clickup]: 'id',
+                [TP_ID.jira]: 'accountId',
+                [TP_ID.trello]: 'id',
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'id',
+                [TP_ID.clickup]: 'id',
+                [TP_ID.jira]: 'accountId',
+                [TP_ID.trello]: 'id',
+            },
+            target_field_name: 'remoteId',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'email',
+                [TP_ID.clickup]: 'email',
+                [TP_ID.jira]: 'emailAddress',
+                [TP_ID.trello]: 'email',
+            },
+            target_field_name: 'email',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'name',
+                [TP_ID.clickup]: 'username',
+                [TP_ID.jira]: 'displayName',
+                [TP_ID.trello]: 'fullName',
+            },
+            target_field_name: 'name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'active',
+                [TP_ID.clickup]: undefined,
+                [TP_ID.jira]: 'active',
+                [TP_ID.trello]: undefined,
+            },
+            target_field_name: 'isActive',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'avatarUrl',
+                [TP_ID.clickup]: 'profilePicture',
+                [TP_ID.jira]: 'avatarUrls."48x48"',
+                [TP_ID.trello]: 'avatarUrl',
+            },
+            target_field_name: 'avatar',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'createdAt',
+                [TP_ID.clickup]: undefined,
+                [TP_ID.jira]: undefined,
+                [TP_ID.trello]: undefined,
+            },
+            target_field_name: 'createdTimeStamp',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: null,
+                [TP_ID.clickup]: undefined,
+                [TP_ID.jira]: undefined,
+                [TP_ID.trello]: undefined,
+            },
+            target_field_name: 'updatedTimeStamp',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'admin',
+                [TP_ID.clickup]: undefined,
+                [TP_ID.jira]: undefined,
+                [TP_ID.trello]: undefined,
+            },
+            target_field_name: 'isAdmin',
+        },
+    ],
+    [TicketStandardObjects.ticketComment]: [
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'id',
+                [TP_ID.clickup]: 'id',
+                [TP_ID.jira]: 'id',
+                [TP_ID.trello]: 'id',
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'id',
+                [TP_ID.clickup]: 'id',
+                [TP_ID.jira]: 'id',
+                [TP_ID.trello]: 'id',
+            },
+            target_field_name: 'remoteId',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'body',
+                [TP_ID.clickup]: 'comment_text',
+                [TP_ID.jira]: 'body',
+                [TP_ID.trello]: 'data.text',
+            },
+            target_field_name: 'body',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: '_user.id',
+                [TP_ID.clickup]: 'user.id',
+                [TP_ID.jira]: 'author.accountId',
+                [TP_ID.trello]: 'idMemberCreator',
+            },
+            target_field_name: 'createdBy',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'createdAt',
+                [TP_ID.clickup]: 'date',
+                [TP_ID.jira]: 'created',
+                [TP_ID.trello]: 'date',
+            },
+            target_field_name: 'createdTimestamp',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: 'updatedAt',
+                [TP_ID.clickup]: undefined,
+                [TP_ID.jira]: 'updated',
+                [TP_ID.trello]: 'data.dateLastEdited',
+            },
+            target_field_name: 'updatedTimeStamp',
+        },
+        {
+            source_field_name: {
+                [TP_ID.linear]: '_parent.id',
+                [TP_ID.clickup]: undefined,
+                [TP_ID.jira]: undefined,
+                [TP_ID.trello]: undefined,
+            },
+            target_field_name: 'parentId',
         },
     ],
 };

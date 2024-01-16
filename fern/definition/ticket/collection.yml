@@ -1,0 +1,43 @@
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+
+types:
+    GetCollectionsResponse:
+        properties:
+            status: types.ResponseStatus
+            next: optional<string>
+            previous: optional<string>
+            results: unknown
+
+service:
+    base-path: /ticket/collections
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getCollections:
+            docs: Get all the collections
+            method: GET
+            path: ''
+            request:
+                name: GetCollectionsRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetCollectionsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

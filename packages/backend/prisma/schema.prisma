@@ -15,6 +15,11 @@ enum TP_ID {
   closecrm
   slack
   discord
+  linear
+  clickup
+  asana
+  trello
+  jira
 }
 
 enum ENV {

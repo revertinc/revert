@@ -141,7 +141,7 @@ const noteService = new NoteService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not fetch lead', error);
+                console.error('Could not fetch note', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -349,7 +349,7 @@ const noteService = new NoteService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not fetch leads', error);
+                console.error('Could not fetch notes', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -566,7 +566,7 @@ const noteService = new NoteService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not update lead', error.response);
+                console.error('Could not update note', error.response);
                 if (isStandardError(error)) {
                     throw error;
                 }

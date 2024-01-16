@@ -174,6 +174,7 @@ app.listen(config.PORT, () => {
     cron.schedule(`*/2 * * * *`, async () => {
         await AuthService.refreshOAuthTokensForThirdParty();
         await AuthService.refreshOAuthTokensForThirdPartyChatServices();
+        await AuthService.refreshOAuthTokensForThirdPartyTicketServices();
     });
     if (!config.DISABLE_REVERT_TELEMETRY) {
         cron.schedule(`*/30 * * * *`, async () => {

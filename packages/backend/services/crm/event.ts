@@ -559,7 +559,7 @@ const eventService = new EventService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not update lead', error.response);
+                console.error('Could not update event', error.response);
                 if (isStandardError(error)) {
                     throw error;
                 }

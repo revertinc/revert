@@ -1,6 +1,11 @@
 import { get, merge } from 'lodash';
 import { Prisma, PrismaClient, TP_ID, accountFieldMappingConfig } from '@prisma/client';
-import { ChatStandardObjects, StandardObjects, rootSchemaMappingId } from '../../../constants/common';
+import {
+    ChatStandardObjects,
+    StandardObjects,
+    TicketStandardObjects,
+    rootSchemaMappingId,
+} from '../../../constants/common';
 import { logDebug } from '../../logger';
 
 const prisma = new PrismaClient();
@@ -14,7 +19,7 @@ export const transformFieldMappingToModel = async ({
 }: {
     obj: any;
     tpId: TP_ID;
-    objType: StandardObjects | ChatStandardObjects;
+    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects;
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }) => {
@@ -80,7 +85,7 @@ export const transformModelToFieldMapping = async ({
 }: {
     unifiedObj: any;
     tpId: TP_ID;
-    objType: StandardObjects | ChatStandardObjects;
+    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects;
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }) => {

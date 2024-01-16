@@ -140,7 +140,7 @@ const companyService = new CompanyService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not fetch lead', error);
+                console.error('Could not fetch company', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -320,7 +320,7 @@ const companyService = new CompanyService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not fetch leads', error);
+                console.error('Could not fetch companies', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -537,7 +537,7 @@ const companyService = new CompanyService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not update lead', error.response);
+                console.error('Could not update company', error.response);
                 if (isStandardError(error)) {
                     throw error;
                 }
