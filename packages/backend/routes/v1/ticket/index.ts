@@ -58,8 +58,11 @@ ticketRouter.get('/trello-request-token', async (req, res) => {
             },
         });
 
-        const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
-        const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
+        let clientId = account?.apps[0]?.is_revert_app ? config.TRELLO_CLIENT_ID : account?.apps[0]?.app_client_id;
+        let clientSecret = account?.apps[0]?.is_revert_app
+            ? config.TRELLO_CLIENT_SECRET
+            : account?.apps[0]?.app_client_secret;
+
         const oauth = new OAuth(
             requestURL,
             accessURL,

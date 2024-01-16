@@ -44,7 +44,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.linear]: ['issues:create', 'write'],
     [TP_ID.asana]: [],
     [TP_ID.clickup]: [],
-    [TP_ID.trello]: [],
+    [TP_ID.trello]: ['read', 'write'],
     [TP_ID.jira]: ['read:jira-work', 'read:jira-user', 'write:jira-work', 'offline_access'],
 };
 
