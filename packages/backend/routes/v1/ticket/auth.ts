@@ -238,13 +238,15 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 res.send({ status: 'error', error: error });
             }
         } else if (integrationId === TP_ID.trello && req.query.t_id && revertPublicKey) {
+            const trelloClientId = clientId ? clientId : config.TRELLO_CLIENT_ID;
+            const trelloClientSecret = clientId ? clientId : config.TRELLO_CLIENT_SECRET;
             const requestURL = 'https://trello.com/1/OAuthGetRequestToken';
             const accessURL = 'https://trello.com/1/OAuthGetAccessToken';
             const oauth = new OAuth(
                 requestURL,
                 accessURL,
-                String(clientId),
-                String(clientSecret),
+                String(trelloClientId),
+                String(trelloClientSecret),
                 '1.0A',
                 null,
                 'HMAC-SHA1'
