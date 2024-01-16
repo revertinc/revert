@@ -69,7 +69,7 @@
         "express-rate-limit": "^7.1.5",
         "ip": "^1.1.8",
         "lodash": "^4.17.21",
-        "moesif-nodejs": "^3.5.3",
+        "moesif-nodejs": "^3.5.7",
         "morgan": "^1.10.0",
         "node-cron": "^3.0.2",
         "oauth": "^0.10.0",
