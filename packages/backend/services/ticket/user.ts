@@ -89,9 +89,7 @@ const userServiceTicket = new UserService(
                     case TP_ID.trello: {
                         const member: any = await axios({
                             method: 'get',
-                            url: `https://api.trello.com/1/members/${'656731ac45b0954c7f8f066c'}?key=${
-                                connection.app_client_id
-                            }&token=${thirdPartyToken}`,
+                            url: `https://api.trello.com/1/members/${userId}?key=${connection.app_client_id}&token=${thirdPartyToken}`,
                             headers: {
                                 Accept: 'application/json',
                             },
@@ -127,12 +125,19 @@ const userServiceTicket = new UserService(
             try {
                 const connection = res.locals.connection;
                 const account = res.locals.account;
-                const fields: any = req.query.fields;
+                const fields: any = req.query.fields ? JSON.parse(req.query.fields as string) : undefined;
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+
+                if ((thirdPartyId !== TP_ID.jira && !fields) || (fields && !fields.listId)) {
+                    throw new NotFoundError({
+                        error: 'The query parameter "listId" is required and should be included in the "fields" parameter.',
+                    });
+                }
+
                 logInfo(
                     'Revert::GET ALL USERS',
                     connection.app?.env?.accountId,
@@ -157,10 +162,30 @@ const userServiceTicket = new UserService(
                             Before: null,
                         };
 
-                        const result = await linear.users(variables);
+                        let result: any = await linear.users(variables);
+                        const linearGraphqlClient = await linear.client;
+                        let membersId: any = await linearGraphqlClient.rawRequest(
+                            `query Team($teamId: String!) {
+                            team(id: $teamId) {
+                              members {
+                                nodes {
+                                  id
+                                }
+                              }
+                            }
+                          }`,
+                            {
+                                teamId: fields.listId,
+                            }
+                        );
+
+                        membersId = membersId.data.team.members.nodes;
+                        const users = result.nodes.filter((user: any) =>
+                            membersId.some((item: any) => item.id === user.id)
+                        );
 
                         const unifiedUsers = await Promise.all(
-                            result.nodes.map(
+                            users.map(
                                 async (user: any) =>
                                     await unifyObject<any, UnifiedTicketUser>({
                                         obj: user,
@@ -193,10 +218,10 @@ const userServiceTicket = new UserService(
                         break;
                     }
                     case TP_ID.clickup: {
-                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
+                        const pagingString = `${cursor ? `page=${cursor}` : ''}`;
                         const result: any = await axios({
                             method: 'get',
-                            url: `https://api.clickup.com/api/v2/list/${parsedFields.listId}/member`,
+                            url: `https://api.clickup.com/api/v2/list/${fields.listId}/member?${pagingString}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'Content-Type': 'application/json',
@@ -214,18 +239,26 @@ const userServiceTicket = new UserService(
                                     })
                             )
                         );
+                        const pageNumber = !result.data?.last_page
+                            ? cursor
+                                ? (parseInt(String(cursor)) + 1).toString()
+                                : '1'
+                            : undefined;
                         res.send({
                             status: 'ok',
-                            next: undefined,
+                            next: pageNumber,
                             previous: undefined,
                             results: unnifiedMembers,
                         });
                         break;
                     }
                     case TP_ID.jira: {
+                        let pagingString = `${pageSize ? `&maxResults=${pageSize}` : ''}${
+                            pageSize && cursor ? `&startAt=${cursor}` : ''
+                        }`;
                         const result = await axios({
                             method: 'get',
-                            url: `${connection.tp_account_url}/rest/api/2/users/search`,
+                            url: `${connection.tp_account_url}/rest/api/2/users/search?${pagingString}`,
                             headers: {
                                 Accept: 'application/json',
                                 Authorization: `Bearer ${thirdPartyToken}`,
@@ -244,28 +277,36 @@ const userServiceTicket = new UserService(
                             })
                         );
 
+                        const nextCursor = pageSize ? Number(cursor ? cursor : 0) + Number(pageSize) : undefined;
+                        const previousCursor =
+                            pageSize && cursor && Number(cursor) >= pageSize
+                                ? Number(cursor) - Number(pageSize)
+                                : undefined;
+
                         res.send({
                             status: 'ok',
-                            next: 'NEXT_CURSOR',
-                            previous: 'PREVIOUS_CURSOR',
+                            next: nextCursor ? String(nextCursor) : undefined,
+                            previous: previousCursor !== undefined ? String(previousCursor) : undefined,
                             results: unifiedUsers,
                         });
 
                         break;
                     }
                     case TP_ID.trello: {
-                        const parsedFields: any = fields ? JSON.parse(fields) : undefined;
-                        if (!parsedFields.boardId) {
-                            throw new Error('boardId is required to access this trello endpoint');
+                        let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}`;
+
+                        if (cursor) {
+                            pagingString = pagingString + `&before=${cursor}`;
                         }
+
                         const result: any = await axios({
                             method: 'get',
-                            url: `https://api.trello.com/1/boards/${parsedFields.boardId}/members?key=${connection.app_client_id}&token=${thirdPartyToken}`,
+                            url: `https://api.trello.com/1/boards/${fields.listId}/members?key=${connection.app_client_id}&token=${thirdPartyToken}&${pagingString}`,
                             headers: {
                                 Accept: 'application/json',
                             },
                         });
-
+                        const nextCursor = pageSize ? `${result.data[result.data.length - 1].id}` : undefined;
                         const unifiedUsers = await Promise.all(
                             result.data.map(
                                 async (user: any) =>
@@ -281,7 +322,7 @@ const userServiceTicket = new UserService(
 
                         res.send({
                             status: 'ok',
-                            next: undefined,
+                            next: nextCursor,
                             previous: undefined,
                             results: unifiedUsers,
                         });
