@@ -74,12 +74,18 @@ ticketRouter.get('/trello-request-token', async (req, res) => {
         );
 
         const oauth_creds: any = {};
-        oauth.getOAuthRequestToken(async (_error, token, tokenSecret, _results) => {
+        oauth.getOAuthRequestToken(async (error, token, tokenSecret, _results) => {
+            if (error) {
+                console.error('Error obtaining request token:', error);
+                return;
+            }
             //@TODO Error handling
             oauth_creds['oauth_token'] = token;
             oauth_creds['oauth_secret'] = tokenSecret;
-            await redis.setEx(`trello_dev_oauth_token_${oauth_creds.oauth_token}`, 3600, oauth_creds.oauth_secret);
-            res.send({ status: 'ok', oauth_token: oauth_creds.oauth_token, expiration, authorizeURL });
+            if (oauth_creds.oauth_token && oauth_creds.oauth_secret) {
+                await redis.setEx(`trello_dev_oauth_token_${oauth_creds.oauth_token}`, 3600, oauth_creds.oauth_secret);
+                res.send({ status: 'ok', oauth_token: oauth_creds.oauth_token, expiration, authorizeURL });
+            }
         });
     } catch (error: any) {
         logError(error);
