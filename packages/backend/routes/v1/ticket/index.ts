@@ -74,9 +74,10 @@ ticketRouter.get('/trello-request-token', async (req, res) => {
         );
 
         const oauth_creds: any = {};
-        oauth.getOAuthRequestToken(async (error, token, tokenSecret, _results) => {
+        oauth.getOAuthRequestToken(async (error: any, token, tokenSecret, _results) => {
             if (error) {
                 console.error('Error obtaining request token:', error);
+                logError(error);
                 return;
             }
             //@TODO Error handling
