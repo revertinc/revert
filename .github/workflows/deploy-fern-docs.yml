@@ -29,5 +29,8 @@ jobs:
               env:
                   FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
               run: fern generate --docs --instance revert.docs.buildwithfern.com --log-level debug
+
             - name: Generate sdks
               run: fern generate --group external
+              env:
+                  FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
