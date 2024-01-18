@@ -34,3 +34,4 @@ jobs:
               run: fern generate --group external
               env:
                   FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
