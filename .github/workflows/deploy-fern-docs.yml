@@ -29,10 +29,5 @@ jobs:
               env:
                   FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
               run: fern generate --docs --instance revert.docs.buildwithfern.com --log-level debug
-            # FIXME: Postman collection generation hangs in gh action.
-            # - name: Generate postman collection
-            #   run: fern generate --group external
-            #   env:
-            #       POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
-            #       POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
-            #       FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
+            - name: Generate sdks
+              run: fern generate --group external
