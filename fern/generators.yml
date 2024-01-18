@@ -36,6 +36,7 @@ groups:
               config:
                   client_class_name: Revert
                   timeout_in_seconds: infinity
+            # FIXME: Postman collection generation hangs in gh action.
             # - name: fernapi/fern-postman
             #   version: 0.0.44
             #   output:
