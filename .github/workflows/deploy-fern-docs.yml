@@ -36,3 +36,9 @@ jobs:
             #       POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
             #       POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
             #       FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
+            - name: Generate sdks
+              run: fern generate --group external
+              env:
+                  POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+                  POSTMAN_WORKSPACE_ID: ${{ secrets.POSTMAN_WORKSPACE_ID }}
+                  FERN_TOKEN: ${{ secrets.FERN_TOKEN }}

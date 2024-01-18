@@ -13,11 +13,34 @@ groups:
         audiences:
             - external
         generators:
-            - name: fernapi/fern-postman
-              version: 0.0.44
+            - name: fernapi/fern-typescript-node-sdk
+              version: 0.8.13
               output:
-                  location: postman
-                  api-key: ${POSTMAN_API_KEY}
-                  workspace-id: ${POSTMAN_WORKSPACE_ID}
+                  location: npm
+                  package-name: '@revertdotdev/node'
+                  token: ${NPM_TOKEN}
               github:
-                  repository: revertinc/revert-postman
+                  repository: revertinc/revert-node-ts
+              config:
+                  namespaceExport: Revert
+                  timeoutInSeconds: infinity
+
+            - name: fernapi/fern-python-sdk
+              version: 0.7.2
+              output:
+                  location: pypi
+                  package-name: 'revert-api'
+                  token: ${PYPI_TOKEN}
+              github:
+                  repository: revertinc/revert-python
+              config:
+                  client_class_name: Revert
+                  timeout_in_seconds: infinity
+            # - name: fernapi/fern-postman
+            #   version: 0.0.44
+            #   output:
+            #       location: postman
+            #       api-key: ${POSTMAN_API_KEY}
+            #       workspace-id: ${POSTMAN_WORKSPACE_ID}
+            #   github:
+            #       repository: revertinc/revert-postman
