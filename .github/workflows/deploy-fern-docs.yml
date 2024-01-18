@@ -35,3 +35,4 @@ jobs:
               env:
                   FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
                   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
