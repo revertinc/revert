@@ -22,6 +22,13 @@ const xprisma = prisma.$extends({
                 if (args.create?.tp_customer_id) {
                     args.create.tp_customer_id = gcm.encrypt(args.create.tp_customer_id, config.AES_ENCRYPTION_SECRET);
                 }
+
+                if (args.update?.tp_customer_id) {
+                    // when same t_id is used to update with other app
+                    const thirdPartyCustomerId: any = args.update.tp_customer_id;
+                    args.update.tp_customer_id = gcm.encrypt(thirdPartyCustomerId, config.AES_ENCRYPTION_SECRET);
+                }
+
                 return query(args);
             },
         },
