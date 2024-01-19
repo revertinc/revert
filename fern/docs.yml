@@ -23,33 +23,24 @@ navigation:
                   path: ./docs/contents/quick-start.mdx
                 - page: How it works
                   path: ./docs/contents/how-it-works.mdx
-          - section: Use Cases
-            contents:
-                - page: Use Cases
-                  path: ./docs/contents/usecases.mdx
-
-          - section: Rate Limits
+          - section: Developer Guide
             contents:
                 - page: Rate limits
                   path: ./docs/contents/rate-limits.mdx
-          - section: Pagination
-            contents:
                 - page: Pagination
                   path: ./docs/contents/pagination.mdx
-          - section: API Versioning
-            contents:
-                - page: API Versioning
-                  path: ./docs/contents/versioning.mdx
-          - section: Webhooks
-            contents:
-                - page: Webhooks
-                  path: ./docs/contents/webhooks.mdx
-          - section: Developer Guide
-            contents:
                 - page: Developer Guide
                   path: ./docs/contents/developer-guides.mdx
                 - page: Self Host Revert
                   path: ./docs/contents/docker-compose.mdx
+                - page: API Versioning
+                  path: ./docs/contents/versioning.mdx
+                - page: Webhooks
+                  path: ./docs/contents/webhooks.mdx
+          - section: Use Cases
+            contents:
+                - page: Use Cases
+                  path: ./docs/contents/usecases.mdx
           - section: API Integrations Support
             contents:
                 - page: CRMs
