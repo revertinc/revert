@@ -40,6 +40,7 @@ model accounts {
   accountFieldMappingConfig accountFieldMappingConfig?
   createdAt                 DateTime                   @default(now())
   updatedAt                 DateTime                   @default(now()) @updatedAt
+  connections               connections[]
 }
 
 model environments {
@@ -96,12 +97,15 @@ model connections {
   appId                      String?
   schema_mapping_id          String?
   schema_mapping             schema_mapping? @relation(fields: [schema_mapping_id], references: [id])
+  accountId                  String?
+  accounts                   accounts?       @relation(fields: [accountId], references: [id])
   createdAt                  DateTime        @default(now())
   updatedAt                  DateTime        @default(now()) @updatedAt
 
   @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")
-  @@unique([tp_id, t_id], name: "uniqueThirdPartyPerTenant")
+  @@unique([tp_id, t_id, accountId], name: "uniqueThirdPartyPerTenantPerAccount")
   @@unique([tp_customer_id, t_id, tp_id], name: "uniqueCustomerPerTenantPerThirdParty")
+  @@unique([t_id, accountId], name: "UniqueTenantPerAccount")
 }
 
 model schema_mapping {

@@ -294,15 +294,16 @@ authRouter.get('/oauth-callback', async (req, res) => {
 
                 await xprisma.connections.upsert({
                     where: {
-                        id: String(req.query.t_id),
+                        id: `${account!.accounts!.id}_${req.query.t_id}`,
                     },
                     update: {
+                        tp_id: integrationId,
                         tp_access_token: String(access_creds.access_token),
                         app_client_id: clientId || config.TRELLO_CLIENT_ID,
                         app_client_secret: clientSecret || config.TRELLO_CLIENT_SECRET,
                     },
                     create: {
-                        id: String(req.query.t_id),
+                        id: `${account!.accounts!.id}_${req.query.t_id}`,
                         t_id: req.query.t_id as string,
                         tp_id: integrationId,
                         tp_access_token: String(access_creds.access_token),
