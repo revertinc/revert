@@ -1,0 +1,26 @@
+
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1705655923/Revert/Docs/qnolut9hwciuhv1e6gn6.png"/>
+
+
+#### Obtaining Salesforce Client ID and Secret
+
+* Open a [Salesforce Developers account](https://developer.salesforce.com/signup). 
+* Go to `Platform tools > Apps > App Manager`  
+* Create a Salesforce Connected app, using the steps mentioned [here](https://trailhead.salesforce.com/content/learn/projects/build-a-connected-app-for-api-integration/create-a-connected-app)
+  * `NOTE:` You can skip this step and use the default revert Salesforce app
+* Set `https://app.revert.dev/oauth-callback/sfdc` as the `redirect` url for your app
+* **Get your client\_id and client\_secret**:
+  * Go to the `Platform tools > Apps > App Manager > <Name of your App> > Manage` section. 
+  * Click on `Manage Consumer Details`. This will open up a Consumer Details section that gives you the `Consumer Key` (client\_id) and `Consumer Secret` (client\_secret)
+  * Copy your client\_id and client\_secret
+
+#### Connect to Salesforce via Revert
+
+* Create an account on Revert if you don't already have one. (https://app.revert.dev/sign-up)
+* Login to your revert dashboard (https://app.revert.dev/sign-in) and click on `Customize your apps` - `Salesforce`
+
+
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1705652583/Revert/Docs/nwlrrom2sw5xj7dsgznv.png"/>
+
+
+* Enter the `client_id` and `client_secret` you copied in the previous step into the App credentials here and click `Submit`.
