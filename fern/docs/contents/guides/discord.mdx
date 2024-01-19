@@ -1,0 +1,22 @@
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1705659192/Revert/Docs/oym9trkiy1tyrfxl42ds.png" />
+
+#### Obtaining Discord Client ID and Secret
+
+-   Go to [Discord developer portal](https://discord.com/login?redirect_to=%2Fdevelopers%2Fapplications) by logging in with your existing discord account.
+-   Go to `Applications`
+-   Create a Discord app, more details mentioned [here](https://discord.com/developers/docs/topics/oauth2)
+    -   `NOTE:` You can skip this step and use the default revert Discord app
+-   Set `https://app.revert.dev/oauth-callback/discord` as the `redirect` url for your app
+-   **Get your client_id, client_secret and bot token**:
+    -   Go to the "OAuth2" section of the App , then select `General`
+    -   Copy your client_id and client_secret
+    -   Go to "Bot" and copy your Token
+
+#### Connect to Discord via Revert
+
+-   Create an account on Revert if you don't already have one. (https://app.revert.dev/sign-up)
+-   Login to your revert dashboard (https://app.revert.dev/sign-in) and click on `Customize your apps` - `Discord`
+
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1705652583/Revert/Docs/nwlrrom2sw5xj7dsgznv.png" />
+
+-   Enter the `client_id` and `client_secret` you copied in the previous step into the App credentials here and click `Submit`.

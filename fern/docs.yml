@@ -9,6 +9,9 @@ tabs:
     api:
         display-name: API Reference
         icon: 'fa-solid fa-code'
+    guides:
+        display-name: Integration Guides
+        icon: 'fa-solid fa-book'
 navigation:
     - tab: help
       layout:
@@ -16,53 +19,67 @@ navigation:
             contents:
                 - page: Getting Started
                   path: ./docs/contents/intro.mdx
-          - section: Quick Start
-            contents:
                 - page: Quick Start
                   path: ./docs/contents/quick-start.mdx
-          - section: Use Cases
-            contents:
-                - page: Use Cases
-                  path: ./docs/contents/usecases.mdx
-          - section: How it works
-            contents:
                 - page: How it works
                   path: ./docs/contents/how-it-works.mdx
-          - section: Rate Limits
+          - section: Developer Guide
             contents:
                 - page: Rate limits
                   path: ./docs/contents/rate-limits.mdx
-          - section: Pagination
-            contents:
                 - page: Pagination
                   path: ./docs/contents/pagination.mdx
-          - section: API Versioning
-            contents:
-                - page: API Versioning
-                  path: ./docs/contents/versioning.mdx
-          - section: Webhooks
-            contents:
-                - page: Webhooks
-                  path: ./docs/contents/webhooks.mdx
-          - section: Developer Guide
-            contents:
                 - page: Developer Guide
                   path: ./docs/contents/developer-guides.mdx
                 - page: Self Host Revert
                   path: ./docs/contents/docker-compose.mdx
-          - section: CRM Support
+                - page: API Versioning
+                  path: ./docs/contents/versioning.mdx
+                - page: Webhooks
+                  path: ./docs/contents/webhooks.mdx
+          - section: Use Cases
             contents:
-                - page: CRM Support
+                - page: Use Cases
+                  path: ./docs/contents/usecases.mdx
+          - section: API Integrations Support
+            contents:
+                - page: CRMs
                   path: ./docs/contents/crm-supported.mdx
-          - section: Messaging tools Support
-            contents:
-                - page: Messaging tools Support
+                - page: Messaging tools
+                  path: ./docs/contents/messaging-supported.mdx
+                - page: Ticketing Systems
                   path: ./docs/contents/messaging-supported.mdx
     - tab: api
       layout:
           - api: API Reference
+    - tab: guides
+      layout:
+          - section: Integration Guides
+            contents:
+                - page: Pipedrive
+                  path: ./docs/contents/guides/pipedrive.mdx
+                - page: Hubspot
+                  path: ./docs/contents/guides/hubspot.mdx
+                - page: Salesforce
+                  path: ./docs/contents/guides/salesforce.mdx
+                - page: Zoho CRM
+                  path: ./docs/contents/guides/zoho-crm.mdx
+                - page: Close
+                  path: ./docs/contents/guides/close.mdx
+                - page: Slack
+                  path: ./docs/contents/guides/slack.mdx
+                - page: Discord
+                  path: ./docs/contents/guides/discord.mdx
+                - page: Linear
+                  path: ./docs/contents/guides/linear.mdx
+                - page: Clickup
+                  path: ./docs/contents/guides/clickup.mdx
+                - page: Jira
+                  path: ./docs/contents/guides/jira.mdx
+                - page: Trello
+                  path: ./docs/contents/guides/trello.mdx
 colors:
-    accentPrimary: '#2047d0'
+    accentPrimary: '#89a3ff'
 logo:
     dark: ./docs/assets/logo.png
     light: ./docs/assets/logo.png
