@@ -1,25 +1,21 @@
-
-<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1705659064/Revert/Docs/jxbb9n9nsdtcbu73kem4.png"/>
-
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1705659064/Revert/Docs/jxbb9n9nsdtcbu73kem4.png" />
 
 #### Obtaining Slack Client ID and Secret
 
-* Open a [HubSpot Developers account](https://app.hubspot.com/signup-hubspot/developers). 
-* Go to `Manage Apps`  
-* Create a HubSpot app, using the steps mentioned [here](https://legacydocs.hubspot.com/docs/faq/how-do-i-create-an-app-in-hubspot)
-  * `NOTE:` You can skip this step and use the default revert Hubspot app
-* Set `https://app.revert.dev/oauth-callback/hubspot` as the `redirect` url for your app
-* **Get your client\_id and client\_secret**:
-  * Go to the "App Credentials" section of the App setting under `Auth`
-  * Copy your client\_id and client\_secret
+-   Open a [Slack account](https://slack.com/signin#/signin) and [create a workspace](https://slack.com/intl/en-in/help/articles/206845317-Create-a-Slack-workspace).
+-   Go to [Slack API](https://api.slack.com/apps)
+-   Create a Slack app, using the steps mentioned [here](https://api.slack.com/start/quickstart#installing)
+    -   `NOTE:` You can skip this step and use the default revert Slack app
+-   Set `https://app.revert.dev/oauth-callback/slack` as the `redirect` url for your app
+-   **Get your client_id and client_secret**:
+    -   Go to the "Basic Information" section of the App setting
+    -   Copy your client_id and client_secret from App Credentials section
 
 #### Connect to Slack via Revert
 
-* Create an account on Revert if you don't already have one. (https://app.revert.dev/sign-up)
-* Login to your revert dashboard (https://app.revert.dev/sign-in) and click on `Customize your apps` - `Slack`
+-   Create an account on Revert if you don't already have one. (https://app.revert.dev/sign-up)
+-   Login to your revert dashboard (https://app.revert.dev/sign-in) and click on `Customize your apps` - `Slack`
 
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1705652583/Revert/Docs/nwlrrom2sw5xj7dsgznv.png" />
 
-<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1705652583/Revert/Docs/nwlrrom2sw5xj7dsgznv.png"/>
-
-
-* Enter the `client_id` and `client_secret` you copied in the previous step into the App credentials here and click `Submit`.
+-   Enter the `client_id` and `client_secret` you copied in the previous step into the App credentials here and click `Submit`.

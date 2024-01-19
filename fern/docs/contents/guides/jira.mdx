@@ -1,25 +1,21 @@
-
-<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1705660066/Revert/Docs/vauafxidhjisxiiplemx.png"/>
-
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1705660066/Revert/Docs/vauafxidhjisxiiplemx.png" />
 
 #### Obtaining Jira Client ID and Secret
 
-* Open a [HubSpot Developers account](https://app.hubspot.com/signup-hubspot/developers). 
-* Go to `Manage Apps`  
-* Create a HubSpot app, using the steps mentioned [here](https://legacydocs.hubspot.com/docs/faq/how-do-i-create-an-app-in-hubspot)
-  * `NOTE:` You can skip this step and use the default revert Hubspot app
-* Set `https://app.revert.dev/oauth-callback/hubspot` as the `redirect` url for your app
-* **Get your client\_id and client\_secret**:
-  * Go to the "App Credentials" section of the App setting under `Auth`
-  * Copy your client\_id and client\_secret
+-   Open a [Atlassian Developers account](https://id.atlassian.com/login?continue=https%3A%2F%2Fdeveloper.atlassian.com%2F).
+-   CLick on avatar , go to `Developer console`
+-   Create a Atlassian app, using the steps mentioned [here](https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps/#enabling-oauth-2-0--3lo-)
+    -   `NOTE:` You can skip this step and use the default revert Jira app
+-   Set `https://app.revert.dev/oauth-callback/jira` as the `redirect` url for your app
+-   **Get your client_id and client_secret**:
+    -   Go to the "Developer console", select configured app. Click on the `App details` section or `Settings`
+    -   Copy your client_id and client_secret
 
 #### Connect to Jira via Revert
 
-* Create an account on Revert if you don't already have one. (https://app.revert.dev/sign-up)
-* Login to your revert dashboard (https://app.revert.dev/sign-in) and click on `Customize your apps` - `Jira`
+-   Create an account on Revert if you don't already have one. (https://app.revert.dev/sign-up)
+-   Login to your revert dashboard (https://app.revert.dev/sign-in) and click on `Customize your apps` - `Jira`
 
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1705652583/Revert/Docs/nwlrrom2sw5xj7dsgznv.png" />
 
-<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1705652583/Revert/Docs/nwlrrom2sw5xj7dsgznv.png"/>
-
-
-* Enter the `client_id` and `client_secret` you copied in the previous step into the App credentials here and click `Submit`.
+-   Enter the `client_id` and `client_secret` you copied in the previous step into the App credentials here and click `Submit`.
