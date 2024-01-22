@@ -83,7 +83,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             try {
                 await xprisma.connections.upsert({
                     where: {
-                        id: String(req.query.t_id),
+                        id: `${account!.accounts!.id}_${String(req.query.t_id)}`,
                     },
                     update: {
                         tp_access_token: result.data?.access_token,
@@ -95,7 +95,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_customer_id: String(info.data.viewer?.id),
                     },
                     create: {
-                        id: String(req.query.t_id),
+                        id: `${account!.accounts!.id}_${String(req.query.t_id)}`,
                         t_id: req.query.t_id as string,
                         tp_id: integrationId,
                         tp_access_token: String(result.data?.access_token),
@@ -180,7 +180,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             try {
                 await xprisma.connections.upsert({
                     where: {
-                        id: String(req.query.t_id),
+                        id: `${account!.accounts!.id}_${String(req.query.t_id)}`,
                     },
                     update: {
                         tp_access_token: result.data?.access_token,
@@ -192,7 +192,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_customer_id: String(info.data?.user?.id),
                     },
                     create: {
-                        id: String(req.query.t_id),
+                        id: `${account!.accounts!.id}_${String(req.query.t_id)}`,
                         t_id: req.query.t_id as string,
                         tp_id: integrationId,
                         tp_access_token: String(result.data?.access_token),
