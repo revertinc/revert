@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma, TP_ID } from '@prisma/client';
 import config from '../config';
 import gcm from '../helpers/gcmUtil';
 
@@ -21,6 +21,25 @@ const xprisma = prisma.$extends({
             async upsert({ args, query }) {
                 if (args.create?.tp_customer_id) {
                     args.create.tp_customer_id = gcm.encrypt(args.create.tp_customer_id, config.AES_ENCRYPTION_SECRET);
+                }
+
+                if (args.update?.tp_id !== TP_ID.discord) {
+                    args.update.app_bot_token = null;
+                }
+
+                // tp_account_url: zohocrm sfdc pipedrive jira
+                if (args.update?.tp_id) {
+                    const tpId = args.update.tp_id;
+                    if (
+                        !(
+                            tpId === TP_ID.zohocrm ||
+                            tpId === TP_ID.sfdc ||
+                            tpId === TP_ID.pipedrive ||
+                            tpId === TP_ID.jira
+                        )
+                    ) {
+                        args.update.tp_account_url = null;
+                    }
                 }
 
                 if (args.update?.tp_customer_id) {

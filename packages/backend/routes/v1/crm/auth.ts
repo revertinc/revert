@@ -80,6 +80,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_refresh_token: result.data.refresh_token,
                         app_client_id: clientId || config.HUBSPOT_CLIENT_ID,
                         app_client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET,
+                        appId: account?.apps[0].id,
+                        tp_customer_id: info.data.user,
                     },
                     create: {
                         id: `${account!.accounts!.id}_${req.query.t_id}`,
@@ -195,6 +197,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         update: {
                             tp_access_token: result.data.access_token,
                             tp_refresh_token: result.data.refresh_token,
+                            appId: account?.apps[0].id,
+                            app_client_id: clientId || config.ZOHOCRM_CLIENT_ID,
+                            app_client_secret: clientSecret || config.ZOHOCRM_CLIENT_SECRET,
+                            tp_customer_id: info.data.Email,
+                            tp_account_url: req.query.accountURL as string,
+                            tp_id: integrationId,
                         },
                     });
                     config.svix?.message.create(svixAppId, {
@@ -288,8 +296,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     update: {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
+                        tp_customer_id: info.data.email,
                         app_client_id: clientId || config.SFDC_CLIENT_ID,
                         app_client_secret: clientSecret || config.SFDC_CLIENT_SECRET,
+                        appId: account?.apps[0].id,
+                        tp_id: integrationId,
+                        tp_account_url: info.data.urls['custom_domain'],
                     },
                 });
                 config.svix?.message.create(svixAppId, {
@@ -371,6 +383,10 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     update: {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
+                        tp_id: integrationId,
+                        tp_account_url: result.data.api_domain,
+                        tp_customer_id: info.data.data.email,
+                        appId: account?.apps[0].id,
                     },
                     create: {
                         id: String(req.query.t_id),
@@ -460,6 +476,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_refresh_token: result.data.refresh_token,
                         app_client_id: clientId || config.HUBSPOT_CLIENT_ID,
                         app_client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET,
+                        appId: account?.apps[0].id,
+                        tp_id: integrationId,
+                        tp_customer_id: info.data.email,
                     },
                     create: {
                         id: String(req.query.t_id),

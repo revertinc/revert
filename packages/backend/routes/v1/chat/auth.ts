@@ -95,6 +95,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_refresh_token: result.data?.refresh_token,
                         app_client_id: clientId || config.SLACK_CLIENT_ID,
                         app_client_secret: clientSecret || config.SLACK_CLIENT_SECRET,
+                        appId: account?.apps[0].id,
+                        tp_customer_id: String(info.data.user?.id),
+                        tp_id: integrationId,
                     },
                     create: {
                         id: String(req.query.t_id),
@@ -183,6 +186,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         app_client_id: clientId || config.DISCORD_CLIENT_ID,
                         app_client_secret: clientSecret || config.DISCORD_CLIENT_SECRET,
                         app_bot_token: botToken || config.DISCORD_BOT_TOKEN,
+                        tp_id: integrationId,
+                        appId: account?.apps[0].id,
+                        tp_customer_id: guildId,
                     },
                     create: {
                         id: String(req.query.t_id),

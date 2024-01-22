@@ -87,8 +87,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     update: {
                         tp_access_token: result.data?.access_token,
+                        tp_refresh_token: null,
                         app_client_id: clientId || config.LINEAR_CLIENT_ID,
                         app_client_secret: clientSecret || config.LINEAR_CLIENT_SECRET,
+                        appId: account?.apps[0].id,
+                        tp_id: integrationId,
+                        tp_customer_id: String(info.data.viewer?.id),
                     },
                     create: {
                         id: String(req.query.t_id),
@@ -180,8 +184,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     update: {
                         tp_access_token: result.data?.access_token,
+                        tp_refresh_token: null,
                         app_client_id: clientId || config.CLICKUP_CLIENT_ID,
                         app_client_secret: clientSecret || config.CLICKUP_CLIENT_SECRET,
+                        appId: account?.apps[0].id,
+                        tp_id: integrationId,
+                        tp_customer_id: String(info.data?.user?.id),
                     },
                     create: {
                         id: String(req.query.t_id),
@@ -299,8 +307,11 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     update: {
                         tp_id: integrationId,
                         tp_access_token: String(access_creds.access_token),
+                        tp_refresh_token: null,
                         app_client_id: clientId || config.TRELLO_CLIENT_ID,
                         app_client_secret: clientSecret || config.TRELLO_CLIENT_SECRET,
+                        appId: account?.apps[0].id,
+                        tp_customer_id: String(info.id),
                     },
                     create: {
                         id: `${account!.accounts!.id}_${req.query.t_id}`,
@@ -411,10 +422,10 @@ authRouter.get('/oauth-callback', async (req, res) => {
             try {
                 await xprisma.connections.upsert({
                     where: {
-                        id: String(req.query.t_id),
+                        id: `${account!.accounts!.id}_${req.query.t_id}`,
                     },
                     create: {
-                        id: String(req.query.t_id),
+                        id: `${account!.accounts!.id}_${req.query.t_id}`,
                         t_id: req.query.t_id as string,
                         tp_id: integrationId,
                         tp_access_token: result.data.access_token,
@@ -427,8 +438,14 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         appId: account?.apps[0].id,
                     },
                     update: {
+                        tp_id: integrationId,
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
+                        tp_customer_id: accountId,
+                        tp_account_url: jiraBaseUrl as string,
+                        app_client_id: clientId || config.JIRA_CLIENT_ID,
+                        app_client_secret: clientSecret || config.JIRA_CLIENT_SECRET,
+                        appId: account?.apps[0].id,
                     },
                 });
 
