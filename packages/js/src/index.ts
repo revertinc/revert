@@ -1144,6 +1144,18 @@ const createIntegrationBlock = function (self, integration) {
                             '%20'
                         )}&state=${state}`
                     );
+                } else if (selectedIntegration.integrationId === 'msteams') {
+                    const encodedRedirectURI = encodeURIComponent(this.#REDIRECT_URL_BASE);
+                    let modifiedState = JSON.parse(state);
+                    modifiedState.scopes = scopes;
+                    modifiedState = JSON.stringify(modifiedState);
+                    window.open(
+                        `https://login.microsoftonline.com/${'common'}/oauth2/v2.0/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&response_type=code&redirect_uri=${encodedRedirectURI}/msteams&response_mode=query&scope=${scopes.join(
+                            ' '
+                        )}&state=${modifiedState}`
+                    );
                 } else if (selectedIntegration.integrationId === 'linear') {
                     const encodedRedirectURI = encodeURIComponent(this.#REDIRECT_URL_BASE);
                     window.open(

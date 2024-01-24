@@ -242,6 +242,36 @@ class AuthService {
                                     tp_refresh_token: result.data.refresh_token,
                                 },
                             });
+                        } else if (connection.tp_id === TP_ID.msteams) {
+                            const formData = {
+                                client_id: connection.app?.is_revert_app
+                                    ? config.MSTEAMS_CLIENT_ID
+                                    : connection.app_client_id || config.MSTEAMS_CLIENT_ID,
+                                client_secret: connection.app?.is_revert_app
+                                    ? config.MSTEAMS_CLIENT_SECRET
+                                    : connection.app_client_secret || config.MSTEAMS_CLIENT_SECRET,
+                                grant_type: 'refresh_token',
+                                refresh_token: connection.tp_refresh_token,
+                            };
+
+                            const result: any = await axios({
+                                method: 'post',
+                                url: `https://login.microsoftonline.com/${'common'}/oauth2/v2.0/token`,
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                data: formData,
+                            });
+
+                            await prisma.connections.update({
+                                where: {
+                                    id: connection.id,
+                                },
+                                data: {
+                                    tp_access_token: result.data.access_token,
+                                    tp_refresh_token: result.data.refresh_token,
+                                },
+                            });
                         }
                     } catch (error: any) {
                         logError(error.response?.data);

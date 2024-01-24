@@ -46,6 +46,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.clickup]: [],
     [TP_ID.trello]: ['read', 'write'],
     [TP_ID.jira]: ['read:jira-work', 'read:jira-user', 'write:jira-work', 'offline_access'],
+    [TP_ID.msteams]: ['offline_access', 'openid', 'user.Read'],
 };
 
 export const mapIntegrationIdToIntegrationName = {
@@ -61,6 +62,7 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.clickup]: 'Clickup',
     [TP_ID.trello]: 'Trello',
     [TP_ID.jira]: 'Jira',
+    [TP_ID.msteams]: 'msteams',
 };
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';

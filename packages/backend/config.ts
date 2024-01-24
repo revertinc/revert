@@ -45,6 +45,8 @@ const config = {
     TRELLO_CLIENT_SECRET: process.env.TRELLO_CLIENT_SECRET!,
     JIRA_CLIENT_ID: process.env.JIRA_CLIENT_ID!,
     JIRA_CLIENT_SECRET: process.env.JIRA_CLIENT_SECRET!,
+    MSTEAMS_CLIENT_ID: process.env.MSTEAMS_CLIENT_ID!,
+    MSTEAMS_CLIENT_SECRET: process.env.MSTEAMS_CLIENT_SECRET!,
 };
 
 export default config;

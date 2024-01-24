@@ -15,6 +15,7 @@ enum TP_ID {
   closecrm
   slack
   discord
+  msteams
   linear
   clickup
   asana
