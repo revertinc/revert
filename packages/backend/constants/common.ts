@@ -1,7 +1,7 @@
 import { TP_ID } from '@prisma/client';
 
 export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot' | 'closecrm';
-export type CHAT_TP_ID = 'slack' | 'discord';
+export type CHAT_TP_ID = 'slack' | 'discord' | 'msteams';
 export type TICKET_TP_ID = 'linear' | 'clickup' | 'asana' | 'jira' | 'trello';
 
 export const DEFAULT_SCOPE = {
@@ -46,7 +46,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.clickup]: [],
     [TP_ID.trello]: ['read', 'write'],
     [TP_ID.jira]: ['read:jira-work', 'read:jira-user', 'write:jira-work', 'offline_access'],
-    [TP_ID.msteams]: ['offline_access', 'openid', 'user.Read'],
+    [TP_ID.msteams]: ['offline_access', 'openid', 'user.Read', 'Channel.ReadBasic.All'],
 };
 
 export const mapIntegrationIdToIntegrationName = {

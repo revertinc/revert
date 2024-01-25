@@ -2,7 +2,7 @@ import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import { ChannelsService } from '../../generated/typescript/api/resources/chat/resources/channels/service/ChannelsService';
 import { logError, logInfo } from '../../helpers/logger';
 import { isStandardError } from '../../helpers/error';
-import { InternalServerError } from '../../generated/typescript/api/resources/common';
+import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { UnifiedChannel } from '../../models/unified/channel';
@@ -25,6 +25,7 @@ const channelsService = new ChannelsService(
                 const tenantId = connection.t_id;
                 const customerId = connection.tp_customer_id;
                 const botToken = connection.app_bot_token;
+                const fields = req.query.fields;
                 logInfo(
                     'Revert::GET ALL CHANNELS',
                     connection.app?.env?.accountId,
@@ -88,6 +89,42 @@ const channelsService = new ChannelsService(
 
                         res.send({ status: 'ok', next: undefined, results: channels });
                         break;
+                    }
+                    case TP_ID.msteams: {
+                        const parsedFields = fields ? JSON.parse(fields) : undefined;
+                        if (!fields || (fields && !parsedFields.teamsId)) {
+                            throw new NotFoundError({
+                                error: 'teamId is required in fields.',
+                            });
+                        }
+                        const result = await axios({
+                            method: 'get',
+                            url: `https://graph.microsoft.com/v1.0/teams/${parsedFields.teamsId}/allChannels`,
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+
+                        const unifiedChannels = await Promise.all(
+                            result.data.value.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedChannel>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            previous: 'PREVIOUS_CURSOR',
+                            next: 'NEXT_CURSOR',
+                            results: unifiedChannels,
+                        });
                     }
                 }
             } catch (error: any) {
