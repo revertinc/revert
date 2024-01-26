@@ -15,7 +15,7 @@ cp packages/js/.env.example packages/js/.env
 cp packages/react/.env.example packages/react/.env
 cp packages/vue/.env.example packages/vue/.env
 
-# Ensure that clerk is setup in `client` and a user is created by following the instructions here: https://docs.revert.dev/overview/developer-guide/developer-guide#-revertdotdev-client
+# Ensure that [clerk](https://clerk.com/docs/quickstarts/setup-clerk) is setup in `client` and a user is created by following the instructions here: https://docs.revert.dev/overview/developer-guide/developer-guide#-revertdotdev-client
 
 # Update these .env files with any of your own secrets if you'd like to.
 
@@ -29,14 +29,14 @@ docker-compose up -d
 
 ```
 
-The UI is now available at http://localhost:3000 and the backend is available at http://localhost:4001. This also contains a postgres database alongside the API. 
+The UI is now available at http://localhost:3000 and the backend is available at http://localhost:4001. This also contains a Postgres database alongside the API. 
 
 
 #### Run Revert with your own database & redis
 
-The above steps allow you to spin up a postgres & redis instance alongside the API and UI. 
+The above steps allow you to spin up a Postgres & Redis instance alongside the API and UI. 
 
-To use your own postgres & redis instance run the following set of commands: 
+To use your own Postgres & Redis instance run the following set of commands: 
 
 
 ```shell
