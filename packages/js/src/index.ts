@@ -1184,6 +1184,18 @@ const createIntegrationBlock = function (self, integration) {
                             state
                         )}&response_type=code&prompt=consent`
                     );
+                }   else if (selectedIntegration.integrationId === 'gdrive') {
+                    const encodedRedirectURI = encodeURIComponent(this.#REDIRECT_URL_BASE);
+                    let modifiedState = JSON.parse(state);
+                    modifiedState.scopes = scopes;
+                    modifiedState = JSON.stringify(modifiedState);
+                    window.open(
+                        `https://login.microsoftonline.com/${'common'}/oauth2/v2.0/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&response_type=code&redirect_uri=${encodedRedirectURI}/msteams&response_mode=query&scope=${scopes.join(
+                            ' '
+                        )}&state=${modifiedState}`
+                    );
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {

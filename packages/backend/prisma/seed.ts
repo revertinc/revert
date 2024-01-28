@@ -133,16 +133,22 @@ async function main() {
 
     Object.values(ChatStandardObjects).forEach((obj) => {
         Object.values(TP_ID).forEach(async (tpId) => {
-            if (!(tpId === 'slack' || tpId === 'discord')) return;
+            if (!(tpId === 'slack' || tpId === 'discord' || tpId==='gdrive')) return;
             const objSchema = chatSchemas.find((s: any) => s.object === obj);
-            const fieldMappings = objSchema?.fields.map((field: any) => ({
-                id: randomUUID(),
-                source_tp_id: tpId,
-                schema_id: objSchema.id,
-                source_field_name: chatFields[obj].find((a) => a.target_field_name === field)?.source_field_name[tpId]!,
-                target_field_name: field,
-                is_standard_field: true,
-            }));
+            const fieldMappings = objSchema?.fields.map((field: any) => {
+                const sourceFields: any = (chatFields[obj] as { target_field_name: string }[]).find(
+                    (a) => a.target_field_name === field
+                );
+
+                return {
+                    id: randomUUID(),
+                    source_tp_id: tpId,
+                    schema_id: objSchema.id,
+                    source_field_name: sourceFields?.source_field_name[tpId]!,
+                    target_field_name: field,
+                    is_standard_field: true,
+                };
+            });
             if (fieldMappings) {
                 fieldMappingForAll.push(...fieldMappings);
             }

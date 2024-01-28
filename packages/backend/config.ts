@@ -45,6 +45,8 @@ const config = {
     TRELLO_CLIENT_SECRET: process.env.TRELLO_CLIENT_SECRET!,
     JIRA_CLIENT_ID: process.env.JIRA_CLIENT_ID!,
     JIRA_CLIENT_SECRET: process.env.JIRA_CLIENT_SECRET!,
+    GDRIVE_CLIENT_ID: process.env.GDRIVE_CLIENT_ID!,
+    GDRIVE_CLIENT_SECRET: process.env.GDRIVE_CLIENT_SECRET!,
 };
 
 export default config;
