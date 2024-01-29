@@ -29,28 +29,26 @@ docker-compose up -d
 
 ```
 
-The UI is now available at http://localhost:3000 and the backend is available at http://localhost:4001. This also contains a Postgres database alongside the API. 
-
+The UI is now available at `http://localhost:3000` and the backend is available at `http://localhost:4001`. This also contains a Postgres database alongside the API.
 
 #### Run Revert with your own database & redis
 
-The above steps allow you to spin up a Postgres & Redis instance alongside the API and UI. 
+The above steps allow you to spin up a Postgres & Redis instance alongside the API and UI.
 
-To use your own Postgres & Redis instance run the following set of commands: 
-
+To use your own Postgres & Redis instance run the following set of commands:
 
 ```shell
 
 # Seed the database
 
-docker run \ 
+docker run \
     -e PGSQL_URL=postgresql://<PG_USER>:<PG_PASSWORD>@<PG_HOST>:<PG_PORT>/<PG_DB> \
     docker.revert.dev/revertengg/revert-db-seed:latest
 
 # To run Revert API:
 
 docker run \
-  -v cache:/data \ 
+  -v cache:/data \
   -v pgdata:/var/lib/postgresql/data \
   -e PGSQL_URL=postgresql://<PG_USER>:<PG_PASSWORD>@<PG_HOST>:<PG_PORT>/<PG_DB> \
   -e REDIS_SERVER_URL=redis://<REDIS_USER>:<REDIS_PASSWORD>@<REDIS_HOST>:<REDIS_PORT> \
