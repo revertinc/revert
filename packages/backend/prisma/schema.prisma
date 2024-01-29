@@ -103,9 +103,8 @@ model connections {
   updatedAt                  DateTime        @default(now()) @updatedAt
 
   @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")
-  @@unique([tp_id, t_id], name: "uniqueThirdPartyPerTenant")
+  @@unique([tp_id, t_id, environmentId], name: "uniqueThirdPartyPerTenantPerEnvironment")
   @@unique([tp_customer_id, t_id, tp_id], name: "uniqueCustomerPerTenantPerThirdParty")
-  @@unique([tp_id, environmentId], name: "uniqueThirdPartyPerEnvironment")
 }
 
 model schema_mapping {
