@@ -50,7 +50,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
         const botToken = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_bot_token;
         const svixAppId = account!.accounts!.id;
-
+        const environmentId = account?.id;
         if (integrationId === TP_ID.slack && req.query.code && req.query.t_id && revertPublicKey) {
             // handling the slack received code
             const url = 'https://slack.com/api/oauth.v2.access';
@@ -107,6 +107,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_customer_id: String(info.data.user?.id),
                         owner_account_public_token: revertPublicKey,
                         appId: account?.apps[0].id,
+                        environmentId: environmentId,
                     },
                 });
                 // Svix stuff goes here ****
@@ -196,6 +197,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_customer_id: guildId,
                         owner_account_public_token: revertPublicKey,
                         appId: account?.apps[0].id,
+                        environmentId: environmentId,
                     },
                 });
 

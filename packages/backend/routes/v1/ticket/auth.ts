@@ -38,7 +38,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
         const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
         const svixAppId = account!.accounts!.id;
-
+        const environmentId = account?.id;
         if (integrationId === TP_ID.linear && req.query.code && req.query.t_id && revertPublicKey) {
             // Handle the received code
             const url = `https://api.linear.app/oauth/token`;
@@ -100,6 +100,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_customer_id: String(info.data.viewer?.id),
                         owner_account_public_token: revertPublicKey,
                         appId: account?.apps[0].id,
+                        environmentId: environmentId,
                     },
                 });
 
@@ -193,6 +194,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_customer_id: String(info.data?.user?.id),
                         owner_account_public_token: revertPublicKey,
                         appId: account?.apps[0].id,
+                        environmentId: environmentId,
                     },
                 });
 
@@ -311,6 +313,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_customer_id: String(info.id),
                         owner_account_public_token: revertPublicKey,
                         appId: account?.apps[0].id,
+                        environmentId: environmentId,
                     },
                 });
 
@@ -424,6 +427,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         app_client_secret: clientSecret || config.JIRA_CLIENT_SECRET,
                         owner_account_public_token: revertPublicKey,
                         appId: account?.apps[0].id,
+                        environmentId: environmentId,
                     },
                     update: {
                         tp_access_token: result.data.access_token,
