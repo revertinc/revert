@@ -255,7 +255,7 @@ class AuthService {
                             };
                             const result = await axios({
                                 method: 'post',
-                                url: url,
+                                url: 'https://oauth2.googleapis.com/token',
                                 data: qs.stringify(formData),
                                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                             });

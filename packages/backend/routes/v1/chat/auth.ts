@@ -4,7 +4,7 @@ import prisma, { xprisma } from '../../../prisma/client';
 import { logError, logInfo, logDebug } from '../../../helpers/logger';
 import { Prisma, TP_ID } from '@prisma/client';
 import AuthService from '../../../services/auth';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import qs from 'qs';
 import { randomUUID } from 'crypto';
 import redis from '../../../redis/client';
@@ -240,21 +240,108 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
-        } else {
-            await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
-                publicToken: revertPublicKey,
-                status: 'FAILED',
-                integrationName: mapIntegrationIdToIntegrationName[integrationId],
-                tenantId: req.query.t_id,
-                tenantSecretToken,
-            } as IntegrationStatusSseMessage);
-            res.send({
-                status: 'noop',
+        } else if (integrationId === TP_ID.gdrive && req.query.code && revertPublicKey) {
+            const formData = {
+                client_id: clientId || config.GDRIVE_CLIENT_ID,
+                client_secret: clientSecret || config.GDRIVE_CLIENT_SECRET,
+                scope: String(req.query.scopes).split(',').join(' '),
+                code: req.query.code,
+                redirect_uri: 'http://localhost:3000/oauth-callback/gdrive',
+                grant_type: 'authorization_code',
+            };
+
+            const result: any = await axios({
+                method: 'post',
+                url: `https://sts.googleapis.com/v1/token`,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                data: formData,
             });
+
+            logInfo('OAuth creds for Google Drive', result.data);
+
+            const info: any = await axios({
+                method: 'get',
+                url: 'https://www.googleapis.com/drive/v3/about', // Use actual Google Drive API endpoint
+                headers: {
+                    Authorization: `Bearer ${result.data.access_token}`,
+                },
+            });
+
+            logInfo('OAuth token info', info.data);
+
+            try {
+                // prisma
+                await xprisma.connections.upsert({
+                    where: {
+                        id: String(req.query.t_id),
+                    },
+                    update: {
+                        tp_access_token: result.data?.access_token,
+                        tp_refresh_token: result.data?.refresh_token,
+                        app_client_id: clientId || config.GDRIVE_CLIENT_ID,
+                        app_client_secret: clientSecret || config.GDRIVE_CLIENT_SECRET,
+                    },
+                    create: {
+                        id: String(req.query.t_id),
+                        t_id: req.query.t_id as string,
+                        tp_id: integrationId,
+                        tp_access_token: String(result.data?.access_token),
+                        tp_refresh_token: String(result.data?.refresh_token),
+                        app_client_id: clientId || config.GDRIVE_CLIENT_ID,
+                        app_client_secret: clientSecret || config.GDRIVE_CLIENT_SECRET,
+                        tp_customer_id: String(info.data.id),
+                        owner_account_public_token: revertPublicKey,
+                        appId: account?.apps[0].id,
+                    },
+                });
+                // svix
+                config.svix?.message.create(svixAppId, {
+                    eventType: 'connection.added',
+                    payload: {
+                        eventType: 'connection.added',
+                        connection: {
+                            t_id: req.query.t_id as string,
+                            tp_id: TP_ID.gdrive,
+                            tp_access_token: String(result.data?.access_token),
+                            tp_customer_id: String(info.data.id),
+                        },
+                    },
+                    channels: [req.query.t_id as string],
+                });
+
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
+                    publicToken: revertPublicKey,
+                    status: 'FAILED',
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                    tenantId: req.query.t_id,
+                    tenantSecretToken,
+                } as IntegrationStatusSseMessage);
+                res.send({ status: 'ok', tp_customer_id: info.data.id });
+            } catch (error: any) {
+                logError(error);
+                if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                    if (error?.code === 'P2002') {
+                        console.error(
+                            'There is a unique constraint violation, a new user cannot be created with this email'
+                        );
+                    }
+                }
+                console.error('Could not update db', error);
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
+                    publicToken: revertPublicKey,
+                    status: 'FAILED',
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                    tenantId: req.query.t_id,
+                    tenantSecretToken,
+                } as IntegrationStatusSseMessage);
+                res.send({ status: 'error', error: error });
+            }
         }
     } catch (error: any) {
         logError(error);
-        logInfo('Error while getting oauth creds', error);
+        res.status(500).send({ status: 'error', error: 'Internal Server Error' });
     }
 });
 
