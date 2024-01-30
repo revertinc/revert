@@ -87,8 +87,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     update: {
                         tp_access_token: result.data?.access_token,
+                        tp_refresh_token: null,
                         app_client_id: clientId || config.LINEAR_CLIENT_ID,
                         app_client_secret: clientSecret || config.LINEAR_CLIENT_SECRET,
+                        tp_id: integrationId,
+                        appId: account?.apps[0].id,
+                        tp_customer_id: String(info.data.viewer?.id),
                     },
                     create: {
                         id: String(req.query.t_id),
@@ -181,8 +185,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     update: {
                         tp_access_token: result.data?.access_token,
+                        tp_refresh_token: null,
                         app_client_id: clientId || config.CLICKUP_CLIENT_ID,
                         app_client_secret: clientSecret || config.CLICKUP_CLIENT_SECRET,
+                        tp_id: integrationId,
+                        appId: account?.apps[0].id,
+                        tp_customer_id: String(info.data?.user?.id),
                     },
                     create: {
                         id: String(req.query.t_id),
@@ -259,7 +267,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
             const token = String(req.query.oauth_token);
             const verifier = String(req.query.oauth_verifier);
             const tokenSecret = await redis.get(`trello_dev_oauth_token_${req.query.oauth_token}`);
-            let info: any = {};
             try {
                 const { accessToken, accessTokenSecret }: { accessToken: string; accessTokenSecret: string } =
                     await new Promise((resolve, reject) => {
@@ -282,17 +289,23 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     access_secret: accessTokenSecret,
                 };
                 logInfo('OAuth creds for Trello', access_creds);
-                oauth.getProtectedResource(
-                    'https://api.trello.com/1/members/me',
-                    'GET',
-                    accessToken,
-                    accessTokenSecret,
-                    (_error, data, _response) => {
-                        // @TODO error handling
-                        info = data;
-                        logInfo('OAuth token info', data);
-                    }
-                );
+                let info: any = await new Promise((resolve, reject) => {
+                    oauth.getProtectedResource(
+                        'https://api.trello.com/1/members/me',
+                        'GET',
+                        accessToken,
+                        accessTokenSecret,
+                        (error, data, _response) => {
+                            if (error) {
+                                reject(error);
+                            } else {
+                                resolve(data);
+                            }
+                            logInfo('OAuth token info', data);
+                        }
+                    );
+                });
+                info = JSON.parse(info);
 
                 await xprisma.connections.upsert({
                     where: {
@@ -300,8 +313,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     },
                     update: {
                         tp_access_token: String(access_creds.access_token),
+                        tp_refresh_token: null,
                         app_client_id: clientId || config.TRELLO_CLIENT_ID,
                         app_client_secret: clientSecret || config.TRELLO_CLIENT_SECRET,
+                        tp_id: integrationId,
+                        appId: account?.apps[0].id,
+                        tp_customer_id: String(info.id),
                     },
                     create: {
                         id: String(req.query.t_id),
@@ -432,6 +449,11 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     update: {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
+                        app_client_id: clientId || config.JIRA_CLIENT_ID,
+                        app_client_secret: clientSecret || config.JIRA_CLIENT_SECRET,
+                        tp_id: integrationId,
+                        appId: account?.apps[0].id,
+                        tp_customer_id: accountId,
                     },
                 });
 

@@ -104,6 +104,7 @@ model connections {
 
   @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")
   @@unique([tp_id, environmentId], name: "uniqueThirdPartyPerEnvironment")
+  @@unique([t_id, environmentId], name: "uniqueTenantPerEnvironment")
   @@unique([tp_id, t_id, environmentId], name: "uniqueThirdPartyPerTenantPerEnvironment")
   @@unique([tp_customer_id, t_id, tp_id], name: "uniqueCustomerPerTenantPerThirdParty")
 }
