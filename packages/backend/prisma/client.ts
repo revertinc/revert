@@ -25,7 +25,7 @@ const xprisma = prisma.$extends({
 
                 // prepend environment Id to the t_id. connectionId = environmentId_t_id
                 if (args.where?.id && args.create?.environmentId) {
-                    const newConnectionId = `${args.create.environmentId}_${args.where.id}`;
+                    const newConnectionId = `${args.create.environmentId}_${args.create.tp_id}_${args.where.id}`;
                     args.where.id = newConnectionId;
                     args.create.id = newConnectionId;
                 }
