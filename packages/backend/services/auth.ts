@@ -242,6 +242,36 @@ class AuthService {
                                     tp_refresh_token: result.data.refresh_token,
                                 },
                             });
+                        } else if (connection.tp_id === TP_ID.gdrive) {
+                            const formData = {
+                                client_id: connection.app?.is_revert_app
+                                    ? config.GDRIVE_CLIENT_ID
+                                    : connection.app_client_id || config.GDRIVE_CLIENT_ID,
+                                client_secret: connection.app?.is_revert_app
+                                    ? config.GDRIVE_CLIENT_SECRET
+                                    : connection.app_client_secret || config.GDRIVE_CLIENT_SECRET,
+                                grant_type: 'refresh_token',
+                                refresh_token: connection.tp_refresh_token,
+                            };
+                            const result = await axios({
+                                method: 'post',
+                                url: url,
+                                data: qs.stringify(formData),
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            });
+                            if (result.data && result.data.access_token) {
+                                await prisma.connections.update({
+                                    where: {
+                                        id: connection.id,
+                                    },
+                                    data: {
+                                        tp_access_token: result.data.access_token,
+                                        tp_refresh_token: result.data.refresh_token,
+                                    },
+                                });
+                            } else {
+                                logInfo('gdrive connection could not be refreshed', result);
+                            }
                         }
                     } catch (error: any) {
                         logError(error.response?.data);
