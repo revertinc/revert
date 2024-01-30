@@ -1187,15 +1187,17 @@ const createIntegrationBlock = function (self, integration) {
                 }   else if (selectedIntegration.integrationId === 'gdrive') {
                     const encodedRedirectURI = encodeURIComponent(this.#REDIRECT_URL_BASE);
                     let modifiedState = JSON.parse(state);
-                    modifiedState.scopes = scopes;
+                    modifiedState.scopes = scopes; 
                     modifiedState = JSON.stringify(modifiedState);
+                
                     window.open(
-                        `https://login.microsoftonline.com/${'common'}/oauth2/v2.0/authorize?client_id=${
+                        `https://accounts.google.com/o/oauth2/v2/auth?client_id=${
                             selectedIntegration.clientId
-                        }&response_type=code&redirect_uri=${encodedRedirectURI}/msteams&response_mode=query&scope=${scopes.join(
+                        }&response_type=code&redirect_uri=${encodedRedirectURI}/googledrive&scope=${scopes.join(
                             ' '
                         )}&state=${modifiedState}`
                     );
+                }
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {
