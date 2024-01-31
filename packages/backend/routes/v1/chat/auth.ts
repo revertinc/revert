@@ -50,7 +50,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
         const botToken = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_bot_token;
         const svixAppId = account!.accounts!.id;
-
+        const environmentId = account?.id;
         if (integrationId === TP_ID.slack && req.query.code && req.query.t_id && revertPublicKey) {
             // handling the slack received code
             const url = 'https://slack.com/api/oauth.v2.access';
@@ -95,6 +95,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_refresh_token: result.data?.refresh_token,
                         app_client_id: clientId || config.SLACK_CLIENT_ID,
                         app_client_secret: clientSecret || config.SLACK_CLIENT_SECRET,
+                        tp_id: integrationId,
+                        appId: account?.apps[0].id,
+                        tp_customer_id: String(info.data.user?.id),
                     },
                     create: {
                         id: String(req.query.t_id),
@@ -107,6 +110,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_customer_id: String(info.data.user?.id),
                         owner_account_public_token: revertPublicKey,
                         appId: account?.apps[0].id,
+                        environmentId: environmentId,
                     },
                 });
                 // Svix stuff goes here ****
@@ -183,6 +187,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         app_client_id: clientId || config.DISCORD_CLIENT_ID,
                         app_client_secret: clientSecret || config.DISCORD_CLIENT_SECRET,
                         app_bot_token: botToken || config.DISCORD_BOT_TOKEN,
+                        tp_id: integrationId,
+                        appId: account?.apps[0].id,
+                        tp_customer_id: guildId,
                     },
                     create: {
                         id: String(req.query.t_id),
@@ -196,6 +203,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_customer_id: guildId,
                         owner_account_public_token: revertPublicKey,
                         appId: account?.apps[0].id,
+                        environmentId: environmentId,
                     },
                 });
 
