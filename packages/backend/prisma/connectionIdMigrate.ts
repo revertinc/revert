@@ -19,15 +19,19 @@ async function main() {
     allConnections.forEach(async (connection) => {
         const environmentId = connection.app?.environmentId;
         const newConnectionId = `${environmentId}_${connection.id}`;
-        await prisma.connections.update({
-            where: {
-                id: connection.id,
-            },
-            data: {
-                id: newConnectionId,
-                environmentId: environmentId,
-            },
-        });
+        try {
+            await prisma.connections.update({
+                where: {
+                    id: connection.id,
+                },
+                data: {
+                    id: newConnectionId,
+                    environmentId: environmentId,
+                },
+            });
+        } catch (error) {
+            console.log('error', environmentId, newConnectionId, connection.id, error);
+        }
     });
 }
 main()

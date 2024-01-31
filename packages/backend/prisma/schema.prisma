@@ -43,16 +43,16 @@ model accounts {
 }
 
 model environments {
-  id            String    @id
+  id            String        @id
   env           ENV
-  private_token String    @unique
-  public_token  String    @unique
-  accounts      accounts? @relation(fields: [accountId], references: [id])
+  private_token String        @unique
+  public_token  String        @unique
+  accounts      accounts?     @relation(fields: [accountId], references: [id])
   accountId     String
   apps          apps[]
   connections   connections[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now()) @updatedAt
 }
 
 model apps {
@@ -97,13 +97,12 @@ model connections {
   appId                      String?
   schema_mapping_id          String?
   schema_mapping             schema_mapping? @relation(fields: [schema_mapping_id], references: [id])
-  environemnt                environments?    @relation(fields: [environmentId], references: [id])
+  environemnt                environments?   @relation(fields: [environmentId], references: [id])
   environmentId              String?
   createdAt                  DateTime        @default(now())
   updatedAt                  DateTime        @default(now()) @updatedAt
 
   @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")
-  @@unique([tp_id, environmentId], name: "uniqueThirdPartyPerEnvironment")
   @@unique([t_id, environmentId], name: "uniqueTenantPerEnvironment")
   @@unique([tp_id, t_id, environmentId], name: "uniqueThirdPartyPerTenantPerEnvironment")
   @@unique([tp_customer_id, t_id, tp_id], name: "uniqueCustomerPerTenantPerThirdParty")
