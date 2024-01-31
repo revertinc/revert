@@ -2,7 +2,7 @@ import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
 import { ChannelsService } from '../../generated/typescript/api/resources/chat/resources/channels/service/ChannelsService';
 import { logError, logInfo } from '../../helpers/logger';
 import { isStandardError } from '../../helpers/error';
-import { InternalServerError } from '../../generated/typescript/api/resources/common';
+import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { UnifiedChannel } from '../../models/unified/channel';
@@ -25,6 +25,8 @@ const channelsService = new ChannelsService(
                 const tenantId = connection.t_id;
                 const customerId = connection.tp_customer_id;
                 const botToken = connection.app_bot_token;
+                const fields=req.query.fields;
+
                 logInfo(
                     'Revert::GET ALL CHANNELS',
                     connection.app?.env?.accountId,
@@ -86,9 +88,31 @@ const channelsService = new ChannelsService(
                             )
                         );
 
+
                         res.send({ status: 'ok', next: undefined, results: channels });
                         break;
                     }
+                    case TP_ID.gdrive: {
+                        const url = `https://discord.com/api/guilds/${customerId}/channels`;
+                        let channels: any = await axios.get(url, {
+                            headers: { Authorization: `Bot ${botToken}` },
+                        });
+                        channels = await Promise.all(
+                            channels.data?.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedChannel>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+
+                        res.send({ status: 'ok', next: undefined, results: channels });
+                        break;
                 }
             } catch (error: any) {
                 logError(error);

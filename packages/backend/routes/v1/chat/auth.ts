@@ -4,7 +4,7 @@ import prisma, { xprisma } from '../../../prisma/client';
 import { logError, logInfo, logDebug } from '../../../helpers/logger';
 import { Prisma, TP_ID } from '@prisma/client';
 import AuthService from '../../../services/auth';
-import axios, { isAxiosError } from 'axios';
+import axios from 'axios';
 import qs from 'qs';
 import { randomUUID } from 'crypto';
 import redis from '../../../redis/client';

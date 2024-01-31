@@ -1249,7 +1249,7 @@ const createIntegrationBlock = function (self, integration) {
             }
         };
     }
-    revert = new Revert();
+    revert = new revert();
 })();
 module.exports = revert;
 (window as any).Revert = revert;

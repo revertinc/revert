@@ -1,7 +1,7 @@
 import { TP_ID } from '@prisma/client';
 
 export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot' | 'closecrm';
-export type CHAT_TP_ID = 'slack' | 'discord' |'gdrive';
+export type CHAT_TP_ID = 'slack' | 'discord' | 'gdrive';
 export type TICKET_TP_ID = 'linear' | 'clickup' | 'asana' | 'jira' | 'trello' ;
 
 export const DEFAULT_SCOPE = {
