@@ -454,6 +454,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_id: integrationId,
                         appId: account?.apps[0].id,
                         tp_customer_id: accountId,
+                        tp_account_url: jiraBaseUrl as string,
                     },
                 });
 
