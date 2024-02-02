@@ -42,7 +42,8 @@ const xprisma = prisma.$extends({
                             tpId === TP_ID.zohocrm ||
                             tpId === TP_ID.sfdc ||
                             tpId === TP_ID.pipedrive ||
-                            tpId === TP_ID.jira
+                            tpId === TP_ID.jira ||
+                            tpId === TP_ID.ms_dynamics_365_sales
                         )
                     ) {
                         args.update.tp_account_url = null;

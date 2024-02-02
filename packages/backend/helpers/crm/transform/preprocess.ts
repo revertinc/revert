@@ -263,6 +263,7 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.ms_dynamics_365_sales]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

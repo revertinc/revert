@@ -545,6 +545,115 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 } as IntegrationStatusSseMessage);
                 res.send({ status: 'error', error: error });
             }
+        } else if (integrationId === TP_ID.ms_dynamics_365_sales && req.query.code && revertPublicKey) {
+            let formData: any = {
+                client_id: clientId || config.MS_DYNAMICS_SALES_CLIENT_ID,
+                client_secret: clientSecret || config.MS_DYNAMICS_SALES_CLIENT_SECRET,
+                grant_type: 'authorization_code',
+                code: req.query.code,
+                redirect_uri: config.OAUTH_REDIRECT_BASE
+                    ? encodeURI(config.OAUTH_REDIRECT_BASE + `/${integrationId}`)
+                    : null,
+                //@TODO make this dynamic
+                scope: process.env.MS_DYNAMICS_ORG_URL,
+            };
+            formData = new URLSearchParams(formData);
+
+            const result = await axios({
+                method: 'post',
+                url: `https://login.microsoftonline.com/organizations/oauth2/v2.0/token`,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                data: formData,
+            });
+            logInfo('OAuth creds for Microsoft Dynamics 365 sales', result.data);
+
+            let baseUrl = process.env.MS_DYNAMICS_ORG_URL;
+            baseUrl = baseUrl?.replace(/\/.default$/, '');
+            const info: any = await axios({
+                method: 'get',
+                url: `${baseUrl}/api/data/v9.2/WhoAmI`,
+                headers: {
+                    Authorization: `Bearer ${result.data.access_token}`,
+                    'OData-MaxVersion': '4.0',
+                    'OData-Version': '4.0',
+                },
+            });
+            logInfo('OAuth token info', 'info', info.data);
+
+            try {
+                await xprisma.connections.upsert({
+                    where: {
+                        id: String(req.query.t_id),
+                    },
+                    update: {
+                        tp_id: integrationId,
+                        tp_access_token: result.data.access_token,
+                        tp_refresh_token: result.data.refresh_token,
+                        tp_customer_id: info.data.UserId,
+                        tp_account_url: baseUrl,
+                        app_client_id: clientId || config.MS_DYNAMICS_SALES_CLIENT_ID,
+                        app_client_secret: clientSecret || config.MS_DYNAMICS_SALES_CLIENT_SECRET,
+                        appId: account?.apps[0].id,
+                    },
+                    create: {
+                        id: String(req.query.t_id),
+                        t_id: req.query.t_id as string,
+                        tp_id: integrationId,
+                        tp_access_token: result.data.access_token,
+                        tp_refresh_token: result.data.refresh_token,
+                        tp_customer_id: info.data.UserId,
+                        tp_account_url: baseUrl,
+                        app_client_id: clientId || config.MS_DYNAMICS_SALES_CLIENT_ID,
+                        app_client_secret: clientSecret || config.MS_DYNAMICS_SALES_CLIENT_SECRET,
+                        owner_account_public_token: revertPublicKey,
+                        appId: account?.apps[0].id,
+                        environmentId: environmentId,
+                    },
+                });
+                config.svix?.message.create(svixAppId, {
+                    eventType: 'connection.added',
+                    payload: {
+                        eventType: 'connection.added',
+                        connection: {
+                            t_id: req.query.t_id as string,
+                            tp_id: TP_ID.ms_dynamics_365_sales,
+                            tp_access_token: result.data.access_token,
+                            tp_customer_id: info.data.UserId,
+                        },
+                    },
+                    channels: [req.query.t_id as string],
+                });
+
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
+                    publicToken: revertPublicKey,
+                    status: 'SUCCESS',
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                    tenantId: req.query.t_id,
+                    tenantSecretToken,
+                } as IntegrationStatusSseMessage);
+                res.send({ status: 'ok', tp_customer_id: info.data.UserId });
+            } catch (error: any) {
+                logError(error);
+                if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                    // The .code property can be accessed in a type-safe manner
+                    if (error?.code === 'P2002') {
+                        console.error(
+                            'There is a unique constraint violation, a new user cannot be created with this email'
+                        );
+                    }
+                }
+                console.error('Could not update db', error);
+                await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
+                    publicToken: revertPublicKey,
+                    status: 'FAILED',
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                    tenantId: req.query.t_id,
+                    tenantSecretToken,
+                } as IntegrationStatusSseMessage);
+                res.send({ status: 'error', error: error });
+            }
         } else {
             await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${req.query.t_id}`, {
                 publicToken: revertPublicKey,

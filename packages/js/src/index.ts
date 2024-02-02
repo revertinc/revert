@@ -1129,6 +1129,14 @@ const createIntegrationBlock = function (self, integration) {
                             selectedIntegration.clientId
                         }&response_type=code&state=${encodeURIComponent(state)}`
                     );
+                } else if (selectedIntegration.integrationId === 'ms_dynamics_365_sales') {
+                    window.open(
+                        `https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&response_type=code&redirect_uri=${
+                            this.#REDIRECT_URL_BASE
+                        }/ms_dynamics_365_sales&response_mode=query&scope=${scopes.join('%20')}&state=${state}`
+                    );
                 } else if (selectedIntegration.integrationId === 'slack') {
                     window.open(
                         `https://slack.com/oauth/v2/authorize?client_id=${selectedIntegration.clientId}&redirect_uri=${
