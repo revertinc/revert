@@ -17,7 +17,7 @@
     "author": "Jatin Sandilya",
     "license": "ISC",
     "devDependencies": {
-        "@babel/cli": "^7.12.10",
+        "@babel/cli": "^7.23.9",
         "@babel/core": "^7.23.5",
         "@babel/plugin-proposal-class-properties": "^7.12.1",
         "@babel/preset-env": "^7.12.11",
