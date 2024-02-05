@@ -5786,7 +5786,7 @@ __metadata:
   dependencies:
     "@babel/core": 7.23.5
     "@scarf/scarf": ^1.3.0
-    "@storybook/addon-a11y": 6.5.0-alpha.50
+    "@storybook/addon-a11y": 7.6.12
     "@storybook/addon-actions": 7.6.4
     "@storybook/addon-docs": 6.5.0-alpha.50
     "@storybook/addon-essentials": 6.5.0-alpha.50
@@ -6354,35 +6354,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-a11y@npm:6.5.0-alpha.50":
-  version: 6.5.0-alpha.50
-  resolution: "@storybook/addon-a11y@npm:6.5.0-alpha.50"
+"@storybook/addon-a11y@npm:7.6.12":
+  version: 7.6.12
+  resolution: "@storybook/addon-a11y@npm:7.6.12"
   dependencies:
-    "@storybook/addons": 6.5.0-alpha.50
-    "@storybook/api": 6.5.0-alpha.50
-    "@storybook/channels": 6.5.0-alpha.50
-    "@storybook/client-logger": 6.5.0-alpha.50
-    "@storybook/components": 6.5.0-alpha.50
-    "@storybook/core-events": 6.5.0-alpha.50
-    "@storybook/csf": 0.0.2--canary.507502b.0
-    "@storybook/theming": 6.5.0-alpha.50
+    "@storybook/addon-highlight": 7.6.12
     axe-core: ^4.2.0
-    core-js: ^3.8.2
-    global: ^4.4.0
-    lodash: ^4.17.21
-    react-sizeme: ^3.0.1
-    regenerator-runtime: ^0.13.7
-    ts-dedent: ^2.0.0
-    util-deprecate: ^1.0.2
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0
-    react-dom: ^16.8.0 || ^17.0.0
-  peerDependenciesMeta:
-    react:
-      optional: true
-    react-dom:
-      optional: true
-  checksum: c3919bd8cd4248398236a75b02ff3807a5bda184a8d6902238c57eb7206cda833c0f43712e92be426450ffa9afe6136cf2a0391a0ebc490206aeb3f5089fd707
+  checksum: c40cbe3c541ddf753324e4cc6aa0f44a02cecc72f6dadccb5065d66ca5e84d8b0856ea9f2ad4f6b48415314c5d9aa4ba766a1138e9368055eaafccd7fd4fc502
   languageName: node
   linkType: hard
 
@@ -6600,6 +6578,15 @@ __metadata:
     webpack:
       optional: true
   checksum: e7b696d79cd21d5b383a46be4b4b950bd8f2887cea8a6b1c9179e98e61c718aaf643b145803ada597bb33b22b6829bf150f35c3f8a22d16237a983381873ad47
+  languageName: node
+  linkType: hard
+
+"@storybook/addon-highlight@npm:7.6.12":
+  version: 7.6.12
+  resolution: "@storybook/addon-highlight@npm:7.6.12"
+  dependencies:
+    "@storybook/global": ^5.0.0
+  checksum: c9e92093535facd897f32f15cd7e5bc80059f2dfad62ede2ca59629c5c894378a483ae20dbe516794c11ed27861551afe5b496af130bf20962c8d8d09198f612
   languageName: node
   linkType: hard
 
@@ -12437,13 +12424,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"batch-processor@npm:1.0.0":
-  version: 1.0.0
-  resolution: "batch-processor@npm:1.0.0"
-  checksum: 5519b024f6cd0e95a543bb3edf0ae19e5badae0c32b30b41839b4469bbb1f91e14fc04bff3759cd9c2621aa9e16def48c938783e9027e7ec977fba62d537a468
-  languageName: node
-  linkType: hard
-
 "batch@npm:0.6.1":
   version: 0.6.1
   resolution: "batch@npm:0.6.1"
@@ -15510,15 +15490,6 @@ __metadata:
   version: 1.4.540
   resolution: "electron-to-chromium@npm:1.4.540"
   checksum: 78a48690a5cca3f89544d4e33a11e3101adb0b220da64078f67e167b396cbcd85044853cb88a9453444796599fe157c190ca5ebd00e9daf668ed5a9df3d0bba8
-  languageName: node
-  linkType: hard
-
-"element-resize-detector@npm:^1.2.2":
-  version: 1.2.4
-  resolution: "element-resize-detector@npm:1.2.4"
-  dependencies:
-    batch-processor: 1.0.0
-  checksum: 81c47b7e229c303889d3a9d78ec3f3232e88a6682f1e2424fb0632d9b4f503b2ca011e6954321060604da07749a5a972b6a175fdf6c6806093a3b80a304cde7b
   languageName: node
   linkType: hard
 
@@ -18937,15 +18908,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"invariant@npm:^2.2.4":
-  version: 2.2.4
-  resolution: "invariant@npm:2.2.4"
-  dependencies:
-    loose-envify: ^1.0.0
-  checksum: cc3182d793aad82a8d1f0af697b462939cb46066ec48bbf1707c150ad5fad6406137e91a262022c269702e01621f35ef60269f6c0d7fd178487959809acdfb14
-  languageName: node
-  linkType: hard
-
 "inversify@npm:5.1.1":
   version: 5.1.1
   resolution: "inversify@npm:5.1.1"
@@ -21720,7 +21682,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -25716,18 +25678,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-sizeme@npm:^3.0.1":
-  version: 3.0.2
-  resolution: "react-sizeme@npm:3.0.2"
-  dependencies:
-    element-resize-detector: ^1.2.2
-    invariant: ^2.2.4
-    shallowequal: ^1.1.0
-    throttle-debounce: ^3.0.1
-  checksum: 97cb852c24bbd50acb310da89df564e0d069415f6635676dae3d3bdc583ece88090c0f2ee88a6b0dc36d2793af4a11e83bf6bbb41b86225dd0cf338e8f7e8552
-  languageName: node
-  linkType: hard
-
 "react-transition-group@npm:^4.4.5":
   version: 4.4.5
   resolution: "react-transition-group@npm:4.4.5"
@@ -28567,13 +28517,6 @@ __metadata:
   version: 6.0.2
   resolution: "throat@npm:6.0.2"
   checksum: 463093768d4884772020bb18b0f33d3fec8a2b4173f7da3958dfbe88ff0f1e686ffadf0f87333bf6f6db7306b1450efc7855df69c78bf0bfa61f6d84a3361fe8
-  languageName: node
-  linkType: hard
-
-"throttle-debounce@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "throttle-debounce@npm:3.0.1"
-  checksum: e34ef638e8df3a9154249101b68afcbf2652a139c803415ef8a2f6a8bc577bcd4d79e4bb914ad3cd206523ac78b9fb7e80885bfa049f64fbb1927f99d98b5736
   languageName: node
   linkType: hard
 
