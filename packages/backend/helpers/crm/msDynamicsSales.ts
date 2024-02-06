@@ -26,7 +26,7 @@ export function handleMSDynamicsSales<T extends Record<string, any>>({
             else if (obj.priority === 'normal') priority = 1;
             else if (obj.priority === 'high') priority = 2;
             transformedObj.prioritycode = priority;
-            if(transformedObj.priority) delete(transformedObj.priority);
+            if (transformedObj.priority) delete transformedObj.priority;
         }
         /*
         Microsoft state code
@@ -40,7 +40,7 @@ export function handleMSDynamicsSales<T extends Record<string, any>>({
             else if (obj.status == 'completed') status = 1;
             else if (obj.status == 'canceled') status = 2;
             transformedObj.statecode = status;
-            if(transformedObj.status) delete(transformedObj.status);
+            if (transformedObj.status) delete transformedObj.status;
         }
     }
 
@@ -61,5 +61,27 @@ export function handleMSDynamicsSales<T extends Record<string, any>>({
             [pathKey]: path,
         };
     }
+
+    if (objType === StandardObjects.deal) {
+        if (obj.probability) transformedObj.closeprobability = obj.probability * 100;
+
+        if (obj.priority) {
+            const priority = String(obj.priority).toLowerCase();
+            if (priority === 'hot') transformedObj.opportunityratingcode = 1;
+            else if (priority === 'warm') transformedObj.opportunityratingcode = 2;
+            else if (priority === 'cold') transformedObj.opportunityratingcode = 3;
+        }
+
+        if (obj.stage) {
+            const stage = String(obj.stage).toLowerCase();
+            if (stage === 'qualify') transformedObj.salesstagecode = 0;
+            else if (stage === 'develop') transformedObj.salesstagecode = 1;
+            else if (stage === 'propose') transformedObj.salesstagecode = 2;
+            else if (stage === 'close') transformedObj.salesstagecode = 3;
+        }
+
+        transformedObj.statecode = obj.isWon ? 1 : 0;
+    }
+
     return transformedObj;
 }

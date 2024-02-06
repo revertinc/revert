@@ -104,6 +104,50 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 }
                 return { ...obj, ...modifiedObj };
             },
+            [StandardObjects.deal]: (obj: T) => {
+                const modifiedObj: any = {};
+
+                if (obj.closeprobability && obj.closeprobability !== 0) {
+                    modifiedObj.closeprobability = obj.closeprobability / 100;
+                }
+                /*
+                    Microsoft opportunityratingcode
+                        1 : Hot
+                        2 : Warm
+                        3 : Cold
+                */
+                if (obj.opportunityratingcode) {
+                    const ratingCode = obj.opportunityratingcode;
+                    if (ratingCode === 1) modifiedObj.opportunityratingcode = 'hot';
+                    else if (ratingCode === 2) modifiedObj.opportunityratingcode = 'warm';
+                    else if (ratingCode === 3) modifiedObj.opportunityratingcode = 'cold';
+                }
+
+                /*
+                    Microsoft salesstagecode
+                        0 : Qualify
+                        1 : Develop
+                        2 : Propose
+                        3 : Close
+                */
+                if (obj.salesstagecode) {
+                    const salesstagecode = obj.salesstagecode;
+                    if (salesstagecode === 0) modifiedObj.salesstagecode = 'qualify';
+                    else if (salesstagecode === 1) modifiedObj.salesstagecode = 'develop';
+                    else if (salesstagecode === 2) modifiedObj.salesstagecode = 'propose';
+                    else if (salesstagecode === 3) modifiedObj.salesstagecode = 'close';
+                }
+
+                /*
+                    Microsoft statecode
+                        0 : open
+                        1 : won
+                        2 : lost
+                */
+                modifiedObj.statecode = obj.statecode && obj.statecode === 1 ? true : false;
+
+                return { ...obj, ...modifiedObj };
+            },
         },
         [TP_ID.linear]: {
             [TicketStandardObjects.ticketTask]: (obj: T) => {
