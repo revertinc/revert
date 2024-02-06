@@ -156,6 +156,29 @@ const contactService = new ContactService(
                         res.send({ status: 'ok', result: contact });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/api/data/v9.2/contacts(${contactId})`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedContact = await unifyObject<any, UnifiedContact>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({ status: 'ok', result: unifiedContact });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -383,6 +406,39 @@ const contactService = new ContactService(
                         });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/api/data/v9.2/contacts`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedContacts = await Promise.all(
+                            result.data.value.map(
+                                async (contact: any) =>
+                                    await unifyObject<any, UnifiedContact>({
+                                        obj: contact,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: 'NEXT_CURSOR',
+                            previous: 'PREVIOUS_CURSOR',
+                            results: unifiedContacts,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -540,6 +596,28 @@ const contactService = new ContactService(
                         });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const response = await axios({
+                            method: 'post',
+                            url: `${connection.tp_account_url}/api/data/v9.2/contacts`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: contact,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'MS Dynamics 365 Contact created.',
+                            result: response.data,
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -652,6 +730,27 @@ const contactService = new ContactService(
                         res.send({
                             status: 'ok',
                             message: 'Closecrm contact updated',
+                            result: response.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const response = await axios({
+                            method: 'patch',
+                            url: `${connection.tp_account_url}/api/data/v9.2/contacts(${contactId})`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: contact,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'MS Dynamics 365 Contact updated.',
                             result: response.data,
                         });
                         break;

@@ -9,8 +9,14 @@ export function handleMSDynamicsSales<T extends Record<string, any>>({
     objType: StandardObjects;
     transformedObj: any;
 }) {
+    if (obj.additional) {
+        Object.keys(obj.additional).map((key: any) => (transformedObj[key] = obj.additional[key]));
+    }
+
     if (obj.additional && obj.additional.subject) transformedObj.subject = obj.additional.subject;
     if (objType === StandardObjects.note && obj.additional && obj.additional.entityType && obj.additional.entityId) {
+        delete transformedObj.entityType;
+        delete transformedObj.entityId;
         const entityType = obj.additional.entityType;
         const entityId = obj.additional.entityId;
         const pluralForm = entityType !== 'opportunity' ? entityType + 's' : 'opportunities';
