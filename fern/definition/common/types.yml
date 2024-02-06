@@ -50,6 +50,8 @@ types:
             - sfdc
             - pipedrive
             - slack
+            - closecrm
+            - ms_dynamics_365_sales
     StandardObject:
         enum:
             - company

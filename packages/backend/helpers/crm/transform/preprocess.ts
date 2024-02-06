@@ -70,6 +70,14 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.ms_dynamics_365_sales]: {
+            [StandardObjects.note]: (obj: T) => {
+                // if(!obj.notetext){
+                //     obj['notetext'] = obj.subject
+                // }
+                return obj.notetext ? obj : { ...obj, notetext: obj.subject };
+            },
+        },
         [TP_ID.linear]: {
             [TicketStandardObjects.ticketTask]: (obj: T) => {
                 let status: string;

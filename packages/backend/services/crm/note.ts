@@ -135,6 +135,29 @@ const noteService = new NoteService(
                         res.send({ status: 'ok', result: note });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        let note: any = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/api/data/v9.2/annotations(${noteId})`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        note = await unifyObject<any, UnifiedNote>({
+                            obj: note.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({ status: 'ok', result: note });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -343,6 +366,34 @@ const noteService = new NoteService(
                         });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        let notes: any = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/api/data/v9.2/annotations`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        notes = await Promise.all(
+                            notes.data.value.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedNote>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({ status: 'ok', next: undefined, previous: undefined, results: notes });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -452,6 +503,27 @@ const noteService = new NoteService(
                         });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const response = await axios({
+                            method: 'post',
+                            url: `${connection.tp_account_url}/api/data/v9.2/annotations`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: note,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'MS Dynamics 365 sales note created',
+                            result: response.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -556,6 +628,27 @@ const noteService = new NoteService(
                         res.send({
                             status: 'ok',
                             message: 'Closecrm note updated',
+                            result: response.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const response = await axios({
+                            method: 'patch',
+                            url: `${connection.tp_account_url}/api/data/v9.2/annotations(${noteId})`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: note,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'MS Dynamics 365 sales note created',
                             result: response.data,
                         });
                         break;
@@ -696,6 +789,11 @@ const noteService = new NoteService(
                         // res.send({ status: 'ok', results: notes });
                         // break;
                         throw new NotFoundError({ error: 'Method not allowed' });
+                    }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        let notes: any = {};
+                        res.send({ status: 'ok', results: notes });
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
