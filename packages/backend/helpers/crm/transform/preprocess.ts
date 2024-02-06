@@ -72,10 +72,37 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
         },
         [TP_ID.ms_dynamics_365_sales]: {
             [StandardObjects.note]: (obj: T) => {
-                // if(!obj.notetext){
-                //     obj['notetext'] = obj.subject
-                // }
                 return obj.notetext ? obj : { ...obj, notetext: obj.subject };
+            },
+            [StandardObjects.task]: (obj: T) => {
+                const modifiedObj: any = {};
+                /*
+                Microsoft Priority codes
+                    0 : Low
+                    1 : Normal
+                    2 : High
+                */
+                if (obj.prioritycode !== undefined && obj.prioritycode !== null) {
+                    let priority = null;
+                    if (obj.prioritycode === 0) priority = 'low';
+                    else if (obj.prioritycode === 1) priority = 'normal';
+                    else if (obj.prioritycode === 2) priority = 'high';
+                    modifiedObj.priority = priority;
+                }
+                /*
+                Microsoft state code
+                    0 : Open
+                    1 : Completed
+                    2 : Canceled
+                */
+                if (obj.statecode !== undefined && obj.statecode !== null) {
+                    let status = null;
+                    if (obj.statecode === 0) status = 'open';
+                    else if (obj.statecode == 1) status = 'completed';
+                    else if (obj.statecode == 2) status = 'canceled';
+                    modifiedObj.status = status;
+                }
+                return { ...obj, ...modifiedObj };
             },
         },
         [TP_ID.linear]: {
