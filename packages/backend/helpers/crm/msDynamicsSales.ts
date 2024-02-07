@@ -88,5 +88,15 @@ export function handleMSDynamicsSales<T extends Record<string, any>>({
         if (transformedObj.address_street) delete transformedObj.address_street;
     }
 
+    if (objType === StandardObjects.event) {
+        // MS Dynamics Behaviour if companyId is present contact id gets ignored
+        if (obj.associations) {
+            if (obj.associations.contactId)
+                transformedObj['regardingobjectid_contact@odata.bind'] = `/contacts(${obj.associations.contactId})`;
+            if (obj.associations.companyId)
+                transformedObj['regardingobjectid_account@odata.bind'] = `/accounts(${obj.associations.companyId})`;
+        }
+    }
+
     return transformedObj;
 }
