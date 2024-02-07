@@ -83,5 +83,10 @@ export function handleMSDynamicsSales<T extends Record<string, any>>({
         transformedObj.statecode = obj.isWon ? 1 : 0;
     }
 
+    if (objType === StandardObjects.company) {
+        if (obj.address && obj.address.street) transformedObj.address1_line1 = obj.address.street;
+        if (transformedObj.address_street) delete transformedObj.address_street;
+    }
+
     return transformedObj;
 }

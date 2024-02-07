@@ -134,6 +134,29 @@ const companyService = new CompanyService(
                         });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/api/data/v9.2/accounts(${companyId})`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedCompany = await unifyObject<any, UnifiedCompany>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({ status: 'ok', result: unifiedCompany });
+                        return;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -314,6 +337,39 @@ const companyService = new CompanyService(
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedCompanies });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/api/data/v9.2/accounts`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedCompanies = await Promise.all(
+                            result.data.value.map(
+                                async (company: any) =>
+                                    await unifyObject<any, UnifiedCompany>({
+                                        obj: company,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: 'NEXT_CURSOR',
+                            previous: 'PREVIOUS_CURSOR',
+                            results: unifiedCompanies,
+                        });
+                        return;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -437,6 +493,28 @@ const companyService = new CompanyService(
                         });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const response = await axios({
+                            method: 'post',
+                            url: `${connection.tp_account_url}/api/data/v9.2/accounts`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: company,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Company created in MS Dynamics 365',
+                            result: response.data,
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -529,6 +607,23 @@ const companyService = new CompanyService(
                                 ...companyUpdated.data.data,
                             },
                         });
+                        break;
+                    }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const response = await axios({
+                            method: 'patch',
+                            url: `${connection.tp_account_url}/api/data/v9.2/accounts(${companyId})`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: company,
+                        });
+
+                        res.send({ status: 'ok', message: 'MS Dynamics 365 company updated', result: response.data });
                         break;
                     }
                     default: {

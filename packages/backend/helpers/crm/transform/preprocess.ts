@@ -148,6 +148,14 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
 
                 return { ...obj, ...modifiedObj };
             },
+            [StandardObjects.company]: (obj: T) => {
+                let address_street = obj.address1_line1 ? obj.address1_line1 : null;
+
+                if (obj.address1_line2) address_street += `, ${obj.address1_line2}`;
+                if (obj.address1_line3) address_street += `, ${obj.address1_line3}`;
+
+                return { ...obj, address_street };
+            },
         },
         [TP_ID.linear]: {
             [TicketStandardObjects.ticketTask]: (obj: T) => {

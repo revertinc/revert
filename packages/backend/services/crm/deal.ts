@@ -726,7 +726,6 @@ const dealService = new DealService(
                             status: 'ok',
                             message: 'MS Dynamics 365 Deal updated.',
                             result: response.data,
-                            // result: deal,
                         });
 
                         break;
