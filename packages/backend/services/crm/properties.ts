@@ -63,6 +63,23 @@ export const getObjectPropertiesForConnection = async ({
                 description: '',
             }));
         }
+        case TP_ID.ms_dynamics_365_sales: {
+            const response = await axios({
+                method: 'get',
+                url: `${connection.tp_account_url}/api/data/v9.2/EntityDefinitions(LogicalName='${crmObjectName}')/Attributes`,
+                headers: {
+                    Authorization: `Bearer ${thirdPartyToken}`,
+                    'OData-MaxVersion': '4.0',
+                    'OData-Version': '4.0',
+                    Accept: 'application/json',
+                },
+            });
+            return (response.data.value || []).map((f: any) => ({
+                name: f.LogicalName,
+                type: f.AttributeTypeName.Value,
+                description: f.Description ? f.Description.LocalizedLabels : '',
+            }));
+        }
         default: {
             throw new NotFoundError({ error: 'Unrecognised CRM' });
         }
