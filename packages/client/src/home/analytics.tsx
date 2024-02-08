@@ -29,12 +29,14 @@ const Analytics = ({ environment }) => {
             .then((result) => {
                 // TODO(@ashutosh): replace with analytics endpoint.
                 const data = result.result;
-                setMetrics({
-                    totalConnections: data.totalConnections,
-                    recentConnections: data.recentConnections,
-                    recentApiCalls: data.recentApiCalls,
-                    connectedApps: data.connectedApps,
-                });
+                if (data) {
+                    setMetrics({
+                        totalConnections: data.totalConnections,
+                        recentConnections: data.recentConnections,
+                        recentApiCalls: data.recentApiCalls,
+                        connectedApps: data.connectedApps,
+                    });
+                }
                 setLoading(false);
             })
             .catch((error) => {
