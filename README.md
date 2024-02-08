@@ -8,6 +8,12 @@
 
 </center>
 
+<center>
+
+[English](README.md) | [中国人](./translations/chinese/README.md) | [Deutsch](./translations/german/README.md) | [Português](./translations/portuguese/README.md)
+
+</center>
+
 [![Star us on GitHub](https://img.shields.io/github/stars/revertinc/revert?color=FFD700&label=Stars&logo=Github)](https://github.com/revertinc/revert)
 ![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=revert-client-git-main-revertdev) [![](https://dcbadge.vercel.app/api/server/q5K5cRhymW?style=flat)](https://discord.gg/q5K5cRhymW) [![twitter](https://img.shields.io/twitter/follow/Revertdotdev?style=social)](https://twitter.com/intent/follow?screen_name=RevertdotDev) ![Revert API](https://cronitor.io/badges/HnK0d9/production/OR5NlgURLI1wAT148KU6ycCBSSk.svg) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.revert.dev/) <a href="https://github.com/revertinc/revert/pulse"><img src="https://img.shields.io/github/commit-activity/m/revertinc/revert" alt="Commits-per-month"></a>
 <a href="https://github.com/revertinc/revert/tree/main/LICENSE.txt" target="_blank">
@@ -58,15 +64,13 @@ You might want to check us out if
 -   **SDKs for Popular Frameworks**: Ready-to-use SDKs available for React, Vue, and Angular, enabling quick and easy integration.
 -   **Self-Hosted**: Provides the flexibility to self-host the integration solution, giving you full control over deployment and data.
 
-
 ## Quickstart
 
 #### Revert Cloud
 
-The easiest way to get started is to create a [Revert Cloud account](https://app.revert.dev/sign-up). The cloud version offers the same functionality as the self-hosted one.  
+The easiest way to get started is to create a [Revert Cloud account](https://app.revert.dev/sign-up). The cloud version offers the same functionality as the self-hosted one.
 
-
-If you want to self-host Revert though, you can do that today with docker-compose as instructed below. 
+If you want to self-host Revert though, you can do that today with docker-compose as instructed below.
 
 #### Spinning up Revert with docker-compose
 
@@ -110,7 +114,6 @@ The UI is now available at http://localhost:3000 and the backend is available at
 ### Architecture Overview
 
 <img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1697107526/Revert/how4gj3vp2wch4kw2akb.png" />
-
 
 ## Packages
 
