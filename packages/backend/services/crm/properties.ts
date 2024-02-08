@@ -124,6 +124,16 @@ export const setObjectPropertiesForConnection = async ({
             case TP_ID.sfdc: {
                 // TODO: add Salesforce
             }
+            case TP_ID.ms_dynamics_365_sales: {
+                // NOTE: Does not support creating a field for a entity via api, but it is possible through gui
+
+                return {
+                    status: 'ok',
+                    data: {
+                        message: 'Creating a field for an entity via API is not supported via api',
+                    },
+                };
+            }
             case TP_ID.pipedrive: {
                 const instanceUrl = connection.tp_account_url;
                 const response = await axios.post(

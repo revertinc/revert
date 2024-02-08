@@ -367,19 +367,22 @@ const noteService = new NoteService(
                         break;
                     }
                     case TP_ID.ms_dynamics_365_sales: {
-                        let notes: any = await axios({
+                        const pagingString = cursor ? encodeURI(cursor).split('?')[1] : '';
+
+                        let result: any = await axios({
                             method: 'get',
-                            url: `${connection.tp_account_url}/api/data/v9.2/annotations`,
+                            url: `${connection.tp_account_url}/api/data/v9.2/annotations?${pagingString}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'OData-MaxVersion': '4.0',
                                 'OData-Version': '4.0',
                                 Accept: 'application/json',
+                                Prefer: pageSize ? `odata.maxpagesize=${pageSize}` : '',
                             },
                         });
 
-                        notes = await Promise.all(
-                            notes.data.value.map(
+                        const unifiedNotes = await Promise.all(
+                            result.data.value.map(
                                 async (l: any) =>
                                     await unifyObject<any, UnifiedNote>({
                                         obj: l,
@@ -391,7 +394,12 @@ const noteService = new NoteService(
                             )
                         );
 
-                        res.send({ status: 'ok', next: undefined, previous: undefined, results: notes });
+                        res.send({
+                            status: 'ok',
+                            next: result.data['@odata.nextLink'],
+                            previous: undefined,
+                            results: unifiedNotes,
+                        });
                         break;
                     }
                     default: {

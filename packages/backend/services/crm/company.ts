@@ -338,14 +338,17 @@ const companyService = new CompanyService(
                         break;
                     }
                     case TP_ID.ms_dynamics_365_sales: {
+                        const pagingString = cursor ? encodeURI(cursor).split('?')[1] : '';
+
                         const result = await axios({
                             method: 'get',
-                            url: `${connection.tp_account_url}/api/data/v9.2/accounts`,
+                            url: `${connection.tp_account_url}/api/data/v9.2/accounts?${pagingString}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'OData-MaxVersion': '4.0',
                                 'OData-Version': '4.0',
                                 Accept: 'application/json',
+                                Prefer: pageSize ? `odata.maxpagesize=${pageSize}` : '',
                             },
                         });
 
@@ -364,8 +367,8 @@ const companyService = new CompanyService(
 
                         res.send({
                             status: 'ok',
-                            next: 'NEXT_CURSOR',
-                            previous: 'PREVIOUS_CURSOR',
+                            next: result.data['@odata.nextLink'],
+                            previous: undefined,
                             results: unifiedCompanies,
                         });
                         return;

@@ -407,14 +407,17 @@ const leadService = new LeadService(
                         break;
                     }
                     case TP_ID.ms_dynamics_365_sales: {
+                        const pagingString = cursor ? encodeURI(cursor).split('?')[1] : '';
+
                         const result = await axios({
                             method: 'get',
-                            url: `${connection.tp_account_url}/api/data/v9.2/leads`,
+                            url: `${connection.tp_account_url}/api/data/v9.2/leads?${pagingString}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'OData-MaxVersion': '4.0',
                                 'OData-Version': '4.0',
                                 Accept: 'application/json',
+                                Prefer: pageSize ? `odata.maxpagesize=${pageSize}` : '',
                             },
                         });
 
@@ -432,8 +435,8 @@ const leadService = new LeadService(
                         );
                         res.send({
                             status: 'ok',
-                            previous: 'PREIOUS_CURSOR',
-                            next: 'NEXT_CURSOR',
+                            next: result.data['@odata.nextLink'],
+                            previous: undefined,
                             results: unifiedLeads,
                         });
                         break;
