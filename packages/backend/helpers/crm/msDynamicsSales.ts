@@ -98,5 +98,13 @@ export function handleMSDynamicsSales<T extends Record<string, any>>({
         }
     }
 
+    // @TODO document this
+    if (objType === StandardObjects.user) {
+        if (transformedObj.businessUnitId) {
+            transformedObj['businessunitid@odata.bind'] = `/businessunits(${transformedObj.businessUnitId})`;
+            delete transformedObj.businessUnitId;
+        }
+    }
+
     return transformedObj;
 }
