@@ -552,7 +552,10 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 res.send({ status: 'error', error: error });
             }
         } else if (integrationId === TP_ID.ms_dynamics_365_sales && req.query.code && revertPublicKey) {
-            const orgURL = (account?.apps[0].app_config as AppConfig).org_url;
+            let orgURL = account?.apps[0]?.is_revert_app
+                ? undefined
+                : (account?.apps[0]?.app_config as AppConfig).org_url;
+            if (!orgURL) orgURL = config.MS_DYNAMICS_SALES_ORG_URL;
             let formData: any = {
                 client_id: clientId || config.MS_DYNAMICS_SALES_CLIENT_ID,
                 client_secret: clientSecret || config.MS_DYNAMICS_SALES_CLIENT_SECRET,
@@ -576,8 +579,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
             });
             logInfo('OAuth creds for Microsoft Dynamics 365 sales', result.data);
 
-            let baseUrl = process.env.MS_DYNAMICS_ORG_URL;
-            baseUrl = baseUrl?.replace(/\/.default$/, '');
             const info: any = await axios({
                 method: 'get',
                 url: `${orgURL}/api/data/v9.2/WhoAmI`,
@@ -602,7 +603,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_account_url: orgURL,
                         app_client_id: clientId || config.MS_DYNAMICS_SALES_CLIENT_ID,
                         app_client_secret: clientSecret || config.MS_DYNAMICS_SALES_CLIENT_SECRET,
-                        app_config: { org_url: orgURL },
+                        app_config: { org_url: orgURL || config.MS_DYNAMICS_SALES_ORG_URL },
                         appId: account?.apps[0].id,
                     },
                     create: {
@@ -615,7 +616,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_account_url: orgURL,
                         app_client_id: clientId || config.MS_DYNAMICS_SALES_CLIENT_ID,
                         app_client_secret: clientSecret || config.MS_DYNAMICS_SALES_CLIENT_SECRET,
-                        app_config: { org_url: orgURL },
+                        app_config: { org_url: orgURL || config.MS_DYNAMICS_SALES_ORG_URL },
                         owner_account_public_token: revertPublicKey,
                         appId: account?.apps[0].id,
                         environmentId: environmentId,

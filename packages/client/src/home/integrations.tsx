@@ -586,7 +586,7 @@ const Integrations = ({ environment }) => {
                                     <img
                                         width={100}
                                         alt="MS Dynamics Sales logo"
-                                        src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1691139212/Revert/image_60_whit0z.png"
+                                        src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1691139212/c_scale,w_136/Revert/image_60_whit0z.png"
                                     />
                                     <p className="font-bold mt-4">MS Dynamics Sales</p>
                                     <span>Configure your MS Dynamics 365 Sakes App from here.</span>
