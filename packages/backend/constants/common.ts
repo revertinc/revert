@@ -156,3 +156,9 @@ export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefi
         [TP_ID.ms_dynamics_365_sales]: '',
     },
 };
+
+// Interface for app's having parameters apart from client_id & client_secret
+export interface AppConfig {
+    bot_token?: string;
+    org_url?: string;
+}

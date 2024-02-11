@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import isWorkEmail from '../helpers/isWorkEmail';
 import { ENV, TP_ID } from '@prisma/client';
 import { logInfo, logError } from '../helpers/logger';
-import { DEFAULT_SCOPE } from '../constants/common';
+import { AppConfig, DEFAULT_SCOPE } from '../constants/common';
 
 class AuthService {
     async refreshOAuthTokensForThirdParty() {
@@ -192,7 +192,7 @@ class AuthService {
                                 client_secret: connection.app_client_secret || config.MS_DYNAMICS_SALES_CLIENT_SECRET,
                                 grant_type: 'refresh_token',
                                 //@TODO make this dynamic
-                                scope: process.env.MS_DYNAMICS_ORG_URL,
+                                scope: `${connection.tp_account_url}/.default`,
                                 refresh_token: connection.tp_refresh_token,
                             };
                             formData = new URLSearchParams(formData);
@@ -528,7 +528,7 @@ class AuthService {
         scopes = [],
         tpId,
         isRevertApp,
-        botToken,
+        appConfig,
     }: {
         appId: string;
         publicToken: string;
@@ -537,7 +537,7 @@ class AuthService {
         scopes?: string[];
         tpId: TP_ID;
         isRevertApp: boolean;
-        botToken?: string;
+        appConfig?: AppConfig;
     }): Promise<any> {
         if (!publicToken || !tpId) {
             return { error: 'Bad request' };
@@ -551,7 +551,8 @@ class AuthService {
                 ...(clientSecret && { app_client_secret: clientSecret }),
                 is_revert_app: isRevertApp,
                 ...(scopes.filter(Boolean).length && { scope: scopes }),
-                ...(botToken && { app_bot_token: botToken }),
+                ...(appConfig?.bot_token && { app_config: { bot_token: appConfig.bot_token } }),
+                ...(appConfig?.org_url && { app_config: { org_url: appConfig.org_url } }),
             },
         });
         if (!account) {

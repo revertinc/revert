@@ -74,7 +74,6 @@ const proxyService = new ProxyService(
 
                 res.send({ result: result.data });
             } else if (thirdPartyId === TP_ID.ms_dynamics_365_sales) {
-                console.log('DEBUG', 'path: ', `${connection.tp_account_url}/${path}`, method);
                 const result = await axios({
                     method: method,
                     url: `${connection.tp_account_url}/${path}`,

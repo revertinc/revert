@@ -32,7 +32,7 @@ const revertTenantMiddleware = () => async (req: Request, res: Response, next: (
                 t_id: true,
                 tp_account_url: true,
                 tp_customer_id: true,
-                app_bot_token: true,
+                app_config: true,
                 app_client_id: true,
                 app: {
                     include: {

@@ -21,6 +21,7 @@ types:
             account: optional<Account>
             connections: optional<list<Connection>>
             is_revert_app: boolean
+            app_config: optional<AppConfig>
 
     RevertUser:
         properties:
@@ -101,3 +102,7 @@ types:
             - medium
             - low
             - lowest
+    AppConfig:
+        properties:
+            bot_token: optional<string>
+            org_url: optional<string>

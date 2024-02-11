@@ -9,7 +9,7 @@ import prisma, { Prisma, xprisma } from '../../../prisma/client';
 import { logInfo, logError, logDebug } from '../../../helpers/logger';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../redis/client/pubsub';
 import redis from '../../../redis/client';
-import { CRM_TP_ID, mapIntegrationIdToIntegrationName } from '../../../constants/common';
+import { AppConfig, CRM_TP_ID, mapIntegrationIdToIntegrationName } from '../../../constants/common';
 
 const authRouter = express.Router({ mergeParams: true });
 
@@ -34,7 +34,13 @@ authRouter.get('/oauth-callback', async (req, res) => {
             },
             include: {
                 apps: {
-                    select: { id: true, app_client_id: true, app_client_secret: true, is_revert_app: true },
+                    select: {
+                        id: true,
+                        app_client_id: true,
+                        app_client_secret: true,
+                        is_revert_app: true,
+                        app_config: true,
+                    },
                     where: { tp_id: integrationId },
                 },
                 accounts: true,
@@ -546,6 +552,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 res.send({ status: 'error', error: error });
             }
         } else if (integrationId === TP_ID.ms_dynamics_365_sales && req.query.code && revertPublicKey) {
+            const orgURL = (account?.apps[0].app_config as AppConfig).org_url;
             let formData: any = {
                 client_id: clientId || config.MS_DYNAMICS_SALES_CLIENT_ID,
                 client_secret: clientSecret || config.MS_DYNAMICS_SALES_CLIENT_SECRET,
@@ -555,7 +562,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     ? encodeURI(config.OAUTH_REDIRECT_BASE + `/${integrationId}`)
                     : null,
                 //@TODO make this dynamic
-                scope: process.env.MS_DYNAMICS_ORG_URL,
+                scope: `${orgURL}/.default`,
             };
             formData = new URLSearchParams(formData);
 
@@ -573,7 +580,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             baseUrl = baseUrl?.replace(/\/.default$/, '');
             const info: any = await axios({
                 method: 'get',
-                url: `${baseUrl}/api/data/v9.2/WhoAmI`,
+                url: `${orgURL}/api/data/v9.2/WhoAmI`,
                 headers: {
                     Authorization: `Bearer ${result.data.access_token}`,
                     'OData-MaxVersion': '4.0',
@@ -592,9 +599,10 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.UserId,
-                        tp_account_url: baseUrl,
+                        tp_account_url: orgURL,
                         app_client_id: clientId || config.MS_DYNAMICS_SALES_CLIENT_ID,
                         app_client_secret: clientSecret || config.MS_DYNAMICS_SALES_CLIENT_SECRET,
+                        app_config: { org_url: orgURL },
                         appId: account?.apps[0].id,
                     },
                     create: {
@@ -604,9 +612,10 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_access_token: result.data.access_token,
                         tp_refresh_token: result.data.refresh_token,
                         tp_customer_id: info.data.UserId,
-                        tp_account_url: baseUrl,
+                        tp_account_url: orgURL,
                         app_client_id: clientId || config.MS_DYNAMICS_SALES_CLIENT_ID,
                         app_client_secret: clientSecret || config.MS_DYNAMICS_SALES_CLIENT_SECRET,
+                        app_config: { org_url: orgURL },
                         owner_account_public_token: revertPublicKey,
                         appId: account?.apps[0].id,
                         environmentId: environmentId,

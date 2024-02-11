@@ -30,8 +30,8 @@ const xprisma = prisma.$extends({
                     args.create.id = newConnectionId;
                 }
 
-                if (args.update?.tp_id !== TP_ID.discord) {
-                    args.update.app_bot_token = null;
+                if (!(args.update?.tp_id === TP_ID.discord || args.update?.tp_id === TP_ID.ms_dynamics_365_sales)) {
+                    args.update.app_config = Prisma.DbNull;
                 }
 
                 // tp_account_url: zohocrm sfdc pipedrive jira

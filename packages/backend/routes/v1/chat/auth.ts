@@ -9,7 +9,7 @@ import qs from 'qs';
 import { randomUUID } from 'crypto';
 import redis from '../../../redis/client';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../redis/client/pubsub';
-import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
+import { mapIntegrationIdToIntegrationName, AppConfig } from '../../../constants/common';
 
 const authRouter = express.Router();
 
@@ -38,7 +38,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         app_client_id: true,
                         app_client_secret: true,
                         is_revert_app: true,
-                        app_bot_token: true,
+                        app_config: true,
                     },
                     where: { tp_id: integrationId },
                 },
@@ -48,7 +48,9 @@ authRouter.get('/oauth-callback', async (req, res) => {
 
         const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
-        const botToken = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_bot_token;
+        const botToken = account?.apps[0]?.is_revert_app
+            ? undefined
+            : (account?.apps[0]?.app_config as AppConfig).bot_token;
         const svixAppId = account!.accounts!.id;
         const environmentId = account?.id;
         if (integrationId === TP_ID.slack && req.query.code && req.query.t_id && revertPublicKey) {
@@ -186,7 +188,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_refresh_token: result.data?.refresh_token,
                         app_client_id: clientId || config.DISCORD_CLIENT_ID,
                         app_client_secret: clientSecret || config.DISCORD_CLIENT_SECRET,
-                        app_bot_token: botToken || config.DISCORD_BOT_TOKEN,
+                        app_config: { bot_token: botToken || config.DISCORD_BOT_TOKEN },
                         tp_id: integrationId,
                         appId: account?.apps[0].id,
                         tp_customer_id: guildId,
@@ -199,7 +201,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         tp_refresh_token: String(result.data?.refresh_token),
                         app_client_id: clientId || config.DISCORD_CLIENT_ID,
                         app_client_secret: clientSecret || config.DISCORD_CLIENT_SECRET,
-                        app_bot_token: botToken || config.DISCORD_BOT_TOKEN,
+                        app_config: { bot_token: botToken || config.DISCORD_BOT_TOKEN },
                         tp_customer_id: guildId,
                         owner_account_public_token: revertPublicKey,
                         appId: account?.apps[0].id,
