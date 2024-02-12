@@ -84,7 +84,7 @@ const EditCredentials: React.FC<{
     const [isRevertApp, setIsRevertApp] = React.useState(app.is_revert_app);
 
     const { loading, status, fetch } = useApi();
-
+    
     const handleAddNewScope = (e) => {
         if (e.key === 'Enter') {
             setScopes((ss) => [...ss, ...newScope.split(',').map((s) => s.trim())]);
@@ -159,9 +159,9 @@ const EditCredentials: React.FC<{
                             <span className="font-bold">Bot Token: </span>
                             <Input
                                 className="app_bot_token"
-                                value={appConfig.bot_token}
+                                value={app?.app_config?.bot_token}
                                 onChange={handleAppConfigFieldChange}
-                                error={!appConfig.bot_token}
+                                error={!app?.app_config?.bot_token}
                             />
                         </Row>
                     )}
@@ -170,9 +170,9 @@ const EditCredentials: React.FC<{
                             <span className="font-bold">Organisation URL: </span>
                             <Input
                                 className="app_org_url"
-                                value={appConfig.org_url}
+                                value={app?.app_config?.org_url}
                                 onChange={handleAppConfigFieldChange}
-                                error={!appConfig.org_url}
+                                error={!app?.app_config?.org_url}
                             />
                         </Row>
                         
