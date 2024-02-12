@@ -5787,7 +5787,7 @@ __metadata:
     "@babel/core": 7.23.5
     "@scarf/scarf": ^1.3.0
     "@storybook/addon-a11y": 6.5.0-alpha.50
-    "@storybook/addon-actions": 7.6.4
+    "@storybook/addon-actions": 7.6.14
     "@storybook/addon-docs": 6.5.0-alpha.50
     "@storybook/addon-essentials": 6.5.0-alpha.50
     "@storybook/addon-links": 7.4.5
@@ -6420,17 +6420,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-actions@npm:7.6.4":
-  version: 7.6.4
-  resolution: "@storybook/addon-actions@npm:7.6.4"
+"@storybook/addon-actions@npm:7.6.14":
+  version: 7.6.14
+  resolution: "@storybook/addon-actions@npm:7.6.14"
   dependencies:
-    "@storybook/core-events": 7.6.4
+    "@storybook/core-events": 7.6.14
     "@storybook/global": ^5.0.0
     "@types/uuid": ^9.0.1
     dequal: ^2.0.2
     polished: ^4.2.2
     uuid: ^9.0.0
-  checksum: 305070099dbc6db0e00c5b329433c332202042ee6a86b545cd79899c116edeed5421c6eb23aec7af25bac57a657632657acd9b2d41f10a42b4623f0db41a2906
+  checksum: 7f3543ab9fce4d07a45b65ed89d13271d5c42e11b97cfd3aa818e8de0200757c62b39b7c1e1efefe538f3613805d2af79cca8c74131bc7f8ef4701e54bf32835
   languageName: node
   linkType: hard
 
@@ -7330,12 +7330,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/core-events@npm:7.6.4":
-  version: 7.6.4
-  resolution: "@storybook/core-events@npm:7.6.4"
+"@storybook/core-events@npm:7.6.14":
+  version: 7.6.14
+  resolution: "@storybook/core-events@npm:7.6.14"
   dependencies:
     ts-dedent: ^2.0.0
-  checksum: 8983ca8df99707b5805bef3cfe4eff24afd0c5c9fd5f3ed4e2a81b8d86a295d95bb180a1fca4cb748310162a4c4386bbf40d3b6b1fe7e5ad3e9fcb40440fdd78
+  checksum: 67eb85b5e0f72173cc8c6e7592160e57adadc3bd8632057df848eead1ae28509371cdf3bf4f67f171cded9e840e0585de3661416c5436e94c1f9f4fe4ca7bfdc
   languageName: node
   linkType: hard
 
