@@ -55,6 +55,14 @@ cp packages/backend/.env.example packages/backend/.env
 -   Refer https://www.postgresql.org/download/ for instructions.
 -   Get a PostgreSQL url and update it in `.env`
 
+### Applying Existing Migrations
+
+-   Apply the existing migrations to sync the database with sample data wth the schema.
+
+```shell
+ yarn workspace @revertdotdev/backend migration:dev
+```
+
 ### Seed the database
 
 ```shell
