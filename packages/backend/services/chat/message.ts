@@ -22,7 +22,7 @@ const messageService = new MessagesService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const botToken = connection.app_bot_token;
+                const botToken = connection.app_config?.bot_token;
                 const message = await disunifyChatObject<UnifiedMessage>({
                     obj: messageData,
                     tpId: thirdPartyId,
