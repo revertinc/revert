@@ -321,7 +321,6 @@ const createIntegrationBlock = function (self, integration) {
                 signInElement.setAttribute('id', 'revert-signin-container');
                 signInElement.style.position = 'absolute';
                 signInElement.style.top = '15%';
-                signInElement.style.left = '40%';
                 signInElement.style.width = '390px';
                 signInElement.style.display = 'flex';
                 signInElement.style.flexDirection = 'column';
