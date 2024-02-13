@@ -367,21 +367,43 @@ const createIntegrationBlock = function (self, integration) {
                 headerDiv.appendChild(headerText);
                 headerDiv.appendChild(closeButton);
                 signInElement.appendChild(headerDiv);
+                const integrationsContainerWrapper = createViewElement(
+                    'div',
+                    'integrations-container-wrapper',
+                    transformStyle({
+                        width: '390px',
+                        height: '350px',
+                        position: 'relative',
+                    }),
+                    []
+                );
+                signInElement.appendChild(integrationsContainerWrapper);
                 const integrationsContainer = createViewElement(
                     'div',
                     'integrations-container',
                     transformStyle({
+                        boxSizing: 'border-box',
                         width: '100%',
+                        height: '350px',
+                        padding: '0 32px',
                         display: 'flex',
                         flexDirection: 'row',
                         flexWrap: 'wrap',
                         gap: '10px',
                         alignItems: 'center',
                         justifyContent: 'space-between',
+                        overflowY: 'auto',
+                        overflowX: 'hidden',
+                        'scrollbar-width': 'none',
+                        position: 'absolute',
+                        top: '0',
+                        bottom: '0',
+                        left: '0',
+                        right: '0',
                     }),
                     []
                 );
-                signInElement.appendChild(integrationsContainer);
+                integrationsContainerWrapper.appendChild(integrationsContainer);
 
                 for (let index = 0; index < this.#integrations.length; index++) {
                     const integration = this.#integrations[index];
