@@ -894,6 +894,20 @@ const eventService = new EventService(
                         res.send({ status: 'ok', message: 'deleted' });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        await axios({
+                            method: 'delete',
+                            url: `${connection.tp_account_url}/api/data/v9.2/appointments(${eventId})`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                            },
+                        });
+                        res.send({ status: 'ok', message: 'deleted' });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }

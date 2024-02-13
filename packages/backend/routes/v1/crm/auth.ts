@@ -564,7 +564,6 @@ authRouter.get('/oauth-callback', async (req, res) => {
                 redirect_uri: config.OAUTH_REDIRECT_BASE
                     ? encodeURI(config.OAUTH_REDIRECT_BASE + `/${integrationId}`)
                     : null,
-                //@TODO make this dynamic
                 scope: `${orgURL}/.default`,
             };
             formData = new URLSearchParams(formData);

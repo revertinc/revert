@@ -97,7 +97,7 @@ export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefi
         [TP_ID.sfdc]: 'Account',
         [TP_ID.zohocrm]: 'Accounts',
         [TP_ID.closecrm]: 'organization',
-        [TP_ID.ms_dynamics_365_sales]: '',
+        [TP_ID.ms_dynamics_365_sales]: 'account',
     },
     [StandardObjects.contact]: {
         [TP_ID.hubspot]: 'contacts',
@@ -105,7 +105,7 @@ export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefi
         [TP_ID.sfdc]: 'Contact',
         [TP_ID.zohocrm]: 'Contacts',
         [TP_ID.closecrm]: 'contact',
-        [TP_ID.ms_dynamics_365_sales]: '',
+        [TP_ID.ms_dynamics_365_sales]: 'contact',
     },
     [StandardObjects.deal]: {
         [TP_ID.hubspot]: 'deals',
@@ -113,7 +113,7 @@ export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefi
         [TP_ID.sfdc]: 'Opportunity',
         [TP_ID.zohocrm]: 'Deals',
         [TP_ID.closecrm]: 'opportunity',
-        [TP_ID.ms_dynamics_365_sales]: '',
+        [TP_ID.ms_dynamics_365_sales]: 'opportunity',
     },
     [StandardObjects.event]: {
         [TP_ID.hubspot]: 'meetings',
@@ -121,7 +121,7 @@ export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefi
         [TP_ID.sfdc]: 'Event',
         [TP_ID.zohocrm]: 'Events',
         [TP_ID.closecrm]: '', // @TODO add equivalent cause there are activity, meeting and events options close crm api
-        [TP_ID.ms_dynamics_365_sales]: '',
+        [TP_ID.ms_dynamics_365_sales]: 'appointment',
     },
     [StandardObjects.lead]: {
         [TP_ID.hubspot]: 'contacts',
@@ -129,7 +129,7 @@ export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefi
         [TP_ID.sfdc]: 'Lead',
         [TP_ID.zohocrm]: 'Leads',
         [TP_ID.closecrm]: 'lead',
-        [TP_ID.ms_dynamics_365_sales]: '',
+        [TP_ID.ms_dynamics_365_sales]: 'lead',
     },
     [StandardObjects.note]: {
         [TP_ID.hubspot]: 'notes',
@@ -137,7 +137,7 @@ export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefi
         [TP_ID.sfdc]: 'Note',
         [TP_ID.zohocrm]: 'Notes',
         [TP_ID.closecrm]: 'note',
-        [TP_ID.ms_dynamics_365_sales]: '',
+        [TP_ID.ms_dynamics_365_sales]: 'annotation',
     },
     [StandardObjects.task]: {
         [TP_ID.hubspot]: 'tasks',
@@ -145,7 +145,7 @@ export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefi
         [TP_ID.sfdc]: 'Task',
         [TP_ID.zohocrm]: 'Tasks',
         [TP_ID.closecrm]: 'task',
-        [TP_ID.ms_dynamics_365_sales]: '',
+        [TP_ID.ms_dynamics_365_sales]: 'task',
     },
     [StandardObjects.user]: {
         [TP_ID.hubspot]: 'users',
@@ -153,7 +153,7 @@ export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefi
         [TP_ID.sfdc]: 'User',
         [TP_ID.zohocrm]: 'users',
         [TP_ID.closecrm]: 'user',
-        [TP_ID.ms_dynamics_365_sales]: '',
+        [TP_ID.ms_dynamics_365_sales]: 'systemuser',
     },
 };
 
