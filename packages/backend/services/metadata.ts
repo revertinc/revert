@@ -139,6 +139,15 @@ const metadataService = new MetadataService({
                     clientId: getClientId(apps, TP_ID.trello) || config.TRELLO_CLIENT_ID,
                 },
                 {
+                    integrationId: TP_ID.msteams,
+                    name: 'Microsoft Teams',
+                    imageSrc:
+                        'https://w7.pngwing.com/pngs/383/807/png-transparent-microsoft-teams-macos-bigsur-icon.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.msteams),
+                    clientId: getClientId(apps, TP_ID.msteams) || config.MSTEAMS_CLIENT_ID,
+                },
+                {
                     integrationId: 'microsoft_dynamics',
                     name: 'microsoft dynamics 365',
                     imageSrc:

@@ -90,6 +90,36 @@ const usersService = new UsersService(
                         res.send({ status: 'ok', next: undefined, results: members });
                         break;
                     }
+                    case TP_ID.msteams: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `https://graph.microsoft.com/v1.0/users`,
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+
+                        const unifiedUsers = await Promise.all(
+                            result.data.value.map(
+                                async (l: any) =>
+                                    await unifyObject<any, UnifiedChatUser>({
+                                        obj: l,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            previous: 'PREVIOUS_CURSOR',
+                            next: 'NEXT_CURSOR',
+                            results: unifiedUsers,
+                        });
+                    }
                 }
             } catch (error: any) {
                 logError(error);

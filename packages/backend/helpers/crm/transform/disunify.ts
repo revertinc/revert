@@ -83,6 +83,9 @@ export async function disunifyChatObject<T extends Record<string, any>>({
         case TP_ID.discord: {
             return transformedObj;
         }
+        case TP_ID.msteams: {
+            return transformedObj;
+        }
     }
 }
 
