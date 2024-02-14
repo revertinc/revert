@@ -37,6 +37,8 @@ navigation:
                   path: ./docs/contents/versioning.mdx
                 - page: Webhooks
                   path: ./docs/contents/webhooks.mdx
+                - page: Build Integration
+                  path: ./docs/contents/add-integration-guide.mdx
           - section: Use Cases
             contents:
                 - page: Use Cases
