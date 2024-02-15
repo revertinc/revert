@@ -554,7 +554,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
         } else if (integrationId === TP_ID.ms_dynamics_365_sales && req.query.code && revertPublicKey) {
             let orgURL = account?.apps[0]?.is_revert_app
                 ? undefined
-                : (account?.apps[0]?.app_config as AppConfig).org_url;
+                : (account?.apps[0]?.app_config as AppConfig)?.org_url;
             if (!orgURL) orgURL = config.MS_DYNAMICS_SALES_ORG_URL;
             let formData: any = {
                 client_id: clientId || config.MS_DYNAMICS_SALES_CLIENT_ID,
