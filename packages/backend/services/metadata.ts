@@ -139,13 +139,13 @@ const metadataService = new MetadataService({
                     clientId: getClientId(apps, TP_ID.trello) || config.TRELLO_CLIENT_ID,
                 },
                 {
-                    integrationId: 'microsoft_dynamics',
+                    integrationId: TP_ID.ms_dynamics_365_sales,
                     name: 'microsoft dynamics 365',
                     imageSrc:
-                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1691139212/Revert/image_60_whit0z.png',
-                    status: 'inactive',
-                    scopes: [],
-                    clientId: '',
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1707715552/Revert/mecum34mxpxirpi1obxd.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.ms_dynamics_365_sales),
+                    clientId: getClientId(apps, TP_ID.ms_dynamics_365_sales) || config.MS_DYNAMICS_SALES_CLIENT_ID,
                 },
             ];
             res.send({

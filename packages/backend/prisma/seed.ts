@@ -111,7 +111,8 @@ async function main() {
                     tpId === 'zohocrm' ||
                     tpId === 'sfdc' ||
                     tpId === 'pipedrive' ||
-                    tpId === 'closecrm'
+                    tpId === 'closecrm' ||
+                    tpId === 'ms_dynamics_365_sales'
                 )
             )
                 return;

@@ -24,7 +24,7 @@ const usersService = new UsersService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const customerId = connection.tp_customer_id;
-                const botToken = connection.app_bot_token;
+                const botToken = connection.app_config?.bot_token;
                 logInfo(
                     'Revert::GET ALL USERS',
                     connection.app?.env?.accountId,

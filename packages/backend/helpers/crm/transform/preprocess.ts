@@ -70,6 +70,93 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.ms_dynamics_365_sales]: {
+            [StandardObjects.note]: (obj: T) => {
+                return obj.notetext ? obj : { ...obj, notetext: obj.subject };
+            },
+            [StandardObjects.task]: (obj: T) => {
+                const modifiedObj: any = {};
+                /*
+                Microsoft Priority codes
+                    0 : Low
+                    1 : Normal
+                    2 : High
+                */
+                if (obj.prioritycode !== undefined && obj.prioritycode !== null) {
+                    let priority = null;
+                    if (obj.prioritycode === 0) priority = 'low';
+                    else if (obj.prioritycode === 1) priority = 'normal';
+                    else if (obj.prioritycode === 2) priority = 'high';
+                    modifiedObj.priority = priority;
+                }
+                /*
+                Microsoft state code
+                    0 : Open
+                    1 : Completed
+                    2 : Canceled
+                */
+                if (obj.statecode !== undefined && obj.statecode !== null) {
+                    let status = null;
+                    if (obj.statecode === 0) status = 'open';
+                    else if (obj.statecode == 1) status = 'completed';
+                    else if (obj.statecode == 2) status = 'canceled';
+                    modifiedObj.status = status;
+                }
+                return { ...obj, ...modifiedObj };
+            },
+            [StandardObjects.deal]: (obj: T) => {
+                const modifiedObj: any = {};
+
+                if (obj.closeprobability && obj.closeprobability !== 0) {
+                    modifiedObj.closeprobability = obj.closeprobability / 100;
+                }
+                /*
+                    Microsoft opportunityratingcode
+                        1 : Hot
+                        2 : Warm
+                        3 : Cold
+                */
+                if (obj.opportunityratingcode) {
+                    const ratingCode = obj.opportunityratingcode;
+                    if (ratingCode === 1) modifiedObj.opportunityratingcode = 'hot';
+                    else if (ratingCode === 2) modifiedObj.opportunityratingcode = 'warm';
+                    else if (ratingCode === 3) modifiedObj.opportunityratingcode = 'cold';
+                }
+
+                /*
+                    Microsoft salesstagecode
+                        0 : Qualify
+                        1 : Develop
+                        2 : Propose
+                        3 : Close
+                */
+                if (obj.salesstagecode) {
+                    const salesstagecode = obj.salesstagecode;
+                    if (salesstagecode === 0) modifiedObj.salesstagecode = 'qualify';
+                    else if (salesstagecode === 1) modifiedObj.salesstagecode = 'develop';
+                    else if (salesstagecode === 2) modifiedObj.salesstagecode = 'propose';
+                    else if (salesstagecode === 3) modifiedObj.salesstagecode = 'close';
+                }
+
+                /*
+                    Microsoft statecode
+                        0 : open
+                        1 : won
+                        2 : lost
+                */
+                modifiedObj.statecode = obj.statecode && obj.statecode === 1 ? true : false;
+
+                return { ...obj, ...modifiedObj };
+            },
+            [StandardObjects.company]: (obj: T) => {
+                let address_street = obj.address1_line1 ? obj.address1_line1 : null;
+
+                if (obj.address1_line2) address_street += `, ${obj.address1_line2}`;
+                if (obj.address1_line3) address_street += `, ${obj.address1_line3}`;
+
+                return { ...obj, address_street };
+            },
+        },
         [TP_ID.linear]: {
             [TicketStandardObjects.ticketTask]: (obj: T) => {
                 let status: string;
@@ -263,6 +350,7 @@ export const postprocessDisUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.ms_dynamics_365_sales]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

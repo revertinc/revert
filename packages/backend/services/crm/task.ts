@@ -145,6 +145,29 @@ const taskService = new TaskService(
                         });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/api/data/v9.2/tasks(${taskId})`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedTask = await unifyObject<any, UnifiedTask>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({ status: 'ok', result: unifiedTask });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -361,6 +384,42 @@ const taskService = new TaskService(
                         });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const pagingString = cursor ? encodeURI(cursor).split('?')[1] : '';
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/api/data/v9.2/tasks?${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                                Prefer: pageSize ? `odata.maxpagesize=${pageSize}` : '',
+                            },
+                        });
+
+                        const unifiedTasks = await Promise.all(
+                            result.data.value.map(
+                                async (task: any) =>
+                                    await unifyObject<any, UnifiedTask>({
+                                        obj: task,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: result.data['@odata.nextLink'],
+                            previous: undefined,
+                            results: unifiedTasks,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -478,6 +537,27 @@ const taskService = new TaskService(
                         });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const response = await axios({
+                            method: 'post',
+                            url: `${connection.tp_account_url}/api/data/v9.2/tasks`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: task,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'MS Dynamics 365 Task created.',
+                            result: response.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -586,6 +666,27 @@ const taskService = new TaskService(
                         res.send({
                             status: 'ok',
                             message: 'Closecrm task updated',
+                            result: response.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const response = await axios({
+                            method: 'patch',
+                            url: `${connection.tp_account_url}/api/data/v9.2/tasks(${taskId})`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: task,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'MS Dynamics 365 Task updated.',
                             result: response.data,
                         });
                         break;
@@ -706,6 +807,39 @@ const taskService = new TaskService(
                     }
                     case TP_ID.pipedrive: {
                         throw new NotFoundError({ error: 'Method not allowed' });
+                    }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        let searchString = fields ? `$select=${fields}` : '';
+                        if (searchCriteria) {
+                            searchString += fields ? `&$filter=${searchCriteria}` : `$filter=${searchCriteria}`;
+                        }
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/api/data/v9.2/tasks?${searchString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedTasks = await Promise.all(
+                            result.data.value.map(
+                                async (contact: any) =>
+                                    await unifyObject<any, UnifiedTask>({
+                                        obj: contact,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({ status: 'ok', results: unifiedTasks });
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });

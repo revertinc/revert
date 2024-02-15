@@ -22,7 +22,7 @@ const accountService = new AccountService({
     },
     async updateAccountCredentials(req, res) {
         try {
-            const { clientId, clientSecret, scopes, tpId, isRevertApp, appId, botToken } = req.body;
+            const { clientId, clientSecret, scopes, tpId, isRevertApp, appId, appConfig } = req.body;
             const { 'x-revert-api-token': token } = req.headers;
             const account = await prisma.accounts.findFirst({
                 where: {
@@ -45,7 +45,7 @@ const accountService = new AccountService({
                 scopes,
                 isRevertApp,
                 tpId,
-                botToken,
+                appConfig,
             });
             if (result?.error) {
                 throw new NotFoundError({ error: 'Could not get account for user' });

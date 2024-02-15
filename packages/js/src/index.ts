@@ -321,7 +321,6 @@ const createIntegrationBlock = function (self, integration) {
                 signInElement.setAttribute('id', 'revert-signin-container');
                 signInElement.style.position = 'absolute';
                 signInElement.style.top = '15%';
-                signInElement.style.left = '40%';
                 signInElement.style.width = '390px';
                 signInElement.style.display = 'flex';
                 signInElement.style.flexDirection = 'column';
@@ -367,21 +366,43 @@ const createIntegrationBlock = function (self, integration) {
                 headerDiv.appendChild(headerText);
                 headerDiv.appendChild(closeButton);
                 signInElement.appendChild(headerDiv);
+                const integrationsContainerWrapper = createViewElement(
+                    'div',
+                    'integrations-container-wrapper',
+                    transformStyle({
+                        width: '390px',
+                        height: '350px',
+                        position: 'relative',
+                    }),
+                    []
+                );
+                signInElement.appendChild(integrationsContainerWrapper);
                 const integrationsContainer = createViewElement(
                     'div',
                     'integrations-container',
                     transformStyle({
+                        boxSizing: 'border-box',
                         width: '100%',
+                        height: '350px',
+                        padding: '0 32px',
                         display: 'flex',
                         flexDirection: 'row',
                         flexWrap: 'wrap',
                         gap: '10px',
                         alignItems: 'center',
                         justifyContent: 'space-between',
+                        overflowY: 'auto',
+                        overflowX: 'hidden',
+                        'scrollbar-width': 'none',
+                        position: 'absolute',
+                        top: '0',
+                        bottom: '0',
+                        left: '0',
+                        right: '0',
                     }),
                     []
                 );
-                signInElement.appendChild(integrationsContainer);
+                integrationsContainerWrapper.appendChild(integrationsContainer);
 
                 for (let index = 0; index < this.#integrations.length; index++) {
                     const integration = this.#integrations[index];
@@ -1128,6 +1149,14 @@ const createIntegrationBlock = function (self, integration) {
                         `https://app.close.com/oauth2/authorize/?client_id=${
                             selectedIntegration.clientId
                         }&response_type=code&state=${encodeURIComponent(state)}`
+                    );
+                } else if (selectedIntegration.integrationId === 'ms_dynamics_365_sales') {
+                    window.open(
+                        `https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&response_type=code&redirect_uri=${
+                            this.#REDIRECT_URL_BASE
+                        }/ms_dynamics_365_sales&response_mode=query&scope=${scopes.join('%20')}&state=${state}`
                     );
                 } else if (selectedIntegration.integrationId === 'slack') {
                     window.open(

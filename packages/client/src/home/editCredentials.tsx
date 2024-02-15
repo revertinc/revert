@@ -66,6 +66,11 @@ const LoadingButton = styled(MuiLoadingButton)`
     }
 `;
 
+interface AppConfig {
+    bot_token?: string;
+    org_url?: string;
+  }
+
 const EditCredentials: React.FC<{
     app: any;
     handleClose: ({ refetchOnClose }: { refetchOnClose?: boolean | undefined }) => Promise<void>;
@@ -73,12 +78,13 @@ const EditCredentials: React.FC<{
     const [clientId, setClientId] = React.useState<string>(app.app_client_id);
     const [clientSecret, setClientSecret] = React.useState<string>(app.app_client_secret);
     const [botToken, setBotToken] = React.useState<string>(app.app_bot_token);
+    const [appConfig, setAppConfig] = React.useState<AppConfig>({});
     const [scopes, setScopes] = React.useState<string[]>(app.scope);
     const [newScope, setNewScope] = React.useState<string>('');
     const [isRevertApp, setIsRevertApp] = React.useState(app.is_revert_app);
 
     const { loading, status, fetch } = useApi();
-
+    
     const handleAddNewScope = (e) => {
         if (e.key === 'Enter') {
             setScopes((ss) => [...ss, ...newScope.split(',').map((s) => s.trim())]);
@@ -91,7 +97,7 @@ const EditCredentials: React.FC<{
             appId: app.id,
             tpId: app.tp_id,
             isRevertApp,
-            ...(!isRevertApp && { clientId, clientSecret, scopes, botToken }),
+            ...(!isRevertApp && { clientId, clientSecret, scopes, appConfig }),
         };
         await fetch({
             url: '/internal/account/credentials',
@@ -99,6 +105,15 @@ const EditCredentials: React.FC<{
             payload,
         });
     };
+
+    const handleAppConfigFieldChange = (ev) => {
+        const val = (ev.target.value || '').trim();
+        if (app.tp_id === 'discord') {
+          setAppConfig({  bot_token: val });
+        } else if (app.tp_id === 'ms_dynamics_365_sales') {
+          setAppConfig({  org_url: val });
+        }
+      };
 
     React.useEffect(() => {
         if (status === 200) {
@@ -144,11 +159,23 @@ const EditCredentials: React.FC<{
                             <span className="font-bold">Bot Token: </span>
                             <Input
                                 className="app_bot_token"
-                                value={botToken}
-                                onChange={(ev) => setBotToken((ev.target.value || '').trim())}
-                                error={!botToken}
+                                value={app?.app_config?.bot_token}
+                                onChange={handleAppConfigFieldChange}
+                                error={!app?.app_config?.bot_token}
                             />
                         </Row>
+                    )}
+                    {app.tp_id === 'ms_dynamics_365_sales' && (
+                        <Row>
+                            <span className="font-bold">Organisation URL: </span>
+                            <Input
+                                className="app_org_url"
+                                value={app?.app_config?.org_url}
+                                onChange={handleAppConfigFieldChange}
+                                error={!app?.app_config?.org_url}
+                            />
+                        </Row>
+                        
                     )}
                     {!(app.tp_id === 'closecrm' || app.tp_id === 'pipedrive' || app.tp_id === 'clickup') && (
                         <Row>
@@ -189,7 +216,7 @@ const EditCredentials: React.FC<{
                         isRevertApp
                             ? false
                             : app.tp_id === 'discord'
-                            ? !clientId || !clientSecret || !botToken
+                            ? !clientId || !clientSecret || !appConfig.bot_token
                             : !clientId || !clientSecret
                     }
                 >

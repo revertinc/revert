@@ -44,7 +44,7 @@ service:
                         tpId: types.TPID
                         isRevertApp: boolean
                         appId: string
-                        botToken: optional<string>
+                        appConfig: optional<types.AppConfig>
             response: types.App
             errors:
                 - errors.UnAuthorizedError

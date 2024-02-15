@@ -192,6 +192,7 @@ types:
             email:
                 type: string
                 docs: The email of a user in a CRM.
+        docs: Include the "businessUnitId" in the "additional" section, as it is a mandatory field for Microsoft Dynamics Sales.
     User:
         extends:
             - CommonUnifiedFields

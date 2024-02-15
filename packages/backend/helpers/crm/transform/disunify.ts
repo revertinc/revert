@@ -8,7 +8,13 @@ import {
     TicketStandardObjects,
 } from '../../../constants/common';
 import { transformModelToFieldMapping } from '.';
-import { handleHubspotDisunify, handlePipedriveDisunify, handleSfdcDisunify, handleZohoDisunify } from '..';
+import {
+    handleHubspotDisunify,
+    handleMSDynamicsSales,
+    handlePipedriveDisunify,
+    handleSfdcDisunify,
+    handleZohoDisunify,
+} from '..';
 import { postprocessDisUnifyObject, postprocessDisUnifyTicketObject } from './preprocess';
 import { flattenObj } from '../../../helpers/flattenObj';
 import handleCloseCRMDisunify from '../closecrm';
@@ -50,6 +56,9 @@ export async function disunifyObject<T extends Record<string, any>>({
         }
         case TP_ID.closecrm: {
             return handleCloseCRMDisunify({ obj, transformedObj: processedObj });
+        }
+        case TP_ID.ms_dynamics_365_sales: {
+            return handleMSDynamicsSales({ obj, objType, transformedObj: processedObj });
         }
     }
 }

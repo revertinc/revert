@@ -142,6 +142,29 @@ const userService = new UserService(
                         res.send({ status: 'ok', result: user });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/api/data/v9.2/systemusers(${userId})`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedUser = await unifyObject<any, UnifiedUser>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({ status: 'ok', result: unifiedUser });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -358,6 +381,42 @@ const userService = new UserService(
                         });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const pagingString = cursor ? encodeURI(cursor).split('?')[1] : '';
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/api/data/v9.2/systemusers?${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                                Prefer: pageSize ? `odata.maxpagesize=${pageSize}` : '',
+                            },
+                        });
+
+                        const unifiedUsers = await Promise.all(
+                            result.data.value.map(
+                                async (contact: any) =>
+                                    await unifyObject<any, UnifiedUser>({
+                                        obj: contact,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: result.data['@odata.nextLink'],
+                            previous: undefined,
+                            results: unifiedUsers,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });
                     }
@@ -459,6 +518,29 @@ const userService = new UserService(
                     }
                     case TP_ID.closecrm: {
                         throw new NotFoundError({ error: 'Method not allowed' });
+                    }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const response = await axios({
+                            method: 'post',
+                            url: `${connection.tp_account_url}/api/data/v9.2/systemusers`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: user,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'MS Dynamics 365 Contact created.',
+                            result: response.data,
+                            // result: user,
+                        });
+
+                        break;
                     }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized CRM' });

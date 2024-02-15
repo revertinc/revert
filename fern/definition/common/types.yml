@@ -21,6 +21,7 @@ types:
             account: optional<Account>
             connections: optional<list<Connection>>
             is_revert_app: boolean
+            app_config: optional<AppConfig>
 
     RevertUser:
         properties:
@@ -50,6 +51,8 @@ types:
             - sfdc
             - pipedrive
             - slack
+            - closecrm
+            - ms_dynamics_365_sales
     StandardObject:
         enum:
             - company
@@ -99,3 +102,7 @@ types:
             - medium
             - low
             - lowest
+    AppConfig:
+        properties:
+            bot_token: optional<string>
+            org_url: optional<string>

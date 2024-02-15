@@ -157,6 +157,28 @@ const leadService = new LeadService(
                         res.send({ status: 'ok', result: lead });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/api/data/v9.2/leads(${leadId})`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedLead = await unifyObject<any, UnifiedLead>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedLead });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
                     }
@@ -384,7 +406,41 @@ const leadService = new LeadService(
 
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const pagingString = cursor ? encodeURI(cursor).split('?')[1] : '';
 
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/api/data/v9.2/leads?${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                                Prefer: pageSize ? `odata.maxpagesize=${pageSize}` : '',
+                            },
+                        });
+
+                        const unifiedLeads = await Promise.all(
+                            result.data.value.map(
+                                async (lead: any) =>
+                                    await unifyObject<any, UnifiedLead>({
+                                        obj: lead,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: result.data['@odata.nextLink'],
+                            previous: undefined,
+                            results: unifiedLeads,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
                     }
@@ -505,6 +561,27 @@ const leadService = new LeadService(
                         });
                         break;
                     }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const response = await axios({
+                            method: 'post',
+                            url: `${connection.tp_account_url}/api/data/v9.2/leads`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: lead,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'MS Dynamics 365 Lead created.',
+                            result: response.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognised CRM' });
                     }
@@ -617,6 +694,27 @@ const leadService = new LeadService(
                         res.send({
                             status: 'ok',
                             message: 'Closecrm lead updated',
+                            result: response.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        const response = await axios({
+                            method: 'patch',
+                            url: `${connection.tp_account_url}/api/data/v9.2/leads(${leadId})`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: lead,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'MS Dynamics 365 Lead updated.',
                             result: response.data,
                         });
                         break;
@@ -766,6 +864,39 @@ const leadService = new LeadService(
                                     })
                             )
                         );
+                        res.send({ status: 'ok', results: unifiedLeads });
+                        break;
+                    }
+                    case TP_ID.ms_dynamics_365_sales: {
+                        let searchString = fields ? `$select=${fields}` : '';
+                        if (searchCriteria) {
+                            searchString += fields ? `&$filter=${searchCriteria}` : `$filter=${searchCriteria}`;
+                        }
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/api/data/v9.2/leads?${searchString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'OData-MaxVersion': '4.0',
+                                'OData-Version': '4.0',
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedLeads = await Promise.all(
+                            result.data.value.map(
+                                async (contact: any) =>
+                                    await unifyObject<any, UnifiedLead>({
+                                        obj: contact,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
                         res.send({ status: 'ok', results: unifiedLeads });
                         break;
                     }

@@ -73,6 +73,22 @@ const proxyService = new ProxyService(
                 });
 
                 res.send({ result: result.data });
+            } else if (thirdPartyId === TP_ID.ms_dynamics_365_sales) {
+                const result = await axios({
+                    method: method,
+                    url: `${connection.tp_account_url}/${path}`,
+                    params: queryParams,
+                    headers: {
+                        Authorization: `Bearer ${thirdPartyToken}`,
+                        'OData-MaxVersion': '4.0',
+                        'OData-Version': '4.0',
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    data: body,
+                });
+
+                res.send({ result: result.data });
             } else {
                 throw new NotFoundError({ error: 'Unrecognized CRM!' });
             }
