@@ -33,7 +33,11 @@ Thanks for taking the interest in contributing ♥. We really appreciate any sup
 > **Note**
 > Please be sure that you can make a full production build before pushing code or creating PRs.
 
-You can build the project with:
+- Install the project dependencies by running:
+```bash
+yarn install
+```
+- Next, you can build the project with:
 
 ```bash
 yarn build
