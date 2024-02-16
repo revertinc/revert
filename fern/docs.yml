@@ -54,6 +54,8 @@ navigation:
     - tab: api
       layout:
           - api: API Reference
+            audiences:
+                - external
     - tab: guides
       layout:
           - section: Integration Guides
