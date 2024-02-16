@@ -16,7 +16,12 @@ types:
             next: optional<string>
             previous: optional<string>
             results: list<unified.Contact>
-    CreateOrUpdateContactRequest: unified.ContactWrite
+    CreateOrUpdateContactRequest:
+        extends: unified.ContactWrite
+        properties:
+            additional:
+                type: unknown
+                docs: Any fields that are not unified yet/non-unifiable come inside this `json` object.
     CreateOrUpdateContactResponse:
         properties:
             status: types.ResponseStatus

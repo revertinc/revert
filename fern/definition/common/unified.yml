@@ -18,7 +18,7 @@ types:
                 type: unknown
                 docs: The last updated timestamp of the object.
             additional:
-                type: unknown
+                type: optional<unknown>
                 docs: Any fields that are not unified yet/non-unifiable come inside this `json` object.
     LeadWrite:
         properties:

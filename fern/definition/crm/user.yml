@@ -18,6 +18,10 @@ types:
             results: list<unified.User>
     CreateOrUpdateUserRequest:
         extends: unified.UserWrite
+        properties:
+            additional:
+                type: unknown
+                docs: Any fields that are not unified yet/non-unifiable come inside this `json` object.
     CreateOrUpdateUserResponse:
         properties:
             status: types.ResponseStatus

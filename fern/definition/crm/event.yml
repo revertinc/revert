@@ -19,6 +19,10 @@ types:
             results: list<unified.Event>
     CreateOrUpdateEventRequest:
         extends: unified.EventWrite
+        properties:
+            additional:
+                type: unknown
+                docs: Any fields that are not unified yet/non-unifiable come inside this `json` object.
     CreateOrUpdateEventResponse:
         properties:
             status: types.ResponseStatus
