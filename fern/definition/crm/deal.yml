@@ -18,6 +18,10 @@ types:
             results: list<unified.Deal>
     CreateOrUpdateDealRequest:
         extends: unified.DealWrite
+        properties:
+            additional:
+                type: unknown
+                docs: Any fields that are not unified yet/non-unifiable come inside this `json` object.
     CreateOrUpdateDealResponse:
         properties:
             status: types.ResponseStatus
