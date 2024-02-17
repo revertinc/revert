@@ -1,5 +1,4 @@
 import axios from 'axios';
-import qs from 'qs';
 import config from '../../../../config';
 import { logInfo, logError } from '../../../../helpers/logger';
 import { Prisma, xprisma } from '../../../../prisma/client';
@@ -20,7 +19,6 @@ const handleMsDynamicAuth = async ({
     tenantId,
     tenantSecretToken,
     response,
-    request,
 }: IntegrationAuthProps) => {
     let orgURL = account?.apps[0]?.is_revert_app ? undefined : (account?.apps[0]?.app_config as AppConfig)?.org_url;
     if (!orgURL) orgURL = config.MS_DYNAMICS_SALES_ORG_URL;
