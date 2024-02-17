@@ -6,7 +6,7 @@ import { Prisma, xprisma } from '../../../../prisma/client';
 import { TP_ID } from '@prisma/client';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../../redis/client/pubsub';
 import { IntegrationAuthProps, mapIntegrationIdToIntegrationName } from '../../../../constants/common';
-import sendIntegrationStatusError from 'routes/v1/sendIntegrationstatusError';
+import sendIntegrationStatusError from '../../sendIntegrationstatusError';
 
 export const handleSfdcAuth = async ({
     account,
