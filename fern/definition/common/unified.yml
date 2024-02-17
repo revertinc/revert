@@ -20,7 +20,7 @@ types:
             additional:
                 type: optional<unknown>
                 docs: Any fields that are not unified yet/non-unifiable come inside this `json` object.
-    LeadWrite:
+    LeadRead:
         properties:
             firstName:
                 type: string
@@ -34,12 +34,15 @@ types:
             email:
                 type: string
                 docs: The email of the lead in a CRM.
+    LeadWrite:
+        extends: LeadRead
+        properties:
             associations: optional<associations.LeadAssociation>
     Lead:
         extends:
             - CommonUnifiedFields
-            - LeadWrite
-    DealWrite:
+            - LeadRead
+    DealRead:
         properties:
             amount:
                 type: integer
@@ -62,21 +65,27 @@ types:
             probability:
                 type: integer
                 docs: Probability of the deal getting closed, a decimal number between 0 to 1 (inclusive).
+    DealWrite:
+        extends: DealRead
+        properties:
             associations: optional<associations.DealAssociation>
     Deal:
         extends:
             - CommonUnifiedFields
-            - DealWrite
-    NoteWrite:
+            - DealRead
+    NoteRead:
         properties:
             content:
                 type: string
                 docs: The contents of the note in plain text or HTML.
+    NoteWrite:
+        extends: NoteRead
+        properties:
             associations: optional<associations.DealAssociation>
     Note:
         extends:
             - CommonUnifiedFields
-            - NoteWrite
+            - NoteRead
     Company:
         extends: CommonUnifiedFields
         properties:
@@ -109,7 +118,7 @@ types:
             country: string
             zip: string
             postalCode: string
-    ContactWrite:
+    ContactRead:
         properties:
             firstName:
                 type: string
@@ -123,12 +132,15 @@ types:
             email:
                 type: string
                 docs: The email of the contact in a CRM.
+    ContactWrite:
+        extends: ContactRead
+        properties:
             associations: optional<associations.ContactAssociation>
     Contact:
         extends:
             - CommonUnifiedFields
-            - ContactWrite
-    EventWrite:
+            - ContactRead
+    EventRead:
         properties:
             type:
                 type: string
@@ -151,12 +163,15 @@ types:
             location:
                 type: string
                 docs: The location of the event/meeting.
+    EventWrite:
+        extends: EventRead
+        properties:
             associations: optional<associations.EventAssociation>
     Event:
         extends:
             - CommonUnifiedFields
-            - EventWrite
-    TaskWrite:
+            - EventRead
+    TaskRead:
         properties:
             subject:
                 type: string
@@ -173,11 +188,13 @@ types:
             dueDate:
                 type: unknown
                 docs: The date when this task is due.
+    TaskWrite:
+        properties:
             associations: optional<associations.TaskAssociation>
     Task:
         extends:
             - CommonUnifiedFields
-            - TaskWrite
+            - TaskRead
     UserWrite:
         properties:
             firstName:
