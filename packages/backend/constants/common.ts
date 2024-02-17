@@ -165,7 +165,7 @@ export interface AppConfig {
 }
 
 export type IntegrationAuthProps = {
-    integrationId: CRM_TP_ID;
+    integrationId: TP_ID;
     account:
         | (environments & {
               apps: {
