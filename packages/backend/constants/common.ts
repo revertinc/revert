@@ -1,4 +1,5 @@
-import { TP_ID } from '@prisma/client';
+import { TP_ID, environments } from '@prisma/client';
+import { Request, Response } from 'express';
 
 export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot' | 'closecrm' | 'ms_dynamics_365_sales';
 export type CHAT_TP_ID = 'slack' | 'discord';
@@ -162,3 +163,25 @@ export interface AppConfig {
     bot_token?: string;
     org_url?: string;
 }
+
+export type IntegrationAuthProps = {
+    integrationId: CRM_TP_ID;
+    account:
+        | (environments & {
+              apps: {
+                  id: string;
+                  [key: string]: any;
+              }[];
+          })
+        | null;
+    clientId?: string | null;
+    clientSecret?: string | null;
+    code: string;
+    revertPublicKey: string;
+    svixAppId: string;
+    environmentId?: string;
+    tenantId: string;
+    tenantSecretToken: string;
+    response: Response;
+    request: Request;
+};
