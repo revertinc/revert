@@ -1,7 +1,7 @@
 import axios from 'axios';
 import qs from 'qs';
 import config from '../../../../config';
-import { logInfo, logError } from '../../../../helpers/logger';
+import { logInfo } from '../../../../helpers/logger';
 import { Prisma, xprisma } from '../../../../prisma/client';
 import { TP_ID } from '@prisma/client';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../../redis/client/pubsub';
@@ -20,7 +20,6 @@ const handlePipeDriveAuth = async ({
     tenantId,
     tenantSecretToken,
     response,
-    request,
 }: IntegrationAuthProps) => {
     // Handle the received code
     const url = 'https://oauth.pipedrive.com/oauth/token';
