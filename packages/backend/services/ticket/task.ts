@@ -126,6 +126,29 @@ const taskServiceTicket = new TaskService(
                         });
                         break;
                     }
+                    case TP_ID.plane: {
+                        const result: any = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/issues/${taskId}/?expand=state`,
+                            headers: {
+                                'X-API-Key': thirdPartyToken,
+                            },
+                        });
+
+                        const unifiedTask: any = await unifyObject<any, UnifiedTicketTask>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedTask,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -340,6 +363,43 @@ const taskServiceTicket = new TaskService(
                         });
                         break;
                     }
+                    case TP_ID.plane: {
+                        const pagingString = `${pageSize ? `per_page=${pageSize}` : ''}${
+                            cursor ? `&cursor=${cursor}` : ''
+                        }`;
+
+                        const result: any = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/issues/?${pagingString}&expand=state`,
+                            headers: {
+                                'X-API-Key': thirdPartyToken,
+                            },
+                        });
+
+                        const next_cursor = result.data.next_page_results ? result.data.next_cursor : undefined;
+                        const prev_cursor = result.data.prev_page_results ? result.data.prev_cursor : undefined;
+
+                        const unifiedTasks = await Promise.all(
+                            result.data.results.map(
+                                async (task: any) =>
+                                    await unifyObject<any, UnifiedTicketTask>({
+                                        obj: task,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: next_cursor,
+                            previous: prev_cursor,
+                            results: unifiedTasks,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -514,6 +574,25 @@ const taskServiceTicket = new TaskService(
                             result: result.data,
                         });
 
+                        break;
+                    }
+                    // @TODO unify state(uuid)
+                    case TP_ID.plane: {
+                        const result = await axios({
+                            method: 'post',
+                            url: `${connection.tp_account_url}/issues/`,
+                            headers: {
+                                'X-API-Key': thirdPartyToken,
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(task),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Task created in plane',
+                            result: result.data,
+                        });
                         break;
                     }
                     default: {
@@ -702,6 +781,24 @@ const taskServiceTicket = new TaskService(
                         res.send({
                             status: 'ok',
                             message: 'Trello Task updated',
+                            result: result.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.plane: {
+                        const result = await axios({
+                            method: 'patch',
+                            url: `${connection.tp_account_url}/issues/${taskId}/`,
+                            headers: {
+                                'X-API-Key': thirdPartyToken,
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(task),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Task updated in plane',
                             result: result.data,
                         });
                         break;
