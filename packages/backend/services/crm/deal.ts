@@ -46,6 +46,7 @@ const dealService = new DealService(
                             'hs_deal_stage_probability',
                             'closedate',
                             'hs_is_closed_won',
+                            'hs_createdate',
                         ];
                         let deal: any = await axios({
                             method: 'get',
@@ -209,6 +210,7 @@ const dealService = new DealService(
                             'hs_deal_stage_probability',
                             'closedate',
                             'hs_is_closed_won',
+                            'hs_createdate',
                         ];
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
