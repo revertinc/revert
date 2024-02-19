@@ -20,6 +20,20 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
     objType: StandardObjects | ChatStandardObjects | TicketStandardObjects;
 }) => {
     const preprocessMap: any = {
+        [TP_ID.hubspot]: {
+            [StandardObjects.deal]: (obj: T) => {
+                let isWon = false;
+                if (obj.hs_is_closed_won && obj.hs_is_closed_won === 'true') {
+                    isWon = true;
+                }
+
+                const probability = obj.hs_deal_stage_probability ? Number(obj.hs_deal_stage_probability) : null;
+
+                const amount = obj.amount ? Number(obj.amount) : null;
+
+                return { ...obj, hs_is_closed_won: isWon, hs_deal_stage_probability: probability, amount: amount };
+            },
+        },
         [TP_ID.pipedrive]: {
             [StandardObjects.deal]: (obj: T) => {
                 return {
