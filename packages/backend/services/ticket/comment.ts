@@ -99,6 +99,34 @@ const commentServiceTicket = new CommentService(
                         });
                         break;
                     }
+                    case TP_ID.plane: {
+                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
+                        if (!parsedFields.taskId) {
+                            throw new Error('taskId is required for fetching plane comments.');
+                        }
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/issues/${parsedFields.taskId}/comments/${commentId}`,
+                            headers: {
+                                'X-API-Key': thirdPartyToken,
+                            },
+                        });
+
+                        const unifiedComment = await unifyObject<any, UnifiedTicketComment>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedComment,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -300,6 +328,43 @@ const commentServiceTicket = new CommentService(
                         });
                         break;
                     }
+                    case TP_ID.plane: {
+                        const pagingString = `${pageSize ? `per_page=${pageSize}` : ''}${
+                            cursor ? `&cursor=${cursor}` : ''
+                        }`;
+
+                        const result: any = await axios({
+                            method: 'get',
+                            url: `${connection.tp_account_url}/issues/${fields.taskId}/comments?${pagingString}`,
+                            headers: {
+                                'X-API-Key': thirdPartyToken,
+                            },
+                        });
+
+                        const next_cursor = result.data.next_page_results ? result.data.next_cursor : undefined;
+                        const prev_cursor = result.data.prev_page_results ? result.data.prev_cursor : undefined;
+
+                        const unifiedComments = await Promise.all(
+                            result.data.results.map(
+                                async (comment: any) =>
+                                    await unifyObject<any, UnifiedTicketComment>({
+                                        obj: comment,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: next_cursor,
+                            previous: prev_cursor,
+                            results: unifiedComments,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -398,6 +463,24 @@ const commentServiceTicket = new CommentService(
                         res.send({
                             status: 'ok',
                             message: 'Trello comment posted',
+                            result: commentCreated.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.plane: {
+                        const commentCreated = await axios({
+                            method: 'post',
+                            url: `${connection.tp_account_url}/issues/${commentData.taskId}/comments/`,
+                            headers: {
+                                'X-API-Key': thirdPartyToken,
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(comment),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Plane comment posted',
                             result: commentCreated.data,
                         });
                         break;
@@ -507,6 +590,29 @@ const commentServiceTicket = new CommentService(
                         res.send({
                             status: 'ok',
                             message: 'Trello comment updated',
+                            result: result.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.plane: {
+                        if (!commentData.taskId) {
+                            throw new NotFoundError({
+                                error: 'taskId is required in request body for updating plane comment.',
+                            });
+                        }
+                        const result = await axios({
+                            method: 'patch',
+                            url: `${connection.tp_account_url}/issues/${commentData.taskId}/comments/${commentId}/`,
+                            headers: {
+                                'X-API-Key': thirdPartyToken,
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(comment),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Plane comment posted',
                             result: result.data,
                         });
                         break;

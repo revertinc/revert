@@ -235,6 +235,7 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 return { ...obj, assignee: obj.assignee ? [obj.assignee.accountId] : undefined };
             },
         },
+        [TP_ID.plane]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
@@ -375,6 +376,12 @@ export const postprocessDisUnifyTicketObject = <T extends Record<string, any>>({
         [TP_ID.jira]: {},
         [TP_ID.trello]: {},
         [TP_ID.asana]: {},
+        [TP_ID.plane]: {
+            [TicketStandardObjects.ticketComment]: (obj: T) => {
+                delete obj.taskId;
+                return obj;
+            },
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
