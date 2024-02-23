@@ -1,7 +1,7 @@
 import { TP_ID } from '@prisma/client';
 
 export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot' | 'closecrm' | 'ms_dynamics_365_sales';
-export type CHAT_TP_ID = 'slack' | 'discord';
+export type CHAT_TP_ID = 'slack' | 'discord' | 'gdrive';
 export type TICKET_TP_ID = 'linear' | 'clickup' | 'asana' | 'jira' | 'trello';
 
 export const DEFAULT_SCOPE = {
@@ -47,6 +47,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.trello]: ['read', 'write'],
     [TP_ID.jira]: ['read:jira-work', 'read:jira-user', 'write:jira-work', 'offline_access'],
     [TP_ID.ms_dynamics_365_sales]: ['offline_access', 'User.Read'],
+    [TP_ID.gdrive]: ['https://www.googleapis.com/auth/drive.file']
 };
 
 export const mapIntegrationIdToIntegrationName = {
@@ -63,6 +64,7 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.trello]: 'Trello',
     [TP_ID.jira]: 'Jira',
     [TP_ID.ms_dynamics_365_sales]: 'Microsoft Dynamics 365 Sales',
+    [TP_ID.gdrive]: 'gdrive',
 };
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';

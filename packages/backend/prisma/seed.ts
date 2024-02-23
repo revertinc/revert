@@ -134,7 +134,7 @@ async function main() {
 
     Object.values(ChatStandardObjects).forEach((obj) => {
         Object.values(TP_ID).forEach(async (tpId) => {
-            if (!(tpId === 'slack' || tpId === 'discord')) return;
+            if (!(tpId === 'slack' || tpId === 'discord' || tpId=== 'gdrive')) return;
             const objSchema = chatSchemas.find((s: any) => s.object === obj);
             const fieldMappings = objSchema?.fields.map((field: any) => ({
                 id: randomUUID(),

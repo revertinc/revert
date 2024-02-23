@@ -139,6 +139,15 @@ const metadataService = new MetadataService({
                     clientId: getClientId(apps, TP_ID.trello) || config.TRELLO_CLIENT_ID,
                 },
                 {
+                    integrationId: TP_ID.gdrive,
+                    name: 'Google Drive',
+                    imageSrc:
+                        'https://upload.wikimedia.org/wikipedia/commons/d/da/Google_Drive_logo.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.gdrive),
+                    clientId: getClientId(apps, TP_ID.gdrive) || config.GDRIVE_CLIENT_ID,
+                },
+                {
                     integrationId: TP_ID.ms_dynamics_365_sales,
                     name: 'microsoft dynamics 365',
                     imageSrc:

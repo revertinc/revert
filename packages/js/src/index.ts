@@ -1173,6 +1173,12 @@ const createIntegrationBlock = function (self, integration) {
                             '%20'
                         )}&state=${state}`
                     );
+                } else if (selectedIntegration.integrationId === 'gdrive') {
+                    window.open(
+                        `https://accounts.google.com/o/oauth2/v2/auth?client_id=${selectedIntegration.clientId}&redirect_uri=${
+                            this.#REDIRECT_URL_BASE
+                        }/gdrive&scope=${scopes.join(',')}&user_scope=identity.basic,identity.email&state=${state}`
+                    );  
                 } else if (selectedIntegration.integrationId === 'linear') {
                     const encodedRedirectURI = encodeURIComponent(this.#REDIRECT_URL_BASE);
                     window.open(
