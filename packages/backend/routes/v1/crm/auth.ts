@@ -7,13 +7,13 @@ import { logInfo, logDebug } from '../../../helpers/logger';
 
 import redis from '../../../redis/client';
 import { CRM_TP_ID, mapIntegrationIdToIntegrationName } from '../../../constants/common';
-import handleHubspotAuth from './utils/hubspot';
-import handleZohoAuth from './utils/zoho';
+import handleHubspotAuth from './authHandlers/hubspot';
+import handleZohoAuth from './authHandlers/zoho';
 import sendIntegrationStatusError from '../sendIntegrationstatusError';
-import handleSfdcAuth from './utils/sfdc';
-import handlePipeDriveAuth from './utils/pipedrive';
-import handleMsDynamicAuth from './utils/ms_dynamic_365';
-import handleCloseAuth from './utils/close';
+import handleSfdcAuth from './authHandlers/sfdc';
+import handlePipeDriveAuth from './authHandlers/pipedrive';
+import handleMsDynamicAuth from './authHandlers/ms_dynamic_365';
+import handleCloseAuth from './authHandlers/close';
 
 const authRouter = express.Router({ mergeParams: true });
 

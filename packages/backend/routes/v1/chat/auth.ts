@@ -7,8 +7,8 @@ import { randomUUID } from 'crypto';
 import redis from '../../../redis/client';
 import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
 import sendIntegrationStatusError from '../sendIntegrationstatusError';
-import handleSlackAuth from './utils/slack';
-import handleDiscordAuth from './utils/discord';
+import handleSlackAuth from './authHandlers/slack';
+import handleDiscordAuth from './authHandlers/discord';
 
 const authRouter = express.Router();
 
