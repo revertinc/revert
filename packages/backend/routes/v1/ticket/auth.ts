@@ -6,10 +6,10 @@ import redis from '../../../redis/client';
 import { TP_ID } from '@prisma/client';
 import prisma from '../../../prisma/client';
 import sendIntegrationStatusError from '../sendIntegrationstatusError';
-import handleLinearAuth from './utils/linear';
-import handleClickUpAuth from './utils/clickup';
-import handleTrelloAuth from './utils/trello';
-import handleJiraAuth from './utils/jira';
+import handleLinearAuth from './authHandlers/linear';
+import handleClickUpAuth from './authHandlers/clickup';
+import handleTrelloAuth from './authHandlers/trello';
+import handleJiraAuth from './authHandlers/jira';
 
 const authRouter = express.Router();
 
