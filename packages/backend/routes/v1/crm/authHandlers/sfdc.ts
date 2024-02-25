@@ -1,12 +1,12 @@
 import axios from 'axios';
 import qs from 'qs';
 import config from '../../../../config';
-import { logInfo, logError } from '../../../../helpers/logger';
-import { Prisma, xprisma } from '../../../../prisma/client';
+import { logInfo } from '../../../../helpers/logger';
+import { xprisma } from '../../../../prisma/client';
 import { TP_ID } from '@prisma/client';
-import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../../redis/client/pubsub';
+
 import { IntegrationAuthProps, mapIntegrationIdToIntegrationName } from '../../../../constants/common';
-import sendIntegrationStatusError from '../../sendIntegrationstatusError';
+import handleIntegrationCreationOutcome from '../../handleIntegrationCreationOutcome';
 
 export const handleSfdcAuth = async ({
     account,
@@ -91,23 +91,20 @@ export const handleSfdcAuth = async ({
             },
             channels: [tenantId],
         });
-        await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${tenantId}`, {
-            publicToken: revertPublicKey,
-            status: 'SUCCESS',
-            integrationName: mapIntegrationIdToIntegrationName[integrationId],
-            tenantId,
+
+        return handleIntegrationCreationOutcome({
+            status: true,
+            revertPublicKey,
             tenantSecretToken,
-        } as IntegrationStatusSseMessage);
-        return response.send({ status: 'ok', tp_customer_id: info.data.email });
+            response,
+            tenantId: tenantId,
+            integrationName: mapIntegrationIdToIntegrationName[integrationId],
+            tpCustomerId: info.data.email,
+        });
     } catch (error: any) {
-        logError(error);
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            // The .code property can be accessed in a type-safe manner
-            if (error?.code === 'P2002') {
-                console.error('There is a unique constraint violation, a new user cannot be created with this email');
-            }
-        }
-        return sendIntegrationStatusError({
+        return handleIntegrationCreationOutcome({
+            status: false,
+            error,
             revertPublicKey,
             tenantSecretToken,
             response,
