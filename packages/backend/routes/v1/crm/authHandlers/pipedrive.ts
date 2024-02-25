@@ -2,11 +2,10 @@ import axios from 'axios';
 import qs from 'qs';
 import config from '../../../../config';
 import { logInfo } from '../../../../helpers/logger';
-import { Prisma, xprisma } from '../../../../prisma/client';
+import { xprisma } from '../../../../prisma/client';
 import { TP_ID } from '@prisma/client';
-import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../../../redis/client/pubsub';
 import { IntegrationAuthProps, mapIntegrationIdToIntegrationName } from '../../../../constants/common';
-import sendIntegrationStatusError from '../../sendIntegrationstatusError';
+import handleIntegrationCreationOutcome from '../../handleIntegrationCreationOutcome';
 
 const handlePipeDriveAuth = async ({
     account,
@@ -77,6 +76,7 @@ const handlePipeDriveAuth = async ({
                 environmentId: environmentId,
             },
         });
+
         config.svix?.message.create(svixAppId, {
             eventType: 'connection.added',
             payload: {
@@ -90,22 +90,20 @@ const handlePipeDriveAuth = async ({
             },
             channels: [tenantId],
         });
-        await pubsub.publish(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${tenantId}`, {
-            publicToken: revertPublicKey,
-            status: 'SUCCESS',
-            integrationName: mapIntegrationIdToIntegrationName[integrationId],
-            tenantId,
+
+        return handleIntegrationCreationOutcome({
+            status: true,
+            revertPublicKey,
             tenantSecretToken,
-        } as IntegrationStatusSseMessage);
-        return response.send({ status: 'ok', tp_customer_id: info.data.data.email });
+            response,
+            tenantId: tenantId,
+            integrationName: mapIntegrationIdToIntegrationName[integrationId],
+            tpCustomerId: info.data.data.email,
+        });
     } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            if (error?.code === 'P2002') {
-                console.error('There is a unique constraint violation, a new user cannot be created with this email');
-            }
-        }
-        console.error('Could not update db', error);
-        return sendIntegrationStatusError({
+        return handleIntegrationCreationOutcome({
+            status: false,
+            error,
             revertPublicKey,
             tenantSecretToken,
             response,
