@@ -5,7 +5,7 @@ import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
 import redis from '../../../redis/client';
 import { TP_ID } from '@prisma/client';
 import prisma from '../../../prisma/client';
-import sendIntegrationStatusError from '../sendIntegrationstatusError';
+import handleIntegrationCreationOutcome from '../handleIntegrationCreationOutcome';
 import handleLinearAuth from './authHandlers/linear';
 import handleClickUpAuth from './authHandlers/clickup';
 import handleTrelloAuth from './authHandlers/trello';
@@ -67,32 +67,35 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     return handleJiraAuth(handleAuthProps);
 
                 default:
-                    return sendIntegrationStatusError({
+                    return handleIntegrationCreationOutcome({
+                        status: false,
                         revertPublicKey,
                         tenantSecretToken,
                         response: res,
                         tenantId: req.query.t_id as string,
-                        errorStatusText: 'Not implemented yet',
+                        statusText: 'Not implemented yet',
                     });
             }
         }
 
-        return sendIntegrationStatusError({
+        return handleIntegrationCreationOutcome({
+            status: false,
             revertPublicKey,
             tenantSecretToken,
             response: res,
             tenantId: req.query.t_id as string,
-            errorStatusText: 'noop',
+            statusText: 'noop',
         });
     } catch (error: any) {
-        return sendIntegrationStatusError({
+        return handleIntegrationCreationOutcome({
+            status: false,
             error,
             revertPublicKey,
             integrationName: mapIntegrationIdToIntegrationName[integrationId],
             tenantSecretToken,
             response: res,
             tenantId: req.query.t_id as string,
-            infoMessage: 'Error while getting oauth creds',
+            statusText: 'Error while getting oauth creds',
         });
     }
 });

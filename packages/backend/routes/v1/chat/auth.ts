@@ -6,7 +6,7 @@ import AuthService from '../../../services/auth';
 import { randomUUID } from 'crypto';
 import redis from '../../../redis/client';
 import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
-import sendIntegrationStatusError from '../sendIntegrationstatusError';
+import handleIntegrationCreationOutcome from '../handleIntegrationCreationOutcome';
 import handleSlackAuth from './authHandlers/slack';
 import handleDiscordAuth from './authHandlers/discord';
 
@@ -74,32 +74,35 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     return handleDiscordAuth(handleAuthProps);
 
                 default:
-                    return sendIntegrationStatusError({
+                    return handleIntegrationCreationOutcome({
+                        status: false,
                         revertPublicKey,
                         tenantSecretToken,
                         response: res,
                         tenantId: req.query.t_id as string,
-                        errorStatusText: 'Not implemented yet',
+                        statusText: 'Not implemented yet',
                     });
             }
         } else {
-            return sendIntegrationStatusError({
+            return handleIntegrationCreationOutcome({
+                status: false,
                 revertPublicKey,
                 tenantSecretToken,
                 response: res,
                 tenantId: req.query.t_id as string,
-                errorStatusText: 'noop',
+                statusText: 'noop',
             });
         }
     } catch (error: any) {
-        return sendIntegrationStatusError({
+        return handleIntegrationCreationOutcome({
             error,
             revertPublicKey,
             integrationName: mapIntegrationIdToIntegrationName[integrationId],
             tenantSecretToken,
             response: res,
             tenantId: req.query.t_id as string,
-            infoMessage: 'Error while getting oauth creds',
+            status: false,
+            statusText: 'Error while getting oauth creds',
         });
     }
 });
