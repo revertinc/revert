@@ -9,7 +9,7 @@ import redis from '../../../redis/client';
 import { CRM_TP_ID, mapIntegrationIdToIntegrationName } from '../../../constants/common';
 import handleHubspotAuth from './authHandlers/hubspot';
 import handleZohoAuth from './authHandlers/zoho';
-import sendIntegrationStatusError from '../sendIntegrationstatusError';
+import handleIntegrationCreationOutcome from '../handleIntegrationCreationOutcome';
 import handleSfdcAuth from './authHandlers/sfdc';
 import handlePipeDriveAuth from './authHandlers/pipedrive';
 import handleMsDynamicAuth from './authHandlers/ms_dynamic_365';
@@ -87,32 +87,35 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     return handleMsDynamicAuth(handleAuthProps);
 
                 default:
-                    return sendIntegrationStatusError({
+                    return handleIntegrationCreationOutcome({
+                        status: false,
                         revertPublicKey,
                         tenantSecretToken,
                         response: res,
                         tenantId: req.query.t_id as string,
-                        errorStatusText: 'Not implemented yet',
+                        statusText: 'Not implemented yet',
                     });
             }
         } else {
-            return sendIntegrationStatusError({
+            return handleIntegrationCreationOutcome({
+                status: false,
                 revertPublicKey,
                 tenantSecretToken,
                 response: res,
                 tenantId: req.query.t_id as string,
-                errorStatusText: 'noop',
+                statusText: 'noop',
             });
         }
     } catch (error: any) {
-        return sendIntegrationStatusError({
+        return handleIntegrationCreationOutcome({
+            status: false,
             error,
             revertPublicKey,
             integrationName: mapIntegrationIdToIntegrationName[integrationId],
             tenantSecretToken,
             response: res,
             tenantId: req.query.t_id as string,
-            infoMessage: 'Error while getting oauth creds',
+            statusText: 'Error while getting oauth creds',
         });
     }
 });
