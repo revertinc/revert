@@ -12,6 +12,7 @@ type IntegrationCreationOutcome = {
     error?: any;
     response: Response;
     tpCustomerId?: string;
+    statusText?: string;
 };
 
 /**
@@ -38,6 +39,7 @@ const handleIntegrationCreationOutcome = async ({
     tenantId,
     status,
     tpCustomerId,
+    statusText,
 }: IntegrationCreationOutcome) => {
     error && logError(error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -57,6 +59,7 @@ const handleIntegrationCreationOutcome = async ({
 
     return response.send({
         status: status ? 'ok' : 'error',
+        statusText,
         ...(error ? { error: error } : {}),
         ...(tpCustomerId ? { tp_customer_id: tpCustomerId } : {}),
     });
