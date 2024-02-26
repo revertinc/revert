@@ -4,8 +4,8 @@ Thanks for taking the interest in contributing ♥. We really appreciate any sup
 
 ## Before getting started
 
--   Before jumping into a PR be sure to search [existing PRs](https://github.com/revert/revert/pulls) or [issues](https://github.com/revert/revert/issues) for an open or closed item that relates to your submission.
--   Select an issue from [here](https://github.com/revert/revert/issues) or create a new one
+-   Before jumping into a PR be sure to search [existing PRs](https://github.com/revertinc/revert/pulls) or [issues](https://github.com/revertinc/revert/issues) for an open or closed item that relates to your submission.
+-   Select an issue from [here](https://github.com/revertinc/revert/issues) or create a new one
 -   Consider the results from the discussion in the issue
 
 ## Developing
