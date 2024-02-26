@@ -7,6 +7,133 @@ datasource db {
   url      = env("PGSQL_URL")
 }
 
+model accounts {
+  id                        String                     @id
+  tenant_count              Int?                       @default(0)
+  private_token             String                     @unique
+  public_token              String                     @unique
+  domain                    String                     @unique @default("")
+  skipWaitlist              Boolean                    @default(true)
+  workspaceName             String?
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @default(now()) @updatedAt
+  accountFieldMappingConfig accountFieldMappingConfig?
+  environments              environments[]
+  users                     users[]
+}
+
+model environments {
+  id            String        @id
+  env           ENV
+  private_token String        @unique
+  public_token  String        @unique
+  accountId     String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now()) @updatedAt
+  apps          apps[]
+  connections   connections[]
+  accounts      accounts      @relation(fields: [accountId], references: [id])
+}
+
+model apps {
+  id                         String        @id
+  tp_id                      TP_ID
+  scope                      String[]
+  app_client_id              String?
+  app_client_secret          String?
+  owner_account_public_token String?
+  is_revert_app              Boolean       @default(false)
+  environmentId              String
+  createdAt                  DateTime      @default(now())
+  updatedAt                  DateTime      @default(now()) @updatedAt
+  app_config                 Json?
+  env                        environments  @relation(fields: [environmentId], references: [id])
+  connections                connections[]
+}
+
+model users {
+  id        String   @id
+  domain    String
+  email     String
+  accountId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  account   accounts @relation(fields: [accountId], references: [id])
+}
+
+model connections {
+  tp_access_token            String
+  tp_refresh_token           String?
+  tp_customer_id             String
+  t_id                       String
+  tp_account_url             String?
+  owner_account_public_token String
+  tp_id                      TP_ID
+  app_client_id              String?
+  app_client_secret          String?
+  appId                      String?
+  schema_mapping_id          String?
+  id                         String          @id @default(uuid())
+  createdAt                  DateTime        @default(now())
+  updatedAt                  DateTime        @default(now()) @updatedAt
+  environmentId              String?
+  app_config                 Json?
+  app                        apps?           @relation(fields: [appId], references: [id])
+  environemnt                environments?   @relation(fields: [environmentId], references: [id])
+  schema_mapping             schema_mapping? @relation(fields: [schema_mapping_id], references: [id])
+
+  @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")
+  @@unique([t_id, environmentId], name: "uniqueTenantPerEnvironment")
+  @@unique([tp_id, t_id, environmentId], name: "uniqueThirdPartyPerTenantPerEnvironment")
+  @@unique([tp_customer_id, t_id, tp_id], name: "uniqueCustomerPerTenantPerThirdParty")
+}
+
+model schema_mapping {
+  id                String        @id
+  object_schema_ids String[]
+  connections       connections[]
+  object_schemas    schemas[]
+}
+
+model schemas {
+  id                 String          @id
+  object             String
+  fields             String[]
+  fields_mapping_ids String[]
+  schema_mapping_id  String
+  fieldMappings      fieldMappings[]
+  schema_mapping     schema_mapping  @relation(fields: [schema_mapping_id], references: [id], onDelete: Cascade)
+}
+
+model fieldMappings {
+  id                String  @id
+  source_tp_id      TP_ID
+  source_field_name String?
+  target_field_name String
+  is_standard_field Boolean
+  schema_id         String
+  schema            schemas @relation(fields: [schema_id], references: [id], onDelete: Cascade)
+}
+
+model waitlist {
+  email String @id
+}
+
+model accountFieldMappingConfig {
+  id                                      String   @id
+  account_id                              String   @unique
+  allow_connection_override_custom_fields Boolean  @default(true)
+  mappable_by_connection_field_list       Json?
+  account                                 accounts @relation(fields: [account_id], references: [id])
+}
+
+model telemetry {
+  id        String   @id @default(uuid())
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
 enum TP_ID {
   hubspot
   zohocrm
@@ -27,131 +154,4 @@ enum TP_ID {
 enum ENV {
   development
   production
-}
-
-model accounts {
-  id                        String                     @id
-  tenant_count              Int?                       @default(0)
-  private_token             String                     @unique
-  public_token              String                     @unique
-  domain                    String                     @unique @default("")
-  skipWaitlist              Boolean                    @default(true)
-  workspaceName             String?
-  users                     users[]
-  environments              environments[]
-  accountFieldMappingConfig accountFieldMappingConfig?
-  createdAt                 DateTime                   @default(now())
-  updatedAt                 DateTime                   @default(now()) @updatedAt
-}
-
-model environments {
-  id            String        @id
-  env           ENV
-  private_token String        @unique
-  public_token  String        @unique
-  accounts      accounts?     @relation(fields: [accountId], references: [id])
-  accountId     String
-  apps          apps[]
-  connections   connections[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @default(now()) @updatedAt
-}
-
-model apps {
-  id                         String        @id
-  tp_id                      TP_ID
-  scope                      String[]
-  app_client_id              String?
-  app_client_secret          String?
-  owner_account_public_token String?
-  app_config                 Json?
-  environmentId              String
-  env                        environments  @relation(fields: [environmentId], references: [id])
-  connections                connections[]
-  is_revert_app              Boolean       @default(false)
-  createdAt                  DateTime      @default(now())
-  updatedAt                  DateTime      @default(now()) @updatedAt
-}
-
-model users {
-  id        String   @id
-  domain    String
-  email     String
-  accountId String
-  account   accounts @relation(fields: [accountId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-}
-
-model connections {
-  id                         String          @id @default(uuid())
-  tp_id                      TP_ID
-  tp_access_token            String
-  tp_refresh_token           String?
-  tp_customer_id             String
-  t_id                       String
-  tp_account_url             String?
-  owner_account_public_token String
-  app_client_id              String?
-  app_client_secret          String?
-  app_config                 Json?
-  app                        apps?           @relation(fields: [appId], references: [id])
-  appId                      String?
-  schema_mapping_id          String?
-  schema_mapping             schema_mapping? @relation(fields: [schema_mapping_id], references: [id])
-  environemnt                environments?   @relation(fields: [environmentId], references: [id])
-  environmentId              String?
-  createdAt                  DateTime        @default(now())
-  updatedAt                  DateTime        @default(now()) @updatedAt
-
-  @@unique([tp_customer_id, t_id], name: "uniqueCustomerPerTenant")
-  @@unique([t_id, environmentId], name: "uniqueTenantPerEnvironment")
-  @@unique([tp_id, t_id, environmentId], name: "uniqueThirdPartyPerTenantPerEnvironment")
-  @@unique([tp_customer_id, t_id, tp_id], name: "uniqueCustomerPerTenantPerThirdParty")
-}
-
-model schema_mapping {
-  id                String        @id
-  object_schema_ids String[]
-  object_schemas    schemas[]
-  connections       connections[] // TODO: can make this single to enforce one-on-one relationship (set schema_mapping_id on connections unique)
-}
-
-model schemas {
-  id                 String          @id
-  fields             String[]
-  object             String
-  schema_mapping_id  String
-  schema_mapping     schema_mapping  @relation(fields: [schema_mapping_id], references: [id], onDelete: Cascade)
-  fields_mapping_ids String[]
-  fieldMappings      fieldMappings[]
-}
-
-model fieldMappings {
-  id                String  @id
-  source_tp_id      TP_ID
-  source_field_name String?
-  target_field_name String
-  is_standard_field Boolean
-  schema_id         String
-  schema            schemas @relation(fields: [schema_id], references: [id], onDelete: Cascade)
-}
-
-model waitlist {
-  email String @id
-}
-
-model accountFieldMappingConfig {
-  id                                      String   @id
-  account_id                              String   @unique
-  account                                 accounts @relation(fields: [account_id], references: [id])
-  allow_connection_override_custom_fields Boolean  @default(true)
-  mappable_by_connection_field_list       Json? // [{ objectName, fieldName }]
-}
-
-model telemetry {
-  id        String   @id @default(uuid())
-  metadata  Json? // CreateTelemetryEntryRequest in telemetry.yml
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
 }

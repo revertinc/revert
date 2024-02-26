@@ -6,7 +6,7 @@
 */
 -- AlterEnum
 BEGIN;
-CREATE TYPE "TP_ID_new" AS ENUM ('hubspot', 'zohocrm', 'sfdc', 'pipedrive', 'closecrm', 'ms_dynamics_365_sales', 'slack', 'discord', 'linear', 'clickup', 'asana', 'trello', 'jira');
+CREATE TYPE "TP_ID_new" AS ENUM ('hubspot', 'zohocrm', 'sfdc', 'pipedrive', 'closecrm', 'ms_dynamics_365_sales', 'slack', 'discord', 'linear', 'clickup', 'asana', 'trello', 'jira','gdrive');
 ALTER TABLE "apps" ALTER COLUMN "tp_id" TYPE "TP_ID_new" USING ("tp_id"::text::"TP_ID_new");
 ALTER TABLE "connections" ALTER COLUMN "tp_id" TYPE "TP_ID_new" USING ("tp_id"::text::"TP_ID_new");
 ALTER TABLE "fieldMappings" ALTER COLUMN "source_tp_id" TYPE "TP_ID_new" USING ("source_tp_id"::text::"TP_ID_new");
