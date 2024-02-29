@@ -28,7 +28,14 @@ const revertTenantAuthMiddleware = () => async (req: Request, res: Response, nex
             });
         }
         const conn = await prisma.connections.findFirst({
-            where: { t_id: tenantId as string },
+            where: {
+                t_id: tenantId as string,
+                app: {
+                    env: {
+                        private_token: token as string,
+                    },
+                },
+            },
             include: {
                 app: {
                     include: { env: { include: { accounts: { include: { accountFieldMappingConfig: true } } } } },
