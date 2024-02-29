@@ -10,10 +10,6 @@ const revertTenantAuthMiddleware = () => async (req: Request, res: Response, nex
         'x-revert-t-token': tenantSecretToken,
     } = req.headers;
 
-    if (token) {
-        return next();
-    }
-
     const storedTenantSecretToken = await redis.get(`tenantSecretToken_${tenantId}`);
     if (tenantSecretToken !== storedTenantSecretToken) {
         res.status(401).send({

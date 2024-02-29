@@ -8,7 +8,6 @@ import revertAuthMiddleware from '../../../helpers/authMiddleware';
 import { isStandardError } from '../../../helpers/error';
 import { logError } from '../../../helpers/logger';
 import revertTenantAuthMiddleware from '../../../helpers/tenantAuthMiddleware';
-import revertTenantMiddleware from '../../../helpers/tenantIdMiddleware';
 import { StandardObjects, rootSchemaMappingId } from '../../../constants/common';
 
 const prisma = new PrismaClient();
@@ -118,7 +117,7 @@ const fieldMappingService = new FieldMappingService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantAuthMiddleware()]
 );
 
 export { fieldMappingService };
