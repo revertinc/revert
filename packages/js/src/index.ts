@@ -1250,6 +1250,7 @@ const createIntegrationBlock = function (self, integration) {
                                 'Content-Type': 'application/json',
                                 'x-revert-t-id': this.tenantId,
                                 'x-revert-t-token': tenantToken,
+                                'x-revert-public-token': this.API_REVERT_PUBLIC_TOKEN,
                             },
                         })
                             .then((data) => data.json())

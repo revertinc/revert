@@ -5,7 +5,7 @@ import redis from '../redis/client';
 
 const revertTenantAuthMiddleware = () => async (req: Request, res: Response, next: () => any) => {
     const {
-        'x-revert-api-token': token,
+        'x-revert-public-token': token,
         'x-revert-t-id': tenantId,
         'x-revert-t-token': tenantSecretToken,
     } = req.headers;
@@ -28,7 +28,7 @@ const revertTenantAuthMiddleware = () => async (req: Request, res: Response, nex
                 t_id: tenantId as string,
                 app: {
                     env: {
-                        private_token: token as string,
+                        public_token: token as string,
                     },
                 },
             },
