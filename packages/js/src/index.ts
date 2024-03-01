@@ -509,7 +509,7 @@ const createIntegrationBlock = function (self, integration) {
             }
         };
 
-        renderProcessingStage = function () {
+        renderProcessingStage = function (message) {
             const el = document.createElement('div');
             const processingText = createViewElement(
                 'span',
@@ -521,7 +521,7 @@ const createIntegrationBlock = function (self, integration) {
                     color: '#777',
                 }),
                 [],
-                'Integration setup in progress...'
+                message
             );
             el.appendChild(processingText);
             const container = document.getElementById('revert-signin-container');
@@ -575,7 +575,7 @@ const createIntegrationBlock = function (self, integration) {
 
         renderSuccessStage = function (fieldMappingData, integrationName, tenantToken) {
             console.log(fieldMappingData);
-            if (!fieldMappingData.canAddCustomMapping || !(fieldMappingData.mappableFields || []).length) {
+            if (!(fieldMappingData.mappableFields || []).length) {
                 if (this.closeAfterOAuthFlow) {
                     return this.close();
                 }
@@ -764,6 +764,8 @@ const createIntegrationBlock = function (self, integration) {
                 }
 
                 // save field mapping
+                this.clearInitialOrProcessingOrSuccessStage();
+                this.renderProcessingStage('Saving mapping configuration'); // Show loader when the user clicks on Save Mappings
                 fetch(`${this.CORE_API_BASE_URL}crm/field-mapping`, {
                     mode: 'cors' as RequestMode,
                     method: 'POST',
@@ -771,6 +773,7 @@ const createIntegrationBlock = function (self, integration) {
                         'Content-Type': 'application/json',
                         'x-revert-t-id': this.tenantId,
                         'x-revert-t-token': tenantToken,
+                        'x-revert-public-token': this.API_REVERT_PUBLIC_TOKEN,
                     },
                     body: JSON.stringify({ standardMappings, customMappings }),
                 })
@@ -859,8 +862,8 @@ const createIntegrationBlock = function (self, integration) {
         getFieldMappingInputPair = function (fieldName, data, objectName) {
             const options = data.map((a) => {
                 const op = document.createElement('option');
-                op.setAttribute('value', a.fieldName);
-                op.innerHTML = a.fieldName;
+                op.setAttribute('value', a.name);
+                op.innerHTML = a.name;
                 return op;
             });
             const hiddenObject = createViewElement(
@@ -993,8 +996,8 @@ const createIntegrationBlock = function (self, integration) {
             const getOptions = (obj) =>
                 (fieldList[obj] || []).map((a) => {
                     const op = document.createElement('option');
-                    op.setAttribute('value', a.fieldName);
-                    op.innerHTML = a.fieldName;
+                    op.setAttribute('value', a.name);
+                    op.innerHTML = a.name;
                     return op;
                 });
             const objOptions = Object.keys(fieldList).map((a) => {
@@ -1216,7 +1219,7 @@ const createIntegrationBlock = function (self, integration) {
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {
-                    this.renderProcessingStage();
+                    this.renderProcessingStage('Integration setup in progress...');
                 } else {
                     this.close();
                 }

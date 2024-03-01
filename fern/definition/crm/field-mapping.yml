@@ -1,0 +1,135 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+
+types:
+    MappableFieldType:
+        properties:
+            fieldName: string
+            objectName: types.StandardObject
+    FieldMappingType:
+        properties:
+            sourceFieldName: string
+            targetFieldName: string
+            object: string
+    GetFieldMappingConfigResponse:
+        properties:
+            canAddCustomMapping: boolean
+            mappableFields: list<MappableFieldType>
+            fieldList: unknown
+    CreateFieldMappingRequestBody:
+        properties:
+            standardMappings: list<FieldMappingType>
+            customMappings: list<FieldMappingType>
+    CreateFieldMappingResponse:
+        properties:
+            status: types.ResponseStatus
+    DeleteFieldMappingResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
+    CreateAccountFieldMappingRequestBody:
+        properties:
+            id: string
+            account_id: string
+            allow_connection_override_custom_fields: boolean
+            mappable_by_connection_field_list: list<MappableFieldType>
+    CreateAccountFieldMappingResponse:
+        properties:
+            status: types.ResponseStatus
+    DeleteAccountFieldMappingConfigResponse:
+        properties:
+            status: types.ResponseStatus
+    GetFieldMappingsResponse:
+        properties:
+            tpId: string
+            mappings: list<FieldMappingType>
+
+service:
+    base-path: /crm/field-mapping
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: optional<string>
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-revert-t-token:
+            type: optional<string>
+            docs: The temp used to identify tenant.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getFieldMappingConfig:
+            docs: Get field mappings configs for a connection
+            method: GET
+            path: ''
+            request:
+                name: GetFieldMappingConfigRequest
+            response: GetFieldMappingConfigResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+        getFieldMappings:
+            docs: Get field mappings for a connection
+            method: GET
+            path: '/mappings'
+            request:
+                name: GetFieldMappingsRequest
+            response: GetFieldMappingsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createFieldMapping:
+            docs: Create field mappings for a connection after user input
+            method: POST
+            path: ''
+            request:
+                name: CreateFieldMappingRequest
+                body: CreateFieldMappingRequestBody
+            response: CreateFieldMappingResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        deleteFieldMapping:
+            docs: Delete field mappings for an account
+            method: DELETE
+            path: ''
+            request:
+                name: DeleteFieldMappingRequest
+            response: DeleteFieldMappingResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createAccountFieldMappingConfig:
+            docs: Create field mappings config for an account
+            method: POST
+            path: '/config'
+            request:
+                name: CreateAccountFieldMappingRequest
+                body: CreateAccountFieldMappingRequestBody
+            response: CreateAccountFieldMappingResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        deleteAccountFieldMappingConfig:
+            docs: Delete field mappings config for an account
+            method: DELETE
+            path: '/config'
+            request:
+                name: DeleteAccountFieldMappingConfigRequest
+            response: DeleteAccountFieldMappingConfigResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
