@@ -3,6 +3,8 @@ import { xprisma } from '../prisma/client';
 import { logInfo, logError } from './logger';
 
 const revertTenantMiddleware = () => async (req: Request, res: Response, next: () => any) => {
+    const pathsToSkip = ['/config'];
+    if (pathsToSkip.includes(req.path)) return next();
     const {
         'x-revert-t-id': tenantId,
         'x-revert-api-token': token,

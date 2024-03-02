@@ -4,6 +4,9 @@ import { logError } from './logger';
 import redis from '../redis/client';
 
 const revertTenantAuthMiddleware = () => async (req: Request, res: Response, next: () => any) => {
+    const pathsToSkip = ['/config', '/mappings'];
+    if (pathsToSkip.includes(req.path)) return next();
+    if (req.method === 'DELETE') return next(); // Do not check for tenantSecretToken for DELETE.
     const {
         'x-revert-public-token': token,
         'x-revert-t-id': tenantId,

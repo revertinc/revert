@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "concurrently --kill-others \"yarn run watch:ts\" \"yarn workspace @revertdotdev/revert-react dev\"",
         "watch:ts": "run-script-os",
-        "watch:ts:default": "nodemon -w src/index.ts --exec \"yarn run build && cp dist/revert.js ../react/src/lib/build/revert-dev.js && cp dist/revert.js ../vue/src/lib/build/revert-dev.js\"",
+        "watch:ts:default": "nodemon -w src/index.ts --exec './scripts/watch-ts.sh'",
         "watch:ts:win32": "nodemon -w src/index.ts --exec \"yarn run build && xcopy /y dist\\revert.js ..\\react\\src\\lib\\build\\revert-dev.js*  && xcopy /y dist\\revert.js ..\\vue\\src\\lib\\build\\revert-dev.js*\"",
         "test": "npm test",
         "build": "npm run prebuild && vite build",

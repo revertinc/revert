@@ -141,7 +141,7 @@ model waitlist {
 }
 
 model accountFieldMappingConfig {
-  id                                      String   @id
+  id                                      String   @id @default(uuid())
   account_id                              String   @unique
   account                                 accounts @relation(fields: [account_id], references: [id])
   allow_connection_override_custom_fields Boolean  @default(true)

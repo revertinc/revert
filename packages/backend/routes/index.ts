@@ -141,9 +141,7 @@ register(router, {
         task: taskService,
         user: userService,
         proxy: proxyService,
-        fieldMapping: {
-            fieldMapping: fieldMappingService,
-        },
+        fieldMapping: fieldMappingService,
         properties: propertiesService,
     },
     connection: connectionService,
