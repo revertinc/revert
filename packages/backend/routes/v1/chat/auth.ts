@@ -6,9 +6,9 @@ import AuthService from '../../../services/auth';
 import { randomUUID } from 'crypto';
 import redis from '../../../redis/client';
 import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
-import handleIntegrationCreationOutcome from '../handleIntegrationCreationOutcome';
-import handleSlackAuth from './authHandlers/slack';
-import handleDiscordAuth from './authHandlers/discord';
+import processOAuthResult from '../../../helpers/auth/processOAuthResult';
+import slack from './authHandlers/slack';
+import discord from './authHandlers/discord';
 
 const authRouter = express.Router();
 
@@ -51,7 +51,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
         const svixAppId = account!.accounts!.id;
         const environmentId = account?.id;
 
-        const handleAuthProps = {
+        const authProps = {
             account,
             clientId,
             clientSecret,
@@ -69,12 +69,12 @@ authRouter.get('/oauth-callback', async (req, res) => {
         if (req.query.code && req.query.t_id && revertPublicKey) {
             switch (integrationId) {
                 case TP_ID.slack:
-                    return handleSlackAuth(handleAuthProps);
+                    return slack.handleOAuth(authProps);
                 case TP_ID.discord:
-                    return handleDiscordAuth(handleAuthProps);
+                    return discord.handleOAuth(authProps);
 
                 default:
-                    return handleIntegrationCreationOutcome({
+                    return processOAuthResult({
                         status: false,
                         revertPublicKey,
                         tenantSecretToken,
@@ -84,7 +84,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     });
             }
         } else {
-            return handleIntegrationCreationOutcome({
+            return processOAuthResult({
                 status: false,
                 revertPublicKey,
                 tenantSecretToken,
@@ -94,7 +94,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             });
         }
     } catch (error: any) {
-        return handleIntegrationCreationOutcome({
+        return processOAuthResult({
             error,
             revertPublicKey,
             integrationName: mapIntegrationIdToIntegrationName[integrationId],

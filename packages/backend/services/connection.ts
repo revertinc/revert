@@ -4,6 +4,7 @@ import config from '../config';
 import { logError } from '../helpers/logger';
 import { v4 as uuidv4 } from 'uuid';
 import { NotFoundError, UnAuthorizedError } from '../generated/typescript/api/resources/common/resources';
+import { sendConnectionDeletedEvent } from '../helpers/webhooks/connection';
 
 const connectionService = new ConnectionService({
     async getConnection(req, res) {
@@ -109,14 +110,7 @@ const connectionService = new ConnectionService({
             },
         });
         if (deleted) {
-            config.svix?.message.create(svixAppId, {
-                eventType: 'connection.deleted',
-                payload: {
-                    eventType: 'connection.deleted',
-                    connection,
-                },
-                channels: [connection.t_id],
-            });
+            sendConnectionDeletedEvent(svixAppId, connection);
             res.send({ status: 'ok', deleted });
         } else {
             throw new NotFoundError({ error: 'Connections not found!' });

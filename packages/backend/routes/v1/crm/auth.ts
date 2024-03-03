@@ -7,13 +7,13 @@ import { logInfo, logDebug } from '../../../helpers/logger';
 
 import redis from '../../../redis/client';
 import { CRM_TP_ID, mapIntegrationIdToIntegrationName } from '../../../constants/common';
-import handleHubspotAuth from './authHandlers/hubspot';
-import handleZohoAuth from './authHandlers/zoho';
-import handleIntegrationCreationOutcome from '../handleIntegrationCreationOutcome';
-import handleSfdcAuth from './authHandlers/sfdc';
-import handlePipeDriveAuth from './authHandlers/pipedrive';
-import handleMsDynamicAuth from './authHandlers/ms_dynamic_365';
-import handleCloseAuth from './authHandlers/close';
+import hubspot from './authHandlers/hubspot';
+import zoho from './authHandlers/zoho';
+import processOAuthResult from '../../../helpers/auth/processOAuthResult';
+import sfdc from './authHandlers/sfdc';
+import pipedrive from './authHandlers/pipedrive';
+import msDynamic from './authHandlers/ms_dynamic_365';
+import close from './authHandlers/close';
 
 const authRouter = express.Router({ mergeParams: true });
 
@@ -74,20 +74,20 @@ authRouter.get('/oauth-callback', async (req, res) => {
         if (req.query.code && req.query.t_id && revertPublicKey) {
             switch (integrationId) {
                 case TP_ID.hubspot:
-                    return handleHubspotAuth(handleAuthProps);
+                    return hubspot.handleOAuth(handleAuthProps);
                 case TP_ID.zohocrm:
-                    return handleZohoAuth(handleAuthProps);
+                    return zoho.handleOAuth(handleAuthProps);
                 case TP_ID.sfdc:
-                    return handleSfdcAuth(handleAuthProps);
+                    return sfdc.handleOAuth(handleAuthProps);
                 case TP_ID.pipedrive:
-                    return handlePipeDriveAuth(handleAuthProps);
+                    return pipedrive.handleOAuth(handleAuthProps);
                 case TP_ID.closecrm:
-                    return handleCloseAuth(handleAuthProps);
+                    return close.handleOAuth(handleAuthProps);
                 case TP_ID.ms_dynamics_365_sales:
-                    return handleMsDynamicAuth(handleAuthProps);
+                    return msDynamic.handleOAuth(handleAuthProps);
 
                 default:
-                    return handleIntegrationCreationOutcome({
+                    return processOAuthResult({
                         status: false,
                         revertPublicKey,
                         tenantSecretToken,
@@ -97,7 +97,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     });
             }
         } else {
-            return handleIntegrationCreationOutcome({
+            return processOAuthResult({
                 status: false,
                 revertPublicKey,
                 tenantSecretToken,
@@ -107,7 +107,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             });
         }
     } catch (error: any) {
-        return handleIntegrationCreationOutcome({
+        return processOAuthResult({
             status: false,
             error,
             revertPublicKey,

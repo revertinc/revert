@@ -1,4 +1,4 @@
-import { logError } from '../../helpers/logger';
+import { logError } from '../logger';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../../redis/client/pubsub';
 import { Prisma } from '../../prisma/client';
 import { Response } from 'express';
@@ -30,7 +30,7 @@ type IntegrationCreationOutcome = {
  * @param {string} props.tpCustomerId - The customer ID associated with the third-party integration.
  *
  */
-const handleIntegrationCreationOutcome = async ({
+const processOAuthResult = async ({
     error,
     revertPublicKey,
     integrationName,
@@ -65,4 +65,4 @@ const handleIntegrationCreationOutcome = async ({
     });
 };
 
-export default handleIntegrationCreationOutcome;
+export default processOAuthResult;
