@@ -327,6 +327,48 @@ class AuthService {
                                     tp_refresh_token: result.data.refresh_token,
                                 },
                             });
+                        } else if (connection.tp_id === TP_ID.bitbucket) {
+                            const url = `https://bitbucket.org/site/oauth2/access_token`;
+                            const formData = {
+                                grant_type: 'refresh_token',
+                                refresh_token: connection.tp_refresh_token,
+                            };
+                            const headerData = {
+                                client_id: connection.app?.is_revert_app
+                                    ? config.BITBUCKET_CLIENT_ID
+                                    : connection.app_client_id || config.BITBUCKET_CLIENT_ID,
+                                client_secret: connection.app?.is_revert_app
+                                    ? config.BITBUCKET_CLIENT_SECRET
+                                    : connection.app_client_secret || config.BITBUCKET_CLIENT_SECRET,
+                            };
+
+                            const encodedClientIdSecret = Buffer.from(
+                                headerData.client_id + ':' + headerData.client_secret
+                            ).toString('base64');
+
+                            const result = await axios({
+                                method: 'post',
+                                url: url,
+                                data: JSON.stringify(formData),
+                                headers: {
+                                    Authorization: 'Basic ' + encodedClientIdSecret,
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                            });
+
+                            if (result.data && result.data.access_token) {
+                                await prisma.connections.update({
+                                    where: {
+                                        id: connection.id,
+                                    },
+                                    data: {
+                                        tp_access_token: result.data.access_token,
+                                        tp_refresh_token: result.data.refresh_token,
+                                    },
+                                });
+                            } else {
+                                logInfo('Bitbucket connection could not be refreshed', result);
+                            }
                         }
                     } catch (error: any) {
                         logError(error.response?.data);

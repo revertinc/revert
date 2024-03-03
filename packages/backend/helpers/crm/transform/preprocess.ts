@@ -389,6 +389,7 @@ export const postprocessDisUnifyTicketObject = <T extends Record<string, any>>({
         [TP_ID.jira]: {},
         [TP_ID.trello]: {},
         [TP_ID.asana]: {},
+        [TP_ID.bitbucket]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

@@ -108,6 +108,31 @@ const userServiceTicket = new UserService(
                         });
                         break;
                     }
+                    case TP_ID.bitbucket: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `$https://api.bitbucket.org/2.0/users/${userId}`,
+                            headers: {
+                                Accept: 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+
+                        const unifiedUser = await unifyObject<any, UnifiedTicketUser>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedUser,
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -325,6 +350,13 @@ const userServiceTicket = new UserService(
                             next: nextCursor,
                             previous: undefined,
                             results: unifiedUsers,
+                        });
+                        break;
+                    }
+                    case TP_ID.bitbucket: {
+                        res.send({
+                            status: 'ok',
+                            results: 'This endpoint is currently not supported',
                         });
                         break;
                     }

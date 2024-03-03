@@ -23,6 +23,7 @@ const taskServiceTicket = new TaskService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const fields: any = JSON.parse(req.query.fields as string);
                 logInfo(
                     'Revert::GET TASK',
                     connection.app?.env?.accountId,
@@ -114,6 +115,36 @@ const taskServiceTicket = new TaskService(
 
                         const unifiedTask: any = await unifyObject<any, UnifiedTicketTask>({
                             obj: card.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedTask,
+                        });
+                        break;
+                    }
+                    case TP_ID.bitbucket: {
+                        if (!fields || (fields && !fields.repo && !fields.workspace)) {
+                            throw new NotFoundError({
+                                error: 'The query parameters "repo" and "workspace" are required and should be included in the "fields" parameter."repo" and "workspace" can either be slug or UUID.',
+                            });
+                        }
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `https://api.bitbucket.org/2.0/repositories/${fields.workspace}/${fields.repo}/issues/${taskId}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedTask: any = await unifyObject<any, UnifiedTicketTask>({
+                            obj: result.data,
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -340,6 +371,49 @@ const taskServiceTicket = new TaskService(
                         });
                         break;
                     }
+                    case TP_ID.bitbucket: {
+                        if (!fields || (fields && !fields.repo && !fields.workspace)) {
+                            throw new NotFoundError({
+                                error: 'The query parameters "repo" and "workspace" are required and should be included in the "fields" parameter."repo" and "workspace" can either be slug or UUID.',
+                            });
+                        }
+                        const pagingString = `${cursor ? `page=${cursor}` : ''}`;
+                        const result = await axios({
+                            method: 'get',
+                            url: `https://api.bitbucket.org/2.0/repositories/${fields.workspace}/${fields.repo}/issues/${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedTasks: any = await Promise.all(
+                            result.data.values.map(
+                                async (task: any) =>
+                                    await unifyObject<any, UnifiedTicketTask>({
+                                        obj: task,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        const pageNumber = result.data?.next
+                            ? cursor
+                                ? (parseInt(cursor) + 1).toString()
+                                : '1'
+                            : undefined;
+
+                        res.send({
+                            status: 'ok',
+                            next: pageNumber,
+                            previous: undefined,
+                            results: unifiedTasks,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -361,6 +435,7 @@ const taskServiceTicket = new TaskService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const fields: any = JSON.parse((req.query as any).fields as string);
                 if (taskData && !taskData.listId) {
                     throw new Error('The parameter "listId" is required in request body.');
                 }
@@ -516,6 +591,26 @@ const taskServiceTicket = new TaskService(
 
                         break;
                     }
+                    case TP_ID.bitbucket: {
+                        if (!fields || (fields && !fields.repo && !fields.workspace)) {
+                            throw new NotFoundError({
+                                error: 'The query parameters "repo" and "workspace" are required and should be included in the "fields" parameter."repo" and "workspace" can either be slug or UUID.',
+                            });
+                        }
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `https://api.bitbucket.org/2.0/repositories/${fields.workspace}/${fields.repo}/issues`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(task),
+                        });
+                        res.send({ status: 'ok', message: 'Bitbucket task created', result: result.data });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -538,6 +633,7 @@ const taskServiceTicket = new TaskService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const fields: any = JSON.parse((req.query as any).fields as string);
                 const task: any = await disunifyTicketObject<UnifiedTicketTask>({
                     obj: taskData,
                     tpId: thirdPartyId,
@@ -704,6 +800,30 @@ const taskServiceTicket = new TaskService(
                             message: 'Trello Task updated',
                             result: result.data,
                         });
+                        break;
+                    }
+                    case TP_ID.bitbucket: {
+                        if (!fields || (fields && !fields.repo && !fields.workspace)) {
+                            throw new NotFoundError({
+                                error: 'The query parameters "repo" and "workspace" are required and should be included in the "fields" parameter."repo" and "workspace" can either be slug or UUID.',
+                            });
+                        }
+                        const result = await axios({
+                            method: 'put',
+                            url: `https://api.bitbucket.org/2.0/repositories/${fields.workspace}/${fields.repo}/issues/${taskId}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                            data: JSON.stringify(task),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Bitbucket Task updated',
+                            result: result.data,
+                        });
+
                         break;
                     }
                     default: {

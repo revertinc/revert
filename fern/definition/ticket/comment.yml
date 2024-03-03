@@ -75,6 +75,8 @@ service:
             request:
                 name: CreateCommentRequest
                 body: CreateOrUpdateCommentRequest
+                query-parameters:
+                    fields: optional<string>
             response: CreateOrUpdateCommentResponse
             errors:
                 - errors.UnAuthorizedError
@@ -89,6 +91,8 @@ service:
             request:
                 name: UpdateCommentRequest
                 body: CreateOrUpdateCommentRequest
+                query-parameters:
+                    fields: optional<string>
             response: CreateOrUpdateCommentResponse
             errors:
                 - errors.UnAuthorizedError
