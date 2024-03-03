@@ -5,11 +5,11 @@ import { mapIntegrationIdToIntegrationName } from '../../../constants/common';
 import redis from '../../../redis/client';
 import { TP_ID } from '@prisma/client';
 import prisma from '../../../prisma/client';
-import handleIntegrationCreationOutcome from '../handleIntegrationCreationOutcome';
-import handleLinearAuth from './authHandlers/linear';
-import handleClickUpAuth from './authHandlers/clickup';
-import handleTrelloAuth from './authHandlers/trello';
-import handleJiraAuth from './authHandlers/jira';
+import processOAuthResult from '../../../helpers/auth/processOAuthResult';
+import linear from './authHandlers/linear';
+import clickup from './authHandlers/clickup';
+import trello from './authHandlers/trello';
+import jira from './authHandlers/jira';
 
 const authRouter = express.Router();
 
@@ -40,7 +40,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
         const svixAppId = account!.accounts!.id;
         const environmentId = account?.id;
 
-        const handleAuthProps = {
+        const authProps = {
             account,
             clientId,
             clientSecret,
@@ -58,16 +58,16 @@ authRouter.get('/oauth-callback', async (req, res) => {
         if (req.query.code && req.query.t_id && revertPublicKey) {
             switch (integrationId) {
                 case TP_ID.linear:
-                    return handleLinearAuth(handleAuthProps);
+                    return linear.handleOAuth(authProps);
                 case TP_ID.clickup:
-                    return handleClickUpAuth(handleAuthProps);
+                    return clickup.handleOAuth(authProps);
                 case TP_ID.trello:
-                    return handleTrelloAuth(handleAuthProps);
+                    return trello.handleOAuth(authProps);
                 case TP_ID.jira:
-                    return handleJiraAuth(handleAuthProps);
+                    return jira.handleOAuth(authProps);
 
                 default:
-                    return handleIntegrationCreationOutcome({
+                    return processOAuthResult({
                         status: false,
                         revertPublicKey,
                         tenantSecretToken,
@@ -78,7 +78,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             }
         }
 
-        return handleIntegrationCreationOutcome({
+        return processOAuthResult({
             status: false,
             revertPublicKey,
             tenantSecretToken,
@@ -87,7 +87,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             statusText: 'noop',
         });
     } catch (error: any) {
-        return handleIntegrationCreationOutcome({
+        return processOAuthResult({
             status: false,
             error,
             revertPublicKey,
