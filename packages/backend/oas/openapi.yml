@@ -1,0 +1,5070 @@
+openapi: 3.0.1
+info:
+  title: revert-api
+  version: ''
+paths:
+  /chat/channels:
+    get:
+      description: Get all the channels
+      operationId: chat_channels_getChannels
+      tags:
+        - ChatChannels
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/chatGetChannelsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /chat/message:
+    post:
+      description: Create a new message
+      operationId: chat_messages_createMessage
+      tags:
+        - ChatMessages
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/chatCreateorUpdateMessageResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/chatCreateorUpdateMessageRequest'
+  /chat/users:
+    get:
+      description: Get all the users
+      operationId: chat_users_getUsers
+      tags:
+        - ChatUsers
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/chatGetUsersResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /connection:
+    get:
+      description: Get details of a connection for a specific tenant.
+      operationId: connection_getConnection
+      tags:
+        - Connection
+      parameters:
+        - name: x-revert-t-id
+          in: header
+          description: The unique customer id used when the customer linked their account.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetConnectionResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    delete:
+      description: Delete a connection for a specific tenant.
+      operationId: connection_deleteConnection
+      tags:
+        - Connection
+      parameters:
+        - name: x-revert-t-id
+          in: header
+          description: The unique customer id used when the customer linked their account.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteConnectionResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /connection/all:
+    get:
+      description: Get details of all the connection for a specific account at Revert.
+      operationId: connection_getAllConnections
+      tags:
+        - Connection
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllConnectionResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /connection/webhook:
+    post:
+      description: >-
+        Create a webhook endpoint that listens to a connection events of a
+        specific tenant.
+      operationId: connection_createWebhook
+      tags:
+        - Connection
+      parameters:
+        - name: x-revert-t-id
+          in: header
+          description: The unique customer id used when the customer linked their account.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateConnectionWebhookResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateConnectionWebhookRequest'
+    get:
+      description: Get details of a connection webhook for a specific tenant.
+      operationId: connection_getWebhook
+      tags:
+        - Connection
+      parameters:
+        - name: x-revert-t-id
+          in: header
+          description: The unique customer id used when the customer linked their account.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetConnectionWebhookResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    delete:
+      description: Delete the connection webhook for a specific tenant.
+      operationId: connection_deleteWebhook
+      tags:
+        - Connection
+      parameters:
+        - name: x-revert-t-id
+          in: header
+          description: The unique customer id used when the customer linked their account.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteConnectionWebhookResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /crm/companies/{id}:
+    get:
+      description: Get details of a company
+      operationId: crm_company_getCompany
+      tags:
+        - CrmCompany
+      parameters:
+        - name: id
+          in: path
+          description: The unique `id` of the company in the CRM.
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetCompanyResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update a company
+      operationId: crm_company_updateCompany
+      tags:
+        - CrmCompany
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateOrUpdateCompanyResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/commonCompany'
+  /crm/companies:
+    get:
+      description: Get all the companies
+      operationId: crm_company_getCompanies
+      tags:
+        - CrmCompany
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetCompaniesResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Create a new company
+      operationId: crm_company_createCompany
+      tags:
+        - CrmCompany
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateOrUpdateCompanyResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateOrUpdateCompanyRequest'
+  /crm/companies/search:
+    post:
+      description: Search for companies
+      operationId: crm_company_searchCompanies
+      tags:
+        - CrmCompany
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmSearchCompaniesResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                searchCriteria: {}
+              required:
+                - searchCriteria
+  /crm/contacts/{id}:
+    get:
+      description: Get details of a contact
+      operationId: crm_contact_getContact
+      tags:
+        - CrmContact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetContactResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update a contact
+      operationId: crm_contact_updateContact
+      tags:
+        - CrmContact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateOrUpdateContactResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateOrUpdateContactRequest'
+  /crm/contacts:
+    get:
+      description: Get all the contacts
+      operationId: crm_contact_getContacts
+      tags:
+        - CrmContact
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetContactsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Create a new contact
+      operationId: crm_contact_createContact
+      tags:
+        - CrmContact
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateOrUpdateContactResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateOrUpdateContactRequest'
+  /crm/contacts/search:
+    post:
+      description: Search for contacts
+      operationId: crm_contact_searchContacts
+      tags:
+        - CrmContact
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmSearchContactsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                searchCriteria: {}
+              required:
+                - searchCriteria
+  /crm/deals/{id}:
+    get:
+      description: Get details of a deal
+      operationId: crm_deal_getDeal
+      tags:
+        - CrmDeal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetDealResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update a deal
+      operationId: crm_deal_updateDeal
+      tags:
+        - CrmDeal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateOrUpdateDealResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateOrUpdateDealRequest'
+  /crm/deals:
+    get:
+      description: Get all the deals
+      operationId: crm_deal_getDeals
+      tags:
+        - CrmDeal
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetDealsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Create a new deal
+      operationId: crm_deal_createDeal
+      tags:
+        - CrmDeal
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateOrUpdateDealResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateOrUpdateDealRequest'
+  /crm/deals/search:
+    post:
+      description: Search for deals
+      operationId: crm_deal_searchDeals
+      tags:
+        - CrmDeal
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmSearchDealsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                searchCriteria: {}
+              required:
+                - searchCriteria
+  /crm/events/{id}:
+    get:
+      description: Get details of a event
+      operationId: crm_event_getEvent
+      tags:
+        - CrmEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetEventResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update a event
+      operationId: crm_event_updateEvent
+      tags:
+        - CrmEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateOrUpdateEventResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateOrUpdateEventRequest'
+    delete:
+      description: Delete details of an event in a CRM
+      operationId: crm_event_deleteEvent
+      tags:
+        - CrmEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmDeleteEventResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /crm/events:
+    get:
+      description: Get all the events
+      operationId: crm_event_getEvents
+      tags:
+        - CrmEvent
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetEventsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Create a new event
+      operationId: crm_event_createEvent
+      tags:
+        - CrmEvent
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateOrUpdateEventResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateOrUpdateEventRequest'
+  /crm/events/search:
+    post:
+      description: Search for events
+      operationId: crm_event_searchEvents
+      tags:
+        - CrmEvent
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmSearchEventsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                searchCriteria: {}
+              required:
+                - searchCriteria
+  /crm/field-mapping:
+    get:
+      description: Get field mappings configs for a connection
+      operationId: crm_fieldMapping_getFieldMappingConfig
+      tags:
+        - CrmFieldMapping
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetFieldMappingConfigResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Create field mappings for a connection after user input
+      operationId: crm_fieldMapping_createFieldMapping
+      tags:
+        - CrmFieldMapping
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateFieldMappingResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateFieldMappingRequestBody'
+    delete:
+      description: Delete field mappings for an account
+      operationId: crm_fieldMapping_deleteFieldMapping
+      tags:
+        - CrmFieldMapping
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmDeleteFieldMappingResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /crm/field-mapping/mappings:
+    get:
+      description: Get field mappings for a connection
+      operationId: crm_fieldMapping_getFieldMappings
+      tags:
+        - CrmFieldMapping
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetFieldMappingsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /crm/field-mapping/config:
+    post:
+      description: Create field mappings config for an account
+      operationId: crm_fieldMapping_createAccountFieldMappingConfig
+      tags:
+        - CrmFieldMapping
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateAccountFieldMappingResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateAccountFieldMappingRequestBody'
+    delete:
+      description: Delete field mappings config for an account
+      operationId: crm_fieldMapping_deleteAccountFieldMappingConfig
+      tags:
+        - CrmFieldMapping
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/crmDeleteAccountFieldMappingConfigResponse
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /crm/leads/{id}:
+    get:
+      description: Get details of a lead
+      operationId: crm_lead_getLead
+      tags:
+        - CrmLead
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetLeadResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update a lead
+      operationId: crm_lead_updateLead
+      tags:
+        - CrmLead
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateOrUpdateLeadResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateOrUpdateLeadRequest'
+  /crm/leads:
+    get:
+      description: Get all the leads
+      operationId: crm_lead_getLeads
+      tags:
+        - CrmLead
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetLeadsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Create a new lead
+      operationId: crm_lead_createLead
+      tags:
+        - CrmLead
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateOrUpdateLeadResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateOrUpdateLeadRequest'
+  /crm/leads/search:
+    post:
+      description: Search for leads
+      operationId: crm_lead_searchLeads
+      tags:
+        - CrmLead
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmSearchLeadsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                searchCriteria: {}
+              required:
+                - searchCriteria
+  /crm/notes/{id}:
+    get:
+      description: Get details of a note
+      operationId: crm_note_getNote
+      tags:
+        - CrmNote
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetNoteResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update a note
+      operationId: crm_note_updateNote
+      tags:
+        - CrmNote
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateOrUpdateNoteResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateOrUpdateNoteRequest'
+  /crm/notes:
+    get:
+      description: Get all the notes
+      operationId: crm_note_getNotes
+      tags:
+        - CrmNote
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetNotesResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Create a new note
+      operationId: crm_note_createNote
+      tags:
+        - CrmNote
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateOrUpdateNoteResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateOrUpdateNoteRequest'
+  /crm/notes/search:
+    post:
+      description: Search for notes
+      operationId: crm_note_searchNotes
+      tags:
+        - CrmNote
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmSearchNotesResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                searchCriteria: {}
+              required:
+                - searchCriteria
+  /crm/properties/{objectName}:
+    get:
+      description: Get object properties for connection
+      operationId: crm_properties_getObjectProperties
+      tags:
+        - CrmProperties
+      parameters:
+        - name: objectName
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/commonStandardObject'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetObjectPropertiesResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Set custom properties on an object for a given connection
+      operationId: crm_properties_setCustomProperties
+      tags:
+        - CrmProperties
+      parameters:
+        - name: objectName
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/commonStandardObject'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmSetObjectPropertiesResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmSetObjectPropertiesRequest'
+  /crm/proxy:
+    post:
+      description: Call the native CRM api for a specific connection
+      operationId: crm_proxy_tunnel
+      tags:
+        - CrmProxy
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmProxyResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmPostProxyRequestBody'
+  /crm/tasks/{id}:
+    get:
+      description: Get details of a task
+      operationId: crm_task_getTask
+      tags:
+        - CrmTask
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetTaskResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update a task
+      operationId: crm_task_updateTask
+      tags:
+        - CrmTask
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateOrUpdateTaskResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateOrUpdateTaskRequest'
+  /crm/tasks:
+    get:
+      description: Get all the tasks
+      operationId: crm_task_getTasks
+      tags:
+        - CrmTask
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetTasksResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Create a new task
+      operationId: crm_task_createTask
+      tags:
+        - CrmTask
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateOrUpdateTaskResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateOrUpdateTaskRequest'
+  /crm/tasks/search:
+    post:
+      description: Search for tasks
+      operationId: crm_task_searchTasks
+      tags:
+        - CrmTask
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmSearchTasksResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                searchCriteria: {}
+              required:
+                - searchCriteria
+  /crm/users/{id}:
+    get:
+      description: Get details of a user
+      operationId: crm_user_getUser
+      tags:
+        - CrmUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetUserResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /crm/users:
+    get:
+      description: Get all the users
+      operationId: crm_user_getUsers
+      tags:
+        - CrmUser
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmGetUsersResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Create a new user
+      operationId: crm_user_createUser
+      tags:
+        - CrmUser
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/crmCreateOrUpdateUserResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/crmCreateOrUpdateUserRequest'
+  /internal/account:
+    post:
+      description: Get details of a revert user account
+      operationId: internal_account_getAccountDetails
+      tags:
+        - InternalAccount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalGetAccountDetailsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+              required:
+                - userId
+  /internal/account/credentials:
+    post:
+      description: Update account credentials (customer app token, secret, scope)
+      operationId: internal_account_updateAccountCredentials
+      tags:
+        - InternalAccount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonApp'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  nullable: true
+                clientSecret:
+                  type: string
+                  nullable: true
+                scopes:
+                  type: array
+                  items:
+                    type: string
+                  nullable: true
+                tpId:
+                  $ref: '#/components/schemas/commonTPID'
+                isRevertApp:
+                  type: boolean
+                appId:
+                  type: string
+                appConfig:
+                  $ref: '#/components/schemas/commonAppConfig'
+                  nullable: true
+              required:
+                - tpId
+                - isRevertApp
+                - appId
+  /internal/analytics:
+    post:
+      description: Get Analytics of your revert account
+      operationId: internal_analytics_getAnalytics
+      tags:
+        - InternalAnalytics
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalGetAnalyticsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                environment:
+                  type: string
+              required:
+                - userId
+                - environment
+  /internal/telemetry:
+    post:
+      description: Create telemetry entry for a deployment
+      operationId: internal_telemetry_createTelemetryEntry
+      tags:
+        - InternalTelemetry
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalCreateTelemetryEntryResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                numberOfUsers:
+                  type: integer
+                numberOfAccounts:
+                  type: integer
+                numberOfConnections:
+                  type: integer
+                numberOfApiCalls:
+                  type: integer
+              required:
+                - numberOfUsers
+                - numberOfAccounts
+                - numberOfConnections
+                - numberOfApiCalls
+  /metadata/crms:
+    get:
+      description: >-
+        Retrieve a list of CRMs available for this account from the database
+        based on the public token.
+      operationId: metadata_getCrms
+      tags:
+        - Metadata
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrmMetadataResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /ticket/collections:
+    get:
+      description: Get all the collections
+      operationId: ticket_collection_getCollections
+      tags:
+        - TicketCollection
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ticketGetCollectionsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /ticket/comments/{id}:
+    get:
+      description: Get details of a comment
+      operationId: ticket_comment_getComment
+      tags:
+        - TicketComment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ticketGetCommentResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update comment
+      operationId: ticket_comment_updateComment
+      tags:
+        - TicketComment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ticketCreateOrUpdateCommentResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ticketCreateOrUpdateCommentRequest'
+  /ticket/comments:
+    get:
+      description: Get all the comments
+      operationId: ticket_comment_getComments
+      tags:
+        - TicketComment
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ticketGetCommentsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Post comment
+      operationId: ticket_comment_createComment
+      tags:
+        - TicketComment
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ticketCreateOrUpdateCommentResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ticketCreateOrUpdateCommentRequest'
+  /ticket/proxy:
+    post:
+      description: Call the native Ticketing app's api for a specific connection
+      operationId: ticket_proxy_tunnel
+      tags:
+        - TicketProxy
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ticketProxyResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ticketPostProxyRequestBody'
+  /ticket/tasks/{id}:
+    get:
+      description: Get details of a task
+      operationId: ticket_task_getTask
+      tags:
+        - TicketTask
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ticketGetTaskResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update a task
+      operationId: ticket_task_updateTask
+      tags:
+        - TicketTask
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ticketCreateOrUpdateTaskResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ticketCreateOrUpdateTaskRequest'
+  /ticket/tasks:
+    get:
+      description: Get all the tasks
+      operationId: ticket_task_getTasks
+      tags:
+        - TicketTask
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ticketGetTasksResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      operationId: ticket_task_createTask
+      tags:
+        - TicketTask
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ticketCreateOrUpdateTaskResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ticketCreateOrUpdateTaskRequest'
+  /ticket/users/{id}:
+    get:
+      description: Get details of a user
+      operationId: ticket_user_getUser
+      tags:
+        - TicketUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ticketGetUserResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /ticket/users:
+    get:
+      description: Get all the users
+      operationId: ticket_user_getUsers
+      tags:
+        - TicketUser
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ticketGetUsersResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+components:
+  schemas:
+    chatGetChannelsResponse:
+      title: chatGetChannelsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonChannel'
+      required:
+        - status
+        - results
+    chatCreateorUpdateMessageRequest:
+      title: chatCreateorUpdateMessageRequest
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/commonMessage'
+    chatCreateorUpdateMessageResponse:
+      title: chatCreateorUpdateMessageResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result:
+          $ref: '#/components/schemas/commonMessage'
+      required:
+        - status
+        - result
+    chatGetUsersResponse:
+      title: chatGetUsersResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonUserChat'
+      required:
+        - status
+        - results
+    commonCompanyAssociation:
+      title: commonCompanyAssociation
+      type: object
+      properties:
+        dealId:
+          type: string
+          nullable: true
+          description: The id of the deal to associate with company
+    commonContactAssociation:
+      title: commonContactAssociation
+      type: object
+      properties:
+        dealId:
+          type: string
+          nullable: true
+          description: The id of the deal to associate with contact
+        leadId:
+          type: string
+          nullable: true
+          description: The id of lead to associate with contact for close crm
+    commonDealAssociation:
+      title: commonDealAssociation
+      type: object
+      properties:
+        contactId:
+          type: string
+          nullable: true
+          description: The id of the contact to associate with deal
+        companyId:
+          type: string
+          nullable: true
+          description: The id of the company to associate with deal
+    commonEventAssociation:
+      title: commonEventAssociation
+      type: object
+      properties:
+        dealId:
+          type: string
+          nullable: true
+          description: The id of the deal to associate with event
+        contactId:
+          type: string
+          nullable: true
+          description: The id of the contact to associate with event
+    commonLeadAssociation:
+      title: commonLeadAssociation
+      type: object
+      properties:
+        contactId:
+          type: string
+          nullable: true
+          description: The id of the contact to associate with lead
+        companyId:
+          type: string
+          nullable: true
+          description: The id of the company to associate with lead
+        dealId:
+          type: string
+          nullable: true
+          description: The id of the deal to associate with lead
+    commonNoteAssociation:
+      title: commonNoteAssociation
+      type: object
+      properties:
+        contactId:
+          type: string
+          nullable: true
+          description: The id of the contact to associate with note
+        companyId:
+          type: string
+          nullable: true
+          description: The id of the company to associate with note
+        leadId:
+          type: string
+          nullable: true
+          description: The id of the lead to associate with note
+        dealId:
+          type: string
+          nullable: true
+          description: The id of the deal to associate with note
+    commonTaskAssociation:
+      title: commonTaskAssociation
+      type: object
+      properties:
+        dealId:
+          type: string
+          nullable: true
+          description: The id of the deal to associate with task
+    commonUserAssociation:
+      title: commonUserAssociation
+      type: object
+      properties:
+        dealId:
+          type: string
+          nullable: true
+          description: The id of the deal to associate with user
+    commonBaseError:
+      title: commonBaseError
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+    commonAccount:
+      title: commonAccount
+      type: object
+      properties:
+        id:
+          type: string
+        tenant_count:
+          type: integer
+        private_token:
+          type: string
+        public_token:
+          type: string
+        domain:
+          type: string
+        skipWaitlist:
+          type: boolean
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonRevertUser'
+          nullable: true
+        apps:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonApp'
+          nullable: true
+      required:
+        - id
+        - tenant_count
+        - private_token
+        - public_token
+        - domain
+        - skipWaitlist
+    commonApp:
+      title: commonApp
+      type: object
+      properties:
+        id:
+          type: string
+        tp_id:
+          $ref: '#/components/schemas/commonTPID'
+        scope:
+          type: array
+          items:
+            type: string
+          nullable: true
+        app_client_id:
+          type: string
+          nullable: true
+        app_client_secret:
+          type: string
+          nullable: true
+        owner_account_public_token:
+          type: string
+        account:
+          $ref: '#/components/schemas/commonAccount'
+          nullable: true
+        connections:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonConnection'
+          nullable: true
+        is_revert_app:
+          type: boolean
+        app_config:
+          $ref: '#/components/schemas/commonAppConfig'
+          nullable: true
+      required:
+        - id
+        - tp_id
+        - owner_account_public_token
+        - is_revert_app
+    commonRevertUser:
+      title: commonRevertUser
+      type: object
+      properties:
+        id:
+          type: string
+        domain:
+          type: string
+        email:
+          type: string
+        accountId:
+          type: string
+        account:
+          $ref: '#/components/schemas/commonAccount'
+          nullable: true
+      required:
+        - id
+        - domain
+        - email
+        - accountId
+    commonConnection:
+      title: commonConnection
+      type: object
+      properties:
+        tp_id:
+          $ref: '#/components/schemas/commonTPID'
+        tp_access_token:
+          type: string
+        tp_refresh_token:
+          type: string
+          nullable: true
+        tp_customer_id:
+          type: string
+        t_id:
+          type: string
+        tp_account_url:
+          type: string
+          nullable: true
+        owner_account_public_token:
+          type: string
+        app_client_id:
+          type: string
+          nullable: true
+        app_client_secret:
+          type: string
+          nullable: true
+        app:
+          $ref: '#/components/schemas/commonApp'
+          nullable: true
+      required:
+        - tp_id
+        - tp_access_token
+        - tp_customer_id
+        - t_id
+        - owner_account_public_token
+    commonTPID:
+      title: commonTPID
+      type: string
+      enum:
+        - hubspot
+        - zohocrm
+        - sfdc
+        - pipedrive
+        - slack
+        - closecrm
+        - ms_dynamics_365_sales
+    commonStandardObject:
+      title: commonStandardObject
+      type: string
+      enum:
+        - company
+        - contact
+        - deal
+        - event
+        - lead
+        - note
+        - task
+        - user
+    commonResponseStatus:
+      title: commonResponseStatus
+      type: string
+      enum:
+        - ok
+        - error
+    commonConnectedApps:
+      title: commonConnectedApps
+      type: object
+      properties:
+        appName:
+          type: string
+        imageSrc:
+          type: string
+      required:
+        - appName
+        - imageSrc
+    commonRecentConnections:
+      title: commonRecentConnections
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - createdAt
+    commonRecentApiCalls:
+      title: commonRecentApiCalls
+      type: object
+      properties:
+        method:
+          type: string
+        path:
+          type: string
+        status:
+          type: integer
+      required:
+        - method
+        - path
+        - status
+    commonAnalytics:
+      title: commonAnalytics
+      type: object
+      properties:
+        totalConnections:
+          type: integer
+        connectedApps:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonConnectedApps'
+          nullable: true
+        recentConnections:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonRecentConnections'
+          nullable: true
+        recentApiCalls:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonRecentApiCalls'
+          nullable: true
+      required:
+        - totalConnections
+    commonTicketStatus:
+      title: commonTicketStatus
+      type: string
+      enum:
+        - open
+        - close
+        - in_progress
+    commonTicketPriority:
+      title: commonTicketPriority
+      type: string
+      enum:
+        - urgent
+        - high
+        - medium
+        - low
+        - lowest
+    commonAppConfig:
+      title: commonAppConfig
+      type: object
+      properties:
+        bot_token:
+          type: string
+          nullable: true
+        org_url:
+          type: string
+          nullable: true
+    commonCommonUnifiedFields:
+      title: commonCommonUnifiedFields
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique `id` of this object in Revert
+        remoteId:
+          type: string
+          description: The unique `id` of this object in the downstream CRM.
+        createdTimestamp:
+          description: Creation timestamp of the object.
+        updatedTimestamp:
+          description: The last updated timestamp of the object.
+        additional:
+          nullable: true
+          description: >-
+            Any fields that are not unified yet/non-unifiable come inside this
+            `json` object.
+      required:
+        - id
+        - remoteId
+        - createdTimestamp
+        - updatedTimestamp
+    commonLeadRead:
+      title: commonLeadRead
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: The first name of the lead in a CRM.
+        lastName:
+          type: string
+          description: The last name of the lead in a CRM.
+        phone:
+          type: string
+          description: The phone number of the lead in a CRM.
+        email:
+          type: string
+          description: The email of the lead in a CRM.
+      required:
+        - firstName
+        - lastName
+        - phone
+        - email
+    commonLeadWrite:
+      title: commonLeadWrite
+      type: object
+      properties:
+        associations:
+          $ref: '#/components/schemas/commonLeadAssociation'
+          nullable: true
+      allOf:
+        - $ref: '#/components/schemas/commonLeadRead'
+    commonLead:
+      title: commonLead
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/commonCommonUnifiedFields'
+        - $ref: '#/components/schemas/commonLeadRead'
+    commonDealRead:
+      title: commonDealRead
+      type: object
+      properties:
+        amount:
+          type: integer
+          description: The deal amount mentioned in the CRM for this deal.
+        priority:
+          type: string
+          nullable: true
+          description: The priority attached to this deal. (not supported by pipedrive)
+        stage:
+          type: string
+          description: Deal stage in the CRM.
+        name:
+          type: string
+          description: The name of the deal in a CRM.
+        expectedCloseDate:
+          description: >-
+            Expected close date for this deal. (not supported by pipedrive
+            search api)
+        isWon:
+          type: boolean
+          description: Is `true` if the deal is closed (won).
+        probability:
+          type: integer
+          description: >-
+            Probability of the deal getting closed, a decimal number between 0
+            to 1 (inclusive).
+      required:
+        - amount
+        - stage
+        - name
+        - expectedCloseDate
+        - isWon
+        - probability
+    commonDealWrite:
+      title: commonDealWrite
+      type: object
+      properties:
+        associations:
+          $ref: '#/components/schemas/commonDealAssociation'
+          nullable: true
+      allOf:
+        - $ref: '#/components/schemas/commonDealRead'
+    commonDeal:
+      title: commonDeal
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/commonCommonUnifiedFields'
+        - $ref: '#/components/schemas/commonDealRead'
+    commonNoteRead:
+      title: commonNoteRead
+      type: object
+      properties:
+        content:
+          type: string
+          description: The contents of the note in plain text or HTML.
+      required:
+        - content
+    commonNoteWrite:
+      title: commonNoteWrite
+      type: object
+      properties:
+        associations:
+          $ref: '#/components/schemas/commonDealAssociation'
+          nullable: true
+      allOf:
+        - $ref: '#/components/schemas/commonNoteRead'
+    commonNote:
+      title: commonNote
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/commonCommonUnifiedFields'
+        - $ref: '#/components/schemas/commonNoteRead'
+    commonCompany:
+      title: commonCompany
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the company in a CRM.
+        industry:
+          type: string
+          description: Industry associated with this company. (not supported by pipedrive)
+        description:
+          type: string
+          description: Description of the company. (not supported by pipedrive)
+        annualRevenue:
+          type: integer
+          description: Annual revenue of the company. (not supported by pipedrive)
+        size:
+          type: integer
+          description: Number of employees or size of the company.
+        phone:
+          type: string
+          description: Phone number of the company. (not supported by pipedrive)
+        address:
+          $ref: '#/components/schemas/commonCompanyAddress'
+          description: Company address.
+      required:
+        - name
+        - industry
+        - description
+        - annualRevenue
+        - size
+        - phone
+        - address
+      allOf:
+        - $ref: '#/components/schemas/commonCommonUnifiedFields'
+    commonCompanyAddress:
+      title: commonCompanyAddress
+      type: object
+      properties:
+        street:
+          type: string
+          nullable: true
+        city:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+        zip:
+          type: string
+        postalCode:
+          type: string
+      required:
+        - city
+        - state
+        - country
+        - zip
+        - postalCode
+    commonContactRead:
+      title: commonContactRead
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: The first name of the contact in a CRM.
+        lastName:
+          type: string
+          description: The last name of the contact in a CRM.
+        phone:
+          type: string
+          description: The phone number of the contact in a CRM.
+        email:
+          type: string
+          description: The email of the contact in a CRM.
+      required:
+        - firstName
+        - lastName
+        - phone
+        - email
+    commonContactWrite:
+      title: commonContactWrite
+      type: object
+      properties:
+        associations:
+          $ref: '#/components/schemas/commonContactAssociation'
+          nullable: true
+      allOf:
+        - $ref: '#/components/schemas/commonContactRead'
+    commonContact:
+      title: commonContact
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/commonCommonUnifiedFields'
+        - $ref: '#/components/schemas/commonContactRead'
+    commonEventRead:
+      title: commonEventRead
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of the event in the CRM.
+        subject:
+          type: string
+          description: The Subject of the event/meeting in the CRM.
+        startDateTime:
+          type: string
+          description: Event start date time.
+        endDateTime:
+          type: string
+          description: Event end date time.
+        isAllDayEvent:
+          type: boolean
+          description: Is `true` if the event is an all day event.
+        description:
+          type: string
+          description: Description of the event/meeting.
+        location:
+          type: string
+          description: The location of the event/meeting.
+      required:
+        - type
+        - subject
+        - startDateTime
+        - endDateTime
+        - isAllDayEvent
+        - description
+        - location
+    commonEventWrite:
+      title: commonEventWrite
+      type: object
+      properties:
+        associations:
+          $ref: '#/components/schemas/commonEventAssociation'
+          nullable: true
+      allOf:
+        - $ref: '#/components/schemas/commonEventRead'
+    commonEvent:
+      title: commonEvent
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/commonCommonUnifiedFields'
+        - $ref: '#/components/schemas/commonEventRead'
+    commonTaskRead:
+      title: commonTaskRead
+      type: object
+      properties:
+        subject:
+          type: string
+          description: Subject of the task.
+        body:
+          type: string
+          description: Body of the task description.
+        priority:
+          type: string
+          description: The priority of the task in hand. (not supported by pipedrive)
+        status:
+          type: string
+          description: Completion status of the task.
+        dueDate:
+          description: The date when this task is due.
+      required:
+        - subject
+        - body
+        - priority
+        - status
+        - dueDate
+    commonTaskWrite:
+      title: commonTaskWrite
+      type: object
+      properties:
+        associations:
+          $ref: '#/components/schemas/commonTaskAssociation'
+          nullable: true
+    commonTask:
+      title: commonTask
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/commonCommonUnifiedFields'
+        - $ref: '#/components/schemas/commonTaskRead'
+    commonUserWrite:
+      title: commonUserWrite
+      type: object
+      description: >-
+        Include the "businessUnitId" in the "additional" section, as it is a
+        mandatory field for Microsoft Dynamics Sales.
+      properties:
+        firstName:
+          type: string
+          description: The first name of a user in a CRM.
+        lastName:
+          type: string
+          description: The last name of a user in a CRM.
+        phone:
+          type: string
+          description: The phone number of a user in a CRM.
+        email:
+          type: string
+          description: The email of a user in a CRM.
+      required:
+        - firstName
+        - lastName
+        - phone
+        - email
+    commonUser:
+      title: commonUser
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/commonCommonUnifiedFields'
+        - $ref: '#/components/schemas/commonUserWrite'
+    commonUserChat:
+      title: commonUserChat
+      type: object
+      properties:
+        id:
+          type: string
+          description: Id of user according to connected communication app
+        name:
+          type: string
+          description: The name of user in communication app
+        createdTimestamp:
+          description: Date at which user account has been created
+      required:
+        - id
+        - name
+        - createdTimestamp
+    commonChannel:
+      title: commonChannel
+      type: object
+      properties:
+        id:
+          type: string
+          description: Id of channel belonging to workspace
+        name:
+          type: string
+          description: The name of channel in communication app
+        createdTimestamp:
+          description: Date at which channel has been created
+      required:
+        - id
+        - name
+        - createdTimestamp
+    commonMessage:
+      title: commonMessage
+      type: object
+      properties:
+        text:
+          type: string
+          description: Message sent by user
+        channelId:
+          type: string
+          description: Id of channel to which message was sent
+      required:
+        - text
+        - channelId
+    commonTaskTicketWrite:
+      title: commonTaskTicketWrite
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the task.
+        assignees:
+          type: array
+          items:
+            type: string
+          description: collection of IDs belonging to assignees.
+        description:
+          type: string
+          description: Description of the task.
+        status:
+          $ref: '#/components/schemas/commonTicketStatus'
+          description: Current status of the task.
+        priority:
+          $ref: '#/components/schemas/commonTicketPriority'
+          description: Priority of the task.
+        creatorId:
+          type: string
+          description: ID of the task creator.
+        dueDate:
+          type: string
+          description: Due date for the given task.
+        completedDate:
+          type: string
+          description: Date at which task was completed.
+        parentId:
+          type: string
+          description: Id of the parent task.
+        listId:
+          type: string
+          description: Id of the list
+      required:
+        - name
+        - assignees
+        - description
+        - status
+        - priority
+        - creatorId
+        - dueDate
+        - completedDate
+        - parentId
+        - listId
+    commonTaskTicket:
+      title: commonTaskTicket
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/commonCommonUnifiedFields'
+        - $ref: '#/components/schemas/commonTaskTicketWrite'
+    commonCommentTicketWrite:
+      title: commonCommentTicketWrite
+      type: object
+      properties:
+        body:
+          type: string
+          description: The contents of the comment in plain text or HTML format.
+        taskId:
+          type: string
+          description: Task or Issue to which comment must belong
+      required:
+        - body
+        - taskId
+    commonCommentTicket:
+      title: commonCommentTicket
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/commonCommonUnifiedFields'
+        - $ref: '#/components/schemas/commonCommentTicketWrite'
+    GetConnectionResponse:
+      title: GetConnectionResponse
+      type: object
+      properties:
+        error:
+          type: string
+          nullable: true
+      allOf:
+        - $ref: '#/components/schemas/commonConnection'
+    GetAllConnectionResponse:
+      title: GetAllConnectionResponse
+      type: array
+      items:
+        $ref: '#/components/schemas/commonConnection'
+    DeleteConnectionResponse:
+      title: DeleteConnectionResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        deleted:
+          $ref: '#/components/schemas/commonConnection'
+      required:
+        - status
+        - deleted
+    CreateConnectionWebhookResponse:
+      title: CreateConnectionWebhookResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        webhookUrl:
+          type: string
+        createdAt:
+          type: string
+        secret:
+          type: string
+        error:
+          type: string
+          nullable: true
+        errorMessage:
+          nullable: true
+      required:
+        - status
+        - webhookUrl
+        - createdAt
+        - secret
+    GetConnectionWebhookResponse:
+      title: GetConnectionWebhookResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        webhook: {}
+        error:
+          type: string
+          nullable: true
+        errorMessage:
+          nullable: true
+      required:
+        - status
+        - webhook
+    CreateConnectionWebhookRequest:
+      title: CreateConnectionWebhookRequest
+      type: object
+      properties:
+        webhookUrl:
+          type: string
+      required:
+        - webhookUrl
+    DeleteConnectionWebhookResponse:
+      title: DeleteConnectionWebhookResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        error:
+          type: string
+          nullable: true
+        errorMessage:
+          nullable: true
+      required:
+        - status
+    crmGetCompanyResponse:
+      title: crmGetCompanyResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result:
+          $ref: '#/components/schemas/commonCompany'
+      required:
+        - status
+        - result
+    crmGetCompaniesResponse:
+      title: crmGetCompaniesResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonCompany'
+      required:
+        - status
+        - results
+    crmCreateOrUpdateCompanyRequest:
+      title: crmCreateOrUpdateCompanyRequest
+      type: object
+      properties:
+        associations:
+          $ref: '#/components/schemas/commonCompanyAssociation'
+          nullable: true
+      allOf:
+        - $ref: '#/components/schemas/commonCompany'
+    crmCreateOrUpdateCompanyResponse:
+      title: crmCreateOrUpdateCompanyResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    crmSearchCompaniesResponse:
+      title: crmSearchCompaniesResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonCompany'
+      required:
+        - status
+        - results
+    crmGetContactResponse:
+      title: crmGetContactResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result:
+          $ref: '#/components/schemas/commonContact'
+      required:
+        - status
+        - result
+    crmGetContactsResponse:
+      title: crmGetContactsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonContact'
+      required:
+        - status
+        - results
+    crmCreateOrUpdateContactRequest:
+      title: crmCreateOrUpdateContactRequest
+      type: object
+      properties:
+        additional:
+          description: >-
+            Any fields that are not unified yet/non-unifiable come inside this
+            `json` object.
+      required:
+        - additional
+      allOf:
+        - $ref: '#/components/schemas/commonContactWrite'
+    crmCreateOrUpdateContactResponse:
+      title: crmCreateOrUpdateContactResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    crmSearchContactsResponse:
+      title: crmSearchContactsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonContact'
+      required:
+        - status
+        - results
+    crmGetDealResponse:
+      title: crmGetDealResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result:
+          $ref: '#/components/schemas/commonDeal'
+      required:
+        - status
+        - result
+    crmGetDealsResponse:
+      title: crmGetDealsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonDeal'
+      required:
+        - status
+        - results
+    crmCreateOrUpdateDealRequest:
+      title: crmCreateOrUpdateDealRequest
+      type: object
+      properties:
+        additional:
+          description: >-
+            Any fields that are not unified yet/non-unifiable come inside this
+            `json` object.
+      required:
+        - additional
+      allOf:
+        - $ref: '#/components/schemas/commonDealWrite'
+    crmCreateOrUpdateDealResponse:
+      title: crmCreateOrUpdateDealResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    crmSearchDealsResponse:
+      title: crmSearchDealsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonDeal'
+      required:
+        - status
+        - results
+    crmGetEventResponse:
+      title: crmGetEventResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result:
+          $ref: '#/components/schemas/commonEvent'
+      required:
+        - status
+        - result
+    crmGetEventsResponse:
+      title: crmGetEventsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonEvent'
+      required:
+        - status
+        - results
+    crmCreateOrUpdateEventRequest:
+      title: crmCreateOrUpdateEventRequest
+      type: object
+      properties:
+        additional:
+          description: >-
+            Any fields that are not unified yet/non-unifiable come inside this
+            `json` object.
+      required:
+        - additional
+      allOf:
+        - $ref: '#/components/schemas/commonEventWrite'
+    crmCreateOrUpdateEventResponse:
+      title: crmCreateOrUpdateEventResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    crmSearchEventsResponse:
+      title: crmSearchEventsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonEvent'
+      required:
+        - status
+        - results
+    crmDeleteEventResponse:
+      title: crmDeleteEventResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+      required:
+        - status
+        - message
+    crmMappableFieldType:
+      title: crmMappableFieldType
+      type: object
+      properties:
+        fieldName:
+          type: string
+        objectName:
+          $ref: '#/components/schemas/commonStandardObject'
+      required:
+        - fieldName
+        - objectName
+    crmFieldMappingType:
+      title: crmFieldMappingType
+      type: object
+      properties:
+        sourceFieldName:
+          type: string
+        targetFieldName:
+          type: string
+        object:
+          type: string
+      required:
+        - sourceFieldName
+        - targetFieldName
+        - object
+    crmGetFieldMappingConfigResponse:
+      title: crmGetFieldMappingConfigResponse
+      type: object
+      properties:
+        canAddCustomMapping:
+          type: boolean
+        mappableFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/crmMappableFieldType'
+        fieldList: {}
+      required:
+        - canAddCustomMapping
+        - mappableFields
+        - fieldList
+    crmCreateFieldMappingRequestBody:
+      title: crmCreateFieldMappingRequestBody
+      type: object
+      properties:
+        standardMappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/crmFieldMappingType'
+        customMappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/crmFieldMappingType'
+      required:
+        - standardMappings
+        - customMappings
+    crmCreateFieldMappingResponse:
+      title: crmCreateFieldMappingResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+      required:
+        - status
+    crmDeleteFieldMappingResponse:
+      title: crmDeleteFieldMappingResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+      required:
+        - status
+        - message
+    crmCreateAccountFieldMappingRequestBody:
+      title: crmCreateAccountFieldMappingRequestBody
+      type: object
+      properties:
+        id:
+          type: string
+        account_id:
+          type: string
+        allow_connection_override_custom_fields:
+          type: boolean
+        mappable_by_connection_field_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/crmMappableFieldType'
+      required:
+        - id
+        - account_id
+        - allow_connection_override_custom_fields
+        - mappable_by_connection_field_list
+    crmCreateAccountFieldMappingResponse:
+      title: crmCreateAccountFieldMappingResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+      required:
+        - status
+    crmDeleteAccountFieldMappingConfigResponse:
+      title: crmDeleteAccountFieldMappingConfigResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+      required:
+        - status
+    crmGetFieldMappingsResponse:
+      title: crmGetFieldMappingsResponse
+      type: object
+      properties:
+        tpId:
+          type: string
+        mappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/crmFieldMappingType'
+      required:
+        - tpId
+        - mappings
+    crmGetLeadResponse:
+      title: crmGetLeadResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result:
+          $ref: '#/components/schemas/commonLead'
+      required:
+        - status
+        - result
+    crmGetLeadsResponse:
+      title: crmGetLeadsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonLead'
+      required:
+        - status
+        - results
+    crmCreateOrUpdateLeadRequest:
+      title: crmCreateOrUpdateLeadRequest
+      type: object
+      properties:
+        additional:
+          description: >-
+            Any fields that are not unified yet/non-unifiable come inside this
+            `json` object.
+      required:
+        - additional
+      allOf:
+        - $ref: '#/components/schemas/commonLeadWrite'
+    crmCreateOrUpdateLeadResponse:
+      title: crmCreateOrUpdateLeadResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    crmSearchLeadsResponse:
+      title: crmSearchLeadsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonLead'
+      required:
+        - status
+        - results
+    crmGetNoteResponse:
+      title: crmGetNoteResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result:
+          $ref: '#/components/schemas/commonNote'
+      required:
+        - status
+        - result
+    crmGetNotesResponse:
+      title: crmGetNotesResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonNote'
+      required:
+        - status
+        - results
+    crmCreateOrUpdateNoteRequest:
+      title: crmCreateOrUpdateNoteRequest
+      type: object
+      properties:
+        additional:
+          description: >-
+            Any fields that are not unified yet/non-unifiable come inside this
+            `json` object.
+      required:
+        - additional
+      allOf:
+        - $ref: '#/components/schemas/commonNoteWrite'
+    crmCreateOrUpdateNoteResponse:
+      title: crmCreateOrUpdateNoteResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    crmSearchNotesResponse:
+      title: crmSearchNotesResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonNote'
+      required:
+        - status
+        - results
+    crmFieldDetailsType:
+      title: crmFieldDetailsType
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+      required:
+        - name
+        - type
+        - description
+    crmFieldDetailsTypeRequest:
+      title: crmFieldDetailsTypeRequest
+      type: object
+      properties:
+        additional:
+          description: >-
+            Any fields that are not unified yet/non-unifiable come inside this
+            `json` object.
+      required:
+        - additional
+      allOf:
+        - $ref: '#/components/schemas/crmFieldDetailsType'
+    crmSetObjectPropertiesRequest:
+      title: crmSetObjectPropertiesRequest
+      $ref: '#/components/schemas/crmFieldDetailsTypeRequest'
+    crmGetObjectPropertiesResponse:
+      title: crmGetObjectPropertiesResponse
+    crmSetObjectPropertiesResponse:
+      title: crmSetObjectPropertiesResponse
+    crmProxyResponse:
+      title: crmProxyResponse
+      type: object
+      properties:
+        result: {}
+      required:
+        - result
+    crmPostProxyRequestBody:
+      title: crmPostProxyRequestBody
+      type: object
+      properties:
+        path:
+          type: string
+        body:
+          nullable: true
+        method:
+          type: string
+        queryParams:
+          nullable: true
+      required:
+        - path
+        - method
+    crmGetTaskResponse:
+      title: crmGetTaskResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result:
+          $ref: '#/components/schemas/commonTask'
+      required:
+        - status
+        - result
+    crmGetTasksResponse:
+      title: crmGetTasksResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonTask'
+      required:
+        - status
+        - results
+    crmCreateOrUpdateTaskRequest:
+      title: crmCreateOrUpdateTaskRequest
+      type: object
+      properties:
+        additional:
+          description: >-
+            Any fields that are not unified yet/non-unifiable come inside this
+            `json` object.
+      required:
+        - additional
+      allOf:
+        - $ref: '#/components/schemas/commonTaskWrite'
+    crmCreateOrUpdateTaskResponse:
+      title: crmCreateOrUpdateTaskResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    crmSearchTasksResponse:
+      title: crmSearchTasksResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonTask'
+      required:
+        - status
+        - results
+    crmGetUserResponse:
+      title: crmGetUserResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result:
+          $ref: '#/components/schemas/commonUser'
+      required:
+        - status
+        - result
+    crmGetUsersResponse:
+      title: crmGetUsersResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonUser'
+      required:
+        - status
+        - results
+    crmCreateOrUpdateUserRequest:
+      title: crmCreateOrUpdateUserRequest
+      type: object
+      properties:
+        additional:
+          description: >-
+            Any fields that are not unified yet/non-unifiable come inside this
+            `json` object.
+      required:
+        - additional
+      allOf:
+        - $ref: '#/components/schemas/commonUserWrite'
+    crmCreateOrUpdateUserResponse:
+      title: crmCreateOrUpdateUserResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    crmSearchUsersResponse:
+      title: crmSearchUsersResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonUser'
+      required:
+        - status
+        - results
+    internalGetAccountDetailsResponse:
+      title: internalGetAccountDetailsResponse
+      type: object
+      properties:
+        account:
+          $ref: '#/components/schemas/commonAccount'
+      required:
+        - account
+    internalGetAnalyticsResponse:
+      title: internalGetAnalyticsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result:
+          $ref: '#/components/schemas/commonAnalytics'
+      required:
+        - status
+        - result
+    internalCreateTelemetryEntryResponse:
+      title: internalCreateTelemetryEntryResponse
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    CrmMetadataResponse:
+      title: CrmMetadataResponse
+      type: object
+      properties:
+        status:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CrmMetadata'
+        error:
+          type: string
+          nullable: true
+      required:
+        - status
+        - data
+    CrmMetadata:
+      title: CrmMetadata
+      type: object
+      properties:
+        integrationId:
+          type: string
+        name:
+          type: string
+        imageSrc:
+          type: string
+        status:
+          $ref: '#/components/schemas/CrmStatus'
+        clientId:
+          type: string
+          nullable: true
+        scopes:
+          type: array
+          items:
+            type: string
+      required:
+        - integrationId
+        - name
+        - imageSrc
+        - status
+        - scopes
+    CrmStatus:
+      title: CrmStatus
+      type: string
+      enum:
+        - active
+        - inactive
+    ticketGetCollectionsResponse:
+      title: ticketGetCollectionsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results: {}
+      required:
+        - status
+        - results
+    ticketGetCommentResponse:
+      title: ticketGetCommentResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result: {}
+      required:
+        - status
+        - result
+    ticketGetCommentsResponse:
+      title: ticketGetCommentsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results: {}
+      required:
+        - status
+        - results
+    ticketCreateOrUpdateCommentRequest:
+      title: ticketCreateOrUpdateCommentRequest
+      $ref: '#/components/schemas/commonCommentTicketWrite'
+    ticketCreateOrUpdateCommentResponse:
+      title: ticketCreateOrUpdateCommentResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    ticketProxyResponse:
+      title: ticketProxyResponse
+      type: object
+      properties:
+        result: {}
+      required:
+        - result
+    ticketPostProxyRequestBody:
+      title: ticketPostProxyRequestBody
+      type: object
+      properties:
+        path:
+          type: string
+        body:
+          nullable: true
+        method:
+          type: string
+        queryParams:
+          nullable: true
+      required:
+        - path
+        - method
+    ticketGetTaskResponse:
+      title: ticketGetTaskResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result:
+          $ref: '#/components/schemas/commonTaskTicket'
+      required:
+        - status
+        - result
+    ticketGetTasksResponse:
+      title: ticketGetTasksResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonTaskTicket'
+      required:
+        - status
+        - results
+    ticketCreateOrUpdateTaskRequest:
+      title: ticketCreateOrUpdateTaskRequest
+      $ref: '#/components/schemas/commonTaskTicketWrite'
+    ticketCreateOrUpdateTaskResponse:
+      title: ticketCreateOrUpdateTaskResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    ticketGetUserResponse:
+      title: ticketGetUserResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result: {}
+      required:
+        - status
+        - result
+    ticketGetUsersResponse:
+      title: ticketGetUsersResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results: {}
+      required:
+        - status
+        - results
+  securitySchemes: {}
+servers:
+  - url: https://api.revert.dev
+    description: Production
+  - url: https://api-staging.revert.dev
+    description: Staging (This staging environment is helpful for testing!)
+  - url: http://localhost:4001
+    description: Local
