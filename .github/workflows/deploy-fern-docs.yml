@@ -6,6 +6,12 @@ on:
             - main
         paths:
             - fern/**
+    workflow_dispatch:
+        inputs:
+            task_name:
+                description: 'Enter the name of the task'
+                required: false
+                default: 'deploy-fern-external'
 
 jobs:
     deploy-fern-external:
