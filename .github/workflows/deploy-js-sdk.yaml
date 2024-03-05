@@ -7,6 +7,13 @@ on:
         paths:
             - packages/js/**
 
+    workflow_dispatch:
+        inputs:
+            task_name:
+                description: 'Enter the name of the task'
+                required: false
+                default: 'deploy-js-sdk'
+
 jobs:
     build-deploy-js-sdk:
         runs-on: ubuntu-latest
