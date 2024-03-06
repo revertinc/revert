@@ -74,6 +74,8 @@ service:
             request:
                 name: CreateTaskRequest
                 body: CreateOrUpdateTaskRequest
+                query-parameters:
+                    fields: optional<string>
             response: CreateOrUpdateTaskResponse
             errors:
                 - errors.UnAuthorizedError
@@ -88,6 +90,107 @@ service:
             request:
                 name: UpdateTaskRequest
                 body: CreateOrUpdateTaskRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateTaskResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+                - errors.BadRequestErrorimports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+    associations: ../common/associations.yml
+
+types:
+    GetTaskResponse:
+        properties:
+            status: types.ResponseStatus
+            result: unified.TaskTicket
+    GetTasksResponse:
+        properties:
+            status: types.ResponseStatus
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.TaskTicket>
+    CreateOrUpdateTaskRequest: unified.TaskTicketWrite
+    CreateOrUpdateTaskResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
+            result: unknown
+
+service:
+    base-path: /ticket/tasks
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getTask:
+            docs: Get details of a task
+            method: GET
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: GetTaskRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetTaskResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getTasks:
+            docs: Get all the tasks
+            method: GET
+            path: ''
+            request:
+                name: GetTasksRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetTasksResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createTask:
+            method: POST
+            path: ''
+            request:
+                name: CreateTaskRequest
+                body: CreateOrUpdateTaskRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateTaskResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateTask:
+            docs: Update a task
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateTaskRequest
+                body: CreateOrUpdateTaskRequest
+                query-parameters:
+                    fields: optional<string>
             response: CreateOrUpdateTaskResponse
             errors:
                 - errors.UnAuthorizedError

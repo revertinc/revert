@@ -9,6 +9,7 @@ import processOAuthResult from '../../../helpers/auth/processOAuthResult';
 import linear from './authHandlers/linear';
 import clickup from './authHandlers/clickup';
 import trello from './authHandlers/trello';
+import bitbucket from './authHandlers/bitbucket';
 import jira from './authHandlers/jira';
 
 const authRouter = express.Router();
@@ -65,6 +66,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     return trello.handleOAuth(authProps);
                 case TP_ID.jira:
                     return jira.handleOAuth(authProps);
+                case TP_ID.bitbucket:
+                    return bitbucket.handleOAuth(authProps);
 
                 default:
                     return processOAuthResult({

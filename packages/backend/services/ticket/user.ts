@@ -108,6 +108,31 @@ const userServiceTicket = new UserService(
                         });
                         break;
                     }
+                    case TP_ID.bitbucket: {
+                        const result = await axios({
+                            method: 'GET',
+                            url: `https://api.bitbucket.org/2.0/users/${userId}`,
+                            headers: {
+                                Accept: 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+
+                        const unifiedUser = await unifyObject<any, UnifiedTicketUser>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedUser,
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -132,7 +157,11 @@ const userServiceTicket = new UserService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
 
-                if ((thirdPartyId !== TP_ID.jira && !fields) || (fields && !fields.listId)) {
+                if (
+                    ((thirdPartyId !== TP_ID.jira && !fields) || (thirdPartyId !== TP_ID.bitbucket && !fields)) &&
+                    fields &&
+                    !fields.listId
+                ) {
                     throw new NotFoundError({
                         error: 'The query parameter "listId" is required and should be included in the "fields" parameter.',
                     });
@@ -325,6 +354,13 @@ const userServiceTicket = new UserService(
                             next: nextCursor,
                             previous: undefined,
                             results: unifiedUsers,
+                        });
+                        break;
+                    }
+                    case TP_ID.bitbucket: {
+                        res.send({
+                            status: 'ok',
+                            results: 'This endpoint is currently not supported',
                         });
                         break;
                     }

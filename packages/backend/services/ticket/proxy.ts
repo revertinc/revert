@@ -94,6 +94,23 @@ const proxyServiceTicket = new ProxyService(
                         });
                         break;
                     }
+                    case TP_ID.bitbucket: {
+                        const result: any = await axios({
+                            method: method,
+                            url: `https://api.bitbucket.org/2.0/${path}`,
+                            headers: {
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app!' });
                     }

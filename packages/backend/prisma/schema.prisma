@@ -21,6 +21,7 @@ enum TP_ID {
   asana
   trello
   jira
+  bitbucket
 }
 
 enum ENV {

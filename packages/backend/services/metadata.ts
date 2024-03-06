@@ -147,6 +147,15 @@ const metadataService = new MetadataService({
                     scopes: getScope(apps, TP_ID.ms_dynamics_365_sales),
                     clientId: getClientId(apps, TP_ID.ms_dynamics_365_sales) || config.MS_DYNAMICS_SALES_CLIENT_ID,
                 },
+                {
+                    integrationId: TP_ID.bitbucket,
+                    name: 'Bitbucket',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1702983006/Revert/szfzkoagws7h3miptezo.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.bitbucket),
+                    clientId: getClientId(apps, TP_ID.bitbucket) || config.BITBUCKET_CLIENT_ID,
+                },
             ];
             res.send({
                 status: 'ok',
