@@ -1,5 +1,3 @@
-# Requirements
-
 ## System Requirements
 
 Before you start, make sure you have the following applications and their minimum versions installed, in addition to Node.js and yarn (as mentioned earlier):
@@ -8,13 +6,11 @@ Before you start, make sure you have the following applications and their minimu
 -   **Yarn 3.0.2** or later
 -   macOS, Windows (including WSL), and Linux are supported.
 
-## System Requirements
-
 ## Get Started
 
-### setup
+### Setup
 
-1 . Clone the forked repository and open the created directory
+-   Clone the forked repository and open the created directory
 
 ```shell
 git clone https://github.com/<YOUR_GITHUB_USERNAME>/revert.git
@@ -22,37 +18,53 @@ cd revert
 
 ```
 
-2 . Install dependencies
+-   Install dependencies
 
 ```shell
 yarn
 ```
 
-3 . backend setup
-
 # @revertdotdev/backend
 
-```shell
-# Copy the example env file
-cp packages/backend/.env.example packages/backend/.env
+### Copy the example env file in `packages/backend` folder.
 
-# Update this .env file with your own secrets if you'd like to.
+```shell
+cp packages/backend/.env.example packages/backend/.env
+# Update this .env file with your own secrets if you'd like to.PgSql and redis are must.
 ```
 
 ### Fern setup
 
 -   Login with Fern with `fern login`.
+
 -   To generate Fern drive code locally, run `yarn fern` in the root folder of this repo. This will create the `packages/backend/generated` folder with the generated code.
+
+### Fern setup fails
+
+If `yarn fern` fails to succeed, here are some temporary solutions.
+
+-   Try running `yarn fern` in wsl.
+
+-   Install fern-api globally in wsl.`npm i -g fern-api` will install fern-api globally in wsl and then in the root of this project run `fern generate`.
+
+-   Try dual booting your windows machine to ubuntu or any other linux distribution and setup the project their.
+
+-   Try to change the internet network.For eg: if you were using mobile network,try using another mobile network/different sim and try to run `yarn fern` in wsl multiple times.
+
+These solutions are not permanent, and there is no guarantee that they will work reliably in all situations.Order is not important,any one of them may work for you.
 
 ### Setup Redis
 
 -   Have a redis instance running locally or use https://upstash.com/ to get a redis url.
+
 -   Update the redis url in `.env`
 
 ### Setup PostgreSQL
 
 -   Install PostgreSQL on the system before seeding the database with sample data
+
 -   Refer https://www.postgresql.org/download/ for instructions.
+
 -   Get a PostgreSQL url and update it in `.env`
 
 ### Applying Existing Migrations
@@ -65,54 +77,60 @@ cp packages/backend/.env.example packages/backend/.env
 
 ### Seed the database
 
+-   Seed the database with sample data
+
 ```shell
-# seed the database with sample data
 yarn workspace @revertdotdev/backend db-seed
 ```
 
 ### Running the API locally
 
--   Run
+-   Backend service locally at `:4001`
 
 ```shell
 yarn workspace @revertdotdev/backend dev
 ```
 
-to the run service locally at `:4001`
-
-4 . client setup
-
 # @revertdotdev/client
 
-```shell
-# Copy the example env file
-cp packages/client/.env.example packages/client/.env
+### Copy the example env file in `packages/client` folder.
 
-# Update this .env file with your own secrets if you'd like to.
+```shell
+
+cp packages/client/.env.example packages/client/.env
+# Update this .env file with your own secrets if you'd like to.Clerk publishable key is must.
 ```
 
-1. Generate a Tunnel URL
+### Generate a Tunnel URL
 
 -   First, generate a tunnel URL using `ngrok http <4001 or YOUR_SERVER_PORT>`
+
 -   Copy this URL to your clipboard as you'll need it in the next steps.
 
-2. Configure Clerk Webhook Endpoint
+### Configure Clerk Webhook Endpoint
 
--   Access your Clerk dashboard (Sign up on https://clerk.com/ if you have note already).
--   Navigate to the webhook settings or configuration section.
--   Ensure that the webhook endpoint is set to `<YOUR_LOCALHOST_OR_PUBLIC_URL>/clerk/webhook`
+-   Access your Clerk dashboard (Sign up on https://clerk.com/ if you have not already).
+
+-   Navigate to the webhook settings.
+
+-   Ensure that the webhook endpoint is set to
+    `<Tunnel_Url>/clerk/webhook`
+
 -   Ensure that you are listening to the `user.created` event by ticking the `user`object under `Message Filtering`
 
 <img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1702896296/Revert/Docs/ioj7i0dj97dzcmgb95p2.png" />
 
-3. Sign Up in Your Application
+### Sign Up in Your Application
 
--   Use your application to sign up a new user. This action will trigger a user creation event.
--   In your Clerk dashboard, you should now see a `user.created` object associated with the newly signed-up user.
+-   Run `yarn dev:all` in the root of this repo(Your backend must be setup).
 
-4. Testing with Postman
+-   Go to `localhost:3000` and sign up.
 
--   To verify that Clerk is sending user creation notifications to your endpoint, you can use Postman for testing.
+-   In your Clerk webhook dashboard, click on your webhook endpoint,go to logs and filter by user.created and you will see a new user created.Enter inside it and copy the content.
+
+### Testing Clerk Webhook with Postman
+
+To verify that Clerk is sending user creation notifications to your endpoint, you can use Postman for testing.
 
 -   Open Postman and create a new request.
 
