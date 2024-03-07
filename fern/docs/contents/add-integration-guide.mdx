@@ -10,7 +10,7 @@ To establish the connection with one of the app,watch this video of ClickUp inte
 
 **4.** Incorporate the designated value as a string (previously set in the `TP_ID` enum in the Prisma schema) within the suitable category in both `packages/backend/common.ts` and `packages/backend/prisma/seed.ts`.
 
-**5.** Execute the command `yarn workspace @revertdotdev/backend migration:dev` to apply the necessary database migrations.Also run this to seed the new changes to db tables `yarn workspace @revertdotdev/backend dev`.
+**5.** Execute the command `yarn workspace @revertdotdev/backend migration:dev` to apply the necessary database migrations.Also run this to seed the new changes to db tables `yarn workspace @revertdotdev/backend db-seed`.
 
 > If you are making changes to prisma files and you want the data in the db tables for proper functionality of the feature you are working on, then always seed the db.
 
