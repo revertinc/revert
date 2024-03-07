@@ -262,6 +262,13 @@ const collectionServiceTicket = new CollectionService(
                                 },
                             });
                             result = groups.data;
+
+                             return  res.send({
+                            status: 'ok',
+                            next: undefined,
+                            previous: undefined,
+                            results: result,
+                        });
                         } else if (parsedFields && parsedFields.collection_type === 'repositories') {
                             if (!parsedFields.workspace) {
                                 throw new Error(
@@ -270,25 +277,27 @@ const collectionServiceTicket = new CollectionService(
                             }
                             const projects = await axios({
                                 method: 'get',
-                                url: `https://api.bitbucket.org/2.0/repositories${parsedFields.workspace}?pagelen=10&${pagingString}`,
+                                url: `https://api.bitbucket.org/2.0/repositories/${parsedFields.workspace}?pagelen=10&${pagingString}`,
                                 headers: {
                                     Accept: 'application/json',
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
                             });
                             result = projects.data;
-                        } else {
-                            throw new Error(
-                                "To use this endpoint, please specify the type of collection you're working with. Valid options include: 'groups', 'repositories'."
-                            );
-                        }
-                        const pageNumber = result.next ? (pageSize ? (pageSize + 1).toString() : '1') : undefined;
-                        res.send({
+
+                             const pageNumber = result.next ? (pageSize ? (pageSize + 1).toString() : '1') : undefined;
+                      return  res.send({
                             status: 'ok',
                             next: pageNumber,
                             previous: undefined,
                             results: result.values,
                         });
+                        } else {
+                            throw new Error(
+                                "To use this endpoint, please specify the type of collection you're working with. Valid options include: 'groups', 'repositories'."
+                            );
+                        }
+                       
                         break;
                     }
                     default: {
