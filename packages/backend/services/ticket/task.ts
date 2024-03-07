@@ -813,7 +813,7 @@ const taskServiceTicket = new TaskService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
                             },
-                            data: JSON.stringify(task),
+                            data: task,
                         });
 
                         res.send({
