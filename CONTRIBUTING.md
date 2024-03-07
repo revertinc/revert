@@ -45,4 +45,4 @@ yarn build
 
 ## Contributing an API Integration
 
-Visit https://docs.revert.dev/overview/developer-guide/contribute-an-api-integration for contributing an integration.
+See https://docs.revert.dev/overview/developer-guide/contribute-an-api-integration for more on how to contribute an integration.
