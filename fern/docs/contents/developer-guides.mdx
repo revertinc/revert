@@ -57,7 +57,7 @@ These solutions are not permanent, and there is no guarantee that they will work
 
 -   Have a redis instance running locally or use https://upstash.com/ to get a redis url.
 
--   Update the redis url in `.env`
+-   Update the redis url in `.env`.A redis url looks like this `redis://<username>:<password>@<hostname>:<port>/<database>` . Use `rediss` instead of `redis` if you use a secure connection over TLS/SSL in redis.
 
 ### Setup PostgreSQL
 
@@ -65,7 +65,7 @@ These solutions are not permanent, and there is no guarantee that they will work
 
 -   Refer https://www.postgresql.org/download/ for instructions.
 
--   Get a PostgreSQL url and update it in `.env`
+-   Get a PostgreSQL url and update it in `.env` A pgsql url looks like this `postgresql://<username>:<password>@<hostname>:<port>/<database>`
 
 ### Applying Existing Migrations
 
