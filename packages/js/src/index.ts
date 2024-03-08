@@ -888,17 +888,6 @@ const createIntegrationBlock = function (self, integration) {
                 objectName
             );
             objInput.classList.add('input-style');
-            const hiddenObject = createViewElement(
-                'div',
-                '',
-                transformStyle({
-                    visibility: 'hidden',
-                    height: '1px',
-                }),
-                [],
-                objectName
-            );
-            hiddenObject.classList.add('stdHiddenObj');
             const mappableHeading = createViewElement(
                 'div',
                 '',
