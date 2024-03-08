@@ -866,6 +866,28 @@ const createIntegrationBlock = function (self, integration) {
                 op.innerHTML = a.name;
                 return op;
             });
+            const objectHeading = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                    color: '#4C505B',
+                }),
+                [],
+                'Object'
+            );
+            const objInput = createViewElement(
+                'div',
+                `sd-object-${fieldName}`,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
+                }),
+                [],
+                objectName
+            );
+            objInput.classList.add('input-style');
             const hiddenObject = createViewElement(
                 'div',
                 '',
@@ -938,7 +960,7 @@ const createIntegrationBlock = function (self, integration) {
                     marginBottom: '25px',
                     gap: '10px',
                 }),
-                [hiddenObject, mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
+                [objectHeading, objInput, mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
                 ''
             );
             return container;
