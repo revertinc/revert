@@ -469,7 +469,7 @@ const eventService = new EventService(
                         break;
                     }
                     case TP_ID.zohocrm: {
-                        await axios({
+                        const eventCreated: any = await axios({
                             method: 'post',
                             url: `https://www.zohoapis.com/crm/v3/Events`,
                             headers: {
@@ -477,7 +477,11 @@ const eventService = new EventService(
                             },
                             data: JSON.stringify(event),
                         });
-                        res.send({ status: 'ok', message: 'Zoho event created', result: event });
+                        res.send({
+                            status: 'ok',
+                            message: 'Zoho event created',
+                            result: { ...event, details: eventCreated.data.data[0].details },
+                        });
                         break;
                     }
                     case TP_ID.sfdc: {
