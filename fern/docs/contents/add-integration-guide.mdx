@@ -1,21 +1,27 @@
-
-### How to contribute an integration to Revert
+## How to contribute an integration to Revert
 
 **1.** Ensure that the project is configured in the local environment following the instructions outlined [here](https://github.com/revertinc/revert/blob/main/CONTRIBUTING.md). Establish a connection to an existing application and test various [endpoints](https://docs.revert.dev/api-reference) to verify proper functionality.
 
+To establish the connection with one of the app,watch this video of ClickUp integration [ClickUp Integration](https://www.loom.com/share/1d8947425bcc49af89f210555a50f441?sid=51ad2d45-514a-4536-ac62-772a069cb4a7) and follow the other steps in the "Test Your Integration" section below.
+
 **2.** Analyze the authentication and authorization flow based on the requirements of the third-party API. Identify the appropriate authentication type, which may include options such as Basic, OAuth 2.0, OAuth 1.0, API Key, etc depending on the thirdparty.
 
-**3.** Incorporate your third-party integration by adding it to the Prisma TP_ID enum. Execute the command `yarn migration:dev` in `packages/backend` to apply the necessary database migrations.
+**3.** Incorporate your third-party integration by adding it to the Prisma TP_ID enum.
 
-**4.** Implement the recommended authentication and refresh token flows for the third-party integration. To generate access tokens and establish a connection, refer to the relevant code in `packages/backend/routes/v1/` within respective sub-packages like `crm, chat, ticketing, etc`. For the refresh token flow, inspect the methods available in `packages/backend/services/auth.ts`, for categorized token-refreshing methods such as `refreshOAuthTokensForThirdParty` and `refreshOAuthTokensForThirdPartyTicketServices`.
+**4.** Incorporate the designated value as a string (previously set in the `TP_ID` enum in the Prisma schema) within the suitable category in both `packages/backend/common.ts` and `packages/backend/prisma/seed.ts`.
+
+**5.** Execute the command `yarn workspace @revertdotdev/backend migration:dev` to apply the necessary database migrations.Also run this to seed the new changes to db tables `yarn workspace @revertdotdev/backend db-seed`.
+
+> If you are making changes to prisma files and you want the data in the db tables for proper functionality of the feature you are working on, then always seed the db.
+
+**6.** Implement the recommended authentication and refresh token flows for the third-party integration. To generate access tokens and establish a connection, refer to the relevant code in `packages/backend/routes/v1/` within respective sub-packages like `crm, chat, ticketing, etc`. For the refresh token flow, inspect the methods available in `packages/backend/services/auth.ts`, for categorized token-refreshing methods such as `refreshOAuthTokensForThirdParty` and `refreshOAuthTokensForThirdPartyTicketServices`.
+If your integration doesn't have a refresh token mechanism,study the absent integrations in the above files and proceed similarly.
 
 > If you are introducing a new category that lacks a corresponding structure in the project, feel free to create new packages as needed. Should you require assistance, please don't hesitate to reach out to us on [Discord](<(https://discord.gg/q5K5cRhymW)>).
 
-**5.** Incorporate the designated value as a string (previously set in the `TP_ID` enum in the Prisma schema) within the suitable category in both `packages/backend/common.ts` and `packages/backend/prisma/seed.ts`.
+**7.** Prior to Unification, when implementing any given endpoint, initiate the process by generating a fern configuration for it. Ensure that thirdparty endpoint/operations for the specified API are conducted through Revert.
 
-**6.** Prior to Unification, when implementing any given endpoint, initiate the process by generating a fern configuration for it. Ensure that thirdparty endpoint/operations for the specified API are conducted through Revert.
-
-**7.** For the given endpoint(s), unify the schema and fields by implementing them in `packages/backend/prisma/fields.ts`.
+**8.** For the given endpoint(s), unify the schema and fields by implementing them in `packages/backend/prisma/fields.ts`.Seed the db here again.
 
 **Unification Process.** Performed while retrieving resources from third party to match the provided schema. The process involves the following steps:
 
@@ -30,3 +36,21 @@
 2. `flattenObj`: Extract additional values from the object.
 3. `transformModelToFieldMapping`: Convert fields to match the format accepted by the third party, which is the reverse of the `transformFieldMappingToModel` step in the unification process.
 4. `postprocessDisUnifyObject`: Modify values to align with the expectations of the third party.
+
+**9.** Add changes for your integration in the functions involved during the Unification and Disunification process.
+
+## Test Your Integration
+
+For testing your integration while integrating it with revert.
+
+-   Go to `packages/js` folder and create a new file `.env` and copy the content of `.env.example`.
+
+-   Run `yarn dev:all`
+
+- Go to `packages\react\src\App.tsx` and paste you public revert token from `localhost:3000` in place of `localPublicToken`.
+
+-   Go to `localhost:3001` and start your testing.
+
+Here's a video showing final testing of an integration.It is a video testing the ClickUp integration.
+
+[ClickUp Integration](https://www.loom.com/share/1d8947425bcc49af89f210555a50f441?sid=51ad2d45-514a-4536-ac62-772a069cb4a7)
