@@ -7,6 +7,7 @@ import AppsIcon from '@mui/icons-material/Apps';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import HomeIcon from '@mui/icons-material/Home';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import TaskIcon from '@mui/icons-material/Task';
 
 import Onboarding from './onboarding';
 import Integrations from './integrations';
@@ -159,6 +160,21 @@ const Home = () => {
                         >
                             <OpenInNewIcon />
                             <span className="p-2">Docs</span>
+                        </li>
+                        <li
+                            className="p-2 cursor-pointer hover:border hover:border-[#d1d9f2] rounded-[8px] border-solid border-[1px] border-[#fff]"
+                            style={tabValue === 3 ? selectedStyle : undefined}
+                            onClick={() => {
+                                var currentUrl = window.location.href;
+                                window.open(
+                                    'https://discord.gg/q5K5cRhymW?utm_campaign=discord-ui&utm_medium=dashboard&utm_source=' +
+                                        currentUrl,
+                                    '_blank'
+                                );
+                            }}
+                        >
+                            <TaskIcon />
+                            <span className="p-2">Request Integration</span>
                         </li>
                     </ul>
                 </div>
