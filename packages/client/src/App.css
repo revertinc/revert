@@ -1,6 +1,6 @@
 #top-navbar{
     height: 60px;
-    background: #f3f4f5;
+    background: #080d19;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -8,6 +8,7 @@
     position: fixed;
     z-index: 3;
     width: 100%;
+    color: #94a3b8;
 }
 .control-button {
     background: #00949D;

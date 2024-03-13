@@ -8,21 +8,20 @@ export default function EnvironmentSelector({ environmentProp, setEnvironmentPro
         setEnvironmentProp(event.target.value);
     };
     return (
-        <FormControl sx={{ m: 1, minWidth: 120, background: '#e4e7eb', borderRadius: 2, marginLeft: 3 }} size="small">
+        <FormControl sx={{ m: 1, minWidth: 120, background: '#1c212e', borderRadius: 2, marginLeft: 3 }} size="small">
             <Select
                 labelId="environment-selector"
                 id="environment-selector"
                 value={environmentProp}
-                label="environment"
                 defaultValue={environmentProp}
                 onChange={handleChange}
                 SelectDisplayProps={{
                     style: {
-                        color: '#343232',
+                        color: '#89a3ff',
                     },
                 }}
                 sx={{
-                    color: 'white',
+                    color: '#89a3ff',
                     '.MuiOutlinedInput-notchedOutline': {
                         borderColor: 'rgba(228, 219, 233, 0.25)',
                     },
@@ -33,7 +32,7 @@ export default function EnvironmentSelector({ environmentProp, setEnvironmentPro
                         borderColor: 'rgba(228, 219, 233, 0.25)',
                     },
                     '.MuiSvgIcon-root ': {
-                        fill: '#343232 !important',
+                        fill: '#89a3ff !important',
                     },
                 }}
                 className="capitalize"
@@ -43,11 +42,15 @@ export default function EnvironmentSelector({ environmentProp, setEnvironmentPro
                         value={e.env}
                         className="capitalize"
                         sx={{
+                            background: '#080d19',
+                            '&:hover': {
+                                background: '#38486c',
+                            },
                             '&&.Mui-selected': {
-                                backgroundColor: '#626060',
+                                backgroundColor: '#2c3957',
                             },
                             '&.Mui-selected:hover': {
-                                backgroundColor: '#747272',
+                                backgroundColor: '#475b89',
                             },
                         }}
                     >
