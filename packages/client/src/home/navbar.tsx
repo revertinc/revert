@@ -15,7 +15,7 @@ const Navbar = ({ workspaceName, environment, setEnvironment, environmentList })
                     alt="revert_logo"
                     className="w-[30px] h-[30px] ml-[24px] cursor-pointer mt-4 mb-3 mr-[24px]"
                 />
-                <span className="ml-[24px] mr-[12px]">{workspaceName}</span>
+                <span className="ml-[24px] mr-[12px] text-[#fff]">{workspaceName}</span>
                 <EnvironmentSelector
                     environmentProp={environment}
                     setEnvironmentProp={setEnvironment}
@@ -39,6 +39,7 @@ const Navbar = ({ workspaceName, environment, setEnvironment, environmentList })
                         data-size="large"
                         data-icon="octicon-star"
                         aria-label="Star revertinc/revert on GitHub"
+                        data-color-scheme="no-preference: dark_high_contrast; light: dark_high_contrast; dark: dark_high_contrast;"
                     >
                         Star us
                     </GitHubButton>

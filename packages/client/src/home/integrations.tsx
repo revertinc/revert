@@ -109,7 +109,7 @@ const Integrations = ({ environment }) => {
                                     <IconButton
                                         onClick={() => handleOpen('sfdc')}
                                         style={{
-                                            color: '#6e6e6e',
+                                            color: '#94a3b8',
                                             fontSize: 12,
                                             position: 'absolute',
                                             top: 10,
@@ -153,7 +153,7 @@ const Integrations = ({ environment }) => {
                                     <IconButton
                                         onClick={() => handleOpen('hubspot')}
                                         style={{
-                                            color: '#6e6e6e',
+                                            color: '#94a3b8',
                                             fontSize: 12,
                                             position: 'absolute',
                                             top: 10,
@@ -197,7 +197,7 @@ const Integrations = ({ environment }) => {
                                     <IconButton
                                         onClick={() => handleOpen('zohocrm')}
                                         style={{
-                                            color: '#6e6e6e',
+                                            color: '#94a3b8',
                                             fontSize: 12,
                                             position: 'absolute',
                                             top: 10,
@@ -241,7 +241,7 @@ const Integrations = ({ environment }) => {
                                     <IconButton
                                         onClick={() => handleOpen('pipedrive')}
                                         style={{
-                                            color: '#6e6e6e',
+                                            color: '#94a3b8',
                                             fontSize: 12,
                                             position: 'absolute',
                                             top: 10,
@@ -285,7 +285,7 @@ const Integrations = ({ environment }) => {
                                     <IconButton
                                         onClick={() => handleOpen('slack')}
                                         style={{
-                                            color: '#6e6e6e',
+                                            color: '#94a3b8',
                                             fontSize: 12,
                                             position: 'absolute',
                                             top: 10,
@@ -329,7 +329,7 @@ const Integrations = ({ environment }) => {
                                     <IconButton
                                         onClick={() => handleOpen('closecrm')}
                                         style={{
-                                            color: '#6e6e6e',
+                                            color: '#94a3b8',
                                             fontSize: 12,
                                             position: 'absolute',
                                             top: 10,
@@ -373,7 +373,7 @@ const Integrations = ({ environment }) => {
                                     <IconButton
                                         onClick={() => handleOpen('discord')}
                                         style={{
-                                            color: '#6e6e6e',
+                                            color: '#94a3b8',
                                             fontSize: 12,
                                             position: 'absolute',
                                             top: 10,
@@ -417,7 +417,7 @@ const Integrations = ({ environment }) => {
                                     <IconButton
                                         onClick={() => handleOpen('linear')}
                                         style={{
-                                            color: '#6e6e6e',
+                                            color: '#94a3b8',
                                             fontSize: 12,
                                             position: 'absolute',
                                             top: 10,
@@ -461,7 +461,7 @@ const Integrations = ({ environment }) => {
                                     <IconButton
                                         onClick={() => handleOpen('clickup')}
                                         style={{
-                                            color: '#6e6e6e',
+                                            color: '#94a3b8',
                                             fontSize: 12,
                                             position: 'absolute',
                                             top: 10,
@@ -505,7 +505,7 @@ const Integrations = ({ environment }) => {
                                     <IconButton
                                         onClick={() => handleOpen('jira')}
                                         style={{
-                                            color: '#6e6e6e',
+                                            color: '#94a3b8',
                                             fontSize: 12,
                                             position: 'absolute',
                                             top: 10,
@@ -549,7 +549,7 @@ const Integrations = ({ environment }) => {
                                     <IconButton
                                         onClick={() => handleOpen('trello')}
                                         style={{
-                                            color: '#6e6e6e',
+                                            color: '#94a3b8',
                                             fontSize: 12,
                                             position: 'absolute',
                                             top: 10,
@@ -593,7 +593,7 @@ const Integrations = ({ environment }) => {
                                     <IconButton
                                         onClick={() => handleOpen('ms_dynamics_365_sales')}
                                         style={{
-                                            color: '#6e6e6e',
+                                            color: '#94a3b8',
                                             fontSize: 12,
                                             position: 'absolute',
                                             top: 10,
