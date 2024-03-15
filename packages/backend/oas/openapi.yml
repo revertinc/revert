@@ -376,7 +376,9 @@ paths:
                 $ref: '#/components/schemas/commonBaseError'
   /connection/integration-status/{revertPublicToken}:
     get:
-      description: Get the OAuth connection event status
+      description: >-
+        Get the OAuth connection event status. This endpoint responds with a
+        `http.ServerResponse` instead of `json`.
       operationId: connection_getIntegrationStatus
       tags:
         - Connection
@@ -2256,10 +2258,9 @@ paths:
         - name: x-revert-public-token
           in: header
           description: Your public key, to be used on the frontend usually.
-          required: false
+          required: true
           schema:
             type: string
-            nullable: true
         - name: x-revert-t-id
           in: header
           description: The unique customer id used when the customer linked their account.
@@ -2269,10 +2270,9 @@ paths:
         - name: x-revert-t-token
           in: header
           description: The temp used to identify tenant.
-          required: false
+          required: true
           schema:
             type: string
-            nullable: true
       responses:
         '200':
           description: ''
@@ -2301,10 +2301,9 @@ paths:
         - name: x-revert-public-token
           in: header
           description: Your public key, to be used on the frontend usually.
-          required: false
+          required: true
           schema:
             type: string
-            nullable: true
         - name: x-revert-t-id
           in: header
           description: The unique customer id used when the customer linked their account.
@@ -2314,10 +2313,9 @@ paths:
         - name: x-revert-t-token
           in: header
           description: The temp used to identify tenant.
-          required: false
+          required: true
           schema:
             type: string
-            nullable: true
       responses:
         '200':
           description: ''
@@ -4672,6 +4670,16 @@ components:
         - name
         - type
         - description
+    crmFieldDetailsTypeRead:
+      title: crmFieldDetailsTypeRead
+      type: object
+      properties:
+        isCustomField:
+          type: boolean
+      required:
+        - isCustomField
+      allOf:
+        - $ref: '#/components/schemas/crmFieldDetailsType'
     crmFieldDetailsTypeRequest:
       title: crmFieldDetailsTypeRequest
       type: object
@@ -4689,6 +4697,9 @@ components:
       $ref: '#/components/schemas/crmFieldDetailsTypeRequest'
     crmGetObjectPropertiesResponse:
       title: crmGetObjectPropertiesResponse
+      type: array
+      items:
+        $ref: '#/components/schemas/crmFieldDetailsTypeRead'
     crmSetObjectPropertiesResponse:
       title: crmSetObjectPropertiesResponse
     crmProxyResponse:
@@ -4927,10 +4938,6 @@ components:
       title: CreateAccountFieldMappingRequestBody
       type: object
       properties:
-        id:
-          type: string
-        account_id:
-          type: string
         allow_connection_override_custom_fields:
           type: boolean
         mappable_by_connection_field_list:
@@ -4938,8 +4945,6 @@ components:
           items:
             $ref: '#/components/schemas/MappableFieldType'
       required:
-        - id
-        - account_id
         - allow_connection_override_custom_fields
         - mappable_by_connection_field_list
     CreateAccountFieldMappingResponse:

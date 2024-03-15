@@ -149,7 +149,7 @@ service:
                 - errors.InternalServerError
                 - errors.NotFoundError
         getIntegrationStatus:
-            docs: Get the OAuth connection event status. This endpoint responds with a `http.ServerResponse` instead of `json.
+            docs: Get the OAuth connection event status. This endpoint responds with a `http.ServerResponse` instead of `json`.
             method: GET
             path: /connection/integration-status/{revertPublicToken}
             path-parameters:

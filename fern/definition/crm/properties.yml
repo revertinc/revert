@@ -10,6 +10,10 @@ types:
             name: string
             type: string
             description: string
+    FieldDetailsTypeRead:
+        extends: FieldDetailsType
+        properties:
+            isCustomField: boolean
     FieldDetailsTypeRequest:
         extends: FieldDetailsType
         properties:
@@ -17,7 +21,7 @@ types:
                 type: unknown
                 docs: Any fields that are not unified yet/non-unifiable come inside this `json` object.
     SetObjectPropertiesRequest: FieldDetailsTypeRequest
-    GetObjectPropertiesResponse: unknown
+    GetObjectPropertiesResponse: list<FieldDetailsTypeRead>
     SetObjectPropertiesResponse: unknown
 
 service:
