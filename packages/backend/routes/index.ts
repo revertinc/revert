@@ -3,6 +3,10 @@ import axios from 'axios';
 import express from 'express';
 import cors from 'cors';
 
+import { createSession } from 'better-sse';
+import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../redis/client/pubsub';
+import { logDebug } from '../helpers/logger';
+
 import crmRouter from './v1/crm';
 import config from '../config';
 import revertAuthMiddleware from '../helpers/authMiddleware';
@@ -25,7 +29,7 @@ import {
     userService,
 } from '../services/crm';
 import { connectionService } from '../services/connection';
-import { fieldMappingService } from './v1/crm/fieldMapping';
+import { fieldMappingService } from './v1/fieldMapping';
 import { propertiesService } from './properties';
 import chatRouter from './v1/chat';
 import { usersService } from '../services/chat/users';
@@ -118,6 +122,23 @@ router.post('/clerk/webhook', async (req, res) => {
     }
 });
 
+router.get('/connection/integration-status/:publicToken', async (req, res) => {
+    try {
+        const publicToken = req.params.publicToken;
+        const { tenantId } = req.query;
+        const session = await createSession(req, res);
+        await pubsub.subscribe(`${PUBSUB_CHANNELS.INTEGRATION_STATUS}_${tenantId}`, async (message: any) => {
+            logDebug('pubsub message', message);
+            let parsedMessage = JSON.parse(message) as IntegrationStatusSseMessage;
+            if (parsedMessage.publicToken === publicToken) {
+                session.push(JSON.stringify(parsedMessage));
+            }
+        });
+    } catch (err: any) {
+        logError(err);
+    }
+});
+
 router.use('/crm', cors(), revertAuthMiddleware(), crmRouter);
 
 router.use('/chat', cors(), revertAuthMiddleware(), chatRouter);
@@ -141,9 +162,9 @@ register(router, {
         task: taskService,
         user: userService,
         proxy: proxyService,
-        fieldMapping: fieldMappingService,
         properties: propertiesService,
     },
+    fieldMapping: fieldMappingService,
     connection: connectionService,
     chat: {
         users: usersService,

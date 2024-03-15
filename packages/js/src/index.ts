@@ -766,7 +766,7 @@ const createIntegrationBlock = function (self, integration) {
                 // save field mapping
                 this.clearInitialOrProcessingOrSuccessStage();
                 this.renderProcessingStage('Saving mapping configuration'); // Show loader when the user clicks on Save Mappings
-                fetch(`${this.CORE_API_BASE_URL}crm/field-mapping`, {
+                fetch(`${this.CORE_API_BASE_URL}field-mapping`, {
                     mode: 'cors' as RequestMode,
                     method: 'POST',
                     headers: {
@@ -1235,7 +1235,7 @@ const createIntegrationBlock = function (self, integration) {
                     this.close();
                 }
                 const evtSource = new EventSource(
-                    `${this.CORE_API_BASE_URL}crm/integration-status/${this.API_REVERT_PUBLIC_TOKEN}?tenantId=${this.tenantId}`
+                    `${this.CORE_API_BASE_URL}connection/integration-status/${this.API_REVERT_PUBLIC_TOKEN}?tenantId=${this.tenantId}`
                 );
                 evtSource.onmessage = (event) => {
                     const data = JSON.parse(event.data);
@@ -1257,7 +1257,7 @@ const createIntegrationBlock = function (self, integration) {
                         evtSource.close();
                         const tenantToken = parsedData.tenantSecretToken;
                         // fetch field mapping
-                        fetch(`${this.CORE_API_BASE_URL}crm/field-mapping`, {
+                        fetch(`${this.CORE_API_BASE_URL}field-mapping`, {
                             mode: 'cors' as RequestMode,
                             method: 'GET',
                             headers: {
