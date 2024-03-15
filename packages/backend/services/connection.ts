@@ -198,6 +198,10 @@ const connectionService = new ConnectionService({
             });
         }
     },
+    async getIntegrationStatus(_req, _res) {
+        // Note: DUMMY method since real implementation is in routes/index.ts because for some reason
+        // This endpoint is not working for a ServerResponse type of responseBody.
+    },
 });
 
 export { connectionService };

@@ -1,16 +1,16 @@
 import { PrismaClient, TP_ID } from '@prisma/client';
 import { randomUUID } from 'crypto';
 
-import { InternalServerError, NotFoundError } from '../../../generated/typescript/api/resources/common';
-import { getObjectPropertiesForConnection } from '../../../services/crm/properties';
-import revertAuthMiddleware from '../../../helpers/authMiddleware';
-import { isStandardError } from '../../../helpers/error';
-import { logError } from '../../../helpers/logger';
-import revertTenantAuthMiddleware from '../../../helpers/tenantAuthMiddleware';
-import { rootSchemaMappingId } from '../../../constants/common';
-import revertTenantMiddleware from '../../../helpers/tenantIdMiddleware';
-import { FieldMappingService } from '../../../generated/typescript/api/resources/crm/resources/fieldMapping/service/FieldMappingService';
-import { FieldMappingType } from '../../../generated/typescript/api/resources/crm';
+import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
+import { getObjectPropertiesForConnection } from '../../services/crm/properties';
+import revertAuthMiddleware from '../../helpers/authMiddleware';
+import { isStandardError } from '../../helpers/error';
+import { logError } from '../../helpers/logger';
+import revertTenantAuthMiddleware from '../../helpers/tenantAuthMiddleware';
+import { rootSchemaMappingId } from '../../constants/common';
+import revertTenantMiddleware from '../../helpers/tenantIdMiddleware';
+import { FieldMappingService } from '../../generated/typescript/api/resources/fieldMapping/service/FieldMappingService';
+import { FieldMappingType } from '../../generated/typescript/api';
 
 const prisma = new PrismaClient();
 

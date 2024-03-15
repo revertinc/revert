@@ -163,7 +163,6 @@ const Home = () => {
                         </li>
                         <li
                             className="p-2 cursor-pointer hover:border hover:border-[#d1d9f2] rounded-[8px] border-solid border-[1px] border-[#fff]"
-                            style={tabValue === 3 ? selectedStyle : undefined}
                             onClick={() => {
                                 var currentUrl = window.location.href;
                                 window.open(
