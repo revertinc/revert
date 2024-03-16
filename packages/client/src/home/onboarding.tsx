@@ -12,8 +12,8 @@ const CustomButton = styled(Button)({
     padding: '6px 12px',
     border: '1px solid',
     lineHeight: 1.5,
-    backgroundColor: '#2047d0',
-    borderColor: '#0063cc',
+    backgroundColor: '#080d19',
+    borderColor: '#2c3957',
     fontFamily: [
         '-apple-system',
         'BlinkMacSystemFont',
@@ -27,8 +27,8 @@ const CustomButton = styled(Button)({
         '"Segoe UI Symbol"',
     ].join(','),
     '&:hover': {
-        backgroundColor: '#0069d9',
-        borderColor: '#0062cc',
+        backgroundColor: '#38486c',
+        borderColor: '#2c3957',
         boxShadow: 'none',
     },
     '&:active': {

@@ -374,6 +374,44 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/commonBaseError'
+  /connection/integration-status/{revertPublicToken}:
+    get:
+      description: >-
+        Get the OAuth connection event status. This endpoint responds with a
+        `http.ServerResponse` instead of `json`.
+      operationId: connection_getIntegrationStatus
+      tags:
+        - Connection
+      parameters:
+        - name: revertPublicToken
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tenantId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetConnectStatusResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
   /crm/companies/{id}:
     get:
       description: Get details of a company
@@ -1303,202 +1341,6 @@ paths:
                 searchCriteria: {}
               required:
                 - searchCriteria
-  /crm/field-mapping:
-    get:
-      description: Get field mappings configs for a connection
-      operationId: crm_fieldMapping_getFieldMappingConfig
-      tags:
-        - CrmFieldMapping
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/crmGetFieldMappingConfigResponse'
-        '401':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-        '500':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-    post:
-      description: Create field mappings for a connection after user input
-      operationId: crm_fieldMapping_createFieldMapping
-      tags:
-        - CrmFieldMapping
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/crmCreateFieldMappingResponse'
-        '401':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-        '404':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-        '500':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/crmCreateFieldMappingRequestBody'
-    delete:
-      description: Delete field mappings for an account
-      operationId: crm_fieldMapping_deleteFieldMapping
-      tags:
-        - CrmFieldMapping
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/crmDeleteFieldMappingResponse'
-        '401':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-        '404':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-        '500':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-  /crm/field-mapping/mappings:
-    get:
-      description: Get field mappings for a connection
-      operationId: crm_fieldMapping_getFieldMappings
-      tags:
-        - CrmFieldMapping
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/crmGetFieldMappingsResponse'
-        '401':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-        '404':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-        '500':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-  /crm/field-mapping/config:
-    post:
-      description: Create field mappings config for an account
-      operationId: crm_fieldMapping_createAccountFieldMappingConfig
-      tags:
-        - CrmFieldMapping
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/crmCreateAccountFieldMappingResponse'
-        '401':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-        '404':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-        '500':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/crmCreateAccountFieldMappingRequestBody'
-    delete:
-      description: Delete field mappings config for an account
-      operationId: crm_fieldMapping_deleteAccountFieldMappingConfig
-      tags:
-        - CrmFieldMapping
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: >-
-                  #/components/schemas/crmDeleteAccountFieldMappingConfigResponse
-        '401':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-        '404':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-        '500':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
   /crm/leads/{id}:
     get:
       description: Get details of a lead
@@ -2406,6 +2248,273 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/crmCreateOrUpdateUserRequest'
+  /field-mapping:
+    get:
+      description: Get field mappings configs for a connection
+      operationId: fieldMapping_getFieldMappingConfig
+      tags:
+        - FieldMapping
+      parameters:
+        - name: x-revert-public-token
+          in: header
+          description: Your public key, to be used on the frontend usually.
+          required: true
+          schema:
+            type: string
+        - name: x-revert-t-id
+          in: header
+          description: The unique customer id used when the customer linked their account.
+          required: true
+          schema:
+            type: string
+        - name: x-revert-t-token
+          in: header
+          description: The temp used to identify tenant.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFieldMappingConfigResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Create field mappings for a connection after user input
+      operationId: fieldMapping_createFieldMapping
+      tags:
+        - FieldMapping
+      parameters:
+        - name: x-revert-public-token
+          in: header
+          description: Your public key, to be used on the frontend usually.
+          required: true
+          schema:
+            type: string
+        - name: x-revert-t-id
+          in: header
+          description: The unique customer id used when the customer linked their account.
+          required: true
+          schema:
+            type: string
+        - name: x-revert-t-token
+          in: header
+          description: The temp used to identify tenant.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFieldMappingResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFieldMappingRequestBody'
+    delete:
+      description: Delete field mappings for a connection
+      operationId: fieldMapping_deleteFieldMapping
+      tags:
+        - FieldMapping
+      parameters:
+        - name: x-revert-api-token
+          in: header
+          description: Your official API key for accessing revert apis.
+          required: true
+          schema:
+            type: string
+        - name: x-revert-t-id
+          in: header
+          description: The unique customer id used when the customer linked their account.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteFieldMappingResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /field-mapping/mappings:
+    get:
+      description: Get field mappings for a connection
+      operationId: fieldMapping_getFieldMappings
+      tags:
+        - FieldMapping
+      parameters:
+        - name: x-revert-api-token
+          in: header
+          description: Your official API key for accessing revert apis.
+          required: true
+          schema:
+            type: string
+        - name: x-revert-t-id
+          in: header
+          description: The unique customer id used when the customer linked their account.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFieldMappingsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /field-mapping/config:
+    post:
+      description: Create field mappings config for an account
+      operationId: fieldMapping_createAccountFieldMappingConfig
+      tags:
+        - FieldMapping
+      parameters:
+        - name: x-revert-api-token
+          in: header
+          description: Your official API key for accessing revert apis.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAccountFieldMappingResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAccountFieldMappingRequestBody'
+    delete:
+      description: Delete field mappings config for an account
+      operationId: fieldMapping_deleteAccountFieldMappingConfig
+      tags:
+        - FieldMapping
+      parameters:
+        - name: x-revert-api-token
+          in: header
+          description: Your official API key for accessing revert apis.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteAccountFieldMappingConfigResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
   /internal/account:
     post:
       description: Get details of a revert user account
@@ -4105,6 +4214,32 @@ components:
           nullable: true
       required:
         - status
+    GetConnectStatusResponse:
+      title: GetConnectStatusResponse
+      type: object
+      properties:
+        publicToken:
+          type: string
+        status:
+          $ref: '#/components/schemas/ConnectionStatus'
+        integrationName:
+          type: string
+        tenantId:
+          type: string
+        tenantSecretToken:
+          type: string
+          nullable: true
+      required:
+        - publicToken
+        - status
+        - integrationName
+        - tenantId
+    ConnectionStatus:
+      title: ConnectionStatus
+      type: string
+      enum:
+        - SUCCESS
+        - FAILED
     crmGetCompanyResponse:
       title: crmGetCompanyResponse
       type: object
@@ -4385,128 +4520,6 @@ components:
       required:
         - status
         - message
-    crmMappableFieldType:
-      title: crmMappableFieldType
-      type: object
-      properties:
-        fieldName:
-          type: string
-        objectName:
-          $ref: '#/components/schemas/commonStandardObject'
-      required:
-        - fieldName
-        - objectName
-    crmFieldMappingType:
-      title: crmFieldMappingType
-      type: object
-      properties:
-        sourceFieldName:
-          type: string
-        targetFieldName:
-          type: string
-        object:
-          type: string
-      required:
-        - sourceFieldName
-        - targetFieldName
-        - object
-    crmGetFieldMappingConfigResponse:
-      title: crmGetFieldMappingConfigResponse
-      type: object
-      properties:
-        canAddCustomMapping:
-          type: boolean
-        mappableFields:
-          type: array
-          items:
-            $ref: '#/components/schemas/crmMappableFieldType'
-        fieldList: {}
-      required:
-        - canAddCustomMapping
-        - mappableFields
-        - fieldList
-    crmCreateFieldMappingRequestBody:
-      title: crmCreateFieldMappingRequestBody
-      type: object
-      properties:
-        standardMappings:
-          type: array
-          items:
-            $ref: '#/components/schemas/crmFieldMappingType'
-        customMappings:
-          type: array
-          items:
-            $ref: '#/components/schemas/crmFieldMappingType'
-      required:
-        - standardMappings
-        - customMappings
-    crmCreateFieldMappingResponse:
-      title: crmCreateFieldMappingResponse
-      type: object
-      properties:
-        status:
-          $ref: '#/components/schemas/commonResponseStatus'
-      required:
-        - status
-    crmDeleteFieldMappingResponse:
-      title: crmDeleteFieldMappingResponse
-      type: object
-      properties:
-        status:
-          $ref: '#/components/schemas/commonResponseStatus'
-        message:
-          type: string
-      required:
-        - status
-        - message
-    crmCreateAccountFieldMappingRequestBody:
-      title: crmCreateAccountFieldMappingRequestBody
-      type: object
-      properties:
-        id:
-          type: string
-        account_id:
-          type: string
-        allow_connection_override_custom_fields:
-          type: boolean
-        mappable_by_connection_field_list:
-          type: array
-          items:
-            $ref: '#/components/schemas/crmMappableFieldType'
-      required:
-        - id
-        - account_id
-        - allow_connection_override_custom_fields
-        - mappable_by_connection_field_list
-    crmCreateAccountFieldMappingResponse:
-      title: crmCreateAccountFieldMappingResponse
-      type: object
-      properties:
-        status:
-          $ref: '#/components/schemas/commonResponseStatus'
-      required:
-        - status
-    crmDeleteAccountFieldMappingConfigResponse:
-      title: crmDeleteAccountFieldMappingConfigResponse
-      type: object
-      properties:
-        status:
-          $ref: '#/components/schemas/commonResponseStatus'
-      required:
-        - status
-    crmGetFieldMappingsResponse:
-      title: crmGetFieldMappingsResponse
-      type: object
-      properties:
-        tpId:
-          type: string
-        mappings:
-          type: array
-          items:
-            $ref: '#/components/schemas/crmFieldMappingType'
-      required:
-        - tpId
-        - mappings
     crmGetLeadResponse:
       title: crmGetLeadResponse
       type: object
@@ -4657,6 +4670,16 @@ components:
         - name
         - type
         - description
+    crmFieldDetailsTypeRead:
+      title: crmFieldDetailsTypeRead
+      type: object
+      properties:
+        isCustomField:
+          type: boolean
+      required:
+        - isCustomField
+      allOf:
+        - $ref: '#/components/schemas/crmFieldDetailsType'
     crmFieldDetailsTypeRequest:
       title: crmFieldDetailsTypeRequest
       type: object
@@ -4674,6 +4697,9 @@ components:
       $ref: '#/components/schemas/crmFieldDetailsTypeRequest'
     crmGetObjectPropertiesResponse:
       title: crmGetObjectPropertiesResponse
+      type: array
+      items:
+        $ref: '#/components/schemas/crmFieldDetailsTypeRead'
     crmSetObjectPropertiesResponse:
       title: crmSetObjectPropertiesResponse
     crmProxyResponse:
@@ -4834,6 +4860,122 @@ components:
       required:
         - status
         - results
+    MappableFieldType:
+      title: MappableFieldType
+      type: object
+      properties:
+        fieldName:
+          type: string
+        objectName:
+          $ref: '#/components/schemas/commonStandardObject'
+      required:
+        - fieldName
+        - objectName
+    FieldMappingType:
+      title: FieldMappingType
+      type: object
+      properties:
+        sourceFieldName:
+          type: string
+        targetFieldName:
+          type: string
+        object:
+          type: string
+      required:
+        - sourceFieldName
+        - targetFieldName
+        - object
+    GetFieldMappingConfigResponse:
+      title: GetFieldMappingConfigResponse
+      type: object
+      properties:
+        canAddCustomMapping:
+          type: boolean
+        mappableFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappableFieldType'
+        fieldList: {}
+      required:
+        - canAddCustomMapping
+        - mappableFields
+        - fieldList
+    CreateFieldMappingRequestBody:
+      title: CreateFieldMappingRequestBody
+      type: object
+      properties:
+        standardMappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldMappingType'
+        customMappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldMappingType'
+      required:
+        - standardMappings
+        - customMappings
+    CreateFieldMappingResponse:
+      title: CreateFieldMappingResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+      required:
+        - status
+    DeleteFieldMappingResponse:
+      title: DeleteFieldMappingResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+      required:
+        - status
+        - message
+    CreateAccountFieldMappingRequestBody:
+      title: CreateAccountFieldMappingRequestBody
+      type: object
+      properties:
+        allow_connection_override_custom_fields:
+          type: boolean
+        mappable_by_connection_field_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappableFieldType'
+      required:
+        - allow_connection_override_custom_fields
+        - mappable_by_connection_field_list
+    CreateAccountFieldMappingResponse:
+      title: CreateAccountFieldMappingResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+      required:
+        - status
+    DeleteAccountFieldMappingConfigResponse:
+      title: DeleteAccountFieldMappingConfigResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+      required:
+        - status
+    GetFieldMappingsResponse:
+      title: GetFieldMappingsResponse
+      type: object
+      properties:
+        tpId:
+          type: string
+        mappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldMappingType'
+      required:
+        - tpId
+        - mappings
     internalGetAccountDetailsResponse:
       title: internalGetAccountDetailsResponse
       type: object

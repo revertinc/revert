@@ -95,6 +95,7 @@ const Integrations = ({ environment }) => {
             description: 'Configure your MS Dynamics 365 Sakes App from here.',
             onClick: () => handleOpen('ms_dynamics_365_sales'),
         },
+
         {
             name: 'Bitbucket',
             logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1702983006/Revert/szfzkoagws7h3miptezo.png',

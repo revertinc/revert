@@ -2,7 +2,7 @@ import axios from 'axios';
 import { TP_ID, connections } from '@prisma/client';
 import { CRM_TP_ID, objectNameMapping } from '../../constants/common';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
-import { FieldDetailsTypeRequest } from '../../generated/typescript/api/resources/crm';
+import { FieldDetailsTypeRequest, FieldDetailsTypeRead } from '../../generated/typescript/api/resources/crm';
 import { logError } from '../../helpers/logger';
 import { isStandardError } from '../../helpers/error';
 
@@ -12,7 +12,7 @@ export const getObjectPropertiesForConnection = async ({
 }: {
     objectName: string;
     connection: connections;
-}) => {
+}): Promise<Array<FieldDetailsTypeRead>> => {
     const thirdPartyToken = connection.tp_access_token;
     const tpId = connection.tp_id as CRM_TP_ID;
     const crmObjectName = (objectNameMapping[objectName] || {})[tpId] || objectName;
@@ -26,6 +26,7 @@ export const getObjectPropertiesForConnection = async ({
                 name: f.name,
                 type: f.type,
                 description: f.label,
+                isCustomField: f.hubspotDefined ? false : true,
             }));
         }
         case TP_ID.zohocrm: {
@@ -39,6 +40,7 @@ export const getObjectPropertiesForConnection = async ({
                 name: f.api_name,
                 type: f.json_type,
                 description: '',
+                isCustomField: f.custom_field ? true : false,
             }));
         }
         case TP_ID.sfdc: {
@@ -50,6 +52,7 @@ export const getObjectPropertiesForConnection = async ({
                 name: f.name,
                 type: f.type,
                 description: '',
+                isCustomField: f.custom ? true : false,
             }));
         }
         case TP_ID.pipedrive: {
@@ -61,9 +64,11 @@ export const getObjectPropertiesForConnection = async ({
                 name: f.key,
                 type: f.field_type,
                 description: '',
+                isCustomField: f.edit_flag ? true : false,
             }));
         }
         case TP_ID.ms_dynamics_365_sales: {
+            // @see: https://learn.microsoft.com/en-us/previous-versions/dynamicscrm-2016/developers-guide/gg326975(v=crm.8)
             const response = await axios({
                 method: 'get',
                 url: `${connection.tp_account_url}/api/data/v9.2/EntityDefinitions(LogicalName='${crmObjectName}')/Attributes`,
@@ -78,6 +83,7 @@ export const getObjectPropertiesForConnection = async ({
                 name: f.LogicalName,
                 type: f.AttributeTypeName.Value,
                 description: f.Description ? f.Description.LocalizedLabels : '',
+                isCustomField: f.IsCustomAttribute ? true : false,
             }));
         }
         default: {

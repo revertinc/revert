@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
 
 imports:
-    errors: ../common/errors.yml
-    types: ../common/types.yml
+    errors: common/errors.yml
+    types: common/types.yml
 
 types:
     MappableFieldType:
@@ -32,8 +32,6 @@ types:
             message: string
     CreateAccountFieldMappingRequestBody:
         properties:
-            id: string
-            account_id: string
             allow_connection_override_custom_fields: boolean
             mappable_by_connection_field_list: list<MappableFieldType>
     CreateAccountFieldMappingResponse:
@@ -48,21 +46,8 @@ types:
             mappings: list<FieldMappingType>
 
 service:
-    base-path: /crm/field-mapping
+    base-path: /field-mapping
     auth: false
-    headers:
-        x-revert-api-token:
-            type: optional<string>
-            docs: Your official API key for accessing revert apis.
-        x-revert-t-id:
-            type: string
-            docs: The unique customer id used when the customer linked their account.
-        x-revert-t-token:
-            type: optional<string>
-            docs: The temp used to identify tenant.
-        x-api-version:
-            type: optional<string>
-            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
     audiences:
         - external
     endpoints:
@@ -72,6 +57,16 @@ service:
             path: ''
             request:
                 name: GetFieldMappingConfigRequest
+                headers:
+                    x-revert-public-token:
+                        type: string
+                        docs: Your public key, to be used on the frontend usually.
+                    x-revert-t-id:
+                        type: string
+                        docs: The unique customer id used when the customer linked their account.
+                    x-revert-t-token:
+                        type: string
+                        docs: The temp used to identify tenant.
             response: GetFieldMappingConfigResponse
             errors:
                 - errors.UnAuthorizedError
@@ -82,6 +77,13 @@ service:
             path: '/mappings'
             request:
                 name: GetFieldMappingsRequest
+                headers:
+                    x-revert-api-token:
+                        type: string
+                        docs: Your official API key for accessing revert apis.
+                    x-revert-t-id:
+                        type: string
+                        docs: The unique customer id used when the customer linked their account.
             response: GetFieldMappingsResponse
             errors:
                 - errors.UnAuthorizedError
@@ -94,17 +96,34 @@ service:
             request:
                 name: CreateFieldMappingRequest
                 body: CreateFieldMappingRequestBody
+                headers:
+                    x-revert-public-token:
+                        type: string
+                        docs: Your public key, to be used on the frontend usually.
+                    x-revert-t-id:
+                        type: string
+                        docs: The unique customer id used when the customer linked their account.
+                    x-revert-t-token:
+                        type: string
+                        docs: The temp used to identify tenant.
             response: CreateFieldMappingResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
         deleteFieldMapping:
-            docs: Delete field mappings for an account
+            docs: Delete field mappings for a connection
             method: DELETE
             path: ''
             request:
                 name: DeleteFieldMappingRequest
+                headers:
+                    x-revert-api-token:
+                        type: string
+                        docs: Your official API key for accessing revert apis.
+                    x-revert-t-id:
+                        type: string
+                        docs: The unique customer id used when the customer linked their account.
             response: DeleteFieldMappingResponse
             errors:
                 - errors.UnAuthorizedError
@@ -117,6 +136,10 @@ service:
             request:
                 name: CreateAccountFieldMappingRequest
                 body: CreateAccountFieldMappingRequestBody
+                headers:
+                    x-revert-api-token:
+                        type: string
+                        docs: Your official API key for accessing revert apis.
             response: CreateAccountFieldMappingResponse
             errors:
                 - errors.UnAuthorizedError
@@ -128,6 +151,10 @@ service:
             path: '/config'
             request:
                 name: DeleteAccountFieldMappingConfigRequest
+                headers:
+                    x-revert-api-token:
+                        type: string
+                        docs: Your official API key for accessing revert apis.
             response: DeleteAccountFieldMappingConfigResponse
             errors:
                 - errors.UnAuthorizedError
