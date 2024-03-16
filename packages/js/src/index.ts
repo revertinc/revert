@@ -766,7 +766,7 @@ const createIntegrationBlock = function (self, integration) {
                 // save field mapping
                 this.clearInitialOrProcessingOrSuccessStage();
                 this.renderProcessingStage('Saving mapping configuration'); // Show loader when the user clicks on Save Mappings
-                fetch(`${this.CORE_API_BASE_URL}crm/field-mapping`, {
+                fetch(`${this.CORE_API_BASE_URL}field-mapping`, {
                     mode: 'cors' as RequestMode,
                     method: 'POST',
                     headers: {
@@ -866,17 +866,28 @@ const createIntegrationBlock = function (self, integration) {
                 op.innerHTML = a.name;
                 return op;
             });
-            const hiddenObject = createViewElement(
+            const objectHeading = createViewElement(
                 'div',
                 '',
                 transformStyle({
-                    visibility: 'hidden',
-                    height: '1px',
+                    fontWeight: '400',
+                    fontSize: '12px',
+                    color: '#4C505B',
+                }),
+                [],
+                'Object'
+            );
+            const objInput = createViewElement(
+                'div',
+                `sd-object-${fieldName}`,
+                transformStyle({
+                    fontWeight: '400',
+                    fontSize: '12px',
                 }),
                 [],
                 objectName
             );
-            hiddenObject.classList.add('stdHiddenObj');
+            objInput.classList.add('input-style');
             const mappableHeading = createViewElement(
                 'div',
                 '',
@@ -938,7 +949,7 @@ const createIntegrationBlock = function (self, integration) {
                     marginBottom: '25px',
                     gap: '10px',
                 }),
-                [hiddenObject, mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
+                [objectHeading, objInput, mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
                 ''
             );
             return container;
@@ -1224,7 +1235,7 @@ const createIntegrationBlock = function (self, integration) {
                     this.close();
                 }
                 const evtSource = new EventSource(
-                    `${this.CORE_API_BASE_URL}crm/integration-status/${this.API_REVERT_PUBLIC_TOKEN}?tenantId=${this.tenantId}`
+                    `${this.CORE_API_BASE_URL}connection/integration-status/${this.API_REVERT_PUBLIC_TOKEN}?tenantId=${this.tenantId}`
                 );
                 evtSource.onmessage = (event) => {
                     const data = JSON.parse(event.data);
@@ -1246,7 +1257,7 @@ const createIntegrationBlock = function (self, integration) {
                         evtSource.close();
                         const tenantToken = parsedData.tenantSecretToken;
                         // fetch field mapping
-                        fetch(`${this.CORE_API_BASE_URL}crm/field-mapping`, {
+                        fetch(`${this.CORE_API_BASE_URL}field-mapping`, {
                             mode: 'cors' as RequestMode,
                             method: 'GET',
                             headers: {

@@ -832,19 +832,26 @@ const contactService = new ContactService(
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
-                        contacts = contacts.data.data;
-                        contacts = await Promise.all(
-                            contacts?.map(
-                                async (l: any) =>
-                                    await unifyObject<any, UnifiedContact>({
-                                        obj: l,
-                                        tpId: thirdPartyId,
-                                        objType,
-                                        tenantSchemaMappingId: connection.schema_mapping_id,
-                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
-                        );
+                        const isValidContactData =
+                            contacts.data && contacts.data.data !== undefined && Array.isArray(contacts.data.data);
+                        if (isValidContactData) {
+                            contacts = contacts?.data?.data;
+
+                            contacts = await Promise.all(
+                                contacts?.map(
+                                    async (l: any) =>
+                                        await unifyObject<any, UnifiedContact>({
+                                            obj: l,
+                                            tpId: thirdPartyId,
+                                            objType,
+                                            tenantSchemaMappingId: connection.schema_mapping_id,
+                                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                        })
+                                )
+                            );
+                        } else {
+                            contacts = [];
+                        }
                         res.send({ status: 'ok', results: contacts });
                         break;
                     }

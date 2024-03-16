@@ -36,6 +36,17 @@ types:
             status: types.ResponseStatus
             error: optional<string>
             errorMessage: optional<unknown>
+    GetConnectStatusResponse:
+        properties:
+            publicToken: string
+            status: ConnectionStatus
+            integrationName: string
+            tenantId: string
+            tenantSecretToken: optional<string>
+    ConnectionStatus:
+        enum:
+            - SUCCESS
+            - FAILED
 
 service:
     base-path: ''
@@ -137,3 +148,17 @@ service:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
+        getIntegrationStatus:
+            docs: Get the OAuth connection event status. This endpoint responds with a `http.ServerResponse` instead of `json`.
+            method: GET
+            path: /connection/integration-status/{revertPublicToken}
+            path-parameters:
+                revertPublicToken: string
+            request:
+                name: GetConnectStatusRequest
+                query-parameters:
+                    tenantId: string
+            response: GetConnectStatusResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
