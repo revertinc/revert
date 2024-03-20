@@ -92,9 +92,7 @@ const Home = () => {
             .then((result) => {
                 setAccount(result?.account);
                 const environments: string[] = result?.account?.environments?.map((env) => env.env) || [];
-                if (!environments.includes(DEFAULT_ENV)) {
-                    setSelectedEnvironment(environments?.[0]);
-                }
+                setSelectedEnvironment(environments?.[0] || DEFAULT_ENV);
             })
             .catch((error) => {
                 Sentry.captureException(error);
