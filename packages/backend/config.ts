@@ -48,6 +48,7 @@ const config = {
     MS_DYNAMICS_SALES_CLIENT_ID: process.env.MS_DYNAMICS_SALES_CLIENT_ID!,
     MS_DYNAMICS_SALES_CLIENT_SECRET: process.env.MS_DYNAMICS_SALES_CLIENT_SECRET!,
     MS_DYNAMICS_SALES_ORG_URL: process.env.MS_DYNAMICS_SALES_ORG_URL!,
+    PLANE_API_KEY: process.env.PLANE_API_KEY!,
 };
 
 export default config;

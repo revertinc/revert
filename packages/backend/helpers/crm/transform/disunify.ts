@@ -243,5 +243,8 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
 
             return processedObj;
         }
+        case TP_ID.plane: {
+            return processedObj;
+        }
     }
 }

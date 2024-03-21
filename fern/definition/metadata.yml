@@ -18,10 +18,18 @@ types:
             status: CrmStatus
             clientId: optional<string>
             scopes: list<string>
+            authType: optional<AuthType>
     CrmStatus:
         enum:
             - active
             - inactive
+    AuthType:
+        enum:
+            - Basic
+            - OAuth2
+            - ApiKey
+            - BearerToken
+            - OAuth1_0a
 
 service:
     base-path: ''
