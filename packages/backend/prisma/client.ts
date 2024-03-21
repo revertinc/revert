@@ -30,7 +30,7 @@ const xprisma = prisma.$extends({
                     args.create.id = newConnectionId;
                 }
 
-                if (!(args.update?.tp_id === TP_ID.discord || args.update?.tp_id === TP_ID.ms_dynamics_365_sales)) {
+                if (!(args.update?.tp_id === TP_ID.discord || args.update?.tp_id === TP_ID.ms_dynamics_365_sales || args.update?.tp_id === TP_ID.gdrive)) {
                     args.update.app_config = Prisma.DbNull;
                 }
 

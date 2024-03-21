@@ -863,6 +863,7 @@ export const chatFields = {
             source_field_name: {
                 [TP_ID.slack]: 'id',
                 [TP_ID.discord]: 'id',
+                [TP_ID.gdrive]: '',
             },
             target_field_name: 'id',
         },
@@ -870,6 +871,7 @@ export const chatFields = {
             source_field_name: {
                 [TP_ID.slack]: 'name',
                 [TP_ID.discord]: 'name',
+                [TP_ID.gdrive]: '',
             },
             target_field_name: 'name',
         },
@@ -877,6 +879,7 @@ export const chatFields = {
             source_field_name: {
                 [TP_ID.slack]: 'created',
                 [TP_ID.discord]: undefined,
+                [TP_ID.gdrive]: '',
             },
             target_field_name: 'createdTimeStamp',
         },
@@ -886,6 +889,7 @@ export const chatFields = {
             source_field_name: {
                 [TP_ID.slack]: 'id',
                 [TP_ID.discord]: 'user.id',
+                [TP_ID.gdrive]: '',
             },
             target_field_name: 'id',
         },
@@ -893,6 +897,7 @@ export const chatFields = {
             source_field_name: {
                 [TP_ID.slack]: 'profile.real_name',
                 [TP_ID.discord]: 'user.global_name',
+                [TP_ID.gdrive]: '',
             },
             target_field_name: 'name',
         },
@@ -900,6 +905,7 @@ export const chatFields = {
             source_field_name: {
                 [TP_ID.slack]: 'updated',
                 [TP_ID.discord]: 'joined_at',
+                [TP_ID.gdrive]: '',
             },
             target_field_name: 'createdTimeStamp',
         },
@@ -909,6 +915,7 @@ export const chatFields = {
             source_field_name: {
                 [TP_ID.slack]: 'text',
                 [TP_ID.discord]: 'content',
+                [TP_ID.gdrive]: '',
             },
             target_field_name: 'text',
         },
@@ -916,6 +923,7 @@ export const chatFields = {
             source_field_name: {
                 [TP_ID.slack]: 'channel',
                 [TP_ID.discord]: undefined,
+                [TP_ID.gdrive]: '',
             },
             target_field_name: 'channelId',
         },
