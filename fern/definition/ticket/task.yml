@@ -74,6 +74,8 @@ service:
             request:
                 name: CreateTaskRequest
                 body: CreateOrUpdateTaskRequest
+                 query-parameters:
+                    fields: optional<string>
             response: CreateOrUpdateTaskResponse
             errors:
                 - errors.UnAuthorizedError
@@ -88,6 +90,8 @@ service:
             request:
                 name: UpdateTaskRequest
                 body: CreateOrUpdateTaskRequest
+                 query-parameters:
+                    fields: optional<string>
             response: CreateOrUpdateTaskResponse
             errors:
                 - errors.UnAuthorizedError

@@ -99,6 +99,37 @@ const commentServiceTicket = new CommentService(
                         });
                         break;
                     }
+                    case TP_ID.bitbucket: {
+                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
+
+                        if (!parsedFields.taskId || !parsedFields.repo || !parsedFields.workspace) {
+                            throw new Error(
+                                'taskId and "repo" and "workspace" are required for fetching Bitbucket comments and should be included in the "fields" parameter."repo" and "workspace" can either be slug or UUID.'
+                            );
+                        }
+                        const result = await axios({
+                            method: 'get',
+                            url: `https://api.bitbucket.org/2.0/repositories/${parsedFields.workspace}/${parsedFields.repo}/issues/${parsedFields.taskId}/comments/${commentId}`,
+                            headers: {
+                                Accept: 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+
+                        const unifiedComment = await unifyObject<any, UnifiedTicketComment>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedComment,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -300,6 +331,45 @@ const commentServiceTicket = new CommentService(
                         });
                         break;
                     }
+                    case TP_ID.bitbucket: {
+                        if (!fields || (fields && !fields.repo && !fields.workspace)) {
+                            throw new NotFoundError({
+                                error: 'The query parameters "repo" and "workspace" are required and should be included in the "fields" parameter."repo" and "workspace" can either be slug or UUID.',
+                            });
+                        }
+
+                        const pagingString = `${pageSize ? `page=${pageSize}` : ''}`;
+                        let result: any = await axios({
+                            method: 'get',
+                            url: `https://api.bitbucket.org/2.0/repositories/${fields.workspace}/${fields.repo}/issues/${fields.taskId}/comments?pagelen=10&${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+                        const unifiedComments = await Promise.all(
+                            result.data.values.map(
+                                async (comment: any) =>
+                                    await unifyObject<any, UnifiedTicketComment>({
+                                        obj: comment,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        const pageNumber = result.data?.next ? (pageSize ? (pageSize + 1).toString() : '1') : undefined;
+
+                        res.send({
+                            status: 'ok',
+                            next: pageNumber,
+                            previous: undefined,
+                            results: unifiedComments,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -322,6 +392,7 @@ const commentServiceTicket = new CommentService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const fields: any = JSON.parse((req.query as any).fields as string);
                 if (commentData && !commentData.taskId) {
                     throw new Error('The parameter "taskId" is required in request body.');
                 }
@@ -402,6 +473,25 @@ const commentServiceTicket = new CommentService(
                         });
                         break;
                     }
+                    case TP_ID.bitbucket: {
+                        if (!fields || (fields && !fields.repo && !fields.workspace)) {
+                            throw new NotFoundError({
+                                error: 'The query parameters "repo" and "workspace" are required and should be included in the "fields" parameter."repo" and "workspace" can either be slug or UUID.',
+                            });
+                        }
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `https://api.bitbucket.org/2.0/repositories/${fields.workspace}/${fields.repo}/issues/${commentData.taskId}/comments`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(comment),
+                        });
+                        res.send({ status: 'ok', message: 'Bitbucket comment posted', result: result.data });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -425,6 +515,7 @@ const commentServiceTicket = new CommentService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const fields: any = JSON.parse((req.query as any).fields as string);
                 const comment: any = await disunifyTicketObject<UnifiedTicketComment>({
                     obj: commentData,
                     tpId: thirdPartyId,
@@ -509,6 +600,37 @@ const commentServiceTicket = new CommentService(
                             message: 'Trello comment updated',
                             result: result.data,
                         });
+                        break;
+                    }
+                    case TP_ID.bitbucket: {
+                        if (!fields || (fields && !fields.repo && !fields.workspace)) {
+                            throw new NotFoundError({
+                                error: 'The query parameters "repo" and "workspace" are required and should be included in the "fields" parameter."repo" and "workspace" can either be slug or UUID.',
+                            });
+                        }
+
+                        if (!commentData.taskId) {
+                            throw new NotFoundError({
+                                error: 'taskId is required in request body for updating Bitbucket comment.',
+                            });
+                        }
+                        const result = await axios({
+                            method: 'put',
+                            url: `https://api.bitbucket.org/2.0/repositories/${fields.workspace}/${fields.repo}/issues/${commentData.taskId}/comments/${commentId}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(comment),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Bitbucket comment updated',
+                            result: result.data,
+                        });
+
                         break;
                     }
                     default: {

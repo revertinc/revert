@@ -243,5 +243,29 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
 
             return processedObj;
         }
+        case TP_ID.bitbucket: {
+            if (objType === 'ticketTask') {
+                let priorityId = undefined;
+                if (obj.priority === 'urgent') priorityId = 'blocker';
+                else if (obj.priority === 'high') priorityId = 'critical';
+                else if (obj.priority === 'medium') priorityId = 'major';
+                else if (obj.priority === 'low') priorityId = 'minor';
+                else if (obj.priority === 'lowest') priorityId = 'trivial';
+
+                return {
+                    ...transformedObj,
+                    assignee:
+                        obj.assignees && Array.isArray(obj.assignees) && obj.assignees.length > 0
+                            ? {
+                                  account_id: obj.assignees[0],
+                              }
+                            : undefined,
+                    priority: priorityId ? priorityId : undefined,
+
+                    kind: obj.issueTypeId ? obj.issueTypeId : undefined,
+                };
+            }
+            return processedObj;
+        }
     }
 }

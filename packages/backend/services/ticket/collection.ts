@@ -242,6 +242,64 @@ const collectionServiceTicket = new CollectionService(
                         });
                         break;
                     }
+                    case TP_ID.bitbucket: {
+                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
+                        let result: any;
+                        const pagingString = `${pageSize ? `page=${pageSize}` : ''}`;
+                        if (parsedFields && parsedFields.collection_type === 'groups') {
+                            if (!parsedFields.workspace) {
+                                throw new Error(
+                                    "To retrieve all groups in a workspace in Bitbucket, workspace is required. Please set collection_type to 'groups' to verify."
+                                );
+                            }
+                            const groups = await axios({
+                                method: 'get',
+                                url: `https://api.bitbucket.org/1.0/groups/${parsedFields.workspace}?pagelen=10&${pagingString}`,
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                    Accept: 'application/json',
+                                    'Content-Type': 'application/json',
+                                },
+                            });
+                            result = groups.data;
+
+                             return  res.send({
+                            status: 'ok',
+                            next: undefined,
+                            previous: undefined,
+                            results: result,
+                        });
+                        } else if (parsedFields && parsedFields.collection_type === 'repositories') {
+                            if (!parsedFields.workspace) {
+                                throw new Error(
+                                    "To retrieve all repositories in a workspace in Bitbucket, workspace is required. Please set collection_type to 'repositories' to verify."
+                                );
+                            }
+                            const projects = await axios({
+                                method: 'get',
+                                url: `https://api.bitbucket.org/2.0/repositories/${parsedFields.workspace}?pagelen=10&${pagingString}`,
+                                headers: {
+                                    Accept: 'application/json',
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            });
+                            result = projects.data;
+
+                             const pageNumber = result.next ? (pageSize ? (pageSize + 1).toString() : '1') : undefined;
+                      return  res.send({
+                            status: 'ok',
+                            next: pageNumber,
+                            previous: undefined,
+                            results: result.values,
+                        });
+                        } else {
+                            throw new Error(
+                                "To use this endpoint, please specify the type of collection you're working with. Valid options include: 'groups', 'repositories'."
+                            );
+                        }
+                       
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }

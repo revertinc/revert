@@ -249,6 +249,43 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 return { ...obj, assignee: obj.assignee ? [obj.assignee.accountId] : undefined };
             },
         },
+        [TP_ID.bitbucket]: {
+            [TicketStandardObjects.ticketTask]: (obj: T) => {
+                let priority: any;
+                let status: any;
+                if (obj.priority) {
+                    if (obj.priority && obj.priority === 'blocker') priority = 'urgent';
+                    else if (obj.priority && obj.priority === 'critical') priority = 'high';
+                    else if (obj.priority && obj.priority === 'major') priority = 'medium';
+                    else if (obj.priority && obj.priority === 'minor') priority = 'low';
+                    else priority = 'trivial';
+                }
+
+                if (obj.state) {
+                    if (String(obj.state).toLowerCase() === 'new' || String(obj.state).toLowerCase() === 'open')
+                        status = 'open';
+                    else if (
+                        String(obj.state).toLowerCase() === 'wontfix' ||
+                        String(obj.state).toLowerCase() === 'closed' ||
+                        String(obj.state).toLowerCase() === 'invalid' ||
+                        String(obj.state).toLowerCase() === 'onhold' ||
+                        String(obj.state).toLowerCase() === 'duplicate' ||
+                        String(obj.state).toLowerCase() === 'resolved'
+                    )
+                        status = 'closed';
+                    else {
+                        status = String(obj.state);
+                    }
+                }
+
+                return {
+                    ...obj,
+                    assignee: obj.assignee ? [obj.assignee.account_id] : undefined,
+                    state: status,
+                    priority,
+                };
+            },
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
@@ -389,6 +426,7 @@ export const postprocessDisUnifyTicketObject = <T extends Record<string, any>>({
         [TP_ID.jira]: {},
         [TP_ID.trello]: {},
         [TP_ID.asana]: {},
+        [TP_ID.bitbucket]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

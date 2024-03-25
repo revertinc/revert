@@ -13,6 +13,7 @@ export const OAuthCallback = (props) => {
     useEffect(() => {
         const urlSearchParams = new URLSearchParams(window.location.search);
         const params = Object.fromEntries(urlSearchParams.entries());
+
         if (Object.keys(params).length && integrationId) {
             if (integrationId === 'hubspot' || integrationId === 'pipedrive') {
                 console.log('Post crm installation', integrationId, params);
@@ -390,6 +391,40 @@ export const OAuthCallback = (props) => {
                         } else {
                             setStatus('Succeeded. Please feel free to close this window.');
                             window.close();
+                        }
+                        setIsLoading(false);
+                    })
+                    .catch((err) => {
+                        Sentry.captureException(err);
+                        setIsLoading(false);
+                        console.error(err);
+                        setStatus('Errored out');
+                    });
+            } else if (integrationId === 'bitbucket') {
+                console.log('Post ticketing app installation', integrationId, params);
+                const { tenantId, revertPublicToken } = JSON.parse(decodeURIComponent(params.state));
+                fetch(
+                    `${REVERT_BASE_API_URL}/v1/ticket/oauth-callback?integrationId=${integrationId}&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                )
+                    .then((d) => {
+                        return d.json();
+                    })
+                    .then((data) => {
+                        console.log('OAuth flow succeeded', data);
+                        if (data.error) {
+                            const errorMessage =
+                                data.error?.code === 'P2002'
+                                    ? ': Already connected another app. Please disconnect first.'
+                                    : '';
+                            setStatus('Errored out' + errorMessage);
+                        } else {
+                            setStatus('Succeeded. Please feel free to close this window.');
                         }
                         setIsLoading(false);
                     })
