@@ -74,7 +74,7 @@ service:
             request:
                 name: CreateTaskRequest
                 body: CreateOrUpdateTaskRequest
-                 query-parameters:
+                query-parameters:
                     fields: optional<string>
             response: CreateOrUpdateTaskResponse
             errors:
@@ -90,7 +90,7 @@ service:
             request:
                 name: UpdateTaskRequest
                 body: CreateOrUpdateTaskRequest
-                 query-parameters:
+                query-parameters:
                     fields: optional<string>
             response: CreateOrUpdateTaskResponse
             errors:
