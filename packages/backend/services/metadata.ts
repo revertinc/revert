@@ -151,7 +151,7 @@ const metadataService = new MetadataService({
                     integrationId: TP_ID.bitbucket,
                     name: 'Bitbucket',
                     imageSrc:
-                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1702983006/Revert/szfzkoagws7h3miptezo.png',
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711468866/Revert/kuebcmuhxznyjqzl6pvb.svg',
                     status: 'active',
                     scopes: getScope(apps, TP_ID.bitbucket),
                     clientId: getClientId(apps, TP_ID.bitbucket) || config.BITBUCKET_CLIENT_ID,
