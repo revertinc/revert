@@ -82,6 +82,8 @@ navigation:
                   path: ./docs/contents/guides/jira.mdx
                 - page: Trello
                   path: ./docs/contents/guides/trello.mdx
+                - page: BitBucket
+                  path: ./docs/contents/guides/bitbucket.mdx
 colors:
     accentPrimary: '#89a3ff'
 logo:
