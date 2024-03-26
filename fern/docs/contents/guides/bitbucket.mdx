@@ -1,0 +1,20 @@
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1711468058/Revert/Docs/twzdvnlzbcrbvqi9aws6.png" />
+
+#### Obtaining Bitbucket Client ID and Secret
+
+-   Open a [Bitbucket account](https://bitbucket.org/product).
+-   Create a Bitbucket OAuth consumer, using the steps mentioned [here](https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/)
+    -   `NOTE:` You can skip this step and use the default revert Bitbucket app
+-   Set `https://app.revert.dev/oauth-callback/bitbucket` as the `redirect` url for your app
+-   **Get your client_id and client_secret**:
+    -   A consumer will be added,click on the dropdown arrow.
+    -   Copy your client_id and client_secret
+
+#### Connect to Bitbucket via Revert
+
+-   Create an account on Revert if you don't already have one. (https://app.revert.dev/sign-up)
+-   Login to your revert dashboard (https://app.revert.dev/sign-in) and click on `Customize your apps` - `Bitbucket`
+
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1705652583/Revert/Docs/nwlrrom2sw5xj7dsgznv.png" />
+
+-   Enter the `client_id` and `client_secret` you copied in the previous step into the App credentials here and click `Submit`.
