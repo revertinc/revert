@@ -69,7 +69,7 @@ const LoadingButton = styled(MuiLoadingButton)`
 interface AppConfig {
     bot_token?: string;
     org_url?: string;
-  }
+}
 
 const EditCredentials: React.FC<{
     app: any;
@@ -84,7 +84,7 @@ const EditCredentials: React.FC<{
     const [isRevertApp, setIsRevertApp] = React.useState(app.is_revert_app);
 
     const { loading, status, fetch } = useApi();
-    
+
     const handleAddNewScope = (e) => {
         if (e.key === 'Enter') {
             setScopes((ss) => [...ss, ...newScope.split(',').map((s) => s.trim())]);
@@ -109,11 +109,11 @@ const EditCredentials: React.FC<{
     const handleAppConfigFieldChange = (ev) => {
         const val = (ev.target.value || '').trim();
         if (app.tp_id === 'discord') {
-          setAppConfig({  bot_token: val });
+            setAppConfig({ bot_token: val });
         } else if (app.tp_id === 'ms_dynamics_365_sales') {
-          setAppConfig({  org_url: val });
+            setAppConfig({ org_url: val });
         }
-      };
+    };
 
     React.useEffect(() => {
         if (status === 200) {
@@ -122,13 +122,14 @@ const EditCredentials: React.FC<{
     }, [status, handleClose]);
 
     return (
-        <Box>
+        <Box style={{ background: '#181d28', color: '#fff' }}>
             <Row>
                 <span style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="font-bold">Use default revert app</span>
                     <span style={{ fontSize: '14px' }}>(uncheck to use your own app credentials)</span>
                 </span>
                 <Switch
+                    style={{ color: '#fff' }}
                     checked={isRevertApp}
                     value={isRevertApp}
                     onChange={(ev) => setIsRevertApp(ev.target.checked)}
@@ -175,7 +176,6 @@ const EditCredentials: React.FC<{
                                 error={!app?.app_config?.org_url}
                             />
                         </Row>
-                        
                     )}
                     {!(app.tp_id === 'closecrm' || app.tp_id === 'pipedrive' || app.tp_id === 'clickup') && (
                         <Row>
@@ -205,10 +205,11 @@ const EditCredentials: React.FC<{
                 </>
             )}
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', gap: '15px' }}>
-                <Button onClick={() => handleClose({ refetchOnClose: false })} style={{ color: '#000' }}>
+                <Button onClick={() => handleClose({ refetchOnClose: false })} style={{ color: '#fff' }}>
                     Close
                 </Button>
                 <LoadingButton
+                    style={{ background: '#293347' }}
                     variant="contained"
                     onClick={handleSubmit}
                     loading={loading}

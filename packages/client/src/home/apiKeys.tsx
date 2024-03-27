@@ -82,7 +82,7 @@ const ApiKeys = ({ environment }) => {
                                 <div
                                     style={{
                                         padding: 30,
-                                        border: '2px #00000029 solid',
+                                        border: '1px #3E3E3E solid',
                                         borderRadius: 10,
                                         display: 'flex',
                                     }}
@@ -150,7 +150,7 @@ const ApiKeys = ({ environment }) => {
                                 <div
                                     style={{
                                         padding: 30,
-                                        border: '2px #00000029 solid',
+                                        border: '1px #3E3E3E solid',
                                         borderRadius: 10,
                                         display: 'flex',
                                     }}

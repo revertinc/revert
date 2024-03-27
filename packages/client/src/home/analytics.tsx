@@ -86,7 +86,7 @@ const Analytics = ({ environment }) => {
                                     <div
                                         style={{
                                             padding: 30,
-                                            border: '2px #00000029 solid',
+                                            border: '1px #3E3E3E solid',
                                             borderRadius: 10,
                                             display: 'flex',
                                             flexDirection: 'column',
@@ -98,7 +98,7 @@ const Analytics = ({ environment }) => {
                                         }}
                                     >
                                         <p>Total connections</p>
-                                        <span className="font-bold mt-4 text-lg">
+                                        <span className="font-bold mt-4 text-lg text-[#94a3b8]">
                                             {metrics.totalConnections || 'No data'}
                                         </span>
                                     </div>
@@ -116,7 +116,7 @@ const Analytics = ({ environment }) => {
                                     <div
                                         style={{
                                             padding: 30,
-                                            border: '2px #00000029 solid',
+                                            border: '1px #3E3E3E solid',
                                             borderRadius: 10,
                                             display: 'flex',
                                             flexDirection: 'column',
@@ -128,7 +128,7 @@ const Analytics = ({ environment }) => {
                                         }}
                                     >
                                         <p>Recent connections</p>
-                                        <ul className="mt-4 w-full text-sm  text-[#737373]">
+                                        <ul className="mt-4 w-full text-sm  text-[#94a3b8]">
                                             {metrics.recentConnections
                                                 ? metrics.recentConnections.map((connection) => (
                                                       <li className="flex justify-between">
@@ -154,7 +154,7 @@ const Analytics = ({ environment }) => {
                                     <div
                                         style={{
                                             padding: 30,
-                                            border: '2px #00000029 solid',
+                                            border: '1px #3E3E3E solid',
                                             borderRadius: 10,
                                             display: 'flex',
                                             flexDirection: 'column',
@@ -165,7 +165,7 @@ const Analytics = ({ environment }) => {
                                         }}
                                     >
                                         <p>Recent API calls</p>
-                                        <ul className="mt-4 w-full text-sm text-[#737373]">
+                                        <ul className="mt-4 w-full text-sm text-[#94a3b8]">
                                             {metrics.recentApiCalls
                                                 ? metrics.recentApiCalls.map((call) => (
                                                       <li className="flex justify-between">
@@ -191,7 +191,7 @@ const Analytics = ({ environment }) => {
                                     <div
                                         style={{
                                             padding: 30,
-                                            border: '2px #00000029 solid',
+                                            border: '1px #3E3E3E solid',
                                             borderRadius: 10,
                                             display: 'flex',
                                             flexDirection: 'column',
@@ -202,7 +202,7 @@ const Analytics = ({ environment }) => {
                                         }}
                                     >
                                         <p>Connected Apps</p>
-                                        <ul className="mt-4 w-full text-sm text-[#737373]">
+                                        <ul className="mt-4 w-full text-sm text-[#94a3b8]">
                                             {metrics.connectedApps
                                                 ? metrics.connectedApps.map((app) => (
                                                       <li className="flex justify-between m-2">

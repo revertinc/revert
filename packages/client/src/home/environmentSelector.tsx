@@ -10,9 +10,12 @@ export default function EnvironmentSelector({ environmentProp, setEnvironmentPro
     };
     const anchorRef = React.useRef<HTMLDivElement>(null);
     return (
-        <FormControl sx={{ m: 1, minWidth: 120, background: '#1c212e', borderRadius: 2, marginLeft: 3 }} size="small">
+        <FormControl sx={{ m: 1, minWidth: 120, background: '#1c212e', borderRadius: 10, marginLeft: 3 }} size="small">
             <div ref={anchorRef}>
                 <Select
+                    style={{
+                        borderRadius: 10,
+                    }}
                     labelId="environment-selector"
                     id="environment-selector"
                     value={environmentProp}
@@ -34,6 +37,11 @@ export default function EnvironmentSelector({ environmentProp, setEnvironmentPro
                         },
                         anchorEl: anchorRef.current,
                         // FIXME: disablePortal: true, still doesn't fix the re-render issue
+                        PaperProps: {
+                            style: {
+                                background: '#1c212e',
+                            },
+                        },
                     }}
                     sx={{
                         color: '#89a3ff',
