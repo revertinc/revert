@@ -24,81 +24,81 @@ const Integrations = ({ environment }) => {
     // TODO: Get this from API.
     const integrations = [
         {
-            name: 'Salesforce',
-            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1688550774/Revert/image_8_2_peddol.png',
-            description: 'Configure your Salesforce App from here.',
-            onClick: () => handleOpen('sfdc'),
-        },
-        {
             name: 'Hubspot',
-            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1688550714/Revert/image_9_1_vilmhw.png',
+            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711548892/Revert/v8xy74cep10cjuitlnpk.png',
             description: 'Configure your Hubspot App from here.',
             onClick: () => handleOpen('hubspot'),
         },
         {
+            name: 'Salesforce',
+            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711548963/Revert/by6ckdbnibuniorebwxj.png',
+            description: 'Configure your Salesforce App from here.',
+            onClick: () => handleOpen('sfdc'),
+        },
+        {
             name: 'ZohoCRM',
-            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1688550788/Revert/image_10_xvb9h7.png',
+            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711549106/Revert/lig4v85hfhshob9w6z9z.png',
             description: 'Configure your Zoho CRM App from here.',
             onClick: () => handleOpen('zohocrm'),
         },
         {
             name: 'Pipedrive',
-            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1688633518/Revert/PipedriveLogo.png',
+            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711548714/Revert/opggbicfjuskkxnflysm.png',
             description: 'Configure your Pipedrive App from here.',
             onClick: () => handleOpen('pipedrive'),
         },
         {
-            name: 'Slack Chat',
-            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1697800654/Revert/txfq0qixzprqniuc0wry.png',
-            description: 'Configure your Slack Chat App from here.',
-            onClick: () => handleOpen('slack'),
-        },
-        {
             name: 'Close CRM',
-            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/c_scale,w_136/Revert/o8kv3xqzoqioupz0jpnl.jpg',
+            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711548783/Revert/mrfg9qcxzh5r2iyatjdg.png',
             description: 'Configure your Close CRM App from here.',
             onClick: () => handleOpen('closecrm'),
         },
         {
+            name: 'MS Dynamics Sales',
+            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711549741/Revert/pbvr2f2yszrt5ithbirb.png',
+            description: 'Configure your MS Dynamics 365 Sakes App from here.',
+            onClick: () => handleOpen('ms_dynamics_365_sales'),
+        },
+        {
+            name: 'Slack Chat',
+            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711550376/Revert/gei0ux6iptaf1nfxjfv2.png',
+            description: 'Configure your Slack Chat App from here.',
+            onClick: () => handleOpen('slack'),
+        },
+        {
             name: 'Discord Chat',
-            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/c_scale,w_136/v1701337535/Revert/qorqmz5ggxbb5ckywmxm.png',
+            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711550278/Revert/sgbdv2n10bajbykvtxl4.png',
             description: 'Configure your Discord Chat App from here.',
             onClick: () => handleOpen('discord'),
         },
         {
             name: 'Linear',
-            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1702974919/Revert/v5e5z6afm5iepiy3cvex.png',
+            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711549244/Revert/v8r7gnqe0tzoozwbhnyn.png',
             description: 'Configure your Linear Ticketing App from here.',
             onClick: () => handleOpen('linear'),
         },
         {
             name: 'Clickup',
-            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1702974919/Revert/zckjrxorttrrmyuxf1hu.png',
+            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711549293/Revert/ooo7iegqcrdkxgrclzjt.png',
             description: 'Configure your Clickup Ticketing App from here.',
             onClick: () => handleOpen('clickup'),
         },
         {
             name: 'Jira',
-            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1702983006/Revert/szfzkoagws7h3miptezo.png',
+            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711549557/Revert/tsjway6elov5bv1tc5tk.png',
             description: 'Configure your Jira Ticketing App from here.',
             onClick: () => handleOpen('jira'),
         },
         {
             name: 'Trello',
-            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1705315257/Revert/abt6asvtvdqhzgadanwx.png',
+            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711549291/Revert/caydzlxzcitdu2n9yuea.png',
             description: 'Configure your Trello Ticketing App from here.',
             onClick: () => handleOpen('trello'),
-        },
-        {
-            name: 'MS Dynamics Sales',
-            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1707715552/Revert/mecum34mxpxirpi1obxd.png',
-            description: 'Configure your MS Dynamics 365 Sakes App from here.',
-            onClick: () => handleOpen('ms_dynamics_365_sales'),
         },
 
         {
             name: 'Bitbucket',
-            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1702983006/Revert/szfzkoagws7h3miptezo.png',
+            logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711549311/Revert/cmqpors8m8tid9zpn9ak.png',
             description: 'Configure your Bitbucket Ticketing App from here.',
             onClick: () => handleOpen('bitbucket'),
         },
@@ -145,7 +145,7 @@ const Integrations = ({ environment }) => {
                 className="text-lg"
             >
                 <h1 className="text-3xl font-bold mb-3">Integrations</h1>
-                <span className="text-[#080d19ab]">Configure & Manage your connected apps here.</span>
+                <span className="text-[#b1b8ba]">Configure & Manage your connected apps here.</span>
             </Box>
             {loading ? (
                 <div className="mt-10">
@@ -173,7 +173,7 @@ const Integrations = ({ environment }) => {
                                     <div
                                         style={{
                                             padding: 30,
-                                            border: '2px #d1d9f2 solid',
+                                            border: '1px #3E3E3E solid',
                                             borderRadius: 10,
                                             display: 'flex',
                                             flexDirection: 'column',
@@ -183,9 +183,14 @@ const Integrations = ({ environment }) => {
                                             position: 'relative',
                                         }}
                                     >
-                                        <img width={100} alt={`${integration.name} logo`} src={integration.logo} />
+                                        <img
+                                            width={100}
+                                            style={{ maxHeight: 40, objectFit: 'scale-down', objectPosition: 'left' }}
+                                            alt={`${integration.name} logo`}
+                                            src={integration.logo}
+                                        />
                                         <p className="font-bold mt-4">{integration.name}</p>
-                                        <span className="text-[#080d19ab]">{integration.description}</span>
+                                        <span className="text-[#b1b8ba]">{integration.description}</span>
                                         <IconButton
                                             onClick={integration.onClick}
                                             style={{

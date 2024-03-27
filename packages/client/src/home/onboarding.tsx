@@ -12,7 +12,7 @@ const CustomButton = styled(Button)({
     padding: '6px 12px',
     border: '1px solid',
     lineHeight: 1.5,
-    backgroundColor: '#080d19',
+    backgroundColor: '#293347',
     borderColor: '#2c3957',
     fontFamily: [
         '-apple-system',
