@@ -2833,6 +2833,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -2919,7 +2925,13 @@ paths:
       operationId: ticket_comment_createComment
       tags:
         - TicketComment
-      parameters: []
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -3043,6 +3055,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -3134,7 +3152,13 @@ paths:
       operationId: ticket_task_createTask
       tags:
         - TicketTask
-      parameters: []
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''

@@ -1,5 +1,6 @@
 {
     "name": "@revertdotdev/main",
+    "license": "AGPL-3.0-only",
     "private": true,
     "workspaces": [
         "packages/*"
