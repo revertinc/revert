@@ -5715,6 +5715,7 @@ __metadata:
     "@types/ip": ^1.1.3
     "@types/jest": ^29.5.4
     "@types/lodash": ^4.14.199
+    "@types/mime": 3
     "@types/morgan": ^1.9.9
     "@types/node": "*"
     "@types/node-cron": ^3.0.8
@@ -9054,6 +9055,13 @@ __metadata:
   version: 3.0.1
   resolution: "@types/mime@npm:3.0.1"
   checksum: 4040fac73fd0cea2460e29b348c1a6173da747f3a87da0dbce80dd7a9355a3d0e51d6d9a401654f3e5550620e3718b5a899b2ec1debf18424e298a2c605346e7
+  languageName: node
+  linkType: hard
+
+"@types/mime@npm:3":
+  version: 3.0.4
+  resolution: "@types/mime@npm:3.0.4"
+  checksum: a6139c8e1f705ef2b064d072f6edc01f3c099023ad7c4fce2afc6c2bf0231888202adadbdb48643e8e20da0ce409481a49922e737eca52871b3dc08017455843
   languageName: node
   linkType: hard
 
