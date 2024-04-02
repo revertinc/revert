@@ -22,33 +22,33 @@ class CloseAuthHandler extends BaseOAuthHandler {
         tenantSecretToken,
         response,
     }: IntegrationAuthProps) {
-        const formData = {
-            client_id: clientId || config.CLOSECRM_CLIENT_ID,
-            client_secret: clientSecret || config.CLOSECRM_CLIENT_SECRET,
-            grant_type: 'authorization_code',
-            code,
-        };
-
-        const result = await axios({
-            method: 'post',
-            url: 'https://api.close.com/oauth2/token/',
-            data: qs.stringify(formData),
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        });
-        logInfo('OAuth creds for close crm', result.data);
-
-        const info = await axios({
-            method: 'get',
-            url: 'https://api.close.com/api/v1/me/',
-            headers: {
-                Authorization: `Bearer ${result.data.access_token}`,
-                Accept: 'application/json',
-            },
-        });
-
-        logInfo('Oauth token info', info.data);
-
         try {
+            const formData = {
+                client_id: clientId || config.CLOSECRM_CLIENT_ID,
+                client_secret: clientSecret || config.CLOSECRM_CLIENT_SECRET,
+                grant_type: 'authorization_code',
+                code,
+            };
+
+            const result = await axios({
+                method: 'post',
+                url: 'https://api.close.com/oauth2/token/',
+                data: qs.stringify(formData),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            });
+            logInfo('OAuth creds for close crm', result.data);
+
+            const info = await axios({
+                method: 'get',
+                url: 'https://api.close.com/api/v1/me/',
+                headers: {
+                    Authorization: `Bearer ${result.data.access_token}`,
+                    Accept: 'application/json',
+                },
+            });
+
+            logInfo('Oauth token info', info.data);
+
             await xprisma.connections.upsert({
                 where: {
                     id: tenantId,

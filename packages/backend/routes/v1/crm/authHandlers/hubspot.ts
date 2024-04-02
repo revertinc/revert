@@ -22,29 +22,29 @@ class HubspotAuthHandler extends BaseOAuthHandler {
         tenantSecretToken,
         response,
     }: IntegrationAuthProps) {
-        const url = 'https://api.hubapi.com/oauth/v1/token';
-        const formData = {
-            grant_type: 'authorization_code',
-            client_id: clientId || config.HUBSPOT_CLIENT_ID,
-            client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET,
-            redirect_uri: `${config.OAUTH_REDIRECT_BASE}/hubspot`,
-            code: code,
-        };
-        const result = await axios({
-            method: 'post',
-            url: url,
-            data: qs.stringify(formData),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-            },
-        });
-        logInfo('OAuth creds for hubspot', result.data);
-        const info = await axios({
-            method: 'get',
-            url: 'https://api.hubapi.com/oauth/v1/access-tokens/' + result.data.access_token,
-        });
-        logInfo('Oauth token info', info.data);
         try {
+            const url = 'https://api.hubapi.com/oauth/v1/token';
+            const formData = {
+                grant_type: 'authorization_code',
+                client_id: clientId || config.HUBSPOT_CLIENT_ID,
+                client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET,
+                redirect_uri: `${config.OAUTH_REDIRECT_BASE}/hubspot`,
+                code: code,
+            };
+            const result = await axios({
+                method: 'post',
+                url: url,
+                data: qs.stringify(formData),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                },
+            });
+            logInfo('OAuth creds for hubspot', result.data);
+            const info = await axios({
+                method: 'get',
+                url: 'https://api.hubapi.com/oauth/v1/access-tokens/' + result.data.access_token,
+            });
+            logInfo('Oauth token info', info.data);
             await xprisma.connections.upsert({
                 where: {
                     id: tenantId,
@@ -85,6 +85,7 @@ class HubspotAuthHandler extends BaseOAuthHandler {
                 tpCustomerId: info.data.user,
             });
         } catch (error: any) {
+            console.log('ERROR', error);
             return processOAuthResult({
                 status: false,
                 error,

@@ -23,35 +23,35 @@ class PipeDriveAuthHandler extends BaseOAuthHandler {
         tenantSecretToken,
         response,
     }: IntegrationAuthProps) {
-        // Handle the received code
-        const url = 'https://oauth.pipedrive.com/oauth/token';
-        const formData = {
-            grant_type: 'authorization_code',
-            redirect_uri: `${config.OAUTH_REDIRECT_BASE}/pipedrive`,
-            code,
-        };
-        // TODO: Add proper types
-        const result = await axios({
-            method: 'post',
-            url: url,
-            data: qs.stringify(formData),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                Authorization: `Basic ${Buffer.from(
-                    `${clientId || config.PIPEDRIVE_CLIENT_ID}:${clientSecret || config.PIPEDRIVE_CLIENT_SECRET}`
-                ).toString('base64')}`,
-            },
-        });
-        logInfo('OAuth creds for pipedrive', result.data);
-        const info = await axios({
-            method: 'get',
-            url: `${result.data.api_domain}/users/me`,
-            headers: {
-                Authorization: `Bearer ${result.data.access_token}`,
-            },
-        });
-        logInfo('Oauth token info', info.data);
         try {
+            // Handle the received code
+            const url = 'https://oauth.pipedrive.com/oauth/token';
+            const formData = {
+                grant_type: 'authorization_code',
+                redirect_uri: `${config.OAUTH_REDIRECT_BASE}/pipedrive`,
+                code,
+            };
+            // TODO: Add proper types
+            const result = await axios({
+                method: 'post',
+                url: url,
+                data: qs.stringify(formData),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                    Authorization: `Basic ${Buffer.from(
+                        `${clientId || config.PIPEDRIVE_CLIENT_ID}:${clientSecret || config.PIPEDRIVE_CLIENT_SECRET}`
+                    ).toString('base64')}`,
+                },
+            });
+            logInfo('OAuth creds for pipedrive', result.data);
+            const info = await axios({
+                method: 'get',
+                url: `${result.data.api_domain}/users/me`,
+                headers: {
+                    Authorization: `Bearer ${result.data.access_token}`,
+                },
+            });
+            logInfo('Oauth token info', info.data);
             await xprisma.connections.upsert({
                 where: {
                     id: tenantId,
@@ -98,6 +98,7 @@ class PipeDriveAuthHandler extends BaseOAuthHandler {
                 tpCustomerId: info.data.data.email,
             });
         } catch (error) {
+            console.log('OAuthERROR', error);
             return processOAuthResult({
                 status: false,
                 error,

@@ -22,42 +22,44 @@ class MsDynamicAuthHandler extends BaseOAuthHandler {
         tenantSecretToken,
         response,
     }: IntegrationAuthProps) {
-        let orgURL = account?.apps[0]?.is_revert_app ? undefined : (account?.apps[0]?.app_config as AppConfig)?.org_url;
-        if (!orgURL) orgURL = config.MS_DYNAMICS_SALES_ORG_URL;
-        let formData: any = {
-            client_id: clientId || config.MS_DYNAMICS_SALES_CLIENT_ID,
-            client_secret: clientSecret || config.MS_DYNAMICS_SALES_CLIENT_SECRET,
-            grant_type: 'authorization_code',
-            code,
-            redirect_uri: config.OAUTH_REDIRECT_BASE
-                ? encodeURI(config.OAUTH_REDIRECT_BASE + `/${integrationId}`)
-                : null,
-            scope: `${orgURL}/.default`,
-        };
-        formData = new URLSearchParams(formData);
-
-        const result = await axios({
-            method: 'post',
-            url: `https://login.microsoftonline.com/organizations/oauth2/v2.0/token`,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            data: formData,
-        });
-        logInfo('OAuth creds for Microsoft Dynamics 365 sales', result.data);
-
-        const info: any = await axios({
-            method: 'get',
-            url: `${orgURL}/api/data/v9.2/WhoAmI`,
-            headers: {
-                Authorization: `Bearer ${result.data.access_token}`,
-                'OData-MaxVersion': '4.0',
-                'OData-Version': '4.0',
-            },
-        });
-        logInfo('OAuth token info', 'info', info.data);
-
         try {
+            let orgURL = account?.apps[0]?.is_revert_app
+                ? undefined
+                : (account?.apps[0]?.app_config as AppConfig)?.org_url;
+            if (!orgURL) orgURL = config.MS_DYNAMICS_SALES_ORG_URL;
+            let formData: any = {
+                client_id: clientId || config.MS_DYNAMICS_SALES_CLIENT_ID,
+                client_secret: clientSecret || config.MS_DYNAMICS_SALES_CLIENT_SECRET,
+                grant_type: 'authorization_code',
+                code,
+                redirect_uri: config.OAUTH_REDIRECT_BASE
+                    ? encodeURI(config.OAUTH_REDIRECT_BASE + `/${integrationId}`)
+                    : null,
+                scope: `${orgURL}/.default`,
+            };
+            formData = new URLSearchParams(formData);
+
+            const result = await axios({
+                method: 'post',
+                url: `https://login.microsoftonline.com/organizations/oauth2/v2.0/token`,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                data: formData,
+            });
+            logInfo('OAuth creds for Microsoft Dynamics 365 sales', result.data);
+
+            const info: any = await axios({
+                method: 'get',
+                url: `${orgURL}/api/data/v9.2/WhoAmI`,
+                headers: {
+                    Authorization: `Bearer ${result.data.access_token}`,
+                    'OData-MaxVersion': '4.0',
+                    'OData-Version': '4.0',
+                },
+            });
+            logInfo('OAuth token info', 'info', info.data);
+
             await xprisma.connections.upsert({
                 where: {
                     id: tenantId,
@@ -107,6 +109,7 @@ class MsDynamicAuthHandler extends BaseOAuthHandler {
                 tpCustomerId: info.data.UserId,
             });
         } catch (error: any) {
+            console.log('OAuthERROR', error);
             return processOAuthResult({
                 status: false,
                 error,
