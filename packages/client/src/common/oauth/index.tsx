@@ -438,16 +438,18 @@ export const OAuthCallback = (props) => {
         }
     }, [integrationId]);
     return (
-        <div>
-            <h3 className="flex justify-center font-bold">OAuth Authorization {status}</h3>
-            {isLoading && (
-                <TailSpin
-                    wrapperStyle={{ justifyContent: 'center', marginTop: '100px' }}
-                    color="#1C1C1C"
-                    height={80}
-                    width={80}
-                />
-            )}
+        <div className="mt-10">
+            <div className="h-screen">
+                <h3 className="flex justify-center font-bold text-[#fff]">OAuth Authorization {status}</h3>
+                {isLoading && (
+                    <TailSpin
+                        wrapperStyle={{ justifyContent: 'center', marginTop: '100px' }}
+                        color="#1C1C1C"
+                        height={80}
+                        width={80}
+                    />
+                )}
+            </div>
         </div>
     );
 };

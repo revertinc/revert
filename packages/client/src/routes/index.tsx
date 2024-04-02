@@ -56,14 +56,7 @@ export function RouterComponent() {
                         </div>
                     }
                 />
-                <Route
-                    path="/oauth-callback/:integrationId"
-                    element={
-                        <div className="mt-10">
-                            <OAuthCallback />
-                        </div>
-                    }
-                />
+                <Route path="/oauth-callback/:integrationId" element={<OAuthCallback />} />
                 <Route
                     path="/sign-in"
                     element={

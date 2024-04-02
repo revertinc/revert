@@ -23,47 +23,48 @@ class ZohoAuthHandler extends BaseOAuthHandler {
         response,
         request,
     }: IntegrationAuthProps) {
-        const url = `${request?.query.accountURL}/oauth/v2/token`;
-        const formData = {
-            grant_type: 'authorization_code',
-            client_id: clientId || config.ZOHOCRM_CLIENT_ID,
-            client_secret: clientSecret || config.ZOHOCRM_CLIENT_SECRET,
-            redirect_uri: `${config.OAUTH_REDIRECT_BASE}/zohocrm`,
-            code,
-        };
+        try {
+            const url = `${request?.query.accountURL}/oauth/v2/token`;
+            const formData = {
+                grant_type: 'authorization_code',
+                client_id: clientId || config.ZOHOCRM_CLIENT_ID,
+                client_secret: clientSecret || config.ZOHOCRM_CLIENT_SECRET,
+                redirect_uri: `${config.OAUTH_REDIRECT_BASE}/zohocrm`,
+                code,
+            };
 
-        logInfo('Zoho', request?.query, formData);
+            logInfo('Zoho', request?.query, formData);
 
-        const result = await axios({
-            method: 'post',
-            url: url,
-            data: qs.stringify(formData),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-            },
-        });
-
-        logInfo('OAuth creds for zohocrm', result.data);
-        if (result.data.error) {
-            return processOAuthResult({
-                status: false,
-                error: result.data.error,
-                revertPublicKey,
-                tenantSecretToken,
-                response,
-                tenantId: tenantId,
-                integrationName: mapIntegrationIdToIntegrationName[integrationId],
-            });
-        } else {
-            const info = await axios({
-                method: 'get',
-                url: 'https://accounts.zoho.com/oauth/user/info',
+            const result = await axios({
+                method: 'post',
+                url: url,
+                data: qs.stringify(formData),
                 headers: {
-                    authorization: `Zoho-oauthtoken ${result.data.access_token}`,
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
                 },
             });
-            logInfo('Oauth token info', info.data);
-            try {
+
+            logInfo('OAuth creds for zohocrm', result.data);
+            if (result.data.error) {
+                return processOAuthResult({
+                    status: false,
+                    error: result.data.error,
+                    revertPublicKey,
+                    tenantSecretToken,
+                    response,
+                    tenantId: tenantId,
+                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                });
+            } else {
+                const info = await axios({
+                    method: 'get',
+                    url: 'https://accounts.zoho.com/oauth/user/info',
+                    headers: {
+                        authorization: `Zoho-oauthtoken ${result.data.access_token}`,
+                    },
+                });
+                logInfo('Oauth token info', info.data);
+
                 await xprisma.connections.upsert({
                     where: {
                         id: tenantId,
@@ -104,17 +105,18 @@ class ZohoAuthHandler extends BaseOAuthHandler {
                     integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tpCustomerId: info.data.Email,
                 });
-            } catch (error: any) {
-                return processOAuthResult({
-                    status: false,
-                    error,
-                    revertPublicKey,
-                    tenantSecretToken,
-                    response,
-                    tenantId: tenantId,
-                    integrationName: mapIntegrationIdToIntegrationName[integrationId],
-                });
             }
+        } catch (error: any) {
+            console.log('OAuthERROR', error);
+            return processOAuthResult({
+                status: false,
+                error,
+                revertPublicKey,
+                tenantSecretToken,
+                response,
+                tenantId: tenantId,
+                integrationName: mapIntegrationIdToIntegrationName[integrationId],
+            });
         }
     }
 }
