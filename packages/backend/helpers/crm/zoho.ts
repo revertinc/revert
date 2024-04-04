@@ -51,6 +51,10 @@ const getZohoAssociation = (obj: any, objType: StandardObjects) => {
         case StandardObjects.task: {
             return {
                 ...(obj.associations?.dealId && { What_Id: obj.associations.dealId, $se_module: 'Deals' }),
+                ...(obj.associations?.contactId && {
+                    Who_Id: obj.associations.contactId,
+                    $se_module: 'Contacts',
+                }),
             };
         }
         default: {
