@@ -132,7 +132,7 @@ Em caso de dúvidas/feedback, você pode entrar em contato das seguintes formas
 -   Faça uma pergunta em nosso [discord](https://discord.gg/q5K5cRhymW)
 -   Se desejar, você pode agendar uma ligação com nossa equipe abaixo
 
-<a href="https://cal.com/allenrevert/30min?utm_source=banner&utm_campaign=oss"><img alt="Reserve-nos com Cal.com" src="https://cal.com/book-with -cal-dark.svg" /></a>
+<a href="https://cal.com/jatinsandilya/chat-with-jatin-from-revert?utm_source=banner&utm_campaign=oss"><img alt="Reserve-nos com Cal.com" src="https://cal.com/book-with -cal-dark.svg" /></a>
 
 ## 🔒 Segurança
 
