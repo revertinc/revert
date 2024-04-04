@@ -132,7 +132,7 @@ UI 现在可在 http://localhost:3000 上使用，后端可在 http://localhost:
 -   在我们的 [discord](https://discord.gg/q5K5cRhymW) 中提问
 -   如果您愿意，可以与我们的团队进行电话预约
 
-<a href="https://cal.com/allenrevert/30min?utm_source=banner&utm_campaign=oss"><img alt="通过 Cal.com 预订我们" src="https://cal.com/book-with -cal-dark.svg"/></a>
+<a href="https://cal.com/jatinsandilya/chat-with-jatin-from-revert?utm_source=banner&utm_campaign=oss"><img alt="通过 Cal.com 预订我们" src="https://cal.com/book-with -cal-dark.svg"/></a>
 
 ## 🔒 安全
 
