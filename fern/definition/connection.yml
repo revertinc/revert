@@ -47,6 +47,26 @@ types:
         enum:
             - SUCCESS
             - FAILED
+    ConnectionImport:
+        properties:
+            tp_id: types.TPID
+            tp_access_token: string
+            tp_refresh_token: string
+            tp_customer_id:
+                type: string
+                docs: The email id of the user who connected the app.
+            t_id: string
+            tp_account_url: optional<string>
+            app_client_id: string
+            app_client_secret: string
+            app_id: string
+
+    ImportConnectionsRequestBody:
+        properties:
+            connections: list<ConnectionImport>
+    ImportConnectionsResponse:
+        properties:
+            status: types.ResponseStatus
 
 service:
     base-path: ''
@@ -162,3 +182,20 @@ service:
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
+        importConnections:
+            docs: Import multiple connections for a specific environment. Use this to bulk import connections as a one-time exercise.
+            method: POST
+            path: /connection/import
+            request:
+                name: ImportConnectionsRequest
+                headers:
+                    x-revert-t-id:
+                        type: string
+                        docs: The unique customer id used when the customer linked their account.
+                body: ImportConnectionsRequestBody
+
+            response: ImportConnectionsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
