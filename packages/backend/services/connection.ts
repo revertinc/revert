@@ -70,6 +70,75 @@ const connectionService = new ConnectionService({
             throw new NotFoundError({ error: 'Connections not found!' });
         }
     },
+    async importConnections(req, res) {
+        const { 'x-revert-api-token': token } = req.headers;
+        if (!token) {
+            throw new UnAuthorizedError({ error: 'Api unauthorized' });
+        }
+        try {
+            const environment = await prisma.environments.findFirst({
+                where: {
+                    private_token: String(token),
+                },
+            });
+            if (!environment) {
+                throw new UnAuthorizedError({ error: 'Api unauthorized' });
+            }
+            const connectionsData = req.body.connections;
+            const createdConnections = await Promise.all(
+                connectionsData.map(async (connection) => {
+                    return await xprisma.connections.upsert({
+                        where: {
+                            id: connection.t_id,
+                        },
+                        update: {
+                            id: connection.t_id,
+                            t_id: connection.t_id,
+                            tp_id: connection.tp_id,
+                            tp_access_token: connection.tp_access_token,
+                            tp_refresh_token: connection.tp_refresh_token,
+                            app_client_id: connection.app_client_id,
+                            app_client_secret: connection.app_client_secret,
+                            tp_customer_id: connection.tp_customer_id,
+                            owner_account_public_token: environment.public_token,
+                            appId: connection.app_id,
+                            tp_account_url: connection.tp_account_url,
+                            environmentId: environment?.id,
+                        },
+                        create: {
+                            id: connection.t_id,
+                            t_id: connection.t_id,
+                            tp_id: connection.tp_id,
+                            tp_access_token: connection.tp_access_token,
+                            tp_refresh_token: connection.tp_refresh_token,
+                            app_client_id: connection.app_client_id,
+                            app_client_secret: connection.app_client_secret,
+                            tp_customer_id: connection.tp_customer_id,
+                            owner_account_public_token: environment.public_token,
+                            appId: connection.app_id,
+                            tp_account_url: connection.tp_account_url,
+                            environmentId: environment?.id,
+                        },
+                    });
+                })
+            );
+
+            if (createdConnections) {
+                // TODO: Should webhooks get fired for bulk import of connections?
+                // const svixAppId = environment?.accountId!;
+                // createdConnections.forEach((c) => sendConnectionDeletedEvent(svixAppId, c));
+                res.send({ status: 'ok' });
+            } else {
+                throw new NotFoundError({ error: 'Connections not imported!' });
+            }
+        } catch (error: any) {
+            logError(error);
+            console.error(error);
+            res.send({
+                status: 'error',
+            });
+        }
+    },
     async deleteConnection(req, res) {
         const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
         if (!token) {

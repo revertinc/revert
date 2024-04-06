@@ -65,7 +65,7 @@ class HubspotAuthHandler extends BaseOAuthHandler {
                     tp_access_token: result.data.access_token,
                     tp_refresh_token: result.data.refresh_token,
                     app_client_id: clientId || config.HUBSPOT_CLIENT_ID,
-                    app_client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET, // TODO: Fix in other platforms.
+                    app_client_secret: clientSecret || config.HUBSPOT_CLIENT_SECRET,
                     tp_customer_id: info.data.user,
                     owner_account_public_token: revertPublicKey,
                     appId: account?.apps[0].id,

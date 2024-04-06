@@ -126,7 +126,10 @@ const EditCredentials: React.FC<{
             <Row>
                 <span style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="font-bold">Use default revert app</span>
-                    <span style={{ fontSize: '14px' }}>(uncheck to use your own app credentials)</span>
+                    <span style={{ fontSize: '14px', marginBottom: 20 }}>
+                        (uncheck to use your own app credentials)
+                    </span>
+                    <span className="text-xs align-right font-bold mb-4"> AppId: {app.id}</span>
                 </span>
                 <Switch
                     style={{ color: '#fff' }}

@@ -412,6 +412,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/commonBaseError'
+  /connection/import:
+    post:
+      description: >-
+        Import multiple connections for a specific environment. Use this to bulk
+        import connections as a one-time exercise.
+      operationId: connection_importConnections
+      tags:
+        - Connection
+      parameters:
+        - name: x-revert-t-id
+          in: header
+          description: The unique customer id used when the customer linked their account.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportConnectionsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportConnectionsRequestBody'
   /crm/companies/{id}:
     get:
       description: Get details of a company
@@ -4264,6 +4310,57 @@ components:
       enum:
         - SUCCESS
         - FAILED
+    ConnectionImport:
+      title: ConnectionImport
+      type: object
+      properties:
+        tp_id:
+          $ref: '#/components/schemas/commonTPID'
+        tp_access_token:
+          type: string
+        tp_refresh_token:
+          type: string
+        tp_customer_id:
+          type: string
+          description: The email id of the user who connected the app.
+        t_id:
+          type: string
+        tp_account_url:
+          type: string
+          nullable: true
+        app_client_id:
+          type: string
+        app_client_secret:
+          type: string
+        app_id:
+          type: string
+      required:
+        - tp_id
+        - tp_access_token
+        - tp_refresh_token
+        - tp_customer_id
+        - t_id
+        - app_client_id
+        - app_client_secret
+        - app_id
+    ImportConnectionsRequestBody:
+      title: ImportConnectionsRequestBody
+      type: object
+      properties:
+        connections:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectionImport'
+      required:
+        - connections
+    ImportConnectionsResponse:
+      title: ImportConnectionsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+      required:
+        - status
     crmGetCompanyResponse:
       title: crmGetCompanyResponse
       type: object
