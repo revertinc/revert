@@ -3,9 +3,8 @@ import prisma, { xprisma } from '../prisma/client';
 import config from '../config';
 import { logError } from '../helpers/logger';
 import { v4 as uuidv4 } from 'uuid';
-import { Connection, NotFoundError, UnAuthorizedError } from '../generated/typescript/api/resources/common/resources';
+import { NotFoundError, UnAuthorizedError } from '../generated/typescript/api/resources/common/resources';
 import { sendConnectionDeletedEvent } from '../helpers/webhooks/connection';
-import { ConnectionImport } from 'generated/typescript/api';
 
 const connectionService = new ConnectionService({
     async getConnection(req, res) {

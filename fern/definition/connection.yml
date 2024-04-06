@@ -54,7 +54,7 @@ types:
             tp_refresh_token: string
             tp_customer_id:
                 type: string
-                docs: The email id of the user who connected the app.
+                docs: The emailId or a unique ID id of the user who connected the app.
             t_id: string
             tp_account_url: optional<string>
             app_client_id: string
