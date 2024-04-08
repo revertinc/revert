@@ -59,7 +59,9 @@ types:
             tp_account_url: optional<string>
             app_client_id: string
             app_client_secret: string
-            app_id: string
+            app_id:
+                type: string
+                docs: Can be obtained from the integration dashboard.
 
     ImportConnectionsRequestBody:
         properties:
