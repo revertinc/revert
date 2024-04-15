@@ -20,7 +20,7 @@
         "fern-format": "fern format",
         "fern-upgrade": "fern upgrade --rc",
         "fern-docs:preview": "fern generate --docs --preview",
-        "fern-docs": "fern generate --group external",
+        "fern-docs": "fern generate --docs --instance revert.docs.buildwithfern.com --log-level debug",
         "build": "yarn workspaces foreach run build",
         "prepare": "husky install",
         "lint": "lint-staged",

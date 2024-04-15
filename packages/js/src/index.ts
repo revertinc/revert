@@ -877,6 +877,17 @@ const createIntegrationBlock = function (self, integration) {
                 [],
                 'Object'
             );
+            const hiddenObject = createViewElement(
+                'div',
+                '',
+                transformStyle({
+                    visibility: 'hidden',
+                    height: '1px',
+                }),
+                [],
+                objectName
+            );
+            hiddenObject.classList.add('stdHiddenObj');
             const objInput = createViewElement(
                 'div',
                 `sd-object-${fieldName}`,
@@ -949,7 +960,15 @@ const createIntegrationBlock = function (self, integration) {
                     marginBottom: '25px',
                     gap: '10px',
                 }),
-                [objectHeading, objInput, mappableHeading, mappableInput, accountSpecificHeading, accountSpecificInput],
+                [
+                    hiddenObject,
+                    objectHeading,
+                    objInput,
+                    mappableHeading,
+                    mappableInput,
+                    accountSpecificHeading,
+                    accountSpecificInput,
+                ],
                 ''
             );
             return container;
