@@ -2775,6 +2775,57 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/commonBaseError'
+  /sync:
+    post:
+      description: Trigger sync for a specific tenant
+      operationId: sync_triggerSync
+      tags:
+        - Sync
+      parameters:
+        - name: x-revert-api-token
+          in: header
+          description: Your official API key for accessing revert apis.
+          required: true
+          schema:
+            type: string
+        - name: x-revert-t-id
+          in: header
+          description: The unique customer id used when the customer linked their account.
+          required: true
+          schema:
+            type: string
+        - name: x-connection-api-key
+          in: header
+          description: API key for third party provider
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggerSyncResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
   /ticket/collections:
     get:
       description: Get all the collections
@@ -4322,7 +4373,7 @@ components:
           type: string
         tp_customer_id:
           type: string
-          description: The email id of the user who connected the app.
+          description: The emailId or a unique ID id of the user who connected the app.
         t_id:
           type: string
         tp_account_url:
@@ -4334,6 +4385,7 @@ components:
           type: string
         app_id:
           type: string
+          description: Can be obtained from the integration dashboard.
       required:
         - tp_id
         - tp_access_token
@@ -5171,6 +5223,14 @@ components:
       enum:
         - active
         - inactive
+    TriggerSyncResponse:
+      title: TriggerSyncResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+      required:
+        - status
     ticketGetCollectionsResponse:
       title: ticketGetCollectionsResponse
       type: object

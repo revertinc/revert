@@ -50,6 +50,8 @@ const config = {
     MS_DYNAMICS_SALES_ORG_URL: process.env.MS_DYNAMICS_SALES_ORG_URL!,
     BITBUCKET_CLIENT_ID: process.env.BITBUCKET_CLIENT_ID!,
     BITBUCKET_CLIENT_SECRET: process.env.BITBUCKET_CLIENT_SECRET!,
+    OPEN_INT_API_KEY: process.env.OPEN_INT_API_KEY,
+    TWENTY_ACCOUNT_ID: process.env.TWENTY_ACCOUNT_ID,
 };
 
 export default config;

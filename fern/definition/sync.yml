@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+imports:
+    errors: common/errors.yml
+    types: common/types.yml
+
+types:
+    TriggerSyncResponse:
+        properties:
+            status: types.ResponseStatus
+
+service:
+    base-path: /sync
+    auth: false
+    audiences:
+        - external
+    endpoints:
+        triggerSync:
+            docs: Trigger sync for a specific tenant
+            method: POST
+            path: ''
+            request:
+                name: TriggerSyncRequest
+                headers:
+                    x-revert-api-token:
+                        type: string
+                        docs: Your official API key for accessing revert apis.
+                    x-revert-t-id:
+                        type: string
+                        docs: The unique customer id used when the customer linked their account.
+                    x-connection-api-key:
+                        type: optional<string>
+                        docs: API key for third party provider
+            response: TriggerSyncResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+                - errors.NotImplementedError
