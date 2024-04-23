@@ -5553,6 +5553,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opensdks/fetch-links@npm:0.0.17":
+  version: 0.0.17
+  resolution: "@opensdks/fetch-links@npm:0.0.17"
+  checksum: c81f3214bb97680e0784494caa4585136da324c6395d466a7ab6c1f0f0ac7ea852b5ebbe2fef9ffc46f4c0f055528853ebe0b2101b57ee8f9ecbfcd6db4b24ea
+  languageName: node
+  linkType: hard
+
+"@opensdks/runtime@npm:0.0.16":
+  version: 0.0.16
+  resolution: "@opensdks/runtime@npm:0.0.16"
+  dependencies:
+    "@opensdks/fetch-links": 0.0.17
+    openapi-fetch: 0.8.1
+    openapi-typescript-helpers: 0.0.4
+    openapi3-ts: 4.1.2
+  checksum: 8664e6b416b7e419335d5b0ab04df37a266c1aa0237a5131f13d172feda3608db1edf375e3bf64331176788524aa65e1eecb9e7bdeadebb30962f3ae67946a8a
+  languageName: node
+  linkType: hard
+
+"@opensdks/sdk-venice@npm:0.0.14":
+  version: 0.0.14
+  resolution: "@opensdks/sdk-venice@npm:0.0.14"
+  peerDependencies:
+    "@opensdks/runtime": 0.0.14
+  checksum: d46f6e7fa32f03563ffb83dd78e4cfcad65f0f6435e74fd0ed28f16c8623f772721d83f8b9b0989403492cbfa1610750059c9be7525512352e943c47c2c44b32
+  languageName: node
+  linkType: hard
+
 "@pmmmwh/react-refresh-webpack-plugin@npm:^0.5.3":
   version: 0.5.10
   resolution: "@pmmmwh/react-refresh-webpack-plugin@npm:0.5.10"
@@ -5706,6 +5734,8 @@ __metadata:
     "@babel/preset-env": ^7.19.4
     "@babel/preset-typescript": ^7.18.6
     "@linear/sdk": ^13.0.0
+    "@opensdks/runtime": 0.0.16
+    "@opensdks/sdk-venice": 0.0.14
     "@prisma/client": ^4.16.0
     "@sentry/node": ^7.55.2
     "@shortloop/node": 0.0.12
@@ -23273,6 +23303,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"openapi-fetch@npm:0.8.1":
+  version: 0.8.1
+  resolution: "openapi-fetch@npm:0.8.1"
+  dependencies:
+    openapi-typescript-helpers: ^0.0.4
+  checksum: 9bdc37b21bc662af2826c51165ea1e1b0fa5ac05076852870457800d85b0a9bbf3466f905919fba014badd7143946e86640f748dd5720d49445d32d16429ccab
+  languageName: node
+  linkType: hard
+
+"openapi-typescript-helpers@npm:0.0.4, openapi-typescript-helpers@npm:^0.0.4":
+  version: 0.0.4
+  resolution: "openapi-typescript-helpers@npm:0.0.4"
+  checksum: d06d62f9669db5110f32ef36a70f9f2698dd7ad03ba41968baf13e1091caaf23c4af6f8a79103cfd68f65046da4284dcc2f75e9950e9170115189b545e3030fc
+  languageName: node
+  linkType: hard
+
+"openapi3-ts@npm:4.1.2":
+  version: 4.1.2
+  resolution: "openapi3-ts@npm:4.1.2"
+  dependencies:
+    yaml: ^2.2.2
+  checksum: 019a66f4195966bf58ee29f913b91e39975616458fdb40a15507a3b3e338eacfc882def0dda1a5001edf962e382ed6f46c8a0d40684adcccb868960267df30d9
+  languageName: node
+  linkType: hard
+
 "opener@npm:^1.5.2":
   version: 1.5.2
   resolution: "opener@npm:1.5.2"
@@ -31153,6 +31208,15 @@ __metadata:
   version: 1.10.2
   resolution: "yaml@npm:1.10.2"
   checksum: ce4ada136e8a78a0b08dc10b4b900936912d15de59905b2bf415b4d33c63df1d555d23acb2a41b23cf9fb5da41c256441afca3d6509de7247daa062fd2c5ea5f
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.2.2":
+  version: 2.4.1
+  resolution: "yaml@npm:2.4.1"
+  bin:
+    yaml: bin.mjs
+  checksum: 4c391d07a5d5e935e058babb71026c9cdc9a6fd889e35dd91b53cfb0a12691b67c6c5c740858e71345fef18cd9c13c554a6dda9196f59820d769d94041badb0b
   languageName: node
   linkType: hard
 

@@ -16,3 +16,6 @@ errors:
     BadRequestError:
         status-code: 400
         type: BaseError
+    NotImplementedError:
+        status-code: 500
+        type: BaseError
