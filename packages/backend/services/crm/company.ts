@@ -652,6 +652,9 @@ const companyService = new CompanyService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const pageSize = parseInt(String(req.query.pageSize));
+                const cursor = req.query.cursor;
+
                 logInfo('Revert::SEARCH COMPANY', connection.app?.env?.accountId, tenantId, searchCriteria, fields);
 
                 switch (thirdPartyId) {
@@ -665,6 +668,8 @@ const companyService = new CompanyService(
                             },
                             data: JSON.stringify({
                                 ...searchCriteria,
+                                limit: pageSize,
+                                after: cursor,
                                 properties: [
                                     'name',
                                     'hs_object_id',
@@ -680,6 +685,9 @@ const companyService = new CompanyService(
                                 ],
                             }),
                         });
+
+                        const nextCursor = companies.data?.paging?.next?.after || undefined;
+
                         companies = companies.data.results as any[];
                         companies = await Promise.all(
                             companies?.map(
@@ -695,6 +703,8 @@ const companyService = new CompanyService(
                         );
                         res.send({
                             status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
                             results: companies,
                         });
                         break;

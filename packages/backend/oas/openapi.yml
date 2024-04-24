@@ -644,6 +644,18 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -4322,7 +4334,7 @@ components:
           type: string
         tp_customer_id:
           type: string
-          description: The email id of the user who connected the app.
+          description: The emailId or a unique ID id of the user who connected the app.
         t_id:
           type: string
         tp_account_url:
@@ -4334,6 +4346,7 @@ components:
           type: string
         app_id:
           type: string
+          description: Can be obtained from the integration dashboard.
       required:
         - tp_id
         - tp_access_token
@@ -4419,6 +4432,12 @@ components:
       properties:
         status:
           $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
         results:
           type: array
           items:
