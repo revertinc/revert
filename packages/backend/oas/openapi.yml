@@ -2787,6 +2787,57 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/commonBaseError'
+  /sync:
+    post:
+      description: Trigger sync for a specific tenant
+      operationId: sync_triggerSync
+      tags:
+        - Sync
+      parameters:
+        - name: x-revert-api-token
+          in: header
+          description: Your official API key for accessing revert apis.
+          required: true
+          schema:
+            type: string
+        - name: x-revert-t-id
+          in: header
+          description: The unique customer id used when the customer linked their account.
+          required: true
+          schema:
+            type: string
+        - name: x-connection-api-key
+          in: header
+          description: API key for third party provider
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriggerSyncResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
   /ticket/collections:
     get:
       description: Get all the collections
@@ -5190,6 +5241,14 @@ components:
       enum:
         - active
         - inactive
+    TriggerSyncResponse:
+      title: TriggerSyncResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+      required:
+        - status
     ticketGetCollectionsResponse:
       title: ticketGetCollectionsResponse
       type: object
