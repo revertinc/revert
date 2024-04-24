@@ -742,6 +742,8 @@ const leadService = new LeadService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const cursor = req.query.cursor;
+                const pageSize = parseInt(String(req.query.pageSize));
                 logInfo('Revert::SEARCH LEAD', connection.app?.env?.accountId, tenantId, searchCriteria, fields);
 
                 switch (thirdPartyId) {
@@ -755,6 +757,8 @@ const leadService = new LeadService(
                             },
                             data: JSON.stringify({
                                 ...searchCriteria,
+                                limit: pageSize,
+                                after: cursor,
                                 properties: [
                                     'hs_lead_status',
                                     'firstname',
@@ -766,6 +770,8 @@ const leadService = new LeadService(
                                 ],
                             }),
                         });
+                        const nextCursor = leads.data?.paging?.next?.after || undefined;
+
                         leads = filterLeadsFromContactsForHubspot(leads.data.results as any[]);
                         leads = await Promise.all(
                             leads?.map(
@@ -781,6 +787,8 @@ const leadService = new LeadService(
                         );
                         res.send({
                             status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
                             results: leads,
                         });
                         break;

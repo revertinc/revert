@@ -684,6 +684,8 @@ const noteService = new NoteService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const cursor = req.query.cursor;
+                const pageSize = parseInt(String(req.query.pageSize));
                 logInfo('Revert::SEARCH NOTE', connection.app?.env?.accountId, tenantId, searchCriteria, fields);
 
                 switch (thirdPartyId) {
@@ -697,9 +699,12 @@ const noteService = new NoteService(
                             },
                             data: JSON.stringify({
                                 ...searchCriteria,
+                                limit: pageSize,
+                                after: cursor,
                                 properties: ['hs_note_body', 'hs_object_id', ...formattedFields],
                             }),
                         });
+                        const nextCursor = notes.data?.paging?.next?.after || undefined;
                         notes = notes.data.results as any[];
                         notes = await Promise.all(
                             notes?.map(
@@ -713,7 +718,7 @@ const noteService = new NoteService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: notes });
+                        res.send({ status: 'ok', next: nextCursor, previous: undefined, results: notes });
                         break;
                     }
                     case TP_ID.zohocrm: {

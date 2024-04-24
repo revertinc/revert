@@ -683,6 +683,9 @@ const eventService = new EventService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const cursor = req.query.cursor;
+                const pageSize = parseInt(String(req.query.pageSize));
+
                 logInfo('Revert::SEARCH EVENT', connection.app?.env?.accountId, tenantId, searchCriteria, fields);
 
                 switch (thirdPartyId) {
@@ -696,6 +699,8 @@ const eventService = new EventService(
                             },
                             data: JSON.stringify({
                                 ...searchCriteria,
+                                limit: pageSize,
+                                after: cursor,
                                 properties: [
                                     'hs_meeting_title',
                                     'hs_meeting_body',
@@ -708,6 +713,8 @@ const eventService = new EventService(
                                 ],
                             }),
                         });
+                        const nextCursor = events.data?.paging?.next?.after || undefined;
+
                         events = events.data.results as any[];
                         events = await Promise.all(
                             events?.map(
@@ -721,7 +728,7 @@ const eventService = new EventService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: events });
+                        res.send({ status: 'ok', next: nextCursor, previous: undefined, results: events });
                         break;
                     }
                     case TP_ID.zohocrm: {
