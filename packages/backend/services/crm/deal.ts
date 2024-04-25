@@ -760,10 +760,7 @@ const dealService = new DealService(
                 const tenantId = connection.t_id;
 
                 const cursor = req.query.cursor;
-const pageSize = parseInt(String(req.query.pageSize));
-
-
-
+                const pageSize = parseInt(String(req.query.pageSize));
 
                 logInfo(
                     'Revert::SEARCH DEAL',
@@ -785,8 +782,8 @@ const pageSize = parseInt(String(req.query.pageSize));
                             },
                             data: JSON.stringify({
                                 ...searchCriteria,
-                                limit:pageSize
-after:cursor,
+                                limit: pageSize,
+                                after: cursor,
                                 properties: [
                                     'hs_deal_status',
                                     'firstname',
@@ -819,9 +816,7 @@ after:cursor,
                                     })
                             )
                         );
-                        res.send({ status: 'ok', next: nextCursor,
-                        previous: undefined,
-                        results: deals });
+                        res.send({ status: 'ok', next: nextCursor, previous: undefined, results: deals });
                         break;
                     }
                     case TP_ID.zohocrm: {
