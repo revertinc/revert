@@ -700,13 +700,18 @@ const companyService = new CompanyService(
                         break;
                     }
                     case TP_ID.zohocrm: {
+                        const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page_token=${cursor}` : ''
+                        }`;
                         let companies: any = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/Accounts/search?criteria=${searchCriteria}`,
+                            url: `https://www.zohoapis.com/crm/v3/Accounts/search?criteria=${searchCriteria}${pagingString}`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
+                        const nextCursor = companies.data?.info?.next_page_token || undefined;
+                        const prevCursor = companies.data?.info?.previous_page_token || undefined;
                         companies = companies.data.data;
                         companies = await Promise.all(
                             companies?.map(
@@ -720,7 +725,7 @@ const companyService = new CompanyService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: companies });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: companies });
                         break;
                     }
                     case TP_ID.sfdc: {
