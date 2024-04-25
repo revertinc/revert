@@ -668,8 +668,8 @@ const companyService = new CompanyService(
                             },
                             data: JSON.stringify({
                                 ...searchCriteria,
-                                limit: pageSize,
-                                after: cursor,
+                                limit: pageSize || 100,
+                                after: cursor || 0,
                                 properties: [
                                     'name',
                                     'hs_object_id',

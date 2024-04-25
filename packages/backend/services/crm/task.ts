@@ -730,8 +730,8 @@ const taskService = new TaskService(
                             },
                             data: JSON.stringify({
                                 ...searchCriteria,
-                                limit: pageSize,
-                                after: cursor,
+                                limit: pageSize || 100,
+                                after: cursor || 0,
                                 properties: [
                                     'hs_task_body',
                                     'hs_task_subject',

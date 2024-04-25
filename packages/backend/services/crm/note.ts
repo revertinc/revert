@@ -699,8 +699,8 @@ const noteService = new NoteService(
                             },
                             data: JSON.stringify({
                                 ...searchCriteria,
-                                limit: pageSize,
-                                after: cursor,
+                                limit: pageSize || 100,
+                                after: cursor || 0,
                                 properties: ['hs_note_body', 'hs_object_id', ...formattedFields],
                             }),
                         });

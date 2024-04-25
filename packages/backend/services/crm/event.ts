@@ -699,8 +699,8 @@ const eventService = new EventService(
                             },
                             data: JSON.stringify({
                                 ...searchCriteria,
-                                limit: pageSize,
-                                after: cursor,
+                                limit: pageSize || 100,
+                                after: cursor || 0,
                                 properties: [
                                     'hs_meeting_title',
                                     'hs_meeting_body',
