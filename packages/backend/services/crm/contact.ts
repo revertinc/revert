@@ -232,6 +232,7 @@ const contactService = new ContactService(
                             },
                         });
                         const nextCursor = contacts.data?.paging?.next?.after || undefined;
+
                         contacts = contacts.data.results as any[];
                         contacts = await Promise.all(
                             contacts?.map(
@@ -832,17 +833,25 @@ const contactService = new ContactService(
                         break;
                     }
                     case TP_ID.zohocrm: {
+                        const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page_token=${cursor}` : ''
+                        }`;
                         let contacts: any = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/Contacts/search?criteria=${searchCriteria}`,
+                            url: `https://www.zohoapis.com/crm/v3/Contacts/search?criteria=${searchCriteria}${pagingString}`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
+
+                        let nextCursor;
+                        let prevCursor;
                         const isValidContactData =
                             contacts.data && contacts.data.data !== undefined && Array.isArray(contacts.data.data);
                         if (isValidContactData) {
                             contacts = contacts?.data?.data;
+                            nextCursor = contacts.data?.info?.next_page_token || undefined;
+                            prevCursor = contacts.data?.info?.previous_page_token || undefined;
 
                             contacts = await Promise.all(
                                 contacts?.map(
@@ -859,7 +868,7 @@ const contactService = new ContactService(
                         } else {
                             contacts = [];
                         }
-                        res.send({ status: 'ok', results: contacts });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
                         break;
                     }
                     case TP_ID.sfdc: {

@@ -766,13 +766,18 @@ const taskService = new TaskService(
                         break;
                     }
                     case TP_ID.zohocrm: {
+                        const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page_token=${cursor}` : ''
+                        }`;
                         let tasks: any = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/Tasks/search?criteria=${searchCriteria}`,
+                            url: `https://www.zohoapis.com/crm/v3/Tasks/search?criteria=${searchCriteria}${pagingString}`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
+                        const nextCursor = tasks.data?.info?.next_page_token || undefined;
+                        const prevCursor = tasks.data?.info?.previous_page_token || undefined;
                         tasks = tasks.data.data;
                         tasks = await Promise.all(
                             tasks?.map(
@@ -786,7 +791,7 @@ const taskService = new TaskService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: tasks });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: tasks });
                         break;
                     }
                     case TP_ID.sfdc: {

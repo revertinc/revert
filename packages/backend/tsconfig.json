@@ -3,12 +3,8 @@
         "baseUrl": ".",
         "outDir": "./dist",
         "target": "ES2018",
-        "module": "commonjs",
-        "lib": [
-            "es2016",
-            "es2017.object",
-            "es2017.string"
-        ],
+        "module": "NodeNext",
+        "lib": ["es2016", "es2017.object", "es2017.string"],
         "strict": true,
         "skipLibCheck": true,
         "noImplicitAny": true,
@@ -27,7 +23,5 @@
         "moduleResolution": "NodeNext",
         "allowSyntheticDefaultImports": true
     },
-    "exclude": [
-        "**/node_modules/*.d.ts"
-    ],
+    "exclude": ["**/node_modules/*.d.ts"]
 }

@@ -820,13 +820,19 @@ const dealService = new DealService(
                         break;
                     }
                     case TP_ID.zohocrm: {
+                        const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page_token=${cursor}` : ''
+                        }`;
                         let deals: any = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/deals/search?criteria=${searchCriteria}`,
+                            url: `https://www.zohoapis.com/crm/v3/deals/search?criteria=${searchCriteria}${pagingString}`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
+
+                        const nextCursor = deals.data?.info?.next_page_token || undefined;
+                        const prevCursor = deals.data?.info?.previous_page_token || undefined;
                         deals = deals.data.data;
                         deals = await Promise.all(
                             deals?.map(
@@ -840,7 +846,7 @@ const dealService = new DealService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: deals });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: deals });
                         break;
                     }
                     case TP_ID.sfdc: {

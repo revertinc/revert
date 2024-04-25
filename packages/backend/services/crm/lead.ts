@@ -794,13 +794,18 @@ const leadService = new LeadService(
                         break;
                     }
                     case TP_ID.zohocrm: {
+                        const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page_token=${cursor}` : ''
+                        }`;
                         let leads: any = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/Leads/search?criteria=${searchCriteria}`,
+                            url: `https://www.zohoapis.com/crm/v3/Leads/search?criteria=${searchCriteria}${pagingString}`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
+                        const nextCursor = leads.data?.info?.next_page_token || undefined;
+                        const prevCursor = leads.data?.info?.previous_page_token || undefined;
                         leads = leads.data.data;
                         leads = await Promise.all(
                             leads?.map(
@@ -814,7 +819,7 @@ const leadService = new LeadService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: leads });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: leads });
                         break;
                     }
                     case TP_ID.sfdc: {
