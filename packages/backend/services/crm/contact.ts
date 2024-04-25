@@ -954,8 +954,16 @@ const contactService = new ContactService(
                                 'Content-Type': 'application/json',
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
-                            data: { ...searchCriteria, _fields: { contact: fields } },
+                            data: {
+                                ...searchCriteria,
+                                _fields: { contact: fields },
+                                _limit: pageSize || 100,
+                                cursor: cursor,
+                            },
                         });
+
+                        const nextCursor = response.data?.cursor || undefined;
+                        const prevCursor = undefined;
 
                         const contacts = await Promise.all(
                             response.data.data.map(
@@ -970,7 +978,7 @@ const contactService = new ContactService(
                             )
                         );
 
-                        res.send({ status: 'ok', results: contacts });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
                         break;
                     }
                     case TP_ID.ms_dynamics_365_sales: {
