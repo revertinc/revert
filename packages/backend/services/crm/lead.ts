@@ -840,6 +840,9 @@ const leadService = new LeadService(
                         break;
                     }
                     case TP_ID.pipedrive: {
+                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&start=${cursor}` : ''
+                        }`;
                         const instanceUrl = connection.tp_account_url;
                         const result = await axios.get<
                             {
@@ -848,13 +851,16 @@ const leadService = new LeadService(
                         >(
                             `${instanceUrl}/v1/leads/search?term=${searchCriteria}${
                                 formattedFields.length ? `&fields=${formattedFields.join(',')}` : ''
-                            }`,
+                            }${pagingString}`,
                             {
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
                             }
                         );
+
+                        const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
+                        const prevCursor = undefined;
                         // this api has person and organization auto populated
                         const leads = result.data.data.items.map((item) => item.item);
                         const unifiedLeads = await Promise.all(
@@ -869,7 +875,7 @@ const leadService = new LeadService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: unifiedLeads });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedLeads });
                         break;
                     }
                     case TP_ID.ms_dynamics_365_sales: {

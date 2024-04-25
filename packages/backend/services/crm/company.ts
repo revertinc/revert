@@ -755,18 +755,24 @@ const companyService = new CompanyService(
                     }
                     case TP_ID.pipedrive: {
                         const instanceUrl = connection.tp_account_url;
+                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&start=${cursor}` : ''
+                        }`;
                         const result = await axios.get<
                             { data: { items: { item: any; result_score: number }[] } } & PipedrivePagination
                         >(
                             `${instanceUrl}/v1/organizations/search?term=${searchCriteria}${
                                 formattedFields.length ? `&fields=${formattedFields.join(',')}` : ''
-                            }`,
+                            }${pagingString}`,
                             {
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
                             }
                         );
+                        const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
+                        const prevCursor = undefined;
+
                         const companies = result.data.data.items.map((item) => item.item);
                         const unifiedCompanies = await Promise.all(
                             companies?.map(
@@ -780,7 +786,7 @@ const companyService = new CompanyService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: unifiedCompanies });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedCompanies });
                         break;
                     }
                     case TP_ID.ms_dynamics_365_sales: {
