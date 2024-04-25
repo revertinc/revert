@@ -30,6 +30,8 @@ types:
     SearchTasksResponse:
         properties:
             status: types.ResponseStatus
+            next: optional<string>
+            previous: optional<string>
             results: list<unified.Task>
 
 service:
@@ -115,6 +117,8 @@ service:
                         searchCriteria: unknown
                 query-parameters:
                     fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
             response: SearchTasksResponse
             errors:
                 - errors.UnAuthorizedError

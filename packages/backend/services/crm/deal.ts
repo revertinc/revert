@@ -758,6 +758,10 @@ const dealService = new DealService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+
+                const cursor = req.query.cursor;
+                const pageSize = parseInt(String(req.query.pageSize));
+
                 logInfo(
                     'Revert::SEARCH DEAL',
                     connection.app?.env?.accountId,
@@ -778,6 +782,8 @@ const dealService = new DealService(
                             },
                             data: JSON.stringify({
                                 ...searchCriteria,
+                                limit: pageSize || 100,
+                                after: cursor || 0,
                                 properties: [
                                     'hs_deal_status',
                                     'firstname',
@@ -795,6 +801,8 @@ const dealService = new DealService(
                                 ],
                             }),
                         });
+                        const nextCursor = deals.data?.paging?.next?.after || undefined;
+
                         deals = deals.data.results as any[];
                         deals = await Promise.all(
                             deals?.map(
@@ -808,7 +816,7 @@ const dealService = new DealService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: deals });
+                        res.send({ status: 'ok', next: nextCursor, previous: undefined, results: deals });
                         break;
                     }
                     case TP_ID.zohocrm: {

@@ -781,6 +781,8 @@ const contactService = new ContactService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const pageSize = parseInt(String(req.query.pageSize));
+                const cursor = req.query.cursor;
                 logInfo('Revert::SEARCH CONTACT', connection.app?.env?.accountId, tenantId, searchCriteria);
 
                 switch (thirdPartyId) {
@@ -794,6 +796,8 @@ const contactService = new ContactService(
                             },
                             data: JSON.stringify({
                                 ...searchCriteria,
+                                limit: pageSize || 100,
+                                after: cursor || 0,
                                 properties: [
                                     'hs_lead_status',
                                     'firstname',
@@ -805,6 +809,7 @@ const contactService = new ContactService(
                                 ],
                             }),
                         });
+                        const nextCursor = contacts.data?.paging?.next?.after || undefined;
                         contacts = contacts.data.results as any[];
                         contacts = await Promise.all(
                             contacts?.map(
@@ -820,6 +825,8 @@ const contactService = new ContactService(
                         );
                         res.send({
                             status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
                             results: contacts,
                         });
                         break;
