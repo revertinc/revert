@@ -714,6 +714,9 @@ const taskService = new TaskService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const cursor = req.query.cursor;
+                const pageSize = parseInt(String(req.query.pageSize));
+
                 logInfo('Revert::SEARCH TASK', connection.app?.env?.accountId, tenantId, searchCriteria, fields);
 
                 switch (thirdPartyId) {
@@ -727,6 +730,8 @@ const taskService = new TaskService(
                             },
                             data: JSON.stringify({
                                 ...searchCriteria,
+                                limit: pageSize || 100,
+                                after: cursor || 0,
                                 properties: [
                                     'hs_task_body',
                                     'hs_task_subject',
@@ -737,6 +742,8 @@ const taskService = new TaskService(
                                 ],
                             }),
                         });
+                        const nextCursor = tasks.data?.paging?.next?.after || undefined;
+
                         tasks = tasks.data.results as any[];
                         tasks = await Promise.all(
                             tasks?.map(
@@ -752,6 +759,8 @@ const taskService = new TaskService(
                         );
                         res.send({
                             status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
                             results: tasks,
                         });
                         break;

@@ -31,6 +31,8 @@ types:
     SearchEventsResponse:
         properties:
             status: types.ResponseStatus
+            next: optional<string>
+            previous: optional<string>
             results: list<unified.Event>
     DeleteEventResponse:
         properties:
@@ -120,6 +122,8 @@ service:
                         searchCriteria: unknown
                 query-parameters:
                     fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
             response: SearchEventsResponse
             errors:
                 - errors.UnAuthorizedError

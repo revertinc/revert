@@ -644,6 +644,18 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -876,6 +888,18 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -1091,6 +1115,18 @@ paths:
         - CrmDeal
       parameters:
         - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
           in: query
           required: false
           schema:
@@ -1352,6 +1388,18 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -1572,6 +1620,18 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -1787,6 +1847,18 @@ paths:
         - CrmNote
       parameters:
         - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
           in: query
           required: false
           schema:
@@ -2124,6 +2196,18 @@ paths:
         - CrmTask
       parameters:
         - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
           in: query
           required: false
           schema:
@@ -4471,6 +4555,12 @@ components:
       properties:
         status:
           $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
         results:
           type: array
           items:
@@ -4539,6 +4629,12 @@ components:
       properties:
         status:
           $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
         results:
           type: array
           items:
@@ -4607,6 +4703,12 @@ components:
       properties:
         status:
           $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
         results:
           type: array
           items:
@@ -4675,6 +4777,12 @@ components:
       properties:
         status:
           $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
         results:
           type: array
           items:
@@ -4754,6 +4862,12 @@ components:
       properties:
         status:
           $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
         results:
           type: array
           items:
@@ -4822,6 +4936,12 @@ components:
       properties:
         status:
           $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
         results:
           type: array
           items:
@@ -4958,6 +5078,12 @@ components:
       properties:
         status:
           $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
         results:
           type: array
           items:
