@@ -732,13 +732,18 @@ const eventService = new EventService(
                         break;
                     }
                     case TP_ID.zohocrm: {
+                        const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page_token=${cursor}` : ''
+                        }`;
                         let events: any = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/Events/search?criteria=${searchCriteria}`,
+                            url: `https://www.zohoapis.com/crm/v3/Events/search?criteria=${searchCriteria}${pagingString}`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
+                        const nextCursor = events.data?.info?.next_page_token || undefined;
+                        const prevCursor = events.data?.info?.previous_page_token || undefined;
                         events = events.data.data;
                         events = await Promise.all(
                             events?.map(
@@ -752,7 +757,7 @@ const eventService = new EventService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: events });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: events });
                         break;
                     }
                     case TP_ID.sfdc: {
@@ -788,15 +793,16 @@ const eventService = new EventService(
                         if (searchCriteria) {
                             searchString += fields ? `&$filter=${searchCriteria}` : `$filter=${searchCriteria}`;
                         }
-
+                        const pagingString = cursor ? encodeURI(cursor).split('?')[1] : '';
                         const result = await axios({
                             method: 'get',
-                            url: `${connection.tp_account_url}/api/data/v9.2/appointments?${searchString}`,
+                            url: `${connection.tp_account_url}/api/data/v9.2/appointments?${searchString}${pagingString}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'OData-MaxVersion': '4.0',
                                 'OData-Version': '4.0',
                                 Accept: 'application/json',
+                                Prefer: pageSize ? `odata.maxpagesize=${pageSize}` : '',
                             },
                         });
 
@@ -813,7 +819,12 @@ const eventService = new EventService(
                             )
                         );
 
-                        res.send({ status: 'ok', results: unifiedEvents });
+                        res.send({
+                            status: 'ok',
+                            next: result.data['@odata.nextLink'],
+                            previous: undefined,
+                            results: unifiedEvents,
+                        });
                         break;
                     }
                     default: {

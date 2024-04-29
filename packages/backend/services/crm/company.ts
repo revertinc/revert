@@ -710,13 +710,18 @@ const companyService = new CompanyService(
                         break;
                     }
                     case TP_ID.zohocrm: {
+                        const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page_token=${cursor}` : ''
+                        }`;
                         let companies: any = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/Accounts/search?criteria=${searchCriteria}`,
+                            url: `https://www.zohoapis.com/crm/v3/Accounts/search?criteria=${searchCriteria}${pagingString}`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
+                        const nextCursor = companies.data?.info?.next_page_token || undefined;
+                        const prevCursor = companies.data?.info?.previous_page_token || undefined;
                         companies = companies.data.data;
                         companies = await Promise.all(
                             companies?.map(
@@ -730,7 +735,7 @@ const companyService = new CompanyService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: companies });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: companies });
                         break;
                     }
                     case TP_ID.sfdc: {
@@ -760,18 +765,24 @@ const companyService = new CompanyService(
                     }
                     case TP_ID.pipedrive: {
                         const instanceUrl = connection.tp_account_url;
+                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&start=${cursor}` : ''
+                        }`;
                         const result = await axios.get<
                             { data: { items: { item: any; result_score: number }[] } } & PipedrivePagination
                         >(
                             `${instanceUrl}/v1/organizations/search?term=${searchCriteria}${
                                 formattedFields.length ? `&fields=${formattedFields.join(',')}` : ''
-                            }`,
+                            }${pagingString}`,
                             {
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
                             }
                         );
+                        const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
+                        const prevCursor = undefined;
+
                         const companies = result.data.data.items.map((item) => item.item);
                         const unifiedCompanies = await Promise.all(
                             companies?.map(
@@ -785,7 +796,7 @@ const companyService = new CompanyService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: unifiedCompanies });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedCompanies });
                         break;
                     }
                     case TP_ID.ms_dynamics_365_sales: {
@@ -793,15 +804,16 @@ const companyService = new CompanyService(
                         if (searchCriteria) {
                             searchString += fields ? `&$filter=${searchCriteria}` : `$filter=${searchCriteria}`;
                         }
-
+                        const pagingString = cursor ? encodeURI(cursor).split('?')[1] : '';
                         const result = await axios({
                             method: 'get',
-                            url: `${connection.tp_account_url}/api/data/v9.2/accounts?${searchString}`,
+                            url: `${connection.tp_account_url}/api/data/v9.2/accounts?${searchString}${pagingString}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'OData-MaxVersion': '4.0',
                                 'OData-Version': '4.0',
                                 Accept: 'application/json',
+                                Prefer: pageSize ? `odata.maxpagesize=${pageSize}` : '',
                             },
                         });
 
@@ -818,7 +830,12 @@ const companyService = new CompanyService(
                             )
                         );
 
-                        res.send({ status: 'ok', results: unifiedCompanies });
+                        res.send({
+                            status: 'ok',
+                            next: result.data['@odata.nextLink'],
+                            previous: undefined,
+                            results: unifiedCompanies,
+                        });
                         break;
                     }
                     default: {

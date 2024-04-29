@@ -794,13 +794,18 @@ const leadService = new LeadService(
                         break;
                     }
                     case TP_ID.zohocrm: {
+                        const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page_token=${cursor}` : ''
+                        }`;
                         let leads: any = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/Leads/search?criteria=${searchCriteria}`,
+                            url: `https://www.zohoapis.com/crm/v3/Leads/search?criteria=${searchCriteria}${pagingString}`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
+                        const nextCursor = leads.data?.info?.next_page_token || undefined;
+                        const prevCursor = leads.data?.info?.previous_page_token || undefined;
                         leads = leads.data.data;
                         leads = await Promise.all(
                             leads?.map(
@@ -814,7 +819,7 @@ const leadService = new LeadService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: leads });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: leads });
                         break;
                     }
                     case TP_ID.sfdc: {
@@ -843,6 +848,9 @@ const leadService = new LeadService(
                         break;
                     }
                     case TP_ID.pipedrive: {
+                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&start=${cursor}` : ''
+                        }`;
                         const instanceUrl = connection.tp_account_url;
                         const result = await axios.get<
                             {
@@ -851,13 +859,16 @@ const leadService = new LeadService(
                         >(
                             `${instanceUrl}/v1/leads/search?term=${searchCriteria}${
                                 formattedFields.length ? `&fields=${formattedFields.join(',')}` : ''
-                            }`,
+                            }${pagingString}`,
                             {
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
                             }
                         );
+
+                        const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
+                        const prevCursor = undefined;
                         // this api has person and organization auto populated
                         const leads = result.data.data.items.map((item) => item.item);
                         const unifiedLeads = await Promise.all(
@@ -872,7 +883,7 @@ const leadService = new LeadService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: unifiedLeads });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedLeads });
                         break;
                     }
                     case TP_ID.ms_dynamics_365_sales: {
@@ -880,15 +891,17 @@ const leadService = new LeadService(
                         if (searchCriteria) {
                             searchString += fields ? `&$filter=${searchCriteria}` : `$filter=${searchCriteria}`;
                         }
+                        const pagingString = cursor ? encodeURI(cursor).split('?')[1] : '';
 
                         const result = await axios({
                             method: 'get',
-                            url: `${connection.tp_account_url}/api/data/v9.2/leads?${searchString}`,
+                            url: `${connection.tp_account_url}/api/data/v9.2/leads?${searchString}${pagingString}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'OData-MaxVersion': '4.0',
                                 'OData-Version': '4.0',
                                 Accept: 'application/json',
+                                Prefer: pageSize ? `odata.maxpagesize=${pageSize}` : '',
                             },
                         });
 
@@ -905,7 +918,12 @@ const leadService = new LeadService(
                             )
                         );
 
-                        res.send({ status: 'ok', results: unifiedLeads });
+                        res.send({
+                            status: 'ok',
+                            next: result.data['@odata.nextLink'],
+                            previous: undefined,
+                            results: unifiedLeads,
+                        });
                         break;
                     }
                     default: {
