@@ -5,7 +5,7 @@ import cors from 'cors';
 
 import { createSession } from 'better-sse';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../redis/client/pubsub';
-import { logDebug } from '../helpers/logger';
+import { logDebug, logInfo } from '../helpers/logger';
 
 import crmRouter from './v1/crm';
 import config from '../config';
@@ -116,6 +116,7 @@ router.post('/slack-alert', async (req, res) => {
 });
 
 router.post('/clerk/webhook', async (req, res) => {
+    logInfo(req.body);
     if (req.body) {
         let webhookData = req.body.data;
         let webhookEventType = req.body.type;
