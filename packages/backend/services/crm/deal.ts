@@ -191,6 +191,7 @@ const dealService = new DealService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
                 logInfo(
                     'Revert::GET ALL DEAL',
                     connection.app?.env?.accountId,
@@ -217,7 +218,7 @@ const dealService = new DealService(
                         }`;
                         let deals: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/deals?properties=${formattedFields}&${pagingString}`,
+                            url: `https://api.hubapi.com/crm/v3/objects/deals?associations=${associations}&properties=${formattedFields}&${pagingString}`,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
@@ -228,7 +229,7 @@ const dealService = new DealService(
                             deals?.map(
                                 async (l: any) =>
                                     await unifyObject<any, UnifiedDeal>({
-                                        obj: { ...l, ...l?.properties },
+                                        obj: { ...l, ...l?.properties, ...l?.associations },
                                         tpId: thirdPartyId,
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
