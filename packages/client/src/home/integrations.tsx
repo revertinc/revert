@@ -10,6 +10,7 @@ import { LOCALSTORAGE_KEYS } from '../data/localstorage';
 import { useApi } from '../data/hooks';
 import { LoadingButton } from '@mui/lab';
 import MainHeader from '../layout/MainHeader';
+import AddIntegration from '../features/integration/AddIntegration';
 
 const Integrations = ({ environment }) => {
     const user = useUser();
@@ -136,7 +137,7 @@ const Integrations = ({ environment }) => {
     }, [data]);
 
     return (
-        <div className="w-[80%]">
+        <div className="w-[80%] overflow-scroll over-scroll-auto">
             <MainHeader>
                 <Box
                     component="div"
@@ -144,7 +145,7 @@ const Integrations = ({ environment }) => {
                         display: 'flex',
                         flexDirection: 'column',
                     }}
-                    className="text-lg"
+                    className="text-lg mb-16"
                 >
                     <h1 className="text-3xl font-bold mb-3">Integrations</h1>
                     <span className="text-[#b1b8ba]">Configure & Manage your connected apps here.</span>
@@ -166,59 +167,72 @@ const Integrations = ({ environment }) => {
             ) : (
                 <>
                     {account ? (
-                        <div
-                            className="flex justify-between flex-wrap items-start gap-4"
-                            style={{ padding: '2rem 5rem', width: '80%' }}
-                        >
-                            {integrations.map((integration, index) => (
-                                <Box
-                                    key={index}
-                                    sx={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        padding: '2rem 0rem',
-                                        maxWidth: '340px',
-                                        maxHeight: '208px',
-                                    }}
-                                >
-                                    <div
-                                        style={{
-                                            padding: 30,
-                                            border: '1px #3E3E3E solid',
-                                            borderRadius: 10,
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'flex-start',
-                                            height: 200,
-                                            justifyContent: 'flex-end',
-                                            position: 'relative',
-                                        }}
-                                    >
-                                        <img
-                                            width={100}
-                                            style={{ maxHeight: 40, objectFit: 'scale-down', objectPosition: 'left' }}
-                                            alt={`${integration.name} logo`}
-                                            src={integration.logo}
-                                        />
-                                        <p className="font-bold mt-4">{integration.name}</p>
-                                        <span className="text-[#b1b8ba]">{integration.description}</span>
-                                        <IconButton
-                                            onClick={integration.onClick}
-                                            style={{
-                                                color: '#94a3b8',
-                                                fontSize: 12,
-                                                position: 'absolute',
-                                                top: 10,
-                                                right: 10,
+                        <>
+                            <Box
+                                display="flex"
+                                flexDirection="column"
+                                justifyContent="center"
+                                height="80vh"
+                                alignItems="center"
+                            >
+                                <AddIntegration values={{ init, setInit, integrations }} />
+                                {/* <p>No Integration Created, Create and Configure your First Integration</p> */}
+                                <div className="grid grid-cols-4 gap-8">
+                                    {integrations.map((integration, index) => (
+                                        <Box
+                                            key={index}
+                                            sx={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                padding: '2rem 0rem',
+                                                maxWidth: '340px',
+                                                maxHeight: '208px',
                                             }}
                                         >
-                                            <SettingsIcon />
-                                        </IconButton>
-                                    </div>
-                                </Box>
-                            ))}
-                        </div>
+                                            <div
+                                                style={{
+                                                    padding: 30,
+                                                    border: '1px #3E3E3E solid',
+                                                    borderRadius: 10,
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'flex-start',
+                                                    height: 200,
+                                                    justifyContent: 'flex-end',
+                                                    position: 'relative',
+                                                }}
+                                            >
+                                                <img
+                                                    width={100}
+                                                    style={{
+                                                        maxHeight: 40,
+                                                        objectFit: 'scale-down',
+                                                        objectPosition: 'left',
+                                                    }}
+                                                    alt={`${integration.name} logo`}
+                                                    src={integration.logo}
+                                                />
+                                                <p className="font-bold mt-4">{integration.name}</p>
+                                                <span className="text-[#b1b8ba]">{integration.description}</span>
+                                                <IconButton
+                                                    onClick={integration.onClick}
+                                                    style={{
+                                                        color: '#94a3b8',
+                                                        fontSize: 12,
+                                                        position: 'absolute',
+                                                        top: 10,
+                                                        right: 10,
+                                                    }}
+                                                >
+                                                    <SettingsIcon />
+                                                </IconButton>
+                                            </div>
+                                        </Box>
+                                    ))}
+                                </div>
+                            </Box>
+                        </>
                     ) : (
                         <>
                             <Box
