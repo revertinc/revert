@@ -6,6 +6,7 @@ const { veniceSdkDef } = require('@opensdks/sdk-venice');
 const syncTwentyConnection = async (connection: Connection, connectionAPIKey: string) => {
     const connectionId = connection.t_id;
     const openIntApiKey = config.OPEN_INT_API_KEY;
+    const openIntBaseApiUrl = config.OPEN_INT_BASE_API_URL;
     if (!config.OPEN_INT_API_KEY || !connectionAPIKey) {
         console.log('Credentials absent to make this sync happen for: ', connection.t_id, ' returning early');
         return;
@@ -15,7 +16,7 @@ const syncTwentyConnection = async (connection: Connection, connectionAPIKey: st
             ...veniceSdkDef,
             oasMeta: {
                 ...veniceSdkDef.oasMeta,
-                // servers: [{ url: 'http://localhost:4000/api/v0' }],
+                servers: [{ url: `${openIntBaseApiUrl}/api/v0` }],
             },
         },
         {
@@ -117,6 +118,7 @@ const syncTwentyConnection = async (connection: Connection, connectionAPIKey: st
                 id: `pipe_${connectionId}`,
                 sourceId: revertResource?.data.id,
                 destinationId: twentyResource?.data.id,
+                streams: { contact: {}, company: {}, deal: {} },
             },
         });
         syncPipeline.data = [createdPipeline.data];
@@ -125,17 +127,16 @@ const syncTwentyConnection = async (connection: Connection, connectionAPIKey: st
 
     console.log('PIPELINE', syncPipeline?.data[0]);
 
-    void venice
+    await venice
         .POST(`/core/pipeline/${syncPipeline?.data[0]?.id}/_sync`, {
             params: {
-                async: true,
+                path: { id: syncPipeline?.data[0]?.id },
+            },
+            body: {
+                async: false,
             },
         })
-        .then()
-        .catch((e: Error) => console.log('Error', e))
-        .finally(() => {
-            console.log('TRIGGERED');
-        });
+        .catch(() => console.log('TRIGGERED'));
 };
 
 export { syncTwentyConnection };
