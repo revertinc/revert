@@ -8,6 +8,8 @@ import Modal from '@mui/material/Modal';
 import EditCredentials from './editCredentials';
 import { LOCALSTORAGE_KEYS } from '../data/localstorage';
 import { useApi } from '../data/hooks';
+import { LoadingButton } from '@mui/lab';
+import MainHeader from '../layout/MainHeader';
 
 const Integrations = ({ environment }) => {
     const user = useUser();
@@ -16,6 +18,7 @@ const Integrations = ({ environment }) => {
     const [account, setAccount] = useState<any>();
     const [open, setOpen] = React.useState(false);
     const [appId, setAppId] = useState<string>('sfdc');
+    const [init, setInit] = useState<boolean>(false);
 
     const handleOpen = (appId: string) => {
         setAppId(appId);
@@ -134,19 +137,28 @@ const Integrations = ({ environment }) => {
 
     return (
         <div className="w-[80%]">
-            <Box
-                component="div"
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    padding: '0 5rem',
-                    paddingTop: '120px',
-                }}
-                className="text-lg"
-            >
-                <h1 className="text-3xl font-bold mb-3">Integrations</h1>
-                <span className="text-[#b1b8ba]">Configure & Manage your connected apps here.</span>
-            </Box>
+            <MainHeader>
+                <Box
+                    component="div"
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                    className="text-lg"
+                >
+                    <h1 className="text-3xl font-bold mb-3">Integrations</h1>
+                    <span className="text-[#b1b8ba]">Configure & Manage your connected apps here.</span>
+                </Box>
+                <Box>
+                    <LoadingButton
+                        variant="contained"
+                        style={{ background: '#293347', padding: '0.6rem 1.4rem' }}
+                        onClick={() => setInit(true)}
+                    >
+                        Create New Integration
+                    </LoadingButton>
+                </Box>
+            </MainHeader>
             {loading ? (
                 <div className="mt-10">
                     <TailSpin wrapperStyle={{ justifyContent: 'center' }} color="#1C1C1C" height={80} width={80} />
