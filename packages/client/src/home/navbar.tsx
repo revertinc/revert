@@ -16,13 +16,13 @@ const Navbar = ({ workspaceName, environment, setEnvironment, environmentList })
                     className="w-[30px] h-[30px] ml-[24px] cursor-pointer mt-4 mb-3 mr-[24px]"
                 />
                 <span className="ml-[24px] mr-[12px] text-[#fff]">{workspaceName}</span>
+            </Link>
+            <div className="flex justify-center items-center">
                 <EnvironmentSelector
                     environmentProp={environment}
                     setEnvironmentProp={setEnvironment}
                     environmentList={environmentList}
                 />
-            </Link>
-            <div className="flex justify-center items-center">
                 <a
                     href={'https://docs.revert.dev'}
                     target="_blank"
