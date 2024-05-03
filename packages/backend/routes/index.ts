@@ -5,7 +5,7 @@ import cors from 'cors';
 
 import { createSession } from 'better-sse';
 import pubsub, { IntegrationStatusSseMessage, PUBSUB_CHANNELS } from '../redis/client/pubsub';
-import { logDebug, logInfo } from '../helpers/logger';
+import { logDebug } from '../helpers/logger';
 
 import crmRouter from './v1/crm';
 import config from '../config';
