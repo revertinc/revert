@@ -1,3 +1,5 @@
+// TODO: Get this from API Later Point.
+
 export const appsInfo = {
     hubspot: {
         name: 'Hubspot',

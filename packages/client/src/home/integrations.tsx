@@ -23,13 +23,26 @@ const Integrations = ({ environment }) => {
         setAppId(id);
         setOpen(true);
     };
-    // TODO: Get this from API.
+    const apps = account?.environments?.find((x) => x.env === environment).apps || [];
 
     const handleClose = async ({ refetchOnClose = false }: { refetchOnClose?: boolean }) => {
         setOpen(false);
         if (refetchOnClose) {
             await fetchAccount();
         }
+    };
+
+    const handleCreation = async (id: string) => {
+        const payload = {
+            userId: user.user?.id,
+            tpId: id,
+            environment,
+        };
+        const res = await fetch({
+            url: '/internal/account/apps',
+            method: 'POST',
+            payload,
+        });
     };
 
     const fetchAccount = React.useCallback(async () => {
@@ -87,19 +100,17 @@ const Integrations = ({ environment }) => {
             ) : (
                 <>
                     {account ? (
-                        <>
-                            <Box
-                                display="flex"
-                                flexDirection="column"
-                                justifyContent="center"
-                                height="80vh"
-                                alignItems="center"
-                            >
-                                <AddIntegration values={{ init, setInit }} />
-                                {/* <p>No Integration Created, Create and Configure your First Integration</p> */}
-                                <CreatedIntegration values={{ account, environment, handleOpen }} />
-                            </Box>
-                        </>
+                        <Box
+                            display="flex"
+                            flexDirection="column"
+                            justifyContent="center"
+                            height="80vh"
+                            alignItems="center"
+                        >
+                            <AddIntegration values={{ init, setInit, handleCreation, apps }} />
+                            {/* <p>No Integration Created, Create and Configure your First Integration</p> */}
+                            <CreatedIntegration values={{ account, environment, handleOpen }} />
+                        </Box>
                     ) : (
                         <>
                             <Box

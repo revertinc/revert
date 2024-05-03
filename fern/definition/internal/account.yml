@@ -50,3 +50,20 @@ service:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
+        createRevertAppForAccount:
+            docs: create Revert App for Account
+            method: POST
+            path: /apps
+            request: 
+                name: CreateRevertAppForAccount
+                body: 
+                    properties: 
+                        userId: string
+                        tpId: types.TPID
+                        environment: string
+            response: GetAccountDetailsResponse
+            errors: 
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                        
+

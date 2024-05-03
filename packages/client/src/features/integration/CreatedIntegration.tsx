@@ -14,7 +14,6 @@ function CreatedIntegration({
 }) {
     const { account, environment, handleOpen } = values;
     const apps = account.environments.find((x) => x.env === environment).apps;
-    console.log(apps);
     return (
         <div className="grid grid-cols-4 gap-8">
             {apps.map((app, index) => {
