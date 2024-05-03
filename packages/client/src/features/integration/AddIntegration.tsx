@@ -46,7 +46,7 @@ function AddIntegration({
                                 <div
                                     className="flex w-full justify-around items-center px-8 py-8 rounded-lg"
                                     style={{
-                                        border: isAppExist ? '0.5px #ffa8a8 solid' : '0.5px #ced4da solid',
+                                        border: isAppExist ? '1px #ff8787 solid' : '0.5px #ced4da solid',
                                     }}
                                     onClick={() => {
                                         handleCreation(app);
