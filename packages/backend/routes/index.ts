@@ -116,7 +116,6 @@ router.post('/slack-alert', async (req, res) => {
 });
 
 router.post('/clerk/webhook', async (req, res) => {
-    logInfo(req.body);
     if (req.body) {
         let webhookData = req.body.data;
         let webhookEventType = req.body.type;

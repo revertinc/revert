@@ -26,7 +26,7 @@ function AddIntegration({
         >
             <>
                 <Box component="div" sx={{ margin: '3rem' }}>
-                    <h1 className="text-3xl font-bold mb-1 text-[#fff]">Create Integration</h1>
+                    <h1 className="text-3xl font-bold text-[#fff]">Create Integration</h1>
                     <span className="text-[#b1b8ba]">Click to Configure New Integration</span>
                 </Box>
                 <div className="grid grid-cols-4 gap-8 justify-center content-center mx-8">

@@ -3,23 +3,19 @@ import prisma from '../prisma/client';
 
 class AppService {
     async createRevertAppForAccount({
-        userId,
+        accountId,
         tpId,
         environment,
     }: {
-        userId: string;
+        accountId: string;
         tpId: TP_ID;
         environment: string;
     }): Promise<any> {
-        const id = `${tpId}_${userId}_${environment}`;
-        const environmentId = `${userId}_${environment}`;
+        const id = `${tpId}_${accountId}_${environment}`;
+        const environmentId = `${accountId}_${environment}`;
         try {
-            const createdApp = await prisma.apps.upsert({
-                where: {
-                    id,
-                },
-                update: {},
-                create: {
+            const createdApp = await prisma.apps.create({
+                data: {
                     id,
                     tp_id: tpId,
                     scope: [],
@@ -27,7 +23,6 @@ class AppService {
                     environmentId,
                 },
             });
-
             return createdApp;
         } catch (error: any) {
             return { error: 'Something went wrong while creating app' };

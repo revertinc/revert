@@ -13,7 +13,7 @@ import CreatedIntegration from '../features/integration/CreatedIntegration';
 
 const Integrations = ({ environment }) => {
     const user = useUser();
-    const { data, loading, fetch } = useApi();
+    const { data, loading, fetch, status } = useApi();
 
     const [account, setAccount] = useState<any>();
     const [open, setOpen] = React.useState(false);
@@ -38,11 +38,15 @@ const Integrations = ({ environment }) => {
             tpId: id,
             environment,
         };
-        const res = await fetch({
+        await fetch({
             url: '/internal/account/apps',
             method: 'POST',
             payload,
         });
+
+        if (status?.toString().startsWith('2')) {
+            setInit(false);
+        }
     };
 
     const fetchAccount = React.useCallback(async () => {
@@ -78,7 +82,7 @@ const Integrations = ({ environment }) => {
                         display: 'flex',
                         flexDirection: 'column',
                     }}
-                    className="text-lg mb-16"
+                    className="text-lg mb-8"
                 >
                     <h1 className="text-3xl font-bold mb-3">Integrations</h1>
                     <span className="text-[#b1b8ba]">Configure & Manage your connected apps here.</span>
@@ -100,16 +104,9 @@ const Integrations = ({ environment }) => {
             ) : (
                 <>
                     {account ? (
-                        <Box
-                            display="flex"
-                            flexDirection="column"
-                            justifyContent="center"
-                            height="80vh"
-                            alignItems="center"
-                        >
+                        <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
                             <AddIntegration values={{ init, setInit, handleCreation, apps }} />
-                            {/* <p>No Integration Created, Create and Configure your First Integration</p> */}
-                            <CreatedIntegration values={{ account, environment, handleOpen }} />
+                            <CreatedIntegration values={{ apps, handleOpen }} />
                         </Box>
                     ) : (
                         <>

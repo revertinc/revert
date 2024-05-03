@@ -7,13 +7,20 @@ function CreatedIntegration({
     values,
 }: {
     values: {
-        environment: string;
-        account: any;
+        apps: any;
         handleOpen: (appId: string) => void;
     };
 }) {
-    const { account, environment, handleOpen } = values;
-    const apps = account.environments.find((x) => x.env === environment).apps;
+    const { handleOpen, apps } = values;
+
+    if (!apps.length) {
+        return (
+            <div className="flex flex-col justify-center items-center h-[77vh] w-[80vw]">
+                <p>No Integration Created, Create and Configure your First Integration</p>
+            </div>
+        );
+    }
+
     return (
         <div className="grid grid-cols-4 gap-8">
             {apps.map((app, index) => {
@@ -26,8 +33,8 @@ function CreatedIntegration({
                             justifyContent: 'space-between',
                             alignItems: 'center',
                             padding: '2rem 0rem',
-                            maxWidth: '340px',
-                            maxHeight: '208px',
+                            maxWidth: '22rem',
+                            maxHeight: '12.5rem',
                         }}
                     >
                         <div
