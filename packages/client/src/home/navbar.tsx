@@ -9,20 +9,18 @@ import GitHubButton from 'react-github-btn';
 const Navbar = ({ workspaceName, environment, setEnvironment, environmentList }) => {
     return (
         <div id="top-navbar">
-            <Link to="/" className="flex items-center">
-                <img
-                    src={Logo}
-                    alt="revert_logo"
-                    className="w-[30px] h-[30px] ml-[24px] cursor-pointer mt-4 mb-3 mr-[24px]"
-                />
-                <span className="ml-[24px] mr-[12px] text-[#fff]">{workspaceName}</span>
-            </Link>
-            <div className="flex justify-center items-center">
+            <div className="flex justify-around items-center  ml-[1.5rem]">
+                <Link to="/" className="flex justify-evenly items-center">
+                    <img src={Logo} alt="revert_logo" className="w-[2rem] h-[2rem] mr-[1.5rem] cursor-pointer" />
+                    <p className="text-[#fff]">{workspaceName}</p>
+                </Link>
                 <EnvironmentSelector
                     environmentProp={environment}
                     setEnvironmentProp={setEnvironment}
                     environmentList={environmentList}
                 />
+            </div>
+            <div className="flex justify-center items-center">
                 <a
                     href={'https://docs.revert.dev'}
                     target="_blank"
