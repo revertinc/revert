@@ -32,8 +32,10 @@ function AddIntegration({
             <>
                 <div className="overflow-hidden">
                     <Box component="div" sx={{ width: '70vw', padding: '2rem 3rem 0rem 3rem', marginBottom: '1.6rem' }}>
-                        <h1 className="text-3xl font-bold text-[#fff]">Create Integration</h1>
-                        <span className="text-[#b1b8ba]">Select and Click Create to Configure New Integration</span>
+                        <h1 className="text-3xl font-bold text-[#fff]">Create App</h1>
+                        <span className="text-[#b1b8ba]">
+                            Select and click add to configure a new app for an integration
+                        </span>
                     </Box>
                     <div className="pt-4 h-[36rem] overflow-scroll">
                         <div className="grid grid-cols-4 gap-8 justify-center content-center mx-8 ">
@@ -89,7 +91,7 @@ function AddIntegration({
                                 handleCreation(selected);
                             }}
                         >
-                            Create
+                            Add
                         </LoadingButton>
                     </div>
                 </div>

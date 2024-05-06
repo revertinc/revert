@@ -16,7 +16,7 @@ function CreatedIntegration({
     if (!apps.length) {
         return (
             <div className="flex flex-col justify-center items-center h-[77vh] w-[80vw]">
-                <p>No Integration Created, Create and Configure your First Integration</p>
+                <p>No apps have been created; create and configure your first app for an integration</p>
             </div>
         );
     }

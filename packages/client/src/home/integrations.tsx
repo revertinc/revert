@@ -94,7 +94,7 @@ const Integrations = ({ environment }) => {
                             style={{ background: '#293347', padding: '0.6rem 1.4rem' }}
                             onClick={() => setInit(true)}
                         >
-                            Create New Integration
+                            Create App
                         </LoadingButton>
                     </Box>
                 )}
