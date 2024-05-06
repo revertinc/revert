@@ -2,6 +2,7 @@ import { logError } from '../../helpers/logger';
 import { AccountService } from '../../generated/typescript/api/resources/internal/resources/account/service/AccountService';
 import { InternalServerError, NotFoundError, UnAuthorizedError } from '../../generated/typescript/api/resources/common';
 import AuthService from '../auth';
+import AppService from '../app';
 import prisma from '../../prisma/client';
 
 const accountService = new AccountService({
@@ -55,6 +56,28 @@ const accountService = new AccountService({
         } catch (error: any) {
             logError(error);
             console.error('Could not get account for user', error);
+            throw new InternalServerError({ error: 'Internal server error' });
+        }
+    },
+    async createRevertAppForAccount(req, res) {
+        try {
+            const { userId, tpId, environment } = req.body;
+            const result = await AuthService.getAccountForUser(userId);
+
+            if (result?.error) {
+                throw new NotFoundError({ error: 'Could not get the account for user' });
+            }
+
+            const isCreated = await AppService.createRevertAppForAccount({ accountId: result.account.id as string, tpId, environment });
+
+            if (isCreated?.error) {
+                throw new InternalServerError({ error: 'Internal Server Error' });
+            }
+
+            const finalResult = await AuthService.getAccountForUser(userId);
+            res.send({ ...finalResult });
+        } catch (error: any) {
+            logError(error);
             throw new InternalServerError({ error: 'Internal server error' });
         }
     },
