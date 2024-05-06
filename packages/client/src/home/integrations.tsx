@@ -87,15 +87,17 @@ const Integrations = ({ environment }) => {
                     <h1 className="text-3xl font-bold mb-3">Integrations</h1>
                     <span className="text-[#b1b8ba]">Configure & Manage your connected apps here.</span>
                 </Box>
-                <Box>
-                    <LoadingButton
-                        variant="contained"
-                        style={{ background: '#293347', padding: '0.6rem 1.4rem' }}
-                        onClick={() => setInit(true)}
-                    >
-                        Create New Integration
-                    </LoadingButton>
-                </Box>
+                {!init && (
+                    <Box>
+                        <LoadingButton
+                            variant="contained"
+                            style={{ background: '#293347', padding: '0.6rem 1.4rem' }}
+                            onClick={() => setInit(true)}
+                        >
+                            Create New Integration
+                        </LoadingButton>
+                    </Box>
+                )}
             </MainHeader>
             {loading ? (
                 <div className="mt-10">
