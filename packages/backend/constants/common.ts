@@ -49,7 +49,15 @@ export const DEFAULT_SCOPE = {
     [TP_ID.jira]: ['read:jira-work', 'read:jira-user', 'write:jira-work', 'offline_access'],
     [TP_ID.ms_dynamics_365_sales]: ['offline_access', 'User.Read'],
     [TP_ID.bitbucket]: ['issue', 'issue:write', 'repository', 'account'],
-    [TP_ID.github]: [],
+    [TP_ID.github]: [
+        'repo',
+        'issues:write',
+        'pull_requests:write',
+        'issues:read',
+        'pull_requests:read',
+        'metadata:read',
+        'repository_projects:read',
+    ],
 };
 
 export const mapIntegrationIdToIntegrationName = {

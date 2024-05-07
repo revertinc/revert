@@ -267,5 +267,18 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
             }
             return processedObj;
         }
+        case TP_ID.github: {
+            if (objType === 'ticketTask') {
+                return {
+                    ...transformedObj,
+                    assignees:
+                        obj.assignees && Array.isArray(obj.assignees) && obj.assignees.length > 0
+                            ? obj.assignees
+                            : undefined,
+                };
+            }
+
+            return processedObj;
+        }
     }
 }

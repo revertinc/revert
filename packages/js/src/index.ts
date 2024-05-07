@@ -1252,6 +1252,17 @@ const createIntegrationBlock = function (self, integration) {
                             selectedIntegration.clientId
                         }&response_type=code&state=${encodeURIComponent(state)}`
                     );
+                } else if (selectedIntegration.integrationId === 'github') {
+                    const encodedScopes = encodeURIComponent(scopes.join(','));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/github`);
+
+                    window.open(
+                        `https://github.com/login/oauth/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${encodedRedirectUri}&scope=${encodedScopes}&state=${encodeURIComponent(
+                            state
+                        )}&response_type=code`
+                    );
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {
