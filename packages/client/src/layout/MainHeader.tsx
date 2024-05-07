@@ -7,7 +7,7 @@ function MainHeader({ children }: { children: ReactNode }) {
             component="div"
             display="flex"
             flexDirection="row"
-            sx={{ padding: '0 3rem', paddingTop: '8rem', justifyContent: 'space-between' }}
+            sx={{ margin: '0 3rem', marginTop: '8rem', justifyContent: 'space-between' }}
         >
             {children}
         </Box>
