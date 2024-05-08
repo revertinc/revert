@@ -22,38 +22,21 @@ function CreatedIntegration({
     }
 
     return (
-        <div className="grid grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 gap-y-8 gap-x-8 ml-12 mr-8 mb-8 justify-items-stretch lg:grid-cols-3">
             {apps.map((app, index) => {
                 const type = appsInfo?.[app.tp_id];
                 return (
-                    <Box
-                        key={index}
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '2rem 0rem',
-                            maxWidth: '22rem',
-                            maxHeight: '12.5rem',
-                        }}
-                    >
+                    <Box key={index} className="flex items-center">
                         <div
+                            className="flex flex-col justify-end items-start h-[12.5rem] w-full relative px-5 py-10"
                             style={{
-                                padding: 30,
                                 border: '1px #3E3E3E solid',
                                 borderRadius: 10,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'flex-start',
-                                height: 200,
-                                justifyContent: 'flex-end',
-                                position: 'relative',
                             }}
                         >
                             <img
-                                width={100}
+                                className="max-h-[2rem] max-w-[7rem]"
                                 style={{
-                                    maxHeight: 40,
                                     objectFit: 'scale-down',
                                     objectPosition: 'left',
                                 }}

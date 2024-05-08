@@ -74,7 +74,7 @@ const Integrations = ({ environment }) => {
     }, [data]);
 
     return (
-        <div className="w-[80%] overflow-scroll over-scroll-auto">
+        <div className="w-[80vw] overflow-scroll over-scroll-auto">
             <MainHeader>
                 <Box
                     component="div"
@@ -106,10 +106,12 @@ const Integrations = ({ environment }) => {
             ) : (
                 <>
                     {account ? (
-                        <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-                            <AddIntegration values={{ init, setInit, handleCreation, apps }} />
+                        <>
+                            <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+                                <AddIntegration values={{ init, setInit, handleCreation, apps }} />
+                            </Box>
                             <CreatedIntegration values={{ apps, handleOpen }} />
-                        </Box>
+                        </>
                     ) : (
                         <>
                             <Box
