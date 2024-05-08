@@ -15,25 +15,6 @@ import versionMiddleware, { manageRouterVersioning } from './helpers/versionMidd
 import { ShortloopSDK } from '@shortloop/node';
 import endpointLogger from './helpers/endPointLoggerMiddleWare';
 
-const rateLimit = require('express-rate-limit');
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 60, // Limit each IP to 60 requests per `window` (here, per 15 minutes)
-    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    message: async () => {
-        return JSON.stringify({ message: 'Rate limit reached.' });
-    },
-    skip: (req: Request, _res: Response) => {
-        const basePath = req.baseUrl + req.path;
-        const allowedRoutes = ['/health-check'];
-        if (allowedRoutes.includes(basePath)) {
-            return true;
-        }
-        return false;
-    },
-});
-
 const app: Express = express();
 
 // Debug rate limiting / trust proxy issue as per: https://github.com/express-rate-limit/express-rate-limit/wiki/Troubleshooting-Proxy-Issues
@@ -107,7 +88,6 @@ app.use(
     })
 );
 
-app.use(limiter);
 app.use(versionMiddleware());
 
 ShortloopSDK.init({

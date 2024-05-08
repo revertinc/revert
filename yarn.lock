@@ -5769,6 +5769,7 @@ __metadata:
     node-cron: ^3.0.2
     oauth: ^0.10.0
     prisma: ^4.16.0
+    rate-limiter-flexible: ^5.0.3
     redis: ^4.6.8
     svix: ^1.14.0
     ts-node: ^10.9.1
@@ -25424,6 +25425,13 @@ __metadata:
   version: 1.2.1
   resolution: "range-parser@npm:1.2.1"
   checksum: 0a268d4fea508661cf5743dfe3d5f47ce214fd6b7dec1de0da4d669dd4ef3d2144468ebe4179049eff253d9d27e719c88dae55be64f954e80135a0cada804ec9
+  languageName: node
+  linkType: hard
+
+"rate-limiter-flexible@npm:^5.0.3":
+  version: 5.0.3
+  resolution: "rate-limiter-flexible@npm:5.0.3"
+  checksum: 2cf9edb7f887470cd5849bb7d2645d77953719a693d2f98afe38bc6e6af9976832b3ff6cd01469743a7105c5bcfe3122f7ba0300bb34fba3d97a4773326920d2
   languageName: node
   linkType: hard
 

@@ -77,6 +77,7 @@
         "node-cron": "^3.0.2",
         "oauth": "^0.10.0",
         "prisma": "^4.16.0",
+        "rate-limiter-flexible": "^5.0.3",
         "redis": "^4.6.8",
         "svix": "^1.14.0",
         "winston": "^3.11.0"
