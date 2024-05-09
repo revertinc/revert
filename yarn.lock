@@ -5760,7 +5760,6 @@ __metadata:
     dotenv: ^16.3.1
     eslint-plugin-deprecation: ^1.3.2
     express: ^4.18.1
-    express-rate-limit: ^7.1.5
     ip: ^1.1.8
     jest: ^29.6.4
     lodash: ^4.17.21
@@ -16889,15 +16888,6 @@ __metadata:
     jest-message-util: ^29.6.3
     jest-util: ^29.6.3
   checksum: 019b187d665562e4948b239e011a8791363e916f3076a229298d625e67fdadb06e8c2748798c49b4cf418ea223673eadd1de06537e08ba3c055c6f0efefc2306
-  languageName: node
-  linkType: hard
-
-"express-rate-limit@npm:^7.1.5":
-  version: 7.1.5
-  resolution: "express-rate-limit@npm:7.1.5"
-  peerDependencies:
-    express: 4 || 5 || ^5.0.0-beta.1
-  checksum: bdf6ddf4f8c8659d31de6ec1f088b473b2cb4180eb09ae234a279c88744832276e5c1482d530875110c90e314b51a7720bcfb2b3139c1b9e6bf652ba4b59f192
   languageName: node
   linkType: hard
 
