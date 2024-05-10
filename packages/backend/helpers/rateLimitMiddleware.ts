@@ -4,16 +4,15 @@ import { RateLimiterRedis, IRateLimiterStoreOptions } from 'rate-limiter-flexibl
 import redis from '../redis/client';
 import { skipRateLimitRoutes } from './utils';
 
-// In Memory Cache for storing RateLimiterRedis instances to prevent the creation of a new instance for each request.
-// The cache key is the 'rate_limit' value derived from the subscriptions table. Currently, we cache by the 'rate_limit' value for simplicity.
-// Using 'subscriptionId' as a key would be more precise but would add complexity in keeping the cache in sync with the database.
-
 //We can make this dynamic based on the subscription as well
 const RATE_LIMIT_DURATION_IN_MINUTES = 1;
 //TODO:Should we keep DEFAULT_RATE_LIMIT_DEVELOPER_PLAN value in env variable?
 const DEFAULT_RATE_LIMIT_DEVELOPER_PLAN = 100;
 
 class RateLimiterManager {
+    // In Memory Cache for storing RateLimiterRedis instances to prevent the creation of a new instance for each request.
+    // The cache key is the 'rate_limit' value derived from the subscriptions table. Currently, we cache by the 'rate_limit' value for simplicity.
+    // Using 'subscriptionId' as a key would be more precise but would add complexity in keeping the cache in sync with the database.
     #rateLimiters = new Map<number, RateLimiterRedis>();
 
     get(rateLimit: number): RateLimiterRedis {
