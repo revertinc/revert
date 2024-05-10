@@ -218,9 +218,15 @@ const dealService = new DealService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
+                        let url = '';
+                        if (associations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/deals?associations=${associations}&properties=${formattedFields}&${pagingString}`;
+                        } else {
+                            url = `https://api.hubapi.com/crm/v3/objects/deals?properties=${formattedFields}&${pagingString}`;
+                        }
                         let deals: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/deals?associations=${associations}&properties=${formattedFields}&${pagingString}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
@@ -230,30 +236,32 @@ const dealService = new DealService(
 
                         // collect all association IDs dynamically
 
-                        let associationIdMap: any = {};
-                        associations.forEach((type) => {
-                            associationIdMap[type] = [];
-                            deals.forEach((deal: any) => {
-                                deal.associations[type]?.results.forEach((assoc: any) => {
-                                    associationIdMap[type].push({ id: assoc.id });
+                        if (associations.length > 0) {
+                            let associationIdMap: any = {};
+                            associations.forEach((type) => {
+                                associationIdMap[type] = [];
+                                deals.forEach((deal: any) => {
+                                    deal.associations[type]?.results.forEach((assoc: any) => {
+                                        associationIdMap[type].push({ id: assoc.id });
+                                    });
                                 });
                             });
-                        });
 
-                        for (let type of associations) {
-                            const details = await fetchAssociationsDetails(
-                                type,
-                                associationIdMap[type],
-                                thirdPartyToken
-                            );
-                            deals = deals.map((deal: any) => {
-                                if (deal.associations[type]) {
-                                    deal.associations[type] = deal.associations[type].results.map((assoc: any) => {
-                                        return details.find((detail: any) => detail.id === assoc.id) || assoc;
-                                    });
-                                }
-                                return deal;
-                            });
+                            for (let type of associations) {
+                                const details = await fetchAssociationsDetails(
+                                    type,
+                                    associationIdMap[type],
+                                    thirdPartyToken
+                                );
+                                deals = deals.map((deal: any) => {
+                                    if (deal.associations[type]) {
+                                        deal.associations[type] = deal.associations[type].results.map((assoc: any) => {
+                                            return details.find((detail: any) => detail.id === assoc.id) || assoc;
+                                        });
+                                    }
+                                    return deal;
+                                });
+                            }
                         }
 
                         deals = await Promise.all(
