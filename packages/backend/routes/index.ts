@@ -141,11 +141,11 @@ router.get('/connection/integration-status/:publicToken', async (req, res) => {
     }
 });
 
-router.use('/crm', cors(), [revertAuthMiddleware(), rateLimitMiddleware], crmRouter);
+router.use('/crm', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], crmRouter);
 
-router.use('/chat', cors(), [revertAuthMiddleware(), rateLimitMiddleware], chatRouter);
+router.use('/chat', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], chatRouter);
 
-router.use('/ticket', cors(), [revertAuthMiddleware(), rateLimitMiddleware], ticketRouter);
+router.use('/ticket', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], ticketRouter);
 
 register(router, {
     metadata: metadataService,

@@ -24,7 +24,7 @@ const getRateLimiter = (rateLimit: number): RateLimiterRedis => {
     return rateLimiters.get(rateLimit)!; // the `!` tells TypeScript that the return value is non-null
 };
 
-async function rateLimitMiddleware(req: Request, res: Response, next: Function) {
+const rateLimitMiddleware = () => async (req: Request, res: Response, next: Function) => {
     if (skipRateLimitRoutes(req)) next();
     try {
         const { 'x-revert-t-id': tenantId } = req.headers;
@@ -32,6 +32,7 @@ async function rateLimitMiddleware(req: Request, res: Response, next: Function) 
         const rateLimit = subscription.rate_limit;
         //TODO: Maybe include the x-revert-api-key along with the tenantId to make it more unique
         const rateLimiter = getRateLimiter(rateLimit);
+        // rate limit is per tenantId
         await rateLimiter.consume(tenantId as string, 1); // consume 1 point for each request
         next();
     } catch (rejRes) {
@@ -41,6 +42,6 @@ async function rateLimitMiddleware(req: Request, res: Response, next: Function) 
             res.status(429).send('Too Many Requests');
         }
     }
-}
+};
 
 export default rateLimitMiddleware;
