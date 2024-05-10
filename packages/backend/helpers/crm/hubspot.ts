@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { AllAssociation } from '../../constants/associations';
 import { StandardObjects } from '../../constants/common';
 
@@ -118,4 +119,25 @@ export function handleHubspotDisunify<T extends Record<string, any>, Association
         hubspotObj['associations'] = associationArr;
     }
     return hubspotObj;
+}
+
+export async function fetchAssociationsDetails(type: string, ids: any[], thirdPartyToken: string) {
+    try {
+        if (ids.length === 0) return [];
+
+        const data = JSON.stringify({ inputs: ids });
+        const responses = await axios({
+            method: 'post',
+            url: `https://api.hubapi.com/crm/v3/objects/${type}/batch/read`,
+            headers: {
+                authorization: `Bearer ${thirdPartyToken}`,
+                'Content-Type': 'application/json',
+            },
+            data: data,
+        });
+
+        return responses.data.results;
+    } catch (error) {
+        console.log('Failed to fetch associations details from hubspot', error);
+    }
 }

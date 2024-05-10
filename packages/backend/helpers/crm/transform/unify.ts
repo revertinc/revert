@@ -44,7 +44,9 @@ export async function unifyObject<T extends Record<string, any>, K>({
             }
         }
     });
-
+    if (obj.associations) {
+        unifiedObject.additional['associations'] = obj['associations'];
+    }
     // Check if associations object is empty and set it to undefined
     if (Object.keys(unifiedObject.associations || {}).length === 0) {
         unifiedObject.associations = undefined;

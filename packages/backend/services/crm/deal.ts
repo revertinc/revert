@@ -12,6 +12,7 @@ import { unifyObject, disunifyObject } from '../../helpers/crm/transform';
 import { UnifiedDeal } from '../../models/unified';
 import { PipedriveDeal, PipedrivePagination } from '../../constants/pipedrive';
 import { StandardObjects } from '../../constants/common';
+import { fetchAssociationsDetails } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.deal;
 
@@ -192,6 +193,7 @@ const dealService = new DealService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET ALL DEAL',
                     connection.app?.env?.accountId,
@@ -225,11 +227,40 @@ const dealService = new DealService(
                         });
                         const nextCursor = deals.data?.paging?.next?.after || undefined;
                         deals = deals.data.results as any[];
+
+                        // collect all association IDs dynamically
+
+                        let associationIdMap: any = {};
+                        associations.forEach((type) => {
+                            associationIdMap[type] = [];
+                            deals.forEach((deal: any) => {
+                                deal.associations[type]?.results.forEach((assoc: any) => {
+                                    associationIdMap[type].push({ id: assoc.id });
+                                });
+                            });
+                        });
+
+                        for (let type of associations) {
+                            const details = await fetchAssociationsDetails(
+                                type,
+                                associationIdMap[type],
+                                thirdPartyToken
+                            );
+                            deals = deals.map((deal: any) => {
+                                if (deal.associations[type]) {
+                                    deal.associations[type] = deal.associations[type].results.map((assoc: any) => {
+                                        return details.find((detail: any) => detail.id === assoc.id) || assoc;
+                                    });
+                                }
+                                return deal;
+                            });
+                        }
+
                         deals = await Promise.all(
                             deals?.map(
-                                async (l: any) =>
+                                async (item: any) =>
                                     await unifyObject<any, UnifiedDeal>({
-                                        obj: { ...l, ...l?.properties, ...l?.associations },
+                                        obj: { ...item, ...item?.properties },
                                         tpId: thirdPartyId,
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
@@ -237,6 +268,7 @@ const dealService = new DealService(
                                     })
                             )
                         );
+
                         res.send({
                             status: 'ok',
                             next: nextCursor,
