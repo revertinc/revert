@@ -34,7 +34,7 @@ interface applications {
     credited_to: { id: number; first_name: string; last_name: string; name: string; employee_id: string };
     rejection_reason: string;
     rejection_details: string;
-    jobs: UnifiedJob;
+    jobs: UnifiedJob[];
     job_post_id: number;
     status: string;
     current_stage: {
@@ -58,5 +58,5 @@ interface applications {
     keyed_custom_fields: {
         application_custom_test: { name: string; type: string; value: string };
     };
-    attachments: { filename: string; url: string; type: string; created_at: Date };
+    attachments: { filename: string; url: string; type: string; created_at: Date }[];
 }
