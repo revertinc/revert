@@ -56,7 +56,7 @@ export default function useRevertConnect(props: useRevertConnectProps) {
                 },
             });
         }
-    }, [loading]);
+    }, [loading, props.config.tenantId]);
 
     const open = (integrationId?: string) => {
         if (error) {
