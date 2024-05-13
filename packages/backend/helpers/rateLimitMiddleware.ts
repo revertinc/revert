@@ -3,11 +3,10 @@ import { RateLimiterRedis, IRateLimiterStoreOptions } from 'rate-limiter-flexibl
 
 import redis from '../redis/client';
 import { skipRateLimitRoutes } from './utils';
+import config from '../config';
 
 //We can make this dynamic based on the subscription as well
 const RATE_LIMIT_DURATION_IN_MINUTES = 1;
-//TODO:Should we keep DEFAULT_RATE_LIMIT_DEVELOPER_PLAN value in env variable?
-const DEFAULT_RATE_LIMIT_DEVELOPER_PLAN = 100;
 
 class RateLimiterManager {
     // In Memory Cache for storing RateLimiterRedis instances to prevent the creation of a new instance for each request.
@@ -34,7 +33,7 @@ const rateLimitMiddleware = () => async (req: Request, res: Response, next: Func
     try {
         const { 'x-revert-t-id': tenantId } = req.headers;
         const { subscription, id: accountId } = res.locals.account; // Subscription details are retrieved from response locals set earlier in the revertAuthMiddleware.
-        const rateLimit = subscription?.rate_limit ?? DEFAULT_RATE_LIMIT_DEVELOPER_PLAN; //incase subscription undefined, we will use the default rate limit this is to make sure backward compatibility as currently some accounts might not have subscription attached to them. We can remove the optional chaining and nullish coalescing once we are sure that all accounts have subscription attached to them
+        const rateLimit = subscription?.rate_limit ?? config.DEFAULT_RATE_LIMIT_DEVELOPER_PLAN; //incase subscription undefined, we will use the default rate limit this is to make sure backward compatibility as currently some accounts might not have subscription attached to them. We can remove the optional chaining and nullish coalescing once we are sure that all accounts have subscription attached to them
         const rateLimiter = rateLimiterManager.get(rateLimit);
         //added accountId to make the key unique
         const uniqueKey = `${accountId}-${tenantId}`;
