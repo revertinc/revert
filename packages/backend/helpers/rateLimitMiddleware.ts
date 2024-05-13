@@ -24,7 +24,7 @@ class RateLimiterManager {
             };
             this.#rateLimiters.set(rateLimit, new RateLimiterRedis(opts));
         }
-        return this.#rateLimiters.get(rateLimit)!; // the `!` tells TypeScript that the return value is non-null
+        return this.#rateLimiters.get(rateLimit)!;
     }
 }
 const rateLimiterManager = new RateLimiterManager();
