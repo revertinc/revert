@@ -1,0 +1,65 @@
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    GetJobResponse:
+        properties:
+            status: types.ResponseStatus
+            result: unified.Job
+    GetJobsResponse:
+        properties:
+            status: types.ResponseStatus
+            next: optional<string>
+            previous: optional<string>
+            results: list<unified.Job>
+
+service:
+    base-path: /ats/jobs
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getJob:
+            docs: Get details of a job.
+            method: GET
+            path: /{id}
+            path-parameters:
+                id:
+                    type: string
+                    docs: The unique `id` of the job.
+            request:
+                name: GetJobRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetJobResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getJobs:
+            docs: Get all the jobs.
+            method: GET
+            path: ''
+            request:
+                name: GetJobsRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetJobsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

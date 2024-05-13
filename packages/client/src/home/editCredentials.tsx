@@ -112,6 +112,8 @@ const EditCredentials: React.FC<{
             setAppConfig({ bot_token: val });
         } else if (app.tp_id === 'ms_dynamics_365_sales') {
             setAppConfig({ org_url: val });
+        } else if (app.tp_id === 'workable') {
+            setAppConfig({ org_url: val });
         }
     };
 
@@ -169,7 +171,7 @@ const EditCredentials: React.FC<{
                             />
                         </Row>
                     )}
-                    {app.tp_id === 'ms_dynamics_365_sales' && (
+                    {(app.tp_id === 'ms_dynamics_365_sales' || app.tp_id === 'workable') && (
                         <Row>
                             <span className="font-bold">Organisation URL: </span>
                             <Input

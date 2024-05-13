@@ -156,6 +156,15 @@ const metadataService = new MetadataService({
                     scopes: getScope(apps, TP_ID.bitbucket),
                     clientId: getClientId(apps, TP_ID.bitbucket) || config.BITBUCKET_CLIENT_ID,
                 },
+                {
+                    integrationId: TP_ID.workable,
+                    name: 'Workable',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711468866/Revert/kuebcmuhxznyjqzl6pvb.svg',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.workable),
+                    clientId: getClientId(apps, TP_ID.workable) || config.WORKABLE_CLIENT_ID,
+                },
             ];
             res.send({
                 status: 'ok',
