@@ -12,6 +12,7 @@ const rateLimiters = new Map<number, RateLimiterRedis>();
 
 //We can make this dynamic based on the subscription as well
 const RATE_LIMIT_DURATION_IN_MINUTES = 1;
+const FALL_BACK_DEFAULT_RATE_LIMIT = 1;
 
 const getRateLimiter = (rateLimit: number): RateLimiterRedis => {
     if (!rateLimiters.has(rateLimit)) {
@@ -30,7 +31,8 @@ const rateLimitMiddleware = () => async (req: Request, res: Response, next: Func
     try {
         const { 'x-revert-t-id': tenantId } = req.headers;
         const { subscription, id: accountId } = res.locals.account; // Subscription details are retrieved from response locals set earlier in the revertAuthMiddleware.
-        const rateLimit = subscription?.rate_limit ?? config.DEFAULT_RATE_LIMIT_DEVELOPER_PLAN; //incase subscription undefined, we will use the default rate limit this is to make sure backward compatibility as currently some accounts might not have subscription attached to them. We can remove the optional chaining and nullish coalescing once we are sure that all accounts have subscription attached to them
+        const rateLimit =
+            subscription?.rate_limit ?? config.DEFAULT_RATE_LIMIT_DEVELOPER_PLAN ?? FALL_BACK_DEFAULT_RATE_LIMIT; //incase subscription undefined, we will use the default rate limit this is to make sure backward compatibility as currently some accounts might not have subscription attached to them. We can remove the optional chaining and nullish coalescing once we are sure that all accounts have subscription attached to them. In case of DEFAULT_RATE_LIMIT_DEVELOPER_PLAN is missing in config, we will fallback to 1
         const rateLimiter = getRateLimiter(rateLimit);
         //added accountId to make the key unique
         const uniqueKey = `${accountId}-${tenantId}`;
