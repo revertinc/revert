@@ -1,6 +1,6 @@
 {
     "name": "@revertdotdev/revert-react",
-    "version": "0.0.19",
+    "version": "0.0.19-rc1",
     "repository": {
         "type": "git",
         "url": "https://github.com/revertinc/revert.git"
