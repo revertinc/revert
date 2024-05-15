@@ -12,7 +12,7 @@ const rateLimiters = new Map<number, RateLimiterRedis>();
 
 //We can make this dynamic based on the subscription as well
 const RATE_LIMIT_DURATION_IN_MINUTES = 1;
-const FALL_BACK_DEFAULT_RATE_LIMIT = 1;
+const FALL_BACK_DEFAULT_RATE_LIMIT = 100;
 
 const getRateLimiter = (rateLimit: number): RateLimiterRedis => {
     if (!rateLimiters.has(rateLimit)) {
