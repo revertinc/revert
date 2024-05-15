@@ -7,7 +7,6 @@ import Onboarding from './onboarding';
 import Integrations from './integrations';
 import { useUser } from '@clerk/clerk-react';
 import Sidebar from '../ui/Sidebar';
-import { useEnvironment } from '../hooks';
 
 declare global {
     interface Window {
@@ -15,21 +14,20 @@ declare global {
     }
 }
 
-const renderTab = (tabValue: number, handleChange, environment) => {
+const renderTab = (tabValue: number, handleChange) => {
     if (tabValue === 0) {
         return <Onboarding changeTabs={() => handleChange(1)} />;
     } else if (tabValue === 1) {
-        return <Integrations environment={environment} />;
+        return <Integrations />;
     } else if (tabValue === 2) {
-        return <Analytics environment={environment} />;
+        return <Analytics />;
     } else if (tabValue === 3) {
-        return <ApiKeys environment={environment} />;
+        return <ApiKeys />;
     } else return undefined;
 };
 
 const Home = () => {
     const [tabValue, setTabValue] = React.useState(0);
-    const { environment } = useEnvironment();
     const { user } = useUser();
 
     const IntercomParams = useMemo(
@@ -64,7 +62,7 @@ const Home = () => {
             <Navbar />
             <div className="flex h-[100%] bg-[#181d28] text-[#fff]">
                 <Sidebar values={{ tabValue, handleChange }} />
-                {renderTab(tabValue, handleChange, environment)}
+                {renderTab(tabValue, handleChange)}
             </div>
         </>
     );

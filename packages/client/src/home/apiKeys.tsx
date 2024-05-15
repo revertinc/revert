@@ -7,8 +7,10 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { REVERT_BASE_API_URL } from '../constants';
 import * as Sentry from '@sentry/react';
+import { useEnvironment } from '../hooks';
 
-const ApiKeys = ({ environment }) => {
+const ApiKeys = () => {
+    const { environment } = useEnvironment();
     const user = useUser();
     const [account, setAccount] = useState<any>();
     const [isLoading, setLoading] = useState<boolean>(false);

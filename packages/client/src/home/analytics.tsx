@@ -4,8 +4,10 @@ import { useUser } from '@clerk/clerk-react';
 import { TailSpin } from 'react-loader-spinner';
 import { REVERT_BASE_API_URL } from '../constants';
 import * as Sentry from '@sentry/react';
+import { useEnvironment } from '../hooks';
 
-const Analytics = ({ environment }) => {
+const Analytics = () => {
+    const { environment } = useEnvironment();
     const user = useUser();
     const [metrics, setMetrics] = useState<any>();
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -205,7 +207,7 @@ const Analytics = ({ environment }) => {
                                         <ul className="mt-4 w-full text-sm text-[#94a3b8]">
                                             {metrics.connectedApps
                                                 ? metrics.connectedApps.map((app) => (
-                                                      <li className="flex justify-between m-2">
+                                                      <li className="flex justify-between m-2" key={app.appName}>
                                                           <img
                                                               width={50}
                                                               className="object-scale-down"

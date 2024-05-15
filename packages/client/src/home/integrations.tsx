@@ -10,8 +10,10 @@ import { LoadingButton } from '@mui/lab';
 import MainHeader from '../layout/MainHeader';
 import AddIntegration from '../features/integration/AddIntegration';
 import CreatedIntegration from '../features/integration/CreatedIntegration';
+import { useEnvironment } from '../hooks';
 
-const Integrations = ({ environment }) => {
+const Integrations = () => {
+    const { environment } = useEnvironment();
     const user = useUser();
     const { data, loading, fetch, status } = useApi();
 
