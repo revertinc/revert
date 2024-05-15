@@ -4,6 +4,10 @@ import React from 'react';
 import { SignedIn, SignedOut, SignUp, ClerkProvider, SignIn } from '@clerk/clerk-react';
 import { OAuthCallback } from '../common/oauth';
 import AppLayout from '../layout/AppLayout';
+import Onboarding from '../home/onboarding';
+import Integrations from '../home/integrations';
+import Analytics from '../home/analytics';
+import ApiKeys from '../home/apiKeys';
 
 export function RouterComponent() {
     const navigate = useNavigate();
@@ -13,7 +17,6 @@ export function RouterComponent() {
             <Toaster position="bottom-right" reverseOrder={false} />
             <Routes>
                 <Route
-                    path="/home"
                     element={
                         <>
                             <SignedOut>
@@ -37,7 +40,13 @@ export function RouterComponent() {
                             </SignedIn>
                         </>
                     }
-                />
+                >
+                    <Route index element={<Navigate replace to="home" />} />
+                    <Route path="home" element={<Onboarding />} />
+                    <Route path="apps" element={<Integrations />} />
+                    <Route path="analytics" element={<Analytics />} />
+                    <Route path="environment" element={<ApiKeys />} />
+                </Route>
                 <Route
                     path="/sign-up"
                     element={

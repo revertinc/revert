@@ -5,45 +5,47 @@ import EqualizerIcon from '@mui/icons-material/Equalizer';
 import HomeIcon from '@mui/icons-material/Home';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import TaskIcon from '@mui/icons-material/Task';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const selectedStyle = {
     background: '#293347',
     color: '#89a3ff',
 };
 
-function Sidebar({ values }) {
-    const { tabValue, handleChange } = values;
+function Sidebar() {
+    const navigate = useNavigate();
+    const { pathname } = useLocation();
     return (
         <div className="w-[20%] flex flex-col items-center pt-[120px] text-[#94a3b8]">
             <ul>
                 <li
                     className="p-2 cursor-pointer hover:bg-[#2c3957] rounded-[8px]"
-                    style={tabValue === 0 ? selectedStyle : undefined}
-                    onClick={() => handleChange(0)}
+                    style={pathname === '/home' ? selectedStyle : undefined}
+                    onClick={() => navigate('/home')}
                 >
                     <HomeIcon />
                     <span className="p-2">Home</span>
                 </li>
                 <li
                     className="p-2 cursor-pointer hover:bg-[#2c3957] rounded-[8px]"
-                    style={tabValue === 1 ? selectedStyle : undefined}
-                    onClick={() => handleChange(1)}
+                    style={pathname === '/apps' ? selectedStyle : undefined}
+                    onClick={() => navigate('/apps')}
                 >
                     <AppsIcon />
                     <span className="p-2">Integrations</span>
                 </li>
                 <li
                     className="p-2 cursor-pointer hover:bg-[#2c3957] rounded-[8px]"
-                    style={tabValue === 2 ? selectedStyle : undefined}
-                    onClick={() => handleChange(2)}
+                    style={pathname === '/analytics' ? selectedStyle : undefined}
+                    onClick={() => navigate('/analytics')}
                 >
                     <EqualizerIcon />
                     <span className="p-2">Analytics</span>
                 </li>
                 <li
                     className="p-2 cursor-pointer hover:bg-[#2c3957] rounded-[8px]"
-                    style={tabValue === 3 ? selectedStyle : undefined}
-                    onClick={() => handleChange(3)}
+                    style={pathname === '/environment' ? selectedStyle : undefined}
+                    onClick={() => navigate('/environment')}
                 >
                     <KeyIcon />
                     <span className="p-2">API Keys</span>

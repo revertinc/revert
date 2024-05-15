@@ -41,7 +41,7 @@ const CustomButton = styled(Button)({
     },
 });
 
-const ApiKeys = ({ changeTabs }) => {
+const Onboarding = () => {
     return (
         <div className="w-[80%]">
             <Box
@@ -88,7 +88,7 @@ const ApiKeys = ({ changeTabs }) => {
                             <img alt="or Book us with Cal.com" src="https://cal.com/book-with-cal-dark.svg" />
                         </a>
                         <p className="text-l font-bold mt-4 mb-3"> Finally</p>
-                        <CustomButton variant="contained" size="large" onClick={changeTabs}>
+                        <CustomButton variant="contained" size="large">
                             Explore Integrations
                         </CustomButton>
                     </p>
@@ -98,4 +98,4 @@ const ApiKeys = ({ changeTabs }) => {
     );
 };
 
-export default ApiKeys;
+export default Onboarding;

@@ -1,12 +1,9 @@
 import React, { useEffect, useMemo } from 'react';
 import Navbar from './navbar';
-import ApiKeys from './apiKeys';
-import Analytics from './analytics';
 
-import Onboarding from './onboarding';
-import Integrations from './integrations';
 import { useUser } from '@clerk/clerk-react';
 import Sidebar from '../ui/Sidebar';
+import { Outlet } from 'react-router-dom';
 
 declare global {
     interface Window {
@@ -14,20 +11,7 @@ declare global {
     }
 }
 
-const renderTab = (tabValue: number, handleChange) => {
-    if (tabValue === 0) {
-        return <Onboarding changeTabs={() => handleChange(1)} />;
-    } else if (tabValue === 1) {
-        return <Integrations />;
-    } else if (tabValue === 2) {
-        return <Analytics />;
-    } else if (tabValue === 3) {
-        return <ApiKeys />;
-    } else return undefined;
-};
-
 const Home = () => {
-    const [tabValue, setTabValue] = React.useState(0);
     const { user } = useUser();
 
     const IntercomParams = useMemo(
@@ -50,19 +34,17 @@ const Home = () => {
         }
     }, [IntercomParams]);
 
-    const handleChange = (newTabValue: number) => {
-        setTabValue(newTabValue);
-        if (window.Intercom) {
-            window.Intercom('update');
-        }
-    };
+    // Todo: fix Intercom if breaking
 
+    // if (window.Intercom) {
+    //     window.Intercom('update');
+    // }
     return (
         <>
             <Navbar />
             <div className="flex h-[100%] bg-[#181d28] text-[#fff]">
-                <Sidebar values={{ tabValue, handleChange }} />
-                {renderTab(tabValue, handleChange)}
+                <Sidebar />
+                <Outlet />
             </div>
         </>
     );
