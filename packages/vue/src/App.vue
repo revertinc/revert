@@ -15,7 +15,7 @@ export default {
         return {
             config: {
                 revertToken: 'localPublicToken',
-                tenantId: "testTenantId",
+                tenantId: 'testTenantId',
             },
         };
     },
