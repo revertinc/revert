@@ -258,6 +258,13 @@ const createIntegrationBlock = function (self, integration) {
         };
 
         init = function (config) {
+            // checking if the config is valid
+            const { revertToken, tenantId } = config;
+
+            if (revertToken == undefined || revertToken == null || tenantId == undefined || tenantId == null) {
+                return;
+            }
+
             this.API_REVERT_PUBLIC_TOKEN = config.revertToken;
             this.closeAfterOAuthFlow = config.closeAfterOAuthFlow !== undefined ? config.closeAfterOAuthFlow : true; // TODO: Make this backend controlled.
             this.tenantId = config.tenantId;
