@@ -3,7 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import React from 'react';
 import { SignedIn, SignedOut, SignUp, ClerkProvider, SignIn } from '@clerk/clerk-react';
 import { OAuthCallback } from '../common/oauth';
-import Home from '../home/index';
+import AppLayout from '../layout/AppLayout';
 
 export function RouterComponent() {
     const navigate = useNavigate();
@@ -33,7 +33,7 @@ export function RouterComponent() {
                                 </div>
                             </SignedOut>
                             <SignedIn>
-                                <Home />
+                                <AppLayout />
                             </SignedIn>
                         </>
                     }
@@ -80,7 +80,7 @@ export function RouterComponent() {
                     }
                 />
                 <Route path="*" element={<Navigate to="/home" />} />
-            </Routes>{' '}
+            </Routes>
         </ClerkProvider>
     );
 }

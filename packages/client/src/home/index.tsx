@@ -2,42 +2,19 @@ import React, { useEffect } from 'react';
 import Navbar from './navbar';
 import ApiKeys from './apiKeys';
 import Analytics from './analytics';
-import KeyIcon from '@mui/icons-material/Key';
-import AppsIcon from '@mui/icons-material/Apps';
-import EqualizerIcon from '@mui/icons-material/Equalizer';
-import HomeIcon from '@mui/icons-material/Home';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import TaskIcon from '@mui/icons-material/Task';
 
 import Onboarding from './onboarding';
 import Integrations from './integrations';
 import { useUser } from '@clerk/clerk-react';
 import { REVERT_BASE_API_URL, DEFAULT_ENV } from '../constants';
 import * as Sentry from '@sentry/react';
-
-const selectedStyle = {
-    background: '#293347',
-    color: '#89a3ff',
-};
+import Sidebar from '../ui/Sidebar';
 
 declare global {
     interface Window {
         Intercom: any;
     }
 }
-
-const renderNavbar = (workspaceName, environmentList, environment, setEnvironment) => {
-    return (
-        <Navbar
-            workspaceName={workspaceName}
-            environment={environment}
-            setEnvironment={(env) => {
-                setEnvironment(env);
-            }}
-            environmentList={environmentList}
-        />
-    );
-};
 
 const renderTab = (tabValue: number, handleChange, environment) => {
     if (tabValue === 0) {
@@ -110,72 +87,16 @@ const Home = () => {
 
     return (
         <>
-            {renderNavbar(account?.workspaceName, account?.environments, environment, setSelectedEnvironment)}
+            <Navbar
+                workspaceName={account?.workspaceName}
+                environment={environment}
+                setEnvironment={(env) => {
+                    setEnvironment(env);
+                }}
+                environmentList={account?.environments}
+            />
             <div className="flex h-[100%] bg-[#181d28] text-[#fff]">
-                <div className="w-[20%] flex flex-col items-center pt-[120px] text-[#94a3b8]">
-                    <ul>
-                        <li
-                            className="p-2 cursor-pointer hover:bg-[#2c3957] rounded-[8px]"
-                            style={tabValue === 0 ? selectedStyle : undefined}
-                            onClick={() => handleChange(0)}
-                        >
-                            <HomeIcon />
-                            <span className="p-2">Home</span>
-                        </li>
-                        <li
-                            className="p-2 cursor-pointer hover:bg-[#2c3957] rounded-[8px]"
-                            style={tabValue === 1 ? selectedStyle : undefined}
-                            onClick={() => handleChange(1)}
-                        >
-                            <AppsIcon />
-                            <span className="p-2">Integrations</span>
-                        </li>
-                        <li
-                            className="p-2 cursor-pointer hover:bg-[#2c3957] rounded-[8px]"
-                            style={tabValue === 2 ? selectedStyle : undefined}
-                            onClick={() => handleChange(2)}
-                        >
-                            <EqualizerIcon />
-                            <span className="p-2">Analytics</span>
-                        </li>
-                        <li
-                            className="p-2 cursor-pointer hover:bg-[#2c3957] rounded-[8px]"
-                            style={tabValue === 3 ? selectedStyle : undefined}
-                            onClick={() => handleChange(3)}
-                        >
-                            <KeyIcon />
-                            <span className="p-2">API Keys</span>
-                        </li>
-                        <li
-                            className="p-2 cursor-pointer hover:bg-[#2c3957] rounded-[8px] mt-36"
-                            onClick={() => {
-                                var currentUrl = window.location.href;
-                                window.open(
-                                    'https://docs.revert.dev?utm_campaign=docs-ui&utm_medium=dashboard&utm_source=' +
-                                        currentUrl,
-                                    '_blank'
-                                );
-                            }}
-                        >
-                            <OpenInNewIcon />
-                            <span className="p-2">Docs</span>
-                        </li>
-                        <li
-                            className="p-2 cursor-pointer hover:bg-[#2c3957] rounded-[8px]"
-                            onClick={() => {
-                                var currentUrl = window.location.href;
-                                window.open(
-                                    'https://discord.gg/q5K5cRhymW?utm_campaign=discord-ui&utm_medium=dashboard&utm_source=' +
-                                        currentUrl,
-                                    '_blank'
-                                );
-                            }}
-                        >
-                            <TaskIcon />
-                            <span className="p-2">Request Integration</span>
-                        </li>
-                    </ul>
-                </div>
+                <Sidebar values={{ tabValue, handleChange }} />
                 {renderTab(tabValue, handleChange, environment)}
             </div>
         </>
