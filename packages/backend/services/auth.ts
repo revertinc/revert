@@ -437,10 +437,10 @@ class AuthService {
                     include: { environments: true },
                 });
                 // Create Svix application for this account if it doesn't exist.
-                await config.svix?.application.getOrCreate({
-                    name: accountId,
-                    uid: accountId,
-                });
+                // await config.svix?.application.getOrCreate({
+                //     name: accountId,
+                //     uid: accountId,
+                // });
                 // Create user.
                 await prisma.users.create({
                     data: {
