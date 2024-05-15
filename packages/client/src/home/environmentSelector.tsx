@@ -2,11 +2,14 @@ import * as React from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { useEnvironment } from '../hooks';
 
-export default function EnvironmentSelector({ environmentProp, setEnvironmentProp, environmentList }) {
+export default function EnvironmentSelector({ environmentList }) {
+    const { environment, setEnvironment } = useEnvironment();
+
     const handleChange = (event: SelectChangeEvent) => {
         event.preventDefault();
-        setEnvironmentProp(event.target.value);
+        setEnvironment(event.target.value);
     };
     const anchorRef = React.useRef<HTMLDivElement>(null);
     return (
@@ -18,8 +21,7 @@ export default function EnvironmentSelector({ environmentProp, setEnvironmentPro
                     }}
                     labelId="environment-selector"
                     id="environment-selector"
-                    value={environmentProp}
-                    defaultValue={environmentProp}
+                    value={environment}
                     onChange={handleChange}
                     SelectDisplayProps={{
                         style: {

@@ -5,20 +5,19 @@ import { Link } from 'react-router-dom';
 import QuizIcon from '@mui/icons-material/Quiz';
 import EnvironmentSelector from './environmentSelector';
 import GitHubButton from 'react-github-btn';
+import { useAccount } from '../context/AccountProvider';
 
-const Navbar = ({ workspaceName, environment, setEnvironment, environmentList }) => {
+const Navbar = () => {
+    const { account } = useAccount();
+
     return (
         <div id="top-navbar">
             <div className="flex justify-around items-center  ml-[1.5rem]">
                 <Link to="/" className="flex justify-evenly items-center">
                     <img src={Logo} alt="revert_logo" className="w-[2rem] h-[2rem] mr-[1.5rem] cursor-pointer" />
-                    <p className="text-[#fff]">{workspaceName}</p>
+                    <p className="text-[#fff]">{account?.workspaceName}</p>
                 </Link>
-                <EnvironmentSelector
-                    environmentProp={environment}
-                    setEnvironmentProp={setEnvironment}
-                    environmentList={environmentList}
-                />
+                <EnvironmentSelector environmentList={account?.environments} />
             </div>
             <div className="flex justify-center items-center">
                 <a

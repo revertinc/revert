@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Navbar from './navbar';
 import ApiKeys from './apiKeys';
 import Analytics from './analytics';
@@ -6,9 +6,8 @@ import Analytics from './analytics';
 import Onboarding from './onboarding';
 import Integrations from './integrations';
 import { useUser } from '@clerk/clerk-react';
-import { REVERT_BASE_API_URL, DEFAULT_ENV } from '../constants';
-import * as Sentry from '@sentry/react';
 import Sidebar from '../ui/Sidebar';
+import { useEnvironment } from '../hooks';
 
 declare global {
     interface Window {
@@ -27,56 +26,31 @@ const renderTab = (tabValue: number, handleChange, environment) => {
         return <ApiKeys environment={environment} />;
     } else return undefined;
 };
-const getInitialEnvironment = () => {
-    var selectedOption = localStorage.getItem('revert_environment_selected') || DEFAULT_ENV;
-
-    return selectedOption;
-};
 
 const Home = () => {
     const [tabValue, setTabValue] = React.useState(0);
-    const [account, setAccount] = React.useState<any>();
-    const [environment, setEnvironment] = React.useState<string>(getInitialEnvironment());
-    const user = useUser();
+    const { environment } = useEnvironment();
+    const { user } = useUser();
 
-    const setSelectedEnvironment = (option) => {
-        localStorage.setItem('revert_environment_selected', option);
-        setEnvironment(option);
-    };
-    useEffect(() => {
-        if (window.Intercom) {
-            window.Intercom('boot', {
+    const IntercomParams = useMemo(
+        function () {
+            return {
                 api_base: 'https://api-iam.intercom.io',
                 app_id: process.env.REACT_APP_INTERCOM_APP_ID,
-                user_id: user.user?.id, //
-                name: user.user?.fullName, // Full name
-                email: user.user?.emailAddresses[0].emailAddress, // Email address
-                created_at: user.user?.createdAt, // Signup date as a Unix timestamp
-            });
-        }
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
+                user_id: user?.id, //
+                name: user?.fullName, // Full name
+                email: user?.emailAddresses[0].emailAddress, // Email address
+                created_at: user?.createdAt, // Signup date as a Unix timestamp
+            };
+        },
+        [user]
+    );
 
-        const data = JSON.stringify({
-            userId: user.user?.id,
-        });
-        const requestOptions = {
-            method: 'POST',
-            body: data,
-            headers: headers,
-        };
-        fetch(`${REVERT_BASE_API_URL}/internal/account`, requestOptions)
-            .then((response) => response.json())
-            .then((result) => {
-                setAccount(result?.account);
-                const environments: string[] = result?.account?.environments?.map((env) => env.env) || [];
-                setSelectedEnvironment(environments?.[0] || DEFAULT_ENV);
-            })
-            .catch((error) => {
-                Sentry.captureException(error);
-                console.error('error', error);
-            });
-    }, [user.user?.id]);
+    useEffect(() => {
+        if (window.Intercom) {
+            window.Intercom('boot', IntercomParams);
+        }
+    }, [IntercomParams]);
 
     const handleChange = (newTabValue: number) => {
         setTabValue(newTabValue);
@@ -87,14 +61,7 @@ const Home = () => {
 
     return (
         <>
-            <Navbar
-                workspaceName={account?.workspaceName}
-                environment={environment}
-                setEnvironment={(env) => {
-                    setEnvironment(env);
-                }}
-                environmentList={account?.environments}
-            />
+            <Navbar />
             <div className="flex h-[100%] bg-[#181d28] text-[#fff]">
                 <Sidebar values={{ tabValue, handleChange }} />
                 {renderTab(tabValue, handleChange, environment)}

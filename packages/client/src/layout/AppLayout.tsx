@@ -3,6 +3,7 @@ import Home from '../home/';
 import Navbar from '../ui/Navbar';
 import Main from '../ui/Main';
 import Side from '../ui/Side';
+import { AccountProvider } from '../context/AccountProvider';
 
 function AppLayout() {
     return (
@@ -11,7 +12,9 @@ function AppLayout() {
         //     <Side />
         //     <Main />
         // </div>
-        <Home />
+        <AccountProvider>
+            <Home />
+        </AccountProvider>
     );
 }
 
