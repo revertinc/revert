@@ -15,7 +15,7 @@
         "publish": "npm publish --access public"
     },
     "devDependencies": {
-        "@babel/core": "7.23.5",
+        "@babel/core": "7.24.5",
         "@storybook/addon-a11y": "6.5.0-alpha.50",
         "@storybook/addon-actions": "7.6.4",
         "@storybook/addon-docs": "6.5.0-alpha.50",
