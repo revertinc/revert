@@ -80,10 +80,11 @@ function AddIntegration({
                 </div>
                 <div className="flex justify-end mr-8 mb-8 mt-auto">
                     <LoadingButton
-                        variant="contained"
                         style={{
                             background: '#293347',
                             padding: '0.6rem 1.2rem',
+                            color: '#fff',
+                            textTransform: 'capitalize',
                         }}
                         disabled={selected === ''}
                         onClick={() => {

@@ -92,8 +92,12 @@ const Integrations = () => {
                 {!init && (
                     <Box>
                         <LoadingButton
-                            variant="contained"
-                            style={{ background: '#293347', padding: '0.6rem 1.4rem' }}
+                            style={{
+                                background: '#293347',
+                                padding: '0.6rem 1.4rem',
+                                color: '#fff',
+                                textTransform: 'capitalize',
+                            }}
                             onClick={() => setInit(true)}
                         >
                             Create App

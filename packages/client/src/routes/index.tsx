@@ -8,6 +8,7 @@ import Onboarding from '../home/onboarding';
 import Integrations from '../home/integrations';
 import Analytics from '../home/analytics';
 import ApiKeys from '../home/apiKeys';
+import Webhook from '../pages/Webhook';
 
 export function RouterComponent() {
     const navigate = useNavigate();
@@ -46,6 +47,7 @@ export function RouterComponent() {
                     <Route path="apps" element={<Integrations />} />
                     <Route path="analytics" element={<Analytics />} />
                     <Route path="environment" element={<ApiKeys />} />
+                    <Route path="webhooks" element={<Webhook />} />
                 </Route>
                 <Route
                     path="/sign-up"
