@@ -4,7 +4,7 @@ import { useUser } from '@clerk/clerk-react';
 import { TailSpin } from 'react-loader-spinner';
 import { REVERT_BASE_API_URL } from '../constants';
 import * as Sentry from '@sentry/react';
-import { useEnvironment } from '../hooks';
+import { useEnvironment } from '../context/EnvironmentProvider';
 
 const Analytics = () => {
     const { environment } = useEnvironment();

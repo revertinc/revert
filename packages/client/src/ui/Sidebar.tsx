@@ -4,6 +4,7 @@ import AppsIcon from '@mui/icons-material/Apps';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import HomeIcon from '@mui/icons-material/Home';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import WebhookIcon from '@mui/icons-material/Webhook';
 import TaskIcon from '@mui/icons-material/Task';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -50,6 +51,15 @@ function Sidebar() {
                     <KeyIcon />
                     <span className="p-2">API Keys</span>
                 </li>
+                <li
+                    className="p-2 cursor-pointer hover:bg-[#2c3957] rounded-[8px]"
+                    style={pathname === '/webhooks' ? selectedStyle : undefined}
+                    onClick={() => navigate('/webhooks')}
+                >
+                    <WebhookIcon />
+                    <span className="p-2">Webhooks</span>
+                </li>
+
                 <li
                     className="p-2 cursor-pointer hover:bg-[#2c3957] rounded-[8px] mt-36"
                     onClick={() => {

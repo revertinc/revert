@@ -1,7 +1,7 @@
 import React, { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import * as Sentry from '@sentry/react';
 import { useUser } from '@clerk/clerk-react';
-import { useEnvironment } from '../hooks';
+import { useEnvironment } from './EnvironmentProvider';
 import { DEFAULT_ENV, REVERT_BASE_API_URL } from '../constants';
 
 const AccountContext = createContext<any>({});
@@ -16,7 +16,7 @@ export function AccountProvider({ children }: Props) {
     const { setEnvironment } = useEnvironment();
 
     useEffect(() => {
-        if (isLoaded && isSignedIn) {
+        if (isLoaded && isSignedIn && !account) {
             const headers = new Headers();
             headers.append('Content-Type', 'application/json');
 

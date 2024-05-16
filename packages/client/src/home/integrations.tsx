@@ -10,7 +10,7 @@ import { LoadingButton } from '@mui/lab';
 import MainHeader from '../layout/MainHeader';
 import AddIntegration from '../features/integration/AddIntegration';
 import CreatedIntegration from '../features/integration/CreatedIntegration';
-import { useEnvironment } from '../hooks';
+import { useEnvironment } from '../context/EnvironmentProvider';
 
 const Integrations = () => {
     const { environment } = useEnvironment();

@@ -7,7 +7,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { REVERT_BASE_API_URL } from '../constants';
 import * as Sentry from '@sentry/react';
-import { useEnvironment } from '../hooks';
+import { useEnvironment } from '../context/EnvironmentProvider';
 
 const ApiKeys = () => {
     const { environment } = useEnvironment();

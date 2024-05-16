@@ -4,6 +4,7 @@ import Navbar from '../ui/Navbar';
 import Main from '../ui/Main';
 import Side from '../ui/Side';
 import { AccountProvider } from '../context/AccountProvider';
+import { EnvironmentProvider } from '../context/EnvironmentProvider';
 
 function AppLayout() {
     return (
@@ -12,9 +13,11 @@ function AppLayout() {
         //     <Side />
         //     <Main />
         // </div>
-        <AccountProvider>
-            <Home />
-        </AccountProvider>
+        <EnvironmentProvider>
+            <AccountProvider>
+                <Home />
+            </AccountProvider>
+        </EnvironmentProvider>
     );
 }
 
