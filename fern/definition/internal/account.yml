@@ -12,6 +12,9 @@ types:
         properties:
             account: optional<types.SvixAccount>
             exist: boolean
+    SvixMagicLinkResponse:
+        properties:
+            key: string
 
 service:
     base-path: /internal/account
@@ -95,6 +98,19 @@ service:
                         environment: string
                         accountId: string
             response: SvixAccountResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+        createSvixAccountMagicLink:
+            docs: Create Svix Account Consumer Panel MagicLink
+            method: POST
+            path: /svix/panel/link
+            request:
+                name: createSvixAccountPanelMagicLink
+                body:
+                    properties:
+                        appId: string
+            response: SvixMagicLinkResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

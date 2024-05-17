@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import MainHeader from '../layout/MainHeader';
 import { Box } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -7,15 +7,44 @@ import { TailSpin } from 'react-loader-spinner';
 import { useApi } from '../data/hooks';
 import { useEnvironment } from '../context/EnvironmentProvider';
 import { useAccount } from '../context/AccountProvider';
+import { SVIX_CONSUMER_APP_PORTAL_URI } from '../constants';
 
+function getSvixConsumerPortalUrl(key) {
+    return `${SVIX_CONSUMER_APP_PORTAL_URI}${key}`;
+}
 function Webhook() {
     const { loading, isExist, setSvixAccount } = useSvixAccount();
     const { environment } = useEnvironment();
     const { account } = useAccount();
     const { fetch, data } = useApi();
-    // const svixInfo = {
-    //     url: 'https://app.svix.com/login?primaryColorLight=&primaryColorDark=94a3b8&darkMode=true#key=',
-    // };
+    const [key, setKey] = useState();
+
+    useEffect(
+        function () {
+            async function getMagicLink() {
+                await fetch({
+                    method: 'POST',
+                    url: '/internal/account/svix/panel/link',
+                    payload: {
+                        appId: account?.id,
+                    },
+                });
+            }
+            if (isExist) {
+                if (!account || key) {
+                    return;
+                }
+
+                if (!key && data && data.key) {
+                    setKey(data.key);
+                    return;
+                }
+
+                getMagicLink();
+            }
+        },
+        [account?.id, fetch, data, account, key, isExist]
+    );
 
     async function handleCreation() {
         await fetch({
@@ -75,16 +104,15 @@ function Webhook() {
                     </div>
                 </>
             )}
-            {isExist && !loading && (
-                <p>Dashboard</p>
-                // <iframe
-                //     title="svix"
-                //     id="iframe-svix"
-                //     src={svixInfo.url}
-                //     style={{ width: '80vw', height: '100%', border: 'none', color: '#fff' }}
-                //     allow="clipboard-write"
-                //     loading="lazy"
-                // />
+            {isExist && !loading && key && (
+                <iframe
+                    title="svix"
+                    id="iframe-svix"
+                    src={getSvixConsumerPortalUrl(key)}
+                    style={{ width: '80vw', height: '100%', border: 'none', color: '#fff' }}
+                    allow="clipboard-write"
+                    loading="lazy"
+                />
             )}
         </div>
     );

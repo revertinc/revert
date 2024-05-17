@@ -127,6 +127,21 @@ const accountService = new AccountService({
             throw new InternalServerError({ error: 'Internal server error' });
         }
     },
+    async createSvixAccountMagicLink(req, res) {
+        try {
+            const { appId } = req.body;
+            const createMagicLink = await config.svix?.authentication.appPortalAccess(appId, {});
+
+            if (!createMagicLink) {
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+
+            res.send({ key: createMagicLink.url.split('#key=')[1] });
+        } catch (error: any) {
+            logError(error);
+            throw new InternalServerError({ error: 'Internal server error' });
+        }
+    },
 });
 
 export { accountService };

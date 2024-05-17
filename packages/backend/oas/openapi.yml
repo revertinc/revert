@@ -2864,6 +2864,43 @@ paths:
               required:
                 - environment
                 - accountId
+  /internal/account/svix/panel/link:
+    post:
+      description: Create Svix Account Consumer Panel MagicLink
+      operationId: internal_account_createSvixAccountMagicLink
+      tags:
+        - InternalAccount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalSvixMagicLinkResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                appId:
+                  type: string
+              required:
+                - appId
   /internal/analytics:
     post:
       description: Get Analytics of your revert account
@@ -5430,6 +5467,14 @@ components:
           type: boolean
       required:
         - exist
+    internalSvixMagicLinkResponse:
+      title: internalSvixMagicLinkResponse
+      type: object
+      properties:
+        key:
+          type: string
+      required:
+        - key
     internalGetAnalyticsResponse:
       title: internalGetAnalyticsResponse
       type: object
