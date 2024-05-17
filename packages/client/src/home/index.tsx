@@ -4,6 +4,7 @@ import Navbar from './navbar';
 import { useUser } from '@clerk/clerk-react';
 import Sidebar from '../ui/Sidebar';
 import { Outlet } from 'react-router-dom';
+import Main from '../layout/Main';
 
 declare global {
     interface Window {
@@ -42,10 +43,10 @@ const Home = () => {
     return (
         <>
             <Navbar />
-            <div className="flex h-[100%] bg-[#181d28] text-[#fff]">
+            <Main>
                 <Sidebar />
                 <Outlet />
-            </div>
+            </Main>
         </>
     );
 };
