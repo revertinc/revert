@@ -5,6 +5,7 @@ import Main from '../ui/Main';
 import Side from '../ui/Side';
 import { AccountProvider } from '../context/AccountProvider';
 import { EnvironmentProvider } from '../context/EnvironmentProvider';
+import { SvixAccountProvider } from '../context/SvixAccountProvider';
 
 function AppLayout() {
     return (
@@ -15,7 +16,9 @@ function AppLayout() {
         // </div>
         <EnvironmentProvider>
             <AccountProvider>
-                <Home />
+                <SvixAccountProvider>
+                    <Home />
+                </SvixAccountProvider>
             </AccountProvider>
         </EnvironmentProvider>
     );

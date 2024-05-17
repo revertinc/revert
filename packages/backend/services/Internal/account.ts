@@ -1,9 +1,15 @@
 import { logError } from '../../helpers/logger';
 import { AccountService } from '../../generated/typescript/api/resources/internal/resources/account/service/AccountService';
-import { InternalServerError, NotFoundError, UnAuthorizedError } from '../../generated/typescript/api/resources/common';
+import {
+    InternalServerError,
+    NotFoundError,
+    SvixAccount,
+    UnAuthorizedError,
+} from '../../generated/typescript/api/resources/common';
 import AuthService from '../auth';
 import AppService from '../app';
 import prisma from '../../prisma/client';
+import config from '../../config';
 
 const accountService = new AccountService({
     async getAccountDetails(req, res) {
@@ -68,7 +74,11 @@ const accountService = new AccountService({
                 throw new NotFoundError({ error: 'Could not get the account for user' });
             }
 
-            const isCreated = await AppService.createRevertAppForAccount({ accountId: result.account.id as string, tpId, environment });
+            const isCreated = await AppService.createRevertAppForAccount({
+                accountId: result.account.id as string,
+                tpId,
+                environment,
+            });
 
             if (isCreated?.error) {
                 throw new InternalServerError({ error: 'Internal Server Error' });
@@ -76,6 +86,42 @@ const accountService = new AccountService({
 
             const finalResult = await AuthService.getAccountForUser(userId);
             res.send({ ...finalResult });
+        } catch (error: any) {
+            logError(error);
+            throw new InternalServerError({ error: 'Internal server error' });
+        }
+    },
+
+    async createSvixAccount(req, res) {
+        try {
+            const { accountId } = req.body;
+            const createdSvixAccount = await config.svix?.application.create({
+                name: accountId,
+                uid: accountId,
+            });
+
+            if (!createdSvixAccount) {
+                throw new InternalServerError({ error: 'Internal Server Error' });
+            }
+
+            res.send({ account: createdSvixAccount as SvixAccount, exist: true });
+        } catch (error: any) {
+            logError(error);
+            throw new InternalServerError({ error: 'Internal server error' });
+        }
+    },
+
+    async getSvixAccount(req, res) {
+        try {
+            const { id } = req.params;
+            // const { environment } = req.query;
+            const getSvixAccount = await config.svix?.application.get(id);
+
+            if (!getSvixAccount) {
+                res.send({ exist: false });
+            }
+
+            res.send({ account: getSvixAccount, exist: true });
         } catch (error: any) {
             logError(error);
             throw new InternalServerError({ error: 'Internal server error' });
