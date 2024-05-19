@@ -55,7 +55,7 @@ const Integrations = () => {
         const payload = {
             userId: user.user?.id,
         };
-        const res = await fetch({
+        await fetch({
             url: '/internal/account',
             method: 'POST',
             payload,
