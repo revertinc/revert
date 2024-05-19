@@ -94,10 +94,10 @@ const accountService = new AccountService({
 
     async createSvixAccount(req, res) {
         try {
-            const { accountId } = req.body;
+            const { accountId, environment } = req.body;
             const createdSvixAccount = await config.svix?.application.create({
-                name: accountId,
-                uid: accountId,
+                name: `${accountId}_${environment}`,
+                uid: `${accountId}_${environment}`,
             });
 
             if (!createdSvixAccount) {
@@ -114,8 +114,8 @@ const accountService = new AccountService({
     async getSvixAccount(req, res) {
         try {
             const { id } = req.params;
-            // const { environment } = req.query;
-            const getSvixAccount = await config.svix?.application.get(id);
+            const { environment } = req.query;
+            const getSvixAccount = await config.svix?.application.get(`${id}_${environment}`);
 
             if (!getSvixAccount) {
                 res.send({ exist: false });
