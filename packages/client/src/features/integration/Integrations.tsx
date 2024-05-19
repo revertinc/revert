@@ -108,7 +108,12 @@ const Integrations = () => {
             </MainHeader>
             {loading ? (
                 <div className="mt-10">
-                    <TailSpin wrapperStyle={{ justifyContent: 'center' }} color="#1C1C1C" height={80} width={80} />
+                    <TailSpin
+                        wrapperStyle={{ justifyContent: 'center', marginTop: '28vh' }}
+                        color="#1C1C1C"
+                        height={80}
+                        width={80}
+                    />
                 </div>
             ) : (
                 <>
