@@ -119,11 +119,16 @@ const accountService = new AccountService({
 
             if (!getSvixAccount) {
                 res.send({ exist: false });
+                return;
             }
 
             res.send({ account: getSvixAccount, exist: true });
         } catch (error: any) {
             logError(error);
+            if (error?.code) {
+                res.send({ exist: false });
+                return;
+            }
             throw new InternalServerError({ error: 'Internal server error' });
         }
     },

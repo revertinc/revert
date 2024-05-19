@@ -86,6 +86,7 @@ service:
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
+                - errors.NotFoundError
 
         createSvixAccount:
             docs: Create Svix Account

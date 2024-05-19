@@ -15,6 +15,18 @@ export function SvixAccountProvider({ children }: Props) {
     const { environment } = useEnvironment();
     const [isExist, setIsExist] = useState();
     const { fetch, data, status, loading } = useApi();
+
+    async function handleCreation() {
+        await fetch({
+            method: 'POST',
+            url: `/internal/account/svix`,
+            payload: {
+                environment,
+                accountId: account?.id,
+            },
+        });
+    }
+
     useEffect(
         function () {
             async function getSvixAccount() {
@@ -33,7 +45,7 @@ export function SvixAccountProvider({ children }: Props) {
 
             if (data && !svixAccount && account) {
                 setIsExist(data.exist);
-                setSvixAccount(data);
+                if (data.exist) setSvixAccount(data.account);
                 return;
             }
 
@@ -49,7 +61,7 @@ export function SvixAccountProvider({ children }: Props) {
     );
 
     return (
-        <SvixAccountContext.Provider value={{ svixAccount, setSvixAccount, loading, isExist }}>
+        <SvixAccountContext.Provider value={{ svixAccount, setSvixAccount, loading, isExist, handleCreation }}>
             {children}
         </SvixAccountContext.Provider>
     );

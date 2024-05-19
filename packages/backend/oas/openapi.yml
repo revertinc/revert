@@ -2818,6 +2818,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
         '500':
           description: ''
           content:
