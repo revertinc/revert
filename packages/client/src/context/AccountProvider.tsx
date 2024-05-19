@@ -14,6 +14,7 @@ export function AccountProvider({ children }: Props) {
     const [account, setAccount] = useState<any>();
     const { user, isLoaded, isSignedIn } = useUser();
     const { setEnvironment } = useEnvironment();
+    const [isLoading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (isLoaded && isSignedIn && !account) {
@@ -29,21 +30,28 @@ export function AccountProvider({ children }: Props) {
                 body: data,
                 headers: headers,
             };
+            setLoading(true);
             fetch(`${REVERT_BASE_API_URL}/internal/account`, requestOptions)
                 .then((response) => response.json())
                 .then((result) => {
                     setAccount(result?.account);
                     const environments: string[] = result?.account?.environments?.map((env) => env.env) || [];
                     setEnvironment(environments?.[0] || DEFAULT_ENV);
+                    setLoading(false);
                 })
                 .catch((error) => {
                     Sentry.captureException(error);
                     console.error('error', error);
+                    setLoading(false);
                 });
         }
     }, [account, isLoaded, isSignedIn, setEnvironment, user?.id]);
 
-    return <AccountContext.Provider value={{ account }}>{children}</AccountContext.Provider>;
+    return (
+        <AccountContext.Provider value={{ account, loading: !isLoaded && isLoading }}>
+            {children}
+        </AccountContext.Provider>
+    );
 }
 
 export function useAccount() {

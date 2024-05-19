@@ -4,11 +4,11 @@ import React from 'react';
 import { SignedIn, SignedOut, SignUp, ClerkProvider, SignIn } from '@clerk/clerk-react';
 import { OAuthCallback } from '../common/oauth';
 import AppLayout from '../layout/AppLayout';
-import Onboarding from '../home/onboarding';
-import Integrations from '../home/integrations';
-import Analytics from '../home/analytics';
-import ApiKeys from '../home/apiKeys';
-import Webhook from '../pages/Webhook';
+import Onboarding from '../features/home/Onboarding';
+import Integrations from '../features/integration/Integrations';
+import Analytics from '../features/analytics/Analytics';
+import ApiKeys from '../features/environment/ApiKeys';
+import Webhook from '../features/webhooks/Webhook';
 
 export function RouterComponent() {
     const navigate = useNavigate();
