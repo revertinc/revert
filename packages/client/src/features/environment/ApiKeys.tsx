@@ -34,7 +34,7 @@ const ApiKeys = () => {
     };
 
     return (
-        <div className="w-[80vw]">
+        <div className="w-[80vw] overflow-auto">
             <Box
                 component="div"
                 sx={{
@@ -59,7 +59,7 @@ const ApiKeys = () => {
                 </div>
             )}
             {!loading && account && (
-                <div>
+                <div className="overflow-scroll">
                     <KeyContainer values={{ account, data: data.public }} />
                     <KeyContainer
                         values={{ account, data: data.private, secretOverlay: viewSecret ? {} : secretOverlay }}

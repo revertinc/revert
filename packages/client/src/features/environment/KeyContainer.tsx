@@ -23,6 +23,7 @@ function KeyContainer({ values, children }: { values: any; children?: ReactNode 
                     border: '1px #3E3E3E solid',
                     borderRadius: 10,
                     display: 'flex',
+                    maxWidth: '85rem',
                 }}
             >
                 <div className="flex flex-col flex-1">

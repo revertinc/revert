@@ -1,5 +1,5 @@
 import React from 'react';
-import Home from '../home/';
+import Home from '../pages';
 import { AccountProvider } from '../context/AccountProvider';
 import { EnvironmentProvider } from '../context/EnvironmentProvider';
 import { SvixAccountProvider } from '../context/SvixAccountProvider';

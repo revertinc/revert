@@ -11,6 +11,7 @@ import MainHeader from '../../layout/MainHeader';
 import AddIntegration from './AddIntegration';
 import CreatedIntegration from './CreatedIntegration';
 import { useEnvironment } from '../../context/EnvironmentProvider';
+import NoRevertAccess from '../../ui/NoRevertAccess';
 
 const Integrations = () => {
     const { environment } = useEnvironment();
@@ -119,20 +120,9 @@ const Integrations = () => {
                             <CreatedIntegration values={{ apps, handleOpen }} />
                         </>
                     ) : (
-                        <>
-                            <Box
-                                component="div"
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    padding: '0 5rem',
-                                    paddingTop: '120px',
-                                }}
-                                className="text-lg"
-                            >
-                                You don't seem to have access to the Revert, please contact us at team@revert.dev.
-                            </Box>
-                        </>
+                        <NoRevertAccess>
+                            You don't seem to have access to the Revert, please contact us at team@revert.dev.
+                        </NoRevertAccess>
                     )}
                 </>
             )}
