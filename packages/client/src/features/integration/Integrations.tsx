@@ -3,14 +3,14 @@ import Box from '@mui/material/Box';
 import { useUser } from '@clerk/clerk-react';
 import { TailSpin } from 'react-loader-spinner';
 import Modal from '@mui/material/Modal';
-import EditCredentials from './editCredentials';
-import { LOCALSTORAGE_KEYS } from '../data/localstorage';
-import { useApi } from '../data/hooks';
+import EditCredentials from './EditCredentials';
+import { LOCALSTORAGE_KEYS } from '../../data/localstorage';
+import { useApi } from '../../data/hooks';
 import { LoadingButton } from '@mui/lab';
-import MainHeader from '../layout/MainHeader';
-import AddIntegration from '../features/integration/AddIntegration';
-import CreatedIntegration from '../features/integration/CreatedIntegration';
-import { useEnvironment } from '../context/EnvironmentProvider';
+import MainHeader from '../../layout/MainHeader';
+import AddIntegration from './AddIntegration';
+import CreatedIntegration from './CreatedIntegration';
+import { useEnvironment } from '../../context/EnvironmentProvider';
 
 const Integrations = () => {
     const { environment } = useEnvironment();
@@ -89,7 +89,7 @@ const Integrations = () => {
                     <h1 className="text-3xl font-bold mb-3">Integrations</h1>
                     <span className="text-[#b1b8ba]">Configure & Manage your connected apps here.</span>
                 </Box>
-                {!init && (
+                {!init && account && (
                     <Box>
                         <LoadingButton
                             style={{
@@ -138,12 +138,14 @@ const Integrations = () => {
             )}
 
             <Modal open={open} onClose={handleClose}>
-                <EditCredentials
-                    app={account?.environments
-                        ?.find((env) => env.env === environment)
-                        ?.apps?.find((a) => a.tp_id === appId)}
-                    handleClose={handleClose}
-                />
+                <div>
+                    <EditCredentials
+                        app={account?.environments
+                            ?.find((env) => env.env === environment)
+                            ?.apps?.find((a) => a.tp_id === appId)}
+                        handleClose={handleClose}
+                    />
+                </div>
             </Modal>
         </div>
     );
