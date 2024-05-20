@@ -55,7 +55,7 @@ const Integrations = () => {
         }
 
         toast.success(`Added ${appsInfo[id].name} !`, {
-            position: 'bottom-center',
+            position: 'top-center',
         });
     };
 

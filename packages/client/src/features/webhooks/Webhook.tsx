@@ -31,7 +31,7 @@ function Webhook() {
         });
         setCreating(true);
         toast.success('Webhooks Enabled!', {
-            position: 'bottom-center',
+            position: 'top-center',
         });
     }
     useEffect(
