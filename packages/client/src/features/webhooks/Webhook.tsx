@@ -8,6 +8,7 @@ import { useAccount } from '../../context/AccountProvider';
 import { SVIX_CONSUMER_APP_PORTAL_URI } from '../../constants';
 import { useEnvironment } from '../../context/EnvironmentProvider';
 import Spinner from '../../ui/Spinner';
+import toast from 'react-hot-toast';
 
 function getSvixConsumerPortalUrl(key) {
     return `${SVIX_CONSUMER_APP_PORTAL_URI}${key}`;
@@ -28,8 +29,10 @@ function Webhook() {
                 accountId: account?.id,
             },
         });
-
         setCreating(true);
+        toast.success('Webhooks Enabled!', {
+            position: 'bottom-center',
+        });
     }
     useEffect(
         function () {

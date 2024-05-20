@@ -12,6 +12,8 @@ import CreatedIntegration from './CreatedIntegration';
 import { useEnvironment } from '../../context/EnvironmentProvider';
 import NoRevertAccess from '../../ui/NoRevertAccess';
 import Spinner from '../../ui/Spinner';
+import toast from 'react-hot-toast';
+import { appsInfo } from './enums/metadata';
 
 // Todo: Migrate to useAccount
 const Integrations = () => {
@@ -51,6 +53,10 @@ const Integrations = () => {
         if (status?.toString().startsWith('2')) {
             setInit(false);
         }
+
+        toast.success(`Added ${appsInfo[id].name} !`, {
+            position: 'bottom-center',
+        });
     };
 
     const fetchAccount = React.useCallback(async () => {
