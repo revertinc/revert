@@ -12,9 +12,11 @@ types:
         properties:
             account: optional<types.SvixAccount>
             exist: boolean
+            environment: optional<string>
     SvixMagicLinkResponse:
         properties:
             key: string
+            environment: string
 
 service:
     base-path: /internal/account

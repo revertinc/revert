@@ -118,31 +118,36 @@ const accountService = new AccountService({
             const getSvixAccount = await config.svix?.application.get(`${id}_${environment}`);
 
             if (!getSvixAccount) {
-                res.send({ exist: false });
+                res.send({ exist: false, environment });
                 return;
             }
 
-            res.send({ account: getSvixAccount, exist: true });
+            res.send({ account: getSvixAccount, exist: true, environment });
         } catch (error: any) {
-            logError(error);
             if (error?.code) {
-                res.send({ exist: false });
+                res.send({ exist: false, environment: req.query.environment });
                 return;
             }
+            logError(error);
             throw new InternalServerError({ error: 'Internal server error' });
         }
     },
     async createSvixAccountMagicLink(req, res) {
         try {
             const { appId } = req.body;
+            const environment = appId.split('_')[2];
             const createMagicLink = await config.svix?.authentication.appPortalAccess(appId, {});
-
             if (!createMagicLink) {
-                throw new InternalServerError({ error: 'Internal server error' });
+                res.send({ key: '', environment });
+                return;
             }
 
-            res.send({ key: createMagicLink.url.split('#key=')[1] });
+            res.send({ key: createMagicLink.url.split('#key=')[1], environment });
         } catch (error: any) {
+            if (error?.code) {
+                res.send({ key: '', environment: req.body.appId.split('_')[2] });
+                return;
+            }
             logError(error);
             throw new InternalServerError({ error: 'Internal server error' });
         }

@@ -5471,6 +5471,9 @@ components:
           nullable: true
         exist:
           type: boolean
+        environment:
+          type: string
+          nullable: true
       required:
         - exist
     internalSvixMagicLinkResponse:
@@ -5479,8 +5482,11 @@ components:
       properties:
         key:
           type: string
+        environment:
+          type: string
       required:
         - key
+        - environment
     internalGetAnalyticsResponse:
       title: internalGetAnalyticsResponse
       type: object
