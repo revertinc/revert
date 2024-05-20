@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { TailSpin } from 'react-loader-spinner';
 
 import { useAccount } from '../../context/AccountProvider';
 import NoRevertAccess from '../../ui/NoRevertAccess';
@@ -8,6 +7,7 @@ import KeyContainer from './KeyContainer';
 import Box from '@mui/material/Box';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import Spinner from '../../ui/Spinner';
 
 const data = {
     public: {
@@ -48,16 +48,7 @@ const ApiKeys = () => {
                 <h1 className="text-3xl font-bold mb-3">API Keys</h1>
                 <span>Manage your Revert API keys here</span>
             </Box>
-            {loading && (
-                <div className="mt-10">
-                    <TailSpin
-                        wrapperStyle={{ justifyContent: 'center', marginTop: '28vh' }}
-                        color="#1C1C1C"
-                        height={80}
-                        width={80}
-                    />
-                </div>
-            )}
+            {loading && <Spinner />}
             {!loading && account && (
                 <div className="overflow-scroll">
                     <KeyContainer values={{ account, data: data.public }} />

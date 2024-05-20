@@ -14,16 +14,8 @@ export function SvixAccountProvider({ children }: Props) {
     const { account, loading: isLoading } = useAccount();
     const { environment } = useEnvironment();
     const { fetch, data, loading } = useApi();
-    async function handleCreation() {
-        await fetch({
-            method: 'POST',
-            url: `/internal/account/svix`,
-            payload: {
-                environment,
-                accountId: account?.id,
-            },
-        });
-    }
+    const [creating, setCreating] = useState<boolean>(false);
+
     const getSvixAccount = useCallback(async () => {
         if (account?.id && environment) {
             await fetch({
@@ -39,6 +31,12 @@ export function SvixAccountProvider({ children }: Props) {
     useEffect(
         function () {
             if (data) {
+                if (creating) {
+                    setSvixAccount(data);
+                    setCreating(false);
+                    return;
+                }
+
                 if (data.environment.includes(environment)) {
                     if (svixAccount && svixAccount.environment.includes(environment)) {
                         return;
@@ -51,12 +49,18 @@ export function SvixAccountProvider({ children }: Props) {
                 getSvixAccount();
             }
         },
-        [data, environment, getSvixAccount, svixAccount]
+        [creating, data, environment, getSvixAccount, svixAccount]
     );
 
     return (
         <SvixAccountContext.Provider
-            value={{ svixAccount, setSvixAccount, loading: isLoading && loading, handleCreation, environment }}
+            value={{
+                svixAccount,
+                setSvixAccount,
+                loading: isLoading && loading,
+                environment,
+                setCreating,
+            }}
         >
             {children}
         </SvixAccountContext.Provider>

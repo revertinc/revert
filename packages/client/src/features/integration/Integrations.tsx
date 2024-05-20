@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { useUser } from '@clerk/clerk-react';
-import { TailSpin } from 'react-loader-spinner';
 import Modal from '@mui/material/Modal';
 import EditCredentials from './EditCredentials';
 import { LOCALSTORAGE_KEYS } from '../../data/localstorage';
@@ -12,7 +11,9 @@ import AddIntegration from './AddIntegration';
 import CreatedIntegration from './CreatedIntegration';
 import { useEnvironment } from '../../context/EnvironmentProvider';
 import NoRevertAccess from '../../ui/NoRevertAccess';
+import Spinner from '../../ui/Spinner';
 
+// Todo: Migrate to useAccount
 const Integrations = () => {
     const { environment } = useEnvironment();
     const user = useUser();
@@ -107,14 +108,7 @@ const Integrations = () => {
                 )}
             </MainHeader>
             {loading ? (
-                <div className="mt-10">
-                    <TailSpin
-                        wrapperStyle={{ justifyContent: 'center', marginTop: '28vh' }}
-                        color="#1C1C1C"
-                        height={80}
-                        width={80}
-                    />
-                </div>
+                <Spinner />
             ) : (
                 <>
                     {account ? (

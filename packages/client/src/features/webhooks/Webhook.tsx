@@ -3,21 +3,34 @@ import MainHeader from '../../layout/MainHeader';
 import { Box } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { useSvixAccount } from '../../context/SvixAccountProvider';
-import { TailSpin } from 'react-loader-spinner';
 import { useApi } from '../../data/hooks';
 import { useAccount } from '../../context/AccountProvider';
 import { SVIX_CONSUMER_APP_PORTAL_URI } from '../../constants';
 import { useEnvironment } from '../../context/EnvironmentProvider';
+import Spinner from '../../ui/Spinner';
 
 function getSvixConsumerPortalUrl(key) {
     return `${SVIX_CONSUMER_APP_PORTAL_URI}${key}`;
 }
 function Webhook() {
-    const { loading, handleCreation, svixAccount } = useSvixAccount();
+    const { loading, svixAccount, setCreating, setSvixAccount } = useSvixAccount();
     const { environment } = useEnvironment();
     const { account } = useAccount();
-    const { fetch, data } = useApi();
+    const { fetch, data, loading: isLoading } = useApi();
     const [key, setKey] = useState<any>();
+
+    async function handleCreation() {
+        await fetch({
+            method: 'POST',
+            url: `/internal/account/svix`,
+            payload: {
+                environment,
+                accountId: account?.id,
+            },
+        });
+
+        setCreating(true);
+    }
     useEffect(
         function () {
             async function getMagicLink() {
@@ -30,29 +43,38 @@ function Webhook() {
                 });
             }
 
+            if (data && data.account && svixAccount !== data) {
+                setSvixAccount(data);
+                setKey(undefined);
+                return;
+            }
+
             if (!loading && svixAccount && svixAccount.exist) {
                 if (!account || !environment) {
                     return;
                 }
+
                 if (key && key.environment === environment) {
                     return;
                 }
+
                 if (data) {
-                    if (data.environment.includes(environment)) {
+                    if (data.key && data.environment.includes(environment)) {
                         setKey({ token: data.key, environment });
                     } else {
                         getMagicLink();
+                        setKey(undefined);
                     }
                 } else {
                     getMagicLink();
                 }
             }
         },
-        [account, data, environment, fetch, key, loading, svixAccount]
+        [account, data, environment, fetch, key, loading, setSvixAccount, svixAccount]
     );
 
     return (
-        <div className="w-[80vw]">
+        <div className="w-[80vw] overflow-auto">
             <MainHeader>
                 <Box
                     component="div"
@@ -91,20 +113,21 @@ function Webhook() {
                     <p>Enable webhooks to start configure </p>
                 </div>
             )}
-            {loading && (
-                <TailSpin
-                    wrapperStyle={{ justifyContent: 'center', marginTop: '28vh' }}
-                    color="#1C1C1C"
-                    height={80}
-                    width={80}
-                />
-            )}
-            {!loading && svixAccount && svixAccount.exist && key && key.token.length && (
+            {(loading || isLoading || !svixAccount) && <Spinner />}
+            {!loading && svixAccount && svixAccount.exist && key && key.token && (
                 <iframe
                     title="svix"
                     id="iframe-svix"
                     src={getSvixConsumerPortalUrl(key.token)}
-                    style={{ width: '77vw', height: '80vh', border: 'none', color: '#fff', marginLeft: '3vw' }}
+                    style={{
+                        width: '75vw',
+                        height: '78vh',
+                        border: 'none',
+                        color: '#fff',
+                        marginLeft: '3vw',
+                        marginTop: '2vh',
+                        overflow: 'scroll',
+                    }}
                     allow="clipboard-write"
                     loading="lazy"
                 />

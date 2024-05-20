@@ -104,7 +104,7 @@ const accountService = new AccountService({
                 throw new InternalServerError({ error: 'Internal Server Error' });
             }
 
-            res.send({ account: createdSvixAccount as SvixAccount, exist: true });
+            res.send({ account: createdSvixAccount as SvixAccount, exist: true, environment });
         } catch (error: any) {
             logError(error);
             throw new InternalServerError({ error: 'Internal server error' });

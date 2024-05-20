@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { useUser } from '@clerk/clerk-react';
-import { TailSpin } from 'react-loader-spinner';
 import { REVERT_BASE_API_URL } from '../../constants';
 import * as Sentry from '@sentry/react';
 import { useEnvironment } from '../../context/EnvironmentProvider';
 import NoRevertAccess from '../../ui/NoRevertAccess';
 import AnalyticContainer from './AnalyticContainer';
+import Spinner from '../../ui/Spinner';
 
 const styles = {
     box: {
@@ -75,14 +75,7 @@ const Analytics = () => {
                 <span>Check how your integrations are performing.</span>
             </Box>
             {isLoading ? (
-                <div className="mt-10">
-                    <TailSpin
-                        wrapperStyle={{ justifyContent: 'center', marginTop: '28vh' }}
-                        color="#1C1C1C"
-                        height={80}
-                        width={80}
-                    />
-                </div>
+                <Spinner />
             ) : (
                 <>
                     {metrics ? (
