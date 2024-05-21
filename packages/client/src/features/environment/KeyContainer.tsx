@@ -55,13 +55,13 @@ function KeyContainer({ values, children }: { values: any; children?: ReactNode 
                                 position: 'relative',
                             }}
                         >
-                            <div
-                                onClick={() => {
-                                    navigator.clipboard.writeText(currentEnvironmentAccount?.[data.access]);
-                                    toast.success('Copied to clipboard!');
-                                }}
-                            >
-                                <pre>
+                            <div>
+                                <pre
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(currentEnvironmentAccount?.[data.access]);
+                                        toast.success('Copied to clipboard!');
+                                    }}
+                                >
                                     <code
                                         className={`${data.access}`}
                                         title="Click to Copy"
