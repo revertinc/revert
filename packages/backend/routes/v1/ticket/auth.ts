@@ -38,7 +38,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
 
         const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
-        const svixAppId = account!.accounts!.id;
+        const svixAppId = account!.id; // breaking change
         const environmentId = account?.id;
 
         const authProps = {
