@@ -105,7 +105,7 @@ class TrelloAuthHandler extends BaseOAuthHandler {
                 },
             });
 
-            sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.trello, access_creds.access_token, info.id);
+            await sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.trello, access_creds.access_token, info.id);
 
             return processOAuthResult({
                 status: true,

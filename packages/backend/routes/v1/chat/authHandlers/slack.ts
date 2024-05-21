@@ -84,7 +84,7 @@ class SlackAuthHandler extends BaseOAuthHandler {
                 },
             });
             // Svix stuff goes here ****
-            sendConnectionAddedEvent(
+            await sendConnectionAddedEvent(
                 svixAppId,
                 tenantId,
                 TP_ID.slack,

@@ -80,7 +80,7 @@ class PipeDriveAuthHandler extends BaseOAuthHandler {
                 },
             });
 
-            sendConnectionAddedEvent(
+            await sendConnectionAddedEvent(
                 svixAppId,
                 tenantId,
                 TP_ID.pipedrive,

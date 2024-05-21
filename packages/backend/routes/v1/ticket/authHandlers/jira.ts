@@ -105,7 +105,7 @@ class JiraAuthHandler extends BaseOAuthHandler {
                 },
             });
 
-            sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.jira, result.data.access_token, accountId);
+            await sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.jira, result.data.access_token, accountId);
 
             return processOAuthResult({
                 status: true,

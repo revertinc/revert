@@ -180,7 +180,7 @@ const connectionService = new ConnectionService({
             },
         });
         if (deleted) {
-            sendConnectionDeletedEvent(svixAppId, connection);
+            await sendConnectionDeletedEvent(svixAppId, connection);
             res.send({ status: 'ok', deleted });
         } else {
             throw new NotFoundError({ error: 'Connections not found!' });

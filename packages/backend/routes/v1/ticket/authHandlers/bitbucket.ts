@@ -87,7 +87,7 @@ class BitbucketAuthHandler extends BaseOAuthHandler {
                 },
             });
 
-            sendConnectionAddedEvent(
+            await sendConnectionAddedEvent(
                 svixAppId,
                 tenantId,
                 TP_ID.bitbucket,

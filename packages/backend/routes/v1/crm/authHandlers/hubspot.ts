@@ -73,7 +73,13 @@ class HubspotAuthHandler extends BaseOAuthHandler {
                 },
             });
 
-            sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.hubspot, result.data.access_token, info.data.user);
+            await sendConnectionAddedEvent(
+                svixAppId,
+                tenantId,
+                TP_ID.hubspot,
+                result.data.access_token,
+                info.data.user
+            );
 
             return processOAuthResult({
                 status: true,

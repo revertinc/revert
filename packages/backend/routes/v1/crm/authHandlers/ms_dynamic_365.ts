@@ -91,7 +91,7 @@ class MsDynamicAuthHandler extends BaseOAuthHandler {
                     environmentId: environmentId,
                 },
             });
-            sendConnectionAddedEvent(
+            await sendConnectionAddedEvent(
                 svixAppId,
                 tenantId,
                 TP_ID.ms_dynamics_365_sales,
