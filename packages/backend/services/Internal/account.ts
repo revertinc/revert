@@ -10,7 +10,6 @@ import {
 import AuthService from '../auth';
 import AppService from '../app';
 import prisma from '../../prisma/client';
-import config from '../../config';
 
 const accountService = new AccountService({
     async getAccountDetails(req, res) {
@@ -116,19 +115,14 @@ const accountService = new AccountService({
         try {
             const { id } = req.params;
             const { environment } = req.query;
-            const getSvixAccount = await config.svix?.application.get(`${id}_${environment}`);
+            const svixAccount = await SvixService.getSvixAccount({ accountId: id, environment });
 
-            if (!getSvixAccount) {
-                res.send({ exist: false, environment });
-                return;
+            if (!svixAccount) {
+                return res.send({ exist: false, environment });
             }
 
-            res.send({ account: getSvixAccount, exist: true, environment });
+            return res.send({ account: svixAccount, exist: true, environment });
         } catch (error: any) {
-            if (error?.code) {
-                res.send({ exist: false, environment: req.query.environment });
-                return;
-            }
             logError(error);
             throw new InternalServerError({ error: 'Internal server error' });
         }
@@ -137,18 +131,13 @@ const accountService = new AccountService({
         try {
             const { appId } = req.body;
             const environment = appId.split('_')[2];
-            const createMagicLink = await config.svix?.authentication.appPortalAccess(appId, {});
-            if (!createMagicLink) {
-                res.send({ key: '', environment });
-                return;
+            const portalMagicLink = await SvixService.createAppPortalMagicLink(appId);
+            if (!portalMagicLink) {
+                return res.send({ key: '', environment });
             }
 
-            res.send({ key: createMagicLink.url.split('#key=')[1], environment });
+            return res.send({ key: portalMagicLink.url.split('#key=')[1], environment });
         } catch (error: any) {
-            if (error?.code) {
-                res.send({ key: '', environment: req.body.appId.split('_')[2] });
-                return;
-            }
             logError(error);
             throw new InternalServerError({ error: 'Internal server error' });
         }

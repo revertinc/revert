@@ -37,7 +37,7 @@ class SvixService {
         } catch (error) {
             logError({
                 message: `Error while deleting Associated Svix Account For ${userId}`,
-                name: 'SvixAccountDeletion',
+                name: 'SvixAccountDelete',
             });
         }
     }
@@ -52,7 +52,33 @@ class SvixService {
         } catch (error) {
             logError({
                 message: `Error while creating Svix Account`,
-                name: 'SvixAccountCreation',
+                name: 'SvixAccountCreate',
+            });
+            return undefined;
+        }
+    }
+
+    async getSvixAccount({ accountId, environment }: { accountId: string; environment: string }) {
+        try {
+            const getSvixAccount = await config.svix?.application.get(`${accountId}_${environment}`);
+            return getSvixAccount;
+        } catch (error) {
+            logError({
+                message: `Error while GET Svix Account`,
+                name: 'SvixAccountGet',
+            });
+            return undefined;
+        }
+    }
+
+    async createAppPortalMagicLink(appId: string) {
+        try {
+            const createMagicLink = await config.svix?.authentication.appPortalAccess(appId, {});
+            return createMagicLink;
+        } catch (error) {
+            logError({
+                message: `Error while Creating App Portal Magic Link`,
+                name: `SvixAccountCreateMagicLink`,
             });
             return undefined;
         }
