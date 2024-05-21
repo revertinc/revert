@@ -50,10 +50,7 @@ class SvixService {
             });
             return createdSvixAccount;
         } catch (error) {
-            logError({
-                message: `Error while creating Svix Account`,
-                name: 'SvixAccountCreate',
-            });
+            // probably AppId Already Exist
             return undefined;
         }
     }
@@ -63,10 +60,7 @@ class SvixService {
             const getSvixAccount = await config.svix?.application.get(`${accountId}_${environment}`);
             return getSvixAccount;
         } catch (error) {
-            logError({
-                message: `Error while GET Svix Account`,
-                name: 'SvixAccountGet',
-            });
+            // probably App doesn't exist
             return undefined;
         }
     }
@@ -76,10 +70,7 @@ class SvixService {
             const createMagicLink = await config.svix?.authentication.appPortalAccess(appId, {});
             return createMagicLink;
         } catch (error) {
-            logError({
-                message: `Error while Creating App Portal Magic Link`,
-                name: `SvixAccountCreateMagicLink`,
-            });
+            // probably App doesn't exist
             return undefined;
         }
     }
