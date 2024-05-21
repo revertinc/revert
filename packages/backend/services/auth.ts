@@ -382,103 +382,101 @@ class AuthService {
     async createAccountOnClerkUserCreation(webhookData: any, webhookEventType: string) {
         let response;
         logInfo('webhookData', webhookData, webhookEventType);
-        if (webhookData && ['user.created'].includes(webhookEventType)) {
-            try {
-                const userEmail = webhookData.email_addresses[0].email_address;
-                let skipWaitlist = true;
-                let userDomain = userEmail.split('@').pop();
-                let workspaceName = userDomain.charAt(0).toUpperCase() + userDomain.slice(1) + "'s Workspace";
-                if (!isWorkEmail(userEmail)) {
-                    // make the personal email the unique domain.
-                    workspaceName = 'Personal Workspace';
-                    userDomain = userEmail;
-                }
-                if (config.WHITE_LISTED_DOMAINS?.includes(userDomain)) {
-                    skipWaitlist = true;
-                }
-                // Create account only if an account does not exist for this user's domain.
-                const accountId = 'acc_' + uuidv4();
-                const privateTokenDev = 'sk_test_' + uuidv4();
-                const publicTokenDev = 'pk_test_' + uuidv4();
-                const privateTokenProd = 'sk_live_' + uuidv4();
-                const publicTokenProd = 'pk_live_' + uuidv4();
-                const account = await prisma.accounts.upsert({
-                    where: {
-                        domain: userDomain,
-                    },
-                    update: {},
-                    create: {
-                        id: accountId,
-                        private_token: privateTokenProd,
-                        public_token: publicTokenProd,
-                        tenant_count: 0,
-                        domain: userDomain,
-                        skipWaitlist: skipWaitlist,
-                        workspaceName: workspaceName,
-                        environments: {
-                            createMany: {
-                                data: [
-                                    {
-                                        id: `${accountId}_${ENV.development}`,
-                                        env: ENV.development,
-                                        private_token: privateTokenDev,
-                                        public_token: publicTokenDev,
-                                    },
-                                    {
-                                        id: `${accountId}_${ENV.production}`,
-                                        env: ENV.production,
-                                        private_token: privateTokenProd,
-                                        public_token: publicTokenProd,
-                                    },
-                                ],
-                            },
+        try {
+            const userEmail = webhookData.email_addresses[0].email_address;
+            let skipWaitlist = true;
+            let userDomain = userEmail.split('@').pop();
+            let workspaceName = userDomain.charAt(0).toUpperCase() + userDomain.slice(1) + "'s Workspace";
+            if (!isWorkEmail(userEmail)) {
+                // make the personal email the unique domain.
+                workspaceName = 'Personal Workspace';
+                userDomain = userEmail;
+            }
+            if (config.WHITE_LISTED_DOMAINS?.includes(userDomain)) {
+                skipWaitlist = true;
+            }
+            // Create account only if an account does not exist for this user's domain.
+            const accountId = 'acc_' + uuidv4();
+            const privateTokenDev = 'sk_test_' + uuidv4();
+            const publicTokenDev = 'pk_test_' + uuidv4();
+            const privateTokenProd = 'sk_live_' + uuidv4();
+            const publicTokenProd = 'pk_live_' + uuidv4();
+            const account = await prisma.accounts.upsert({
+                where: {
+                    domain: userDomain,
+                },
+                update: {},
+                create: {
+                    id: accountId,
+                    private_token: privateTokenProd,
+                    public_token: publicTokenProd,
+                    tenant_count: 0,
+                    domain: userDomain,
+                    skipWaitlist: skipWaitlist,
+                    workspaceName: workspaceName,
+                    environments: {
+                        createMany: {
+                            data: [
+                                {
+                                    id: `${accountId}_${ENV.development}`,
+                                    env: ENV.development,
+                                    private_token: privateTokenDev,
+                                    public_token: publicTokenDev,
+                                },
+                                {
+                                    id: `${accountId}_${ENV.production}`,
+                                    env: ENV.production,
+                                    private_token: privateTokenProd,
+                                    public_token: publicTokenProd,
+                                },
+                            ],
                         },
                     },
-                    include: { environments: true },
-                });
-                // Create user.
-                await prisma.users.create({
-                    data: {
-                        id: webhookData.id,
+                },
+                include: { environments: true },
+            });
+            // Create user.
+            await prisma.users.create({
+                data: {
+                    id: webhookData.id,
+                    email: userEmail,
+                    domain: userDomain,
+                    accountId: account.id,
+                },
+            });
+            // Send onboarding campaign email
+            try {
+                await axios({
+                    method: 'post',
+                    url: 'https://app.loops.so/api/v1/transactional',
+                    data: JSON.stringify({
+                        transactionalId: config.LOOPS_ONBOARDING_TXN_ID,
                         email: userEmail,
-                        domain: userDomain,
-                        accountId: account.id,
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${config.LOOPS_API_KEY}`,
                     },
                 });
-                // Send onboarding campaign email
-                try {
+                logInfo('Sent onboarding email');
+                // Alert on slack if configured.
+                if (config.SLACK_URL) {
                     await axios({
                         method: 'post',
-                        url: 'https://app.loops.so/api/v1/transactional',
+                        url: config.SLACK_URL,
                         data: JSON.stringify({
-                            transactionalId: config.LOOPS_ONBOARDING_TXN_ID,
-                            email: userEmail,
+                            text: `Woot! :zap: ${userEmail} created an account on Revert!\n\n`,
                         }),
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${config.LOOPS_API_KEY}`,
-                        },
                     });
-                    logInfo('Sent onboarding email');
-                    // Alert on slack if configured.
-                    if (config.SLACK_URL) {
-                        await axios({
-                            method: 'post',
-                            url: config.SLACK_URL,
-                            data: JSON.stringify({
-                                text: `Woot! :zap: ${userEmail} created an account on Revert!\n\n`,
-                            }),
-                        });
-                    }
-                } catch (error: any) {
-                    logError(error);
                 }
-                response = { status: 'ok' };
-            } catch (e: any) {
-                logError(e);
-                console.error(e);
-                response = { error: e };
+            } catch (error: any) {
+                logError(error);
             }
+            response = { status: 'ok' };
+        } catch (e: any) {
+            logError(e);
+            console.error(e);
+            response = { error: e };
         }
         return response;
     }
