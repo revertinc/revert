@@ -106,7 +106,7 @@ function Webhook() {
                             }}
                             onClick={() => handleCreation()}
                         >
-                            Webhook
+                            Enable Webhooks
                         </LoadingButton>
                     </Box>
                 )}
