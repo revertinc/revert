@@ -1,5 +1,6 @@
 import { logError } from '../../helpers/logger';
 import { AccountService } from '../../generated/typescript/api/resources/internal/resources/account/service/AccountService';
+import SvixService from '../svix';
 import {
     InternalServerError,
     NotFoundError,
@@ -95,16 +96,16 @@ const accountService = new AccountService({
     async createSvixAccount(req, res) {
         try {
             const { accountId, environment } = req.body;
-            const createdSvixAccount = await config.svix?.application.create({
-                name: `${accountId}_${environment}`,
-                uid: `${accountId}_${environment}`,
-            });
-
-            if (!createdSvixAccount) {
-                throw new InternalServerError({ error: 'Internal Server Error' });
+            const svixAccount = await SvixService.createSvixAccount({ accountId, environment });
+            if (svixAccount) {
+                return res.send({
+                    account: svixAccount as SvixAccount,
+                    exist: true,
+                    environment,
+                });
             }
 
-            res.send({ account: createdSvixAccount as SvixAccount, exist: true, environment });
+            return res.send({ exist: false, environment });
         } catch (error: any) {
             logError(error);
             throw new InternalServerError({ error: 'Internal server error' });
