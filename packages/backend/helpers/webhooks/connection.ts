@@ -1,6 +1,6 @@
 import config from '../../config';
 
-// Todo(Warn): svixAppIdMatching Env
+// Warn: svixAppId is now including env that is environmentId -> ie: accoundId_environment (accountId_production)
 export default function sendConnectionAddedEvent(
     svixAppId: string,
     tenantId: string,
