@@ -5874,6 +5874,7 @@ __metadata:
     styled-components: ^6.0.7
     tailwindcss: ^3.1.8
     typescript: ^4.7.4
+    uuid: ^9.0.1
     web-vitals: ^3.4.0
   languageName: unknown
   linkType: soft
@@ -29863,7 +29864,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^9.0.0":
+"uuid@npm:^9.0.0, uuid@npm:^9.0.1":
   version: 9.0.1
   resolution: "uuid@npm:9.0.1"
   bin:

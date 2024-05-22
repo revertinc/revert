@@ -23,6 +23,7 @@
         "react-router-dom": "^6.4.1",
         "react-scripts": "5.0.1",
         "styled-components": "^6.0.7",
+        "uuid": "^9.0.1",
         "web-vitals": "^3.4.0"
     },
     "scripts": {

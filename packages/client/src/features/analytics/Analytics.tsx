@@ -7,6 +7,9 @@ import { useEnvironment } from '../../context/EnvironmentProvider';
 import NoRevertAccess from '../../ui/NoRevertAccess';
 import AnalyticContainer from './AnalyticContainer';
 import Spinner from '../../ui/Spinner';
+import { v4 as uuidv4 } from 'uuid';
+
+
 
 const styles = {
     box: {
@@ -108,7 +111,7 @@ const Analytics = () => {
                                         <ul className="mt-4 w-full text-sm text-[#94a3b8]">
                                             {metrics.recentConnections.length ? (
                                                 metrics.recentConnections.map((connection) => (
-                                                    <li className="flex justify-between" key={connection}>
+                                                    <li className="flex justify-between" key={uuidv4()}>
                                                         <span>{connection.id}</span>
                                                         <span>{connection.createdAt}</span>
                                                     </li>
@@ -135,7 +138,7 @@ const Analytics = () => {
                                         <ul className="mt-4 w-full text-sm text-[#94a3b8]">
                                             {metrics.recentApiCalls.length ? (
                                                 metrics.recentApiCalls.map((call) => (
-                                                    <li className="flex justify-between" key={call}>
+                                                    <li className="flex justify-between" key={uuidv4()}>
                                                         <span>{call.method}</span>
                                                         <span>{call.path}</span>
                                                         <span>{call.status}</span>
@@ -162,7 +165,7 @@ const Analytics = () => {
                                         <ul className="mt-4 w-full text-sm text-[#94a3b8]">
                                             {metrics.connectedApps.length ? (
                                                 metrics.connectedApps.map((app) => (
-                                                    <li className="flex justify-between m-2" key={app.appName}>
+                                                    <li className="flex justify-between m-2" key={uuidv4()}>
                                                         <img
                                                             width={50}
                                                             className="object-scale-down"
