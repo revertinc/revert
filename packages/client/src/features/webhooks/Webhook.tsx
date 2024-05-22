@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MainHeader from '../../layout/MainHeader';
-import { Box, Switch } from '@mui/material';
+import { Box } from '@mui/material';
 import { useSvixAccount } from '../../context/SvixAccountProvider';
 import { useApi } from '../../data/hooks';
 import { useAccount } from '../../context/AccountProvider';
@@ -8,6 +8,7 @@ import { SVIX_CONSUMER_APP_PORTAL_URI } from '../../constants';
 import { useEnvironment } from '../../context/EnvironmentProvider';
 import Spinner from '../../ui/Spinner';
 import toast from 'react-hot-toast';
+import CustomSwitch from '../../ui/Switch';
 
 function getSvixConsumerPortalUrl(key) {
     return `${SVIX_CONSUMER_APP_PORTAL_URI}${key}`;
@@ -18,6 +19,7 @@ function Webhook() {
     const { account } = useAccount();
     const { fetch, data, loading: isLoading } = useApi();
     const [key, setKey] = useState<any>();
+    const [checked, setChecked] = useState<boolean>(false);
 
     async function handleCreation() {
         await fetch({
@@ -32,6 +34,7 @@ function Webhook() {
         toast.success('Webhooks Enabled!', {
             position: 'top-center',
         });
+        setChecked(false);
     }
     useEffect(
         function () {
@@ -93,15 +96,20 @@ function Webhook() {
                             : 'Build and Manage Webhooks'}
                     </span>
                 </Box>
-                {!loading && svixAccount && !svixAccount.exist && (
-                    <Box>
-                        <Switch onClick={() => handleCreation()} size="medium" color="success" />
-                    </Box>
-                )}
             </MainHeader>
             {!loading && svixAccount && !svixAccount.exist && (
                 <div className="flex flex-col justify-center items-center h-[70vh] w-[80vw]">
-                    <p>Enable webhooks to start configure </p>
+                    <div className="flex flex-col justify-center items-center h-[30vh] w-[50vw] border-2 rounded-lg border-dashed border-[#475569]">
+                        <p className="mb-4">Enable webhooks to start configure </p>
+                        <CustomSwitch
+                            isOn={checked}
+                            onColor="#51cf66"
+                            handleToggle={() => {
+                                setChecked(true);
+                                handleCreation();
+                            }}
+                        />
+                    </div>
                 </div>
             )}
             {(loading || isLoading || !svixAccount) && <Spinner />}
