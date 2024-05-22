@@ -67,12 +67,12 @@ function Webhook() {
                         getMagicLink();
                         setKey(undefined);
                     }
-                } else {
+                } else if (!isLoading) {
                     getMagicLink();
                 }
             }
         },
-        [account, data, environment, fetch, key, loading, setSvixAccount, svixAccount]
+        [account, data, environment, fetch, isLoading, key, loading, setSvixAccount, svixAccount]
     );
 
     return (
