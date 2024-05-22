@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MainHeader from '../../layout/MainHeader';
-import { Box } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
+import { Box, Switch } from '@mui/material';
 import { useSvixAccount } from '../../context/SvixAccountProvider';
 import { useApi } from '../../data/hooks';
 import { useAccount } from '../../context/AccountProvider';
@@ -96,18 +95,7 @@ function Webhook() {
                 </Box>
                 {!loading && svixAccount && !svixAccount.exist && (
                     <Box>
-                        <LoadingButton
-                            variant="text"
-                            style={{
-                                background: '#293347',
-                                color: '#fff',
-                                padding: '0.6rem 1.4rem',
-                                textTransform: 'capitalize',
-                            }}
-                            onClick={() => handleCreation()}
-                        >
-                            Enable Webhooks
-                        </LoadingButton>
+                        <Switch onClick={() => handleCreation()} size="medium" color="success" />
                     </Box>
                 )}
             </MainHeader>
