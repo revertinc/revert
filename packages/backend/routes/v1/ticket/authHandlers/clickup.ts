@@ -23,6 +23,8 @@ class ClickUpAuthHandler extends BaseOAuthHandler {
         tenantSecretToken,
         response,
     }: IntegrationAuthProps) {
+        // const redirectUrl = request.query.redirect_url;
+
         const formData = {
             client_id: clientId || config.CLICKUP_CLIENT_ID,
             client_secret: clientSecret || config.CLICKUP_CLIENT_SECRET,
@@ -78,7 +80,6 @@ class ClickUpAuthHandler extends BaseOAuthHandler {
             });
 
             sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.clickup, result.data.access_token, info.data?.user?.id);
-
             return processOAuthResult({
                 status: true,
                 revertPublicKey,

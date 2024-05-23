@@ -211,6 +211,7 @@ const createIntegrationBlock = function (self, integration) {
         #state: string;
         #REDIRECT_URL_BASE: string;
         #integrationsLoaded: boolean;
+        #USER_REDIRECT_URL?: string;
         #onClose: () => void;
 
         get REDIRECT_URL_BASE() {
@@ -219,6 +220,10 @@ const createIntegrationBlock = function (self, integration) {
 
         get getIntegrationsLoaded() {
             return this.#integrationsLoaded;
+        }
+
+        get USER_REDIRECT_URL() {
+            return this.#USER_REDIRECT_URL;
         }
 
         constructor() {
@@ -259,8 +264,15 @@ const createIntegrationBlock = function (self, integration) {
 
         init = function (config) {
             // checking if the config is valid
-            const { revertToken, tenantId } = config;
-
+            const { revertToken, tenantId, redirectUrl } = config;
+            try {
+                if (redirectUrl) {
+                    this.#USER_REDIRECT_URL = new URL(redirectUrl).toString();
+                }
+            } catch (err) {
+                console.error('Invalid redirectUrl');
+                return;
+            }
             if (revertToken == undefined || revertToken == null || tenantId == undefined || tenantId == null) {
                 return;
             }
@@ -1149,6 +1161,7 @@ const createIntegrationBlock = function (self, integration) {
                 const state = JSON.stringify({
                     tenantId: this.tenantId,
                     revertPublicToken: this.API_REVERT_PUBLIC_TOKEN,
+                    ...(this.#USER_REDIRECT_URL && { redirectUrl: this.#USER_REDIRECT_URL }),
                 });
                 if (selectedIntegration.integrationId === 'hubspot') {
                     window.open(
@@ -1305,6 +1318,8 @@ const createIntegrationBlock = function (self, integration) {
                                 this.renderSuccessStage(data, parsedData.integrationName, tenantToken);
                             });
                     }
+
+                    window.location.assign(`http://localhost:3000/home?success=${JSON.stringify(parsedData)}`);
                 };
             } else {
                 console.warn('Invalid integration ID provided.');

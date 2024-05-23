@@ -17,9 +17,9 @@ export const OAuthCallback = (props) => {
         if (Object.keys(params).length && integrationId) {
             if (integrationId === 'hubspot' || integrationId === 'pipedrive') {
                 console.log('Post crm installation', integrationId, params);
-                const { tenantId, revertPublicToken } = JSON.parse(decodeURIComponent(params.state));
+                const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=${integrationId}&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}`,
+                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=${integrationId}&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}&redirect_url=${redirectUrl}`,
                     {
                         method: 'GET',
                         headers: {
@@ -298,9 +298,9 @@ export const OAuthCallback = (props) => {
                     });
             } else if (integrationId === 'clickup') {
                 console.log('Post ticketing app installation', integrationId, params);
-                const { tenantId, revertPublicToken } = JSON.parse(decodeURIComponent(params.state));
+                const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/ticket/oauth-callback?integrationId=${integrationId}&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}`,
+                    `${REVERT_BASE_API_URL}/v1/ticket/oauth-callback?integrationId=${integrationId}&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}&redirect_url=${redirectUrl}`,
                     {
                         method: 'GET',
                         headers: {
