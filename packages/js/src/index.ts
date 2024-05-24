@@ -332,6 +332,20 @@ const createIntegrationBlock = function (self, integration) {
             }
         };
 
+        redirectToUrl = function (parsedData) {
+            if (parsedData.redirectUrl !== undefined) {
+                const redirectUrlWithParams = new URL(parsedData.redirectUrl);
+                const params = new URLSearchParams(redirectUrlWithParams.search);
+                params.append('publicToken', parsedData.publicToken);
+                params.append('status', parsedData.status);
+                params.append('integrationName', parsedData.integrationName);
+                params.append('tenantId', parsedData.tenantId);
+                params.append('tenantSecretToken', parsedData.tenantSecretToken);
+                redirectUrlWithParams.search = params.toString();
+                window.location.assign(redirectUrlWithParams.toString());
+            }
+        };
+
         renderInitialStage = function (integrationId) {
             if (!integrationId) {
                 let selectedIntegrationId;
@@ -592,13 +606,14 @@ const createIntegrationBlock = function (self, integration) {
             container.appendChild(poweredByBanner);
         };
 
-        renderSuccessStage = function (fieldMappingData, integrationName, tenantToken) {
+        renderSuccessStage = function (fieldMappingData, parsedData, tenantToken) {
             console.log(fieldMappingData);
             if (!(fieldMappingData.mappableFields || []).length) {
+                this.redirectToUrl(parsedData);
                 if (this.closeAfterOAuthFlow) {
                     return this.close();
                 }
-                return this.renderDoneStage(integrationName);
+                return this.renderDoneStage(parsedData.integrationName);
             }
             const container = document.getElementById('revert-signin-container');
             const poweredByBanner = createPoweredByBanner(this);
@@ -647,7 +662,7 @@ const createIntegrationBlock = function (self, integration) {
                     marginBottom: '5px',
                 }),
                 [],
-                `Map fields specific to your ${integrationName} Account`
+                `Map fields specific to your ${parsedData.integrationName} Account`
             );
             container.appendChild(header);
             container.appendChild(subHeader);
@@ -799,7 +814,8 @@ const createIntegrationBlock = function (self, integration) {
                     .then((data) => data.json())
                     .then((data) => {
                         this.clearInitialOrProcessingOrSuccessStage();
-                        this.renderDoneStage(integrationName);
+                        this.redirectToUrl(parsedData);
+                        this.renderDoneStage(parsedData.integrationName);
                     });
             });
             container.appendChild(saveButton);
@@ -1293,6 +1309,7 @@ const createIntegrationBlock = function (self, integration) {
                     if (parsedData.status === 'FAILED') {
                         this.clearInitialOrProcessingOrSuccessStage();
                         evtSource.close();
+                        this.redirectToUrl(parsedData);
                         if (this.closeAfterOAuthFlow) {
                             return this.close();
                         }
@@ -1319,19 +1336,8 @@ const createIntegrationBlock = function (self, integration) {
                             .then((data) => data.json())
                             .then((data) => {
                                 this.clearInitialOrProcessingOrSuccessStage();
-                                this.renderSuccessStage(data, parsedData.integrationName, tenantToken);
+                                this.renderSuccessStage(data, parsedData, tenantToken);
                             });
-                    }
-                    if (parsedData.redirectUrl !== undefined) {
-                        const redirectUrlWithParams = new URL(parsedData.redirectUrl);
-                        const params = new URLSearchParams(redirectUrlWithParams.search);
-                        params.append('publicToken', parsedData.publicToken);
-                        params.append('status', parsedData.status);
-                        params.append('integrationName', parsedData.integrationName);
-                        params.append('tenantId', parsedData.tenantId);
-                        params.append('tenantSecretToken', parsedData.tenantSecretToken);
-                        redirectUrlWithParams.search = params.toString();
-                        window.location.assign(redirectUrlWithParams.toString());
                     }
                 };
             } else {
