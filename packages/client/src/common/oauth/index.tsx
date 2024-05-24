@@ -19,7 +19,11 @@ export const OAuthCallback = (props) => {
                 console.log('Post crm installation', integrationId, params);
                 const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=${integrationId}&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}&redirect_url=${redirectUrl}`,
+                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=${integrationId}&code=${
+                        params.code
+                    }&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}${
+                        redirectUrl ? `&redirect_url=${redirectUrl}` : ``
+                    }`,
                     {
                         method: 'GET',
                         headers: {
@@ -54,7 +58,11 @@ export const OAuthCallback = (props) => {
                 console.log('Post crm installation', integrationId, params);
                 const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=zohocrm&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}&location=${params.location}&accountURL=${params['accounts-server']}&redirect_url=${redirectUrl}`,
+                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=zohocrm&code=${
+                        params.code
+                    }&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}&location=${
+                        params.location
+                    }&accountURL=${params['accounts-server']}${redirectUrl ? `&redirect_url=${redirectUrl}` : ``}`,
                     {
                         method: 'GET',
                         headers: {
@@ -89,7 +97,11 @@ export const OAuthCallback = (props) => {
                 console.log('Post crm installation', integrationId, params);
                 const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=sfdc&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}&redirect_url=${redirectUrl}`,
+                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=sfdc&code=${
+                        params.code
+                    }&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}${
+                        redirectUrl ? `&redirect_url=${redirectUrl}` : ``
+                    }`,
                     {
                         method: 'GET',
                         headers: {
@@ -123,7 +135,11 @@ export const OAuthCallback = (props) => {
             } else if (integrationId === 'closecrm') {
                 const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=closecrm&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}&redirect_url=${redirectUrl}`,
+                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=closecrm&code=${
+                        params.code
+                    }&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}${
+                        redirectUrl ? `&redirect_url=${redirectUrl}` : ``
+                    }`,
                     {
                         method: 'GET',
                         headers: {
@@ -160,7 +176,11 @@ export const OAuthCallback = (props) => {
                 console.log('Post crm installation', integrationId, params);
                 const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=${integrationId}&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}&redirect_url=${redirectUrl}`,
+                    `${REVERT_BASE_API_URL}/v1/crm/oauth-callback?integrationId=${integrationId}&code=${
+                        params.code
+                    }&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}${
+                        redirectUrl ? `&redirect_url=${redirectUrl}` : ``
+                    }`,
                     {
                         method: 'GET',
                         headers: {
@@ -195,7 +215,11 @@ export const OAuthCallback = (props) => {
                 console.log('Post communication app installation', integrationId, params);
                 const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/chat/oauth-callback?integrationId=${integrationId}&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}&redirect_url=${redirectUrl}`,
+                    `${REVERT_BASE_API_URL}/v1/chat/oauth-callback?integrationId=${integrationId}&code=${
+                        params.code
+                    }&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}${
+                        redirectUrl ? `&redirect_url=${redirectUrl}` : ``
+                    }`,
                     {
                         method: 'GET',
                         headers: {
@@ -230,7 +254,11 @@ export const OAuthCallback = (props) => {
                 console.log('Post communication app installation', integrationId, params);
                 const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/chat/oauth-callback?integrationId=${integrationId}&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}&redirect_url=${redirectUrl}`,
+                    `${REVERT_BASE_API_URL}/v1/chat/oauth-callback?integrationId=${integrationId}&code=${
+                        params.code
+                    }&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}${
+                        redirectUrl ? `&redirect_url=${redirectUrl}` : ``
+                    }`,
                     {
                         method: 'GET',
                         headers: {
@@ -265,7 +293,11 @@ export const OAuthCallback = (props) => {
                 console.log('Post ticketing app installation', integrationId, params);
                 const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/ticket/oauth-callback?integrationId=${integrationId}&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}&redirect_url=${redirectUrl}`,
+                    `${REVERT_BASE_API_URL}/v1/ticket/oauth-callback?integrationId=${integrationId}&code=${
+                        params.code
+                    }&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}${
+                        redirectUrl ? `&redirect_url=${redirectUrl}` : ``
+                    }`,
                     {
                         method: 'GET',
                         headers: {
@@ -300,7 +332,11 @@ export const OAuthCallback = (props) => {
                 console.log('Post ticketing app installation', integrationId, params);
                 const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/ticket/oauth-callback?integrationId=${integrationId}&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}&redirect_url=${redirectUrl}`,
+                    `${REVERT_BASE_API_URL}/v1/ticket/oauth-callback?integrationId=${integrationId}&code=${
+                        params.code
+                    }&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}${
+                        redirectUrl ? `&redirect_url=${redirectUrl}` : ``
+                    }`,
                     {
                         method: 'GET',
                         headers: {
@@ -334,7 +370,13 @@ export const OAuthCallback = (props) => {
             } else if (integrationId === 'trello') {
                 console.log('Post ticketing app installation', integrationId, params);
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/ticket/oauth-callback?integrationId=${integrationId}&t_id=${params.tenantId}&x_revert_public_token=${params.revertPublicToken}&oauth_token=${params.oauth_token}&oauth_verifier=${params.oauth_verifier}&redirect_url=${params.redirectUrl}`,
+                    `${REVERT_BASE_API_URL}/v1/ticket/oauth-callback?integrationId=${integrationId}&t_id=${
+                        params.tenantId
+                    }&x_revert_public_token=${params.revertPublicToken}&oauth_token=${
+                        params.oauth_token
+                    }&oauth_verifier=${params.oauth_verifier}${
+                        params.redirectUrl ? `&redirect_url=${params.redirectUrl}` : ``
+                    }`,
                     {
                         method: 'GET',
                         headers: {
@@ -368,7 +410,11 @@ export const OAuthCallback = (props) => {
                 const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
 
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/ticket/oauth-callback?integrationId=${integrationId}&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}&redirect_url=${redirectUrl}`,
+                    `${REVERT_BASE_API_URL}/v1/ticket/oauth-callback?integrationId=${integrationId}&code=${
+                        params.code
+                    }&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}${
+                        redirectUrl ? `&redirect_url=${redirectUrl}` : ``
+                    }`,
                     {
                         method: 'GET',
                         headers: {
@@ -404,7 +450,11 @@ export const OAuthCallback = (props) => {
                 console.log('Post ticketing app installation', integrationId, params);
                 const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/ticket/oauth-callback?integrationId=${integrationId}&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}&redirect_url=${redirectUrl}`,
+                    `${REVERT_BASE_API_URL}/v1/ticket/oauth-callback?integrationId=${integrationId}&code=${
+                        params.code
+                    }&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}${
+                        redirectUrl ? `&redirect_url=${redirectUrl}` : ``
+                    }`,
                     {
                         method: 'GET',
                         headers: {

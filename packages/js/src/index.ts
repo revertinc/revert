@@ -1318,8 +1318,16 @@ const createIntegrationBlock = function (self, integration) {
                                 this.renderSuccessStage(data, parsedData.integrationName, tenantToken);
                             });
                     }
-                    if (parsedData.redirectUrl != undefined) {
-                        window.location.assign(`${parsedData.redirectUrl}?callback=${JSON.stringify(parsedData)}`);
+                    if (parsedData.redirectUrl !== undefined) {
+                        const redirectUrlWithParams = new URL(parsedData.redirectUrl);
+                        const params = new URLSearchParams(redirectUrlWithParams.search);
+                        params.append('publicToken', parsedData.publicToken);
+                        params.append('status', parsedData.status);
+                        params.append('integrationName', parsedData.integrationName);
+                        params.append('tenantId', parsedData.tenantId);
+                        params.append('tenantSecretToken', parsedData.tenantSecretToken);
+                        redirectUrlWithParams.search = params.toString();
+                        window.location.assign(redirectUrlWithParams.toString());
                     }
                 };
             } else {
