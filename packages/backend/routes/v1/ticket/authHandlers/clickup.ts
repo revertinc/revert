@@ -22,8 +22,10 @@ class ClickUpAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
+        request,
     }: IntegrationAuthProps) {
-        // const redirectUrl = request.query.redirect_url;
+        const redirect_url = request.query?.redirect_url;
+        const redirectUrl = redirect_url ? (redirect_url as string) : undefined;
 
         const formData = {
             client_id: clientId || config.CLICKUP_CLIENT_ID,
@@ -88,6 +90,7 @@ class ClickUpAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data?.user?.id,
+                redirectUrl,
             });
         } catch (error: any) {
             return processOAuthResult({
@@ -98,6 +101,7 @@ class ClickUpAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl,
             });
         }
     }

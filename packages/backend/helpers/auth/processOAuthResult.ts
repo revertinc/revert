@@ -13,6 +13,7 @@ type IntegrationCreationOutcome = {
     response: Response;
     tpCustomerId?: string;
     statusText?: string;
+    redirectUrl?: string;
 };
 
 /**
@@ -40,6 +41,7 @@ const processOAuthResult = async ({
     status,
     tpCustomerId,
     statusText,
+    redirectUrl
 }: IntegrationCreationOutcome) => {
     error && logError(error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -55,6 +57,7 @@ const processOAuthResult = async ({
         integrationName,
         tenantId,
         tenantSecretToken,
+        redirectUrl
     } as IntegrationStatusSseMessage);
 
     return response.send({

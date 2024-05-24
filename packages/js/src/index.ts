@@ -1318,8 +1318,9 @@ const createIntegrationBlock = function (self, integration) {
                                 this.renderSuccessStage(data, parsedData.integrationName, tenantToken);
                             });
                     }
-
-                    window.location.assign(`http://localhost:3000/home?success=${JSON.stringify(parsedData)}`);
+                    if (parsedData.redirectUrl != undefined) {
+                        window.location.assign(`${parsedData.redirectUrl}?callback=${JSON.stringify(parsedData)}`);
+                    }
                 };
             } else {
                 console.warn('Invalid integration ID provided.');
