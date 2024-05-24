@@ -35,6 +35,8 @@ class TrelloAuthHandler extends BaseOAuthHandler {
             null,
             'HMAC-SHA1'
         );
+        const redirect_url = request.query?.redirect_url;
+        const redirectUrl = redirect_url ? (redirect_url as string) : undefined;
         const token = String(request.query.oauth_token);
         const verifier = String(request.query.oauth_verifier);
         const tokenSecret = await redis.get(`trello_dev_oauth_token_${request.query.oauth_token}`);
@@ -115,6 +117,7 @@ class TrelloAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.id,
+                redirectUrl
             });
         } catch (error: any) {
             return processOAuthResult({
@@ -125,6 +128,7 @@ class TrelloAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl
             });
         }
     }
