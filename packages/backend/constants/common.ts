@@ -186,4 +186,5 @@ export type IntegrationAuthProps = {
     tenantSecretToken: string;
     response: Response;
     request: Request;
+    redirectUrl?: string;
 };

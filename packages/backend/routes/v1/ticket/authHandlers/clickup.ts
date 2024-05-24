@@ -22,11 +22,8 @@ class ClickUpAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
-        request,
+        redirectUrl,
     }: IntegrationAuthProps) {
-        const redirect_url = request.query?.redirect_url;
-        const redirectUrl = redirect_url ? (redirect_url as string) : undefined;
-
         const formData = {
             client_id: clientId || config.CLICKUP_CLIENT_ID,
             client_secret: clientSecret || config.CLICKUP_CLIENT_SECRET,

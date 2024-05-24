@@ -21,6 +21,7 @@ class TrelloAuthHandler extends BaseOAuthHandler {
         tenantSecretToken,
         response,
         request,
+        redirectUrl
     }: IntegrationAuthProps) {
         const trelloClientId = clientId ? clientId : config.TRELLO_CLIENT_ID;
         const trelloClientSecret = clientId ? clientId : config.TRELLO_CLIENT_SECRET;
@@ -35,8 +36,6 @@ class TrelloAuthHandler extends BaseOAuthHandler {
             null,
             'HMAC-SHA1'
         );
-        const redirect_url = request.query?.redirect_url;
-        const redirectUrl = redirect_url ? (redirect_url as string) : undefined;
         const token = String(request.query.oauth_token);
         const verifier = String(request.query.oauth_verifier);
         const tokenSecret = await redis.get(`trello_dev_oauth_token_${request.query.oauth_token}`);
