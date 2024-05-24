@@ -1243,7 +1243,11 @@ const createIntegrationBlock = function (self, integration) {
                     );
                 } else if (selectedIntegration.integrationId === 'trello') {
                     fetch(
-                        `${this.CORE_API_BASE_URL}ticket/trello-request-token?tenantId=${this.tenantId}&revertPublicToken=${this.API_REVERT_PUBLIC_TOKEN}`
+                        `${this.CORE_API_BASE_URL}ticket/trello-request-token?tenantId=${
+                            this.tenantId
+                        }&revertPublicToken=${this.API_REVERT_PUBLIC_TOKEN}${
+                            this.#USER_REDIRECT_URL ? `&redirectUrl=${this.#USER_REDIRECT_URL}` : ``
+                        }`
                     )
                         .then((data) => data.json())
                         .then((data) => {
