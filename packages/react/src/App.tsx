@@ -17,7 +17,6 @@ function App() {
                     onClose: () => {
                         console.log('On close working!');
                     },
-                    redirectUrl: 'http://localhost:3000/home',
                 }}
             />
         </div>
