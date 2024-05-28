@@ -12,8 +12,6 @@ types:
 service:
     base-path: /internal/account
     auth: false
-    headers:
-        x-revert-api-token: string
     audiences:
         - internal
     endpoints:

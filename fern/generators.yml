@@ -12,11 +12,11 @@ groups:
                   outputSourceFiles: true
             - name: fernapi/fern-openapi
               version: 0.0.28
-              config:
-                  format: yaml #options are yaml or jsonx
               output:
                   location: local-file-system
                   path: ../packages/backend/oas
+              config:
+                  format: yaml
     external:
         audiences:
             - external
@@ -32,12 +32,11 @@ groups:
               config:
                   namespaceExport: Revert
                   timeoutInSeconds: infinity
-
             - name: fernapi/fern-python-sdk
               version: 0.7.2
               output:
                   location: pypi
-                  package-name: 'revert-api'
+                  package-name: revert-api
                   token: ${PYPI_TOKEN}
               github:
                   repository: revertinc/revert-python
@@ -53,3 +52,15 @@ groups:
             #       workspace-id: ${POSTMAN_WORKSPACE_ID}
             #   github:
             #       repository: revertinc/revert-postman
+    sdk:
+        generators:
+            - name: fernapi/fern-typescript-node-sdk
+              version: 0.7.2
+              output:
+                  location: local-file-system
+                  path: ../node-sdk
+            - name: fernapi/fern-python-sdk
+              version: 0.6.0
+              output:
+                  location: local-file-system
+                  path: ../python-sdk
