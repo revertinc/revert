@@ -1,4 +1,4 @@
-name: revert-api
+name: api
 headers:
     x-revert-api-token: string
     x-api-version: optional<string>

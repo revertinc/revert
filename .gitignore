@@ -86,3 +86,7 @@ npm-debug.log*
 !fern/**/*.yml
 revert-dev.js
 .yarn/install-state.gz
+
+# SDKs
+**/node-sdk
+**/python-sdk

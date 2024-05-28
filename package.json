@@ -16,6 +16,7 @@
     },
     "scripts": {
         "fern": "fern generate --log-level debug --group local",
+        "fern-sdk:generate": "fern generate --group sdk",
         "fern-check": "fern check",
         "fern-format": "fern format",
         "fern-upgrade": "fern upgrade --rc",
