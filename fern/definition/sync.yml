@@ -22,6 +22,9 @@ service:
             request:
                 name: TriggerSyncRequest
                 headers:
+                    x-revert-api-token:
+                        type: string
+                        docs: Your official API key for accessing revert apis.
                     x-revert-t-id:
                         type: string
                         docs: The unique customer id used when the customer linked their account.

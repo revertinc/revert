@@ -78,6 +78,9 @@ service:
             request:
                 name: GetFieldMappingsRequest
                 headers:
+                    x-revert-api-token:
+                        type: string
+                        docs: Your official API key for accessing revert apis.
                     x-revert-t-id:
                         type: string
                         docs: The unique customer id used when the customer linked their account.
@@ -115,6 +118,9 @@ service:
             request:
                 name: DeleteFieldMappingRequest
                 headers:
+                    x-revert-api-token:
+                        type: string
+                        docs: Your official API key for accessing revert apis.
                     x-revert-t-id:
                         type: string
                         docs: The unique customer id used when the customer linked their account.
@@ -130,6 +136,10 @@ service:
             request:
                 name: CreateAccountFieldMappingRequest
                 body: CreateAccountFieldMappingRequestBody
+                headers:
+                    x-revert-api-token:
+                        type: string
+                        docs: Your official API key for accessing revert apis.
             response: CreateAccountFieldMappingResponse
             errors:
                 - errors.UnAuthorizedError
@@ -141,6 +151,10 @@ service:
             path: '/config'
             request:
                 name: DeleteAccountFieldMappingConfigRequest
+                headers:
+                    x-revert-api-token:
+                        type: string
+                        docs: Your official API key for accessing revert apis.
             response: DeleteAccountFieldMappingConfigResponse
             errors:
                 - errors.UnAuthorizedError

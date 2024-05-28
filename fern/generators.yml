@@ -58,9 +58,16 @@ groups:
               version: 0.7.2
               output:
                   location: local-file-system
-                  path: ../packages/node-sdk
+                  path: ../../revert-node-ts/src
+              config:
+                  namespaceExport: Revert
+                  timeoutInSeconds: infinity
+                  outputSourceFiles: true
             - name: fernapi/fern-python-sdk
               version: 0.6.0
               output:
                   location: local-file-system
-                  path: ../packages/python-sdk
+                  path: ../../revert-python/src
+              config:
+                  client_class_name: Revert
+                  timeout_in_seconds: infinity
