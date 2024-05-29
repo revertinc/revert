@@ -6,10 +6,12 @@ class AppService {
         accountId,
         tpId,
         environment,
+        publicToken,
     }: {
         accountId: string;
         tpId: TP_ID;
         environment: string;
+        publicToken: string;
     }): Promise<any> {
         const id = `${tpId}_${accountId}_${environment}`;
         const environmentId = `${accountId}_${environment}`;
@@ -21,6 +23,7 @@ class AppService {
                     scope: [],
                     is_revert_app: true,
                     environmentId,
+                    owner_account_public_token: publicToken,
                 },
             });
             return createdApp;

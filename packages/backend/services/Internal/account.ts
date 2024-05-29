@@ -68,7 +68,14 @@ const accountService = new AccountService({
                 throw new NotFoundError({ error: 'Could not get the account for user' });
             }
 
-            const isCreated = await AppService.createRevertAppForAccount({ accountId: result.account.id as string, tpId, environment });
+            const publicToken: string = result.account.environments.find((e: { env: string; }) => e.env === environment).public_token;
+
+            const isCreated = await AppService.createRevertAppForAccount({
+                accountId: result.account.id as string,
+                tpId,
+                environment,
+                publicToken
+            });
 
             if (isCreated?.error) {
                 throw new InternalServerError({ error: 'Internal Server Error' });
