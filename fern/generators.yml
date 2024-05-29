@@ -62,7 +62,8 @@ groups:
               config:
                   namespaceExport: Revert
                   timeoutInSeconds: infinity
-                  outputSourceFiles: true
+                  outputSourceFiles: false
+                  skipResponseValidation: true
             - name: fernapi/fern-python-sdk
               version: 0.6.0
               output:
