@@ -582,10 +582,11 @@ const createIntegrationBlock = function (self, integration) {
 
         renderSuccessStage = function (fieldMappingData, integrationName, tenantToken) {
             console.log(fieldMappingData);
+            if (this.closeAfterOAuthFlow) {
+                return this.close();
+            }
+
             if (!(fieldMappingData.mappableFields || []).length) {
-                if (this.closeAfterOAuthFlow) {
-                    return this.close();
-                }
                 return this.renderDoneStage(integrationName);
             }
             const container = document.getElementById('revert-signin-container');
