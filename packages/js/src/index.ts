@@ -608,13 +608,16 @@ const createIntegrationBlock = function (self, integration) {
 
         renderSuccessStage = function (fieldMappingData, parsedData, tenantToken) {
             console.log(fieldMappingData);
+            if (this.closeAfterOAuthFlow) {
+                this.redirectToUrl(parsedData);
+                return this.close();
+            }
+
             if (!(fieldMappingData.mappableFields || []).length) {
                 this.redirectToUrl(parsedData);
-                if (this.closeAfterOAuthFlow) {
-                    return this.close();
-                }
                 return this.renderDoneStage(parsedData.integrationName);
             }
+            
             const container = document.getElementById('revert-signin-container');
             const poweredByBanner = createPoweredByBanner(this);
             poweredByBanner.style.position = 'absolute';
