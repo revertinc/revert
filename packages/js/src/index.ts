@@ -211,6 +211,7 @@ const createIntegrationBlock = function (self, integration) {
         #state: string;
         #REDIRECT_URL_BASE: string;
         #integrationsLoaded: boolean;
+        #USER_REDIRECT_URL?: string;
         #onClose: () => void;
 
         get REDIRECT_URL_BASE() {
@@ -219,6 +220,10 @@ const createIntegrationBlock = function (self, integration) {
 
         get getIntegrationsLoaded() {
             return this.#integrationsLoaded;
+        }
+
+        get USER_REDIRECT_URL() {
+            return this.#USER_REDIRECT_URL;
         }
 
         constructor() {
@@ -259,8 +264,15 @@ const createIntegrationBlock = function (self, integration) {
 
         init = function (config) {
             // checking if the config is valid
-            const { revertToken, tenantId } = config;
-
+            const { revertToken, tenantId, redirectUrl } = config;
+            try {
+                if (redirectUrl) {
+                    this.#USER_REDIRECT_URL = new URL(redirectUrl).toString();
+                }
+            } catch (err) {
+                console.error('Invalid redirectUrl');
+                return;
+            }
             if (revertToken == undefined || revertToken == null || tenantId == undefined || tenantId == null) {
                 return;
             }
@@ -317,6 +329,20 @@ const createIntegrationBlock = function (self, integration) {
             this.state = 'close';
             if (this.#onClose) {
                 this.#onClose();
+            }
+        };
+
+        redirectToUrl = function (parsedData) {
+            if (parsedData.redirectUrl !== undefined) {
+                const redirectUrlWithParams = new URL(parsedData.redirectUrl);
+                const params = new URLSearchParams(redirectUrlWithParams.search);
+                params.append('publicToken', parsedData.publicToken);
+                params.append('status', parsedData.status);
+                params.append('integrationName', parsedData.integrationName);
+                params.append('tenantId', parsedData.tenantId);
+                params.append('tenantSecretToken', parsedData.tenantSecretToken);
+                redirectUrlWithParams.search = params.toString();
+                window.location.assign(redirectUrlWithParams.toString());
             }
         };
 
@@ -580,15 +606,18 @@ const createIntegrationBlock = function (self, integration) {
             container.appendChild(poweredByBanner);
         };
 
-        renderSuccessStage = function (fieldMappingData, integrationName, tenantToken) {
+        renderSuccessStage = function (fieldMappingData, parsedData, tenantToken) {
             console.log(fieldMappingData);
             if (this.closeAfterOAuthFlow) {
+                this.redirectToUrl(parsedData);
                 return this.close();
             }
 
             if (!(fieldMappingData.mappableFields || []).length) {
-                return this.renderDoneStage(integrationName);
+                this.redirectToUrl(parsedData);
+                return this.renderDoneStage(parsedData.integrationName);
             }
+            
             const container = document.getElementById('revert-signin-container');
             const poweredByBanner = createPoweredByBanner(this);
             poweredByBanner.style.position = 'absolute';
@@ -636,7 +665,7 @@ const createIntegrationBlock = function (self, integration) {
                     marginBottom: '5px',
                 }),
                 [],
-                `Map fields specific to your ${integrationName} Account`
+                `Map fields specific to your ${parsedData.integrationName} Account`
             );
             container.appendChild(header);
             container.appendChild(subHeader);
@@ -788,7 +817,8 @@ const createIntegrationBlock = function (self, integration) {
                     .then((data) => data.json())
                     .then((data) => {
                         this.clearInitialOrProcessingOrSuccessStage();
-                        this.renderDoneStage(integrationName);
+                        this.redirectToUrl(parsedData);
+                        this.renderDoneStage(parsedData.integrationName);
                     });
             });
             container.appendChild(saveButton);
@@ -1150,6 +1180,7 @@ const createIntegrationBlock = function (self, integration) {
                 const state = JSON.stringify({
                     tenantId: this.tenantId,
                     revertPublicToken: this.API_REVERT_PUBLIC_TOKEN,
+                    ...(this.#USER_REDIRECT_URL && { redirectUrl: this.#USER_REDIRECT_URL }),
                 });
                 if (selectedIntegration.integrationId === 'hubspot') {
                     window.open(
@@ -1231,7 +1262,11 @@ const createIntegrationBlock = function (self, integration) {
                     );
                 } else if (selectedIntegration.integrationId === 'trello') {
                     fetch(
-                        `${this.CORE_API_BASE_URL}ticket/trello-request-token?tenantId=${this.tenantId}&revertPublicToken=${this.API_REVERT_PUBLIC_TOKEN}`
+                        `${this.CORE_API_BASE_URL}ticket/trello-request-token?tenantId=${
+                            this.tenantId
+                        }&revertPublicToken=${this.API_REVERT_PUBLIC_TOKEN}${
+                            this.#USER_REDIRECT_URL ? `&redirectUrl=${this.#USER_REDIRECT_URL}` : ``
+                        }`
                     )
                         .then((data) => data.json())
                         .then((data) => {
@@ -1277,6 +1312,7 @@ const createIntegrationBlock = function (self, integration) {
                     if (parsedData.status === 'FAILED') {
                         this.clearInitialOrProcessingOrSuccessStage();
                         evtSource.close();
+                        this.redirectToUrl(parsedData);
                         if (this.closeAfterOAuthFlow) {
                             return this.close();
                         }
@@ -1303,7 +1339,7 @@ const createIntegrationBlock = function (self, integration) {
                             .then((data) => data.json())
                             .then((data) => {
                                 this.clearInitialOrProcessingOrSuccessStage();
-                                this.renderSuccessStage(data, parsedData.integrationName, tenantToken);
+                                this.renderSuccessStage(data, parsedData, tenantToken);
                             });
                     }
                 };

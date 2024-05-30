@@ -22,6 +22,7 @@ class ClickUpAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
+        redirectUrl,
     }: IntegrationAuthProps) {
         const formData = {
             client_id: clientId || config.CLICKUP_CLIENT_ID,
@@ -78,7 +79,6 @@ class ClickUpAuthHandler extends BaseOAuthHandler {
             });
 
             sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.clickup, result.data.access_token, info.data?.user?.id);
-
             return processOAuthResult({
                 status: true,
                 revertPublicKey,
@@ -87,6 +87,7 @@ class ClickUpAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data?.user?.id,
+                redirectUrl,
             });
         } catch (error: any) {
             return processOAuthResult({
@@ -97,6 +98,7 @@ class ClickUpAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl,
             });
         }
     }

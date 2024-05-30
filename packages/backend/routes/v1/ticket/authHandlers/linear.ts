@@ -22,6 +22,7 @@ class LinearAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
+        redirectUrl,
     }: IntegrationAuthProps) {
         // Handle the received code
         const url = `https://api.linear.app/oauth/token`;
@@ -102,6 +103,7 @@ class LinearAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data.viewer?.id,
+                redirectUrl,
             });
         } catch (error: any) {
             return processOAuthResult({
@@ -112,6 +114,7 @@ class LinearAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl,
             });
         }
     }

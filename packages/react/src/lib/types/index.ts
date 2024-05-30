@@ -4,6 +4,7 @@ type RevertConfig = {
     revertToken: string;
     tenantId: string;
     closeAfterOAuthFlow?: boolean;
+    redirectUrl?:string;
     onLoad?: () => void;
     onClose?: () => void;
     onError?: () => void;

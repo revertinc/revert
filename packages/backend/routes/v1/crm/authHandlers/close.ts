@@ -21,6 +21,7 @@ class CloseAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
+        redirectUrl
     }: IntegrationAuthProps) {
         try {
             const formData = {
@@ -87,6 +88,7 @@ class CloseAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data.email,
+                redirectUrl
             });
         } catch (error: any) {
             return processOAuthResult({
@@ -97,6 +99,7 @@ class CloseAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl
             });
         }
     }
