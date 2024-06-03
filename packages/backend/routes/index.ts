@@ -10,6 +10,7 @@ import { logDebug } from '../helpers/logger';
 import crmRouter from './v1/crm';
 import config from '../config';
 import revertAuthMiddleware from '../helpers/authMiddleware';
+import rateLimitMiddleware from '../helpers/rateLimitMiddleware';
 import { register } from '../generated/typescript';
 import { metadataService } from '../services/metadata';
 import { accountService } from '../services/Internal/account';
@@ -140,11 +141,11 @@ router.get('/connection/integration-status/:publicToken', async (req, res) => {
     }
 });
 
-router.use('/crm', cors(), revertAuthMiddleware(), crmRouter);
+router.use('/crm', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], crmRouter);
 
-router.use('/chat', cors(), revertAuthMiddleware(), chatRouter);
+router.use('/chat', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], chatRouter);
 
-router.use('/ticket', cors(), revertAuthMiddleware(), ticketRouter);
+router.use('/ticket', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], ticketRouter);
 
 register(router, {
     metadata: metadataService,

@@ -53,8 +53,11 @@ const config = {
     OPEN_INT_API_KEY: process.env.OPEN_INT_API_KEY,
     OPEN_INT_BASE_API_URL: process.env.OPEN_INT_BASE_API_URL,
     TWENTY_ACCOUNT_ID: process.env.TWENTY_ACCOUNT_ID,
+
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID!,
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET!,
+
+    DEFAULT_RATE_LIMIT_DEVELOPER_PLAN: process.env.DEFAULT_RATE_LIMIT_DEVELOPER_PLAN,
 };
 
 export default config;

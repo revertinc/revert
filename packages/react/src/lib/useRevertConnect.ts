@@ -56,7 +56,7 @@ export default function useRevertConnect(props: useRevertConnectProps) {
                 },
             });
         }
-    }, [loading]);
+    }, [loading, props.config]);
 
     const open = (integrationId?: string) => {
         if (error) {
@@ -66,6 +66,12 @@ export default function useRevertConnect(props: useRevertConnectProps) {
             console.error('Revert is not present');
             return;
         }
+
+        if (window.Revert && !window.Revert.getIntegrationsLoaded) {
+            console.error('Revert is not loaded');
+            return;
+        }
+
         window.Revert.open(integrationId);
     };
     return { open, error, loading: loading || !integrationsLoaded };
