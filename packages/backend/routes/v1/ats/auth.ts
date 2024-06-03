@@ -15,6 +15,10 @@ authRouter.get('/oauth-callback', async (req, res) => {
     logInfo('OAuth callback', req.query);
     const integrationId = req.query.integrationId as TP_ID;
     const revertPublicKey = req.query.x_revert_public_token as string;
+
+    const redirect_url = req.query?.redirect_url;
+    const redirectUrl = redirect_url ? (redirect_url as string) : undefined;
+
     // generate a token for connection auth and save in redis for 5 mins
     const tenantSecretToken = randomUUID();
     await redis.setEx(`tenantSecretToken_${req.query.t_id}`, 5 * 60, tenantSecretToken);
@@ -57,6 +61,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             tenantSecretToken,
             response: res,
             request: req,
+            redirectUrl,
         };
 
         if (req.query.code && req.query.t_id && revertPublicKey) {
@@ -72,6 +77,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
                         response: res,
                         tenantId: req.query.t_id as string,
                         statusText: 'Not implemented yet',
+                        redirectUrl,
                     });
             }
         }
@@ -83,6 +89,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             response: res,
             tenantId: req.query.t_id as string,
             statusText: 'noop',
+            redirectUrl,
         });
     } catch (error: any) {
         return processOAuthResult({
@@ -94,6 +101,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
             response: res,
             tenantId: req.query.t_id as string,
             statusText: 'Error while getting oauth creds',
+            redirectUrl,
         });
     }
 });

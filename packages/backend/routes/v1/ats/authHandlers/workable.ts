@@ -22,6 +22,7 @@ class WorkableAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
+        redirectUrl,
     }: IntegrationAuthProps) {
         let orgURL = account?.apps[0]?.is_revert_app ? undefined : (account?.apps[0]?.app_config as AppConfig)?.org_url;
         if (!orgURL) orgURL = config.WORKABLE_ORG_URL;
@@ -101,6 +102,7 @@ class WorkableAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data?.id,
+                redirectUrl,
             });
         } catch (error: any) {
             return processOAuthResult({
@@ -111,6 +113,7 @@ class WorkableAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl,
             });
         }
     }
