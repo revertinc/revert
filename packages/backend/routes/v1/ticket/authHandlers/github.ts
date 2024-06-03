@@ -22,6 +22,7 @@ class GitHubAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
+        redirectUrl,
     }: IntegrationAuthProps) {
         const formData = {
             grant_type: 'authorization_code',
@@ -93,6 +94,7 @@ class GitHubAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data?.id,
+                redirectUrl,
             });
         } catch (error: any) {
             return processOAuthResult({
@@ -103,6 +105,7 @@ class GitHubAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl,
             });
         }
     }
