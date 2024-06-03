@@ -486,9 +486,13 @@ export const OAuthCallback = (props) => {
                     });
             } else if (integrationId === 'workable') {
                 console.log('Post ats installation', integrationId, params);
-                const { tenantId, revertPublicToken } = JSON.parse(decodeURIComponent(params.state));
+                const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
-                    `${REVERT_BASE_API_URL}/v1/ats/oauth-callback?integrationId=${integrationId}&code=${params.code}&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}`,
+                    `${REVERT_BASE_API_URL}/v1/ats/oauth-callback?integrationId=${integrationId}&code=${
+                        params.code
+                    }&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}${
+                        redirectUrl ? `&redirect_url=${redirectUrl}` : ``
+                    }`,
                     {
                         method: 'GET',
                         headers: {
