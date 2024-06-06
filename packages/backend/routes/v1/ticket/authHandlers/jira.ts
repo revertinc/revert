@@ -23,6 +23,7 @@ class JiraAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
+        redirectUrl,
     }: IntegrationAuthProps) {
         const formData = {
             grant_type: 'authorization_code',
@@ -115,6 +116,7 @@ class JiraAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: accountId,
+                redirectUrl,
             });
         } catch (error: any) {
             return processOAuthResult({
@@ -125,6 +127,7 @@ class JiraAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl,
             });
         }
     }

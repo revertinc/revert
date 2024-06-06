@@ -22,6 +22,7 @@ class DiscordAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
+        redirectUrl,
     }: IntegrationAuthProps) {
         const botToken = account?.apps[0]?.is_revert_app
             ? undefined
@@ -87,6 +88,7 @@ class DiscordAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data.id,
+                redirectUrl,
             });
         } catch (error: any) {
             return processOAuthResult({
@@ -97,6 +99,7 @@ class DiscordAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl,
             });
         }
     }

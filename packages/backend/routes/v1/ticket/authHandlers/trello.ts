@@ -21,6 +21,7 @@ class TrelloAuthHandler extends BaseOAuthHandler {
         tenantSecretToken,
         response,
         request,
+        redirectUrl
     }: IntegrationAuthProps) {
         const trelloClientId = clientId ? clientId : config.TRELLO_CLIENT_ID;
         const trelloClientSecret = clientId ? clientId : config.TRELLO_CLIENT_SECRET;
@@ -115,6 +116,7 @@ class TrelloAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.id,
+                redirectUrl
             });
         } catch (error: any) {
             return processOAuthResult({
@@ -125,6 +127,7 @@ class TrelloAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl
             });
         }
     }

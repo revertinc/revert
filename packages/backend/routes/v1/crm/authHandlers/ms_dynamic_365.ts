@@ -21,6 +21,7 @@ class MsDynamicAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
+        redirectUrl
     }: IntegrationAuthProps) {
         try {
             let orgURL = account?.apps[0]?.is_revert_app
@@ -107,6 +108,7 @@ class MsDynamicAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data.UserId,
+                redirectUrl
             });
         } catch (error: any) {
             console.log('OAuthERROR', error);
@@ -118,6 +120,7 @@ class MsDynamicAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl
             });
         }
     }

@@ -21,6 +21,7 @@ class HubspotAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
+        redirectUrl
     }: IntegrationAuthProps) {
         try {
             const url = 'https://api.hubapi.com/oauth/v1/token';
@@ -89,6 +90,7 @@ class HubspotAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data.user,
+                redirectUrl
             });
         } catch (error: any) {
             console.log('ERROR', error);
@@ -100,6 +102,7 @@ class HubspotAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl
             });
         }
     }

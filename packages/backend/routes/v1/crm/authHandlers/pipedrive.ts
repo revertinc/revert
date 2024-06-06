@@ -22,6 +22,7 @@ class PipeDriveAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
+        redirectUrl,
     }: IntegrationAuthProps) {
         try {
             // Handle the received code
@@ -96,6 +97,7 @@ class PipeDriveAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data.data.email,
+                redirectUrl,
             });
         } catch (error) {
             console.log('OAuthERROR', error);
@@ -107,6 +109,7 @@ class PipeDriveAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl,
             });
         }
     }

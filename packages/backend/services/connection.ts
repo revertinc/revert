@@ -196,7 +196,12 @@ const connectionService = new ConnectionService({
                     private_token: String(token),
                 },
             });
-            const svixAppId = environment?.id!;
+
+            if (!environment) {
+                throw new UnAuthorizedError({ error: 'Api unauthorized' });
+            }
+
+            const svixAppId = environment.id;
             const secret = `whsec_${Buffer.from(uuidv4()).toString('base64')}`;
             const webhook = await config.svix!.endpoint.create(svixAppId, {
                 url: webhookUrl,
@@ -234,7 +239,12 @@ const connectionService = new ConnectionService({
                     private_token: String(token),
                 },
             });
-            const svixAppId = environment?.id!;
+
+            if (!environment) {
+                throw new UnAuthorizedError({ error: 'Api unauthorized' });
+            }
+
+            const svixAppId = environment.id;
             const webhook = await config.svix!.endpoint.get(svixAppId, String(tenantId));
             res.send({ status: 'ok', webhook: webhook });
         } catch (error: any) {
@@ -258,7 +268,12 @@ const connectionService = new ConnectionService({
                     private_token: String(token),
                 },
             });
-            const svixAppId = environment?.id!;
+
+            if (!environment) {
+                throw new UnAuthorizedError({ error: 'Api unauthorized' });
+            }
+
+            const svixAppId = environment.id;
             await config.svix!.endpoint.delete(svixAppId, webhookId);
             res.send({ status: 'ok' });
         } catch (error: any) {

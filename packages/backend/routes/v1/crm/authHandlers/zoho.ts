@@ -22,6 +22,7 @@ class ZohoAuthHandler extends BaseOAuthHandler {
         tenantSecretToken,
         response,
         request,
+        redirectUrl
     }: IntegrationAuthProps) {
         try {
             const url = `${request?.query.accountURL}/oauth/v2/token`;
@@ -110,6 +111,7 @@ class ZohoAuthHandler extends BaseOAuthHandler {
                     tenantId: tenantId,
                     integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tpCustomerId: info.data.Email,
+                    redirectUrl
                 });
             }
         } catch (error: any) {
@@ -122,6 +124,7 @@ class ZohoAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl
             });
         }
     }

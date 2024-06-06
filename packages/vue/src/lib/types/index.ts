@@ -3,6 +3,7 @@ import { CSSProperties } from 'vue';
 export type RevertConfig = {
     revertToken: string;
     tenantId: string;
+    redirectUrl?:string;
     onLoad?: () => void;
     onClose?: () => void;
     onError?: () => void;
