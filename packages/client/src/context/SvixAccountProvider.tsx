@@ -45,11 +45,11 @@ export function SvixAccountProvider({ children }: Props) {
                 } else {
                     getSvixAccount();
                 }
-            } else {
+            } else if (!loading && !isLoading) {
                 getSvixAccount();
             }
         },
-        [creating, data, environment, getSvixAccount, svixAccount]
+        [creating, data, environment, getSvixAccount, isLoading, loading, svixAccount]
     );
 
     return (
