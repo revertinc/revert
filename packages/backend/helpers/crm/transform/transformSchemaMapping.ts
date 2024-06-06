@@ -4,6 +4,7 @@ import {
     ChatStandardObjects,
     StandardObjects,
     TicketStandardObjects,
+    AtsStandardObjects,
     rootSchemaMappingId,
 } from '../../../constants/common';
 import { logDebug } from '../../logger';
@@ -19,7 +20,7 @@ export const transformFieldMappingToModel = async ({
 }: {
     obj: any;
     tpId: TP_ID;
-    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects;
+    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects | AtsStandardObjects;
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }) => {
@@ -85,7 +86,7 @@ export const transformModelToFieldMapping = async ({
 }: {
     unifiedObj: any;
     tpId: TP_ID;
-    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects;
+    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects | AtsStandardObjects;
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }) => {

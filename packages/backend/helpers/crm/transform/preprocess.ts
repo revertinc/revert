@@ -5,6 +5,7 @@ import {
     StandardObjects,
     TICKET_TP_ID,
     TicketStandardObjects,
+    AtsStandardObjects,
 } from '../../../constants/common';
 import { PipedriveDealStatus } from '../../../constants/pipedrive';
 import { convertToHHMMInUTC, getDuration, getFormattedDate } from '../../../helpers/timeZoneHelper';
@@ -17,7 +18,7 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
 }: {
     obj: T;
     tpId: CRM_TP_ID | TICKET_TP_ID;
-    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects;
+    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects | AtsStandardObjects;
 }) => {
     const preprocessMap: any = {
         [TP_ID.hubspot]: {

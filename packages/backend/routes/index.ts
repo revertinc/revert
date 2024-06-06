@@ -45,6 +45,7 @@ import { collectionServiceTicket } from '../services/ticket/collection';
 import { commentServiceTicket } from '../services/ticket/comment';
 import { proxyServiceTicket } from '../services/ticket/proxy';
 import { syncService } from '../services/sync';
+import atsRouter from './v1/ats';
 
 const router = express.Router();
 
@@ -146,6 +147,8 @@ router.use('/crm', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], crmR
 router.use('/chat', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], chatRouter);
 
 router.use('/ticket', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], ticketRouter);
+
+router.use('/ats', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], atsRouter);
 
 register(router, {
     metadata: metadataService,

@@ -378,7 +378,28 @@ class AuthService {
         }
         return { status: 'ok', message: 'Ticket services tokens refreshed' };
     }
+    async refreshOAuthTokensForThirdPartyAtsServices() {
+        try {
+            const connections = await prisma.connections.findMany({
+                include: { app: true },
+            });
 
+            for (let i = 0; i < connections.length; i++) {
+                const connection = connections[i];
+                if (connection.tp_refresh_token) {
+                    try {
+                    } catch (error: any) {
+                        logError(error.response?.data);
+                        console.error('Could not refresh token', connection.t_id, error.response?.data);
+                    }
+                }
+            }
+        } catch (error: any) {
+            logError(error);
+            console.error('Could not update db', error.response?.data);
+        }
+        return { status: 'ok', message: 'ATS services tokens refreshed' };
+    }
     async createAccountOnClerkUserCreation(webhookData: any, webhookEventType: string) {
         let response;
         logInfo('webhookData', webhookData, webhookEventType);

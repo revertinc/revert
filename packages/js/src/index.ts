@@ -617,7 +617,7 @@ const createIntegrationBlock = function (self, integration) {
                 this.redirectToUrl(parsedData);
                 return this.renderDoneStage(parsedData.integrationName);
             }
-            
+
             const container = document.getElementById('revert-signin-container');
             const poweredByBanner = createPoweredByBanner(this);
             poweredByBanner.style.position = 'absolute';
@@ -1174,6 +1174,211 @@ const createIntegrationBlock = function (self, integration) {
             return container;
         };
 
+        modalForApiKeyInputBasicAuth = function (integrationId: string) {
+            return new Promise((resolve, reject) => {
+                const container = document.getElementById('revert-ui-root');
+
+                // Remove all children of the container
+                while (container.firstChild) {
+                    container.removeChild(container.firstChild);
+                }
+
+                // Create background overlay
+                const backgroundOverlay = document.createElement('div');
+                backgroundOverlay.setAttribute('id', 'background-overlay');
+                backgroundOverlay.style.position = 'fixed';
+                backgroundOverlay.style.top = '0';
+                backgroundOverlay.style.left = '0';
+                backgroundOverlay.style.width = '100%';
+                backgroundOverlay.style.height = '100%';
+                backgroundOverlay.style.background = 'rgba(54, 54, 54, 0.4)';
+                backgroundOverlay.style.zIndex = '999';
+
+                // Create modal
+                const modal = document.createElement('div');
+                modal.setAttribute('id', 'modal-basicAuth');
+                modal.style.position = 'fixed';
+                modal.style.top = '50%';
+                modal.style.left = '50%';
+                modal.style.transform = 'translate(-50%, -50%)';
+                modal.style.background = '#fff';
+                modal.style.padding = '0px 20px 20px 20px';
+                modal.style.borderRadius = '8px';
+                modal.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
+                modal.style.zIndex = '1000';
+                modal.style.width = '400px';
+
+                // Create heading
+                const heading = document.createElement('h3');
+                heading.textContent = 'Enter your API key';
+                heading.style.textAlign = 'center';
+                heading.style.textDecoration = 'underline';
+                heading.style.marginBottom = '35px';
+
+                // Create close button
+                const closeButton = document.createElement('button');
+                closeButton.textContent = '✖';
+                closeButton.style.position = 'absolute';
+                closeButton.style.top = '10px';
+                closeButton.style.right = '10px';
+                closeButton.style.background = 'transparent';
+                closeButton.style.border = 'none';
+                closeButton.style.fontSize = '20px';
+                closeButton.style.cursor = 'pointer';
+
+                closeButton.addEventListener('click', () => {
+                    document.body.removeChild(backgroundOverlay);
+                    reject('Modal closed by user');
+                });
+
+                // Create input field and label container
+                const inputContainer = document.createElement('div');
+                inputContainer.style.display = 'flex';
+                inputContainer.style.alignItems = 'center';
+
+                const apiKeyLabel = document.createElement('label');
+                apiKeyLabel.textContent = 'API Key:';
+                apiKeyLabel.setAttribute('for', 'api-key-input');
+                apiKeyLabel.style.marginRight = '10px';
+                apiKeyLabel.style.fontWeight = 'bold';
+
+                const apiKeyInput = document.createElement('input');
+                apiKeyInput.setAttribute('type', 'text');
+                apiKeyInput.setAttribute('id', 'api-key-input');
+                apiKeyInput.style.flexGrow = '1';
+                apiKeyInput.style.padding = '4px';
+
+                inputContainer.appendChild(apiKeyLabel);
+                inputContainer.appendChild(apiKeyInput);
+
+                // Create error message container
+                const errorMessage = document.createElement('div');
+                errorMessage.setAttribute('id', 'error-message');
+                errorMessage.style.color = 'red';
+                errorMessage.style.marginTop = '10px';
+                errorMessage.style.display = 'none'; // Initially hidden
+
+                // Create submit button
+                const submitButton = document.createElement('button');
+                submitButton.textContent = 'Submit';
+                submitButton.style.float = 'right';
+                submitButton.style.marginTop = '20px';
+                submitButton.style.background = 'rgb(39 45 192)';
+                submitButton.style.borderRadius = '5px';
+                submitButton.style.display = 'flex';
+                submitButton.style.alignItems = 'center';
+                submitButton.style.justifyContent = 'center';
+                submitButton.style.padding = '10px';
+                submitButton.style.color = '#fff';
+                submitButton.style.cursor = 'pointer';
+                submitButton.style.position = 'relative';
+                submitButton.disabled = true; // Initially disable the button
+                submitButton.style.opacity = '0.5';
+
+                // Create loader
+                const loader = document.createElement('span');
+                loader.setAttribute('class', 'loader');
+                loader.style.width = '24px';
+                loader.style.height = '24px';
+                loader.style.padding = '5px';
+                loader.style.position = 'absolute';
+                loader.style.display = 'none'; // Initially hidden
+                loader.style.borderRadius = '100%';
+                loader.style.background = 'linear-gradient(0deg, #2047D033, #2047D0 100%)';
+                loader.style.boxSizing = 'border-box';
+                loader.style.animation = 'rotation 1s linear infinite';
+
+                loader.innerHTML = `
+                    <style>
+                        @keyframes rotation {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                        .loader::after {
+                            content: '';  
+                            box-sizing: border-box;
+                            position: absolute;
+                            left: 50%;
+                            top: 50%;
+                            transform: translate(-50%, -50%);
+                            width: 25px;
+                            height: 25px;
+                            border-radius: 100%;
+                            background: #fff;
+                        }
+                    </style>
+                `;
+
+                submitButton.appendChild(loader);
+
+                apiKeyInput.addEventListener('input', function () {
+                    if (apiKeyInput.value.trim() !== '') {
+                        submitButton.disabled = false;
+                        submitButton.style.opacity = '1';
+                    } else {
+                        submitButton.disabled = true;
+                        submitButton.style.opacity = '0.5';
+                    }
+                });
+
+                submitButton.addEventListener('click', () => {
+                    loader.style.display = 'inline-block';
+                    submitButton.disabled = true;
+                    submitButton.style.opacity = '0.5';
+
+                    // Handle submission of API key here
+                    const apiKey = apiKeyInput.value;
+                    const url = `${
+                        this.CORE_API_BASE_URL
+                    }v1/ats/oauth-callback?integrationId=${integrationId}&code=${apiKey}&t_id=${
+                        this.tenantId
+                    }&x_revert_public_token=${this.API_REVERT_PUBLIC_TOKEN}${
+                        this.#USER_REDIRECT_URL ? `&redirectUrl=${this.#USER_REDIRECT_URL}` : ``
+                    }`;
+
+                    fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                        .then((d) => {
+                            return d.json();
+                        })
+                        .then((data) => {
+                            console.log('OAuth flow succeeded', data);
+                            document.body.removeChild(backgroundOverlay);
+                            resolve(apiKey);
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            loader.style.display = 'none';
+                            submitButton.disabled = false;
+                            submitButton.style.opacity = '1';
+                            // Display error message in the modal
+                            errorMessage.textContent = 'An error occurred. Please try again.';
+                            errorMessage.style.display = 'block';
+                        });
+                });
+
+                // Animation on modal entrance
+                modal.style.animation = 'fadein .8s forwards';
+                modal.style.transition = 'color 500ms ease-in-out';
+
+                // Append elements to the modal
+                modal.appendChild(heading);
+                modal.appendChild(closeButton);
+                modal.appendChild(inputContainer);
+                modal.appendChild(errorMessage);
+                modal.appendChild(submitButton);
+
+                // Append modal and overlay to the container
+                backgroundOverlay.appendChild(modal);
+
+                document.body.appendChild(backgroundOverlay);
+            });
+        };
+
         handleIntegrationRedirect = function (selectedIntegration) {
             if (selectedIntegration) {
                 const scopes = selectedIntegration.scopes;
@@ -1295,6 +1500,8 @@ const createIntegrationBlock = function (self, integration) {
                             selectedIntegration.clientId
                         }&response_type=code&state=${encodeURIComponent(state)}`
                     );
+                } else if (selectedIntegration.integrationId === 'greenhouse') {
+                    this.modalForApiKeyInputBasicAuth('greenhouse');
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {
@@ -1326,6 +1533,7 @@ const createIntegrationBlock = function (self, integration) {
                         evtSource.close();
                         const tenantToken = parsedData.tenantSecretToken;
                         // fetch field mapping
+
                         fetch(`${this.CORE_API_BASE_URL}field-mapping`, {
                             mode: 'cors' as RequestMode,
                             method: 'GET',
