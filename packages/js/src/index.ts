@@ -1174,7 +1174,7 @@ const createIntegrationBlock = function (self, integration) {
             return container;
         };
 
-        modalForApiKeyInputBasicAuth = function (integrationId: string) {
+        modalForApiKeyInputBasicAuth = function (urlString: string) {
             return new Promise((resolve, reject) => {
                 const container = document.getElementById('revert-ui-root');
 
@@ -1321,20 +1321,14 @@ const createIntegrationBlock = function (self, integration) {
                     }
                 });
 
-                submitButton.addEventListener('click', () => {
+                submitButton.addEventListener('click', function () {
                     loader.style.display = 'inline-block';
                     submitButton.disabled = true;
                     submitButton.style.opacity = '0.5';
 
                     // Handle submission of API key here
                     const apiKey = apiKeyInput.value;
-                    const url = `${
-                        this.CORE_API_BASE_URL
-                    }v1/ats/oauth-callback?integrationId=${integrationId}&code=${apiKey}&t_id=${
-                        this.tenantId
-                    }&x_revert_public_token=${this.API_REVERT_PUBLIC_TOKEN}${
-                        this.#USER_REDIRECT_URL ? `&redirectUrl=${this.#USER_REDIRECT_URL}` : ``
-                    }`;
+                    const url = `${urlString}&code=${apiKey}`;
 
                     fetch(url, {
                         method: 'GET',
@@ -1501,7 +1495,13 @@ const createIntegrationBlock = function (self, integration) {
                         }&response_type=code&state=${encodeURIComponent(state)}`
                     );
                 } else if (selectedIntegration.integrationId === 'greenhouse') {
-                    this.modalForApiKeyInputBasicAuth('greenhouse');
+                    const url = `${this.CORE_API_BASE_URL}v1/ats/oauth-callback?integrationId=${
+                        selectedIntegration.integrationId
+                    }&t_id=${this.tenantId}&x_revert_public_token=${this.API_REVERT_PUBLIC_TOKEN}${
+                        this.#USER_REDIRECT_URL ? `&redirectUrl=${this.#USER_REDIRECT_URL}` : ``
+                    }`;
+
+                    this.modalForApiKeyInputBasicAuth(url);
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {
