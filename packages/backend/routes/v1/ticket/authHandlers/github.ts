@@ -84,7 +84,7 @@ class GitHubAuthHandler extends BaseOAuthHandler {
                 },
             });
 
-            sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.github, result.data.access_token, info.data?.id);
+           await sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.github, result.data.access_token, info.data?.id);
 
             return processOAuthResult({
                 status: true,
