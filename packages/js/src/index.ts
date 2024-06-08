@@ -1295,6 +1295,14 @@ const createIntegrationBlock = function (self, integration) {
                             selectedIntegration.clientId
                         }&response_type=code&state=${encodeURIComponent(state)}`
                     );
+                } else if (selectedIntegration.integrationId === 'workable') {
+                    window.open(
+                        `https://www.workable.com/oauth/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${
+                            this.#REDIRECT_URL_BASE
+                        }/workable&resource=user&response_type=code&scope=${scopes.join('+')}&state=${state}`
+                    );
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {

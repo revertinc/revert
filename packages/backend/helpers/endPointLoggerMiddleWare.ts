@@ -6,7 +6,8 @@ const endpointLogger = () => async (req: Request, res: Response, next: NextFunct
     try {
         const path = req.path;
         const { 'x-revert-api-token': token } = req.headers;
-        const toAllow = path.includes('/crm') || path.includes('/chat') || path.includes('/ticket');
+        const toAllow =
+            path.includes('/crm') || path.includes('/chat') || path.includes('/ticket') || path.includes('/ats');
 
         if (!toAllow) return next();
 

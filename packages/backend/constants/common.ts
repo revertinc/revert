@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot' | 'closecrm' | 'ms_dynamics_365_sales';
 export type CHAT_TP_ID = 'slack' | 'discord';
 export type TICKET_TP_ID = 'linear' | 'clickup' | 'asana' | 'jira' | 'trello' | 'bitbucket';
+export type ATS_TP_ID = 'workable';
 
 export const DEFAULT_SCOPE = {
     [TP_ID.hubspot]: [
@@ -49,6 +50,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.jira]: ['read:jira-work', 'read:jira-user', 'write:jira-work', 'offline_access'],
     [TP_ID.ms_dynamics_365_sales]: ['offline_access', 'User.Read'],
     [TP_ID.bitbucket]: ['issue', 'issue:write', 'repository', 'account'],
+    [TP_ID.workable]: [],
 };
 
 export const mapIntegrationIdToIntegrationName = {
@@ -66,6 +68,7 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.jira]: 'Jira',
     [TP_ID.ms_dynamics_365_sales]: 'Microsoft Dynamics 365 Sales',
     [TP_ID.bitbucket]: 'Bitbucket',
+    [TP_ID.workable]: 'Workable',
 };
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';
@@ -91,6 +94,13 @@ export enum TicketStandardObjects {
     ticketUser = 'ticketUser',
     ticketTask = 'ticketTask',
     ticketComment = 'ticketComment',
+}
+
+export enum AtsStandardObjects {
+    jobs = 'jobs',
+    offers = 'offers',
+    candidates = 'candidates',
+    departments = 'departments',
 }
 
 export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefined>> = {

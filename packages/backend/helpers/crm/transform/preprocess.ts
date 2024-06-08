@@ -1,5 +1,6 @@
 import { TP_ID } from '@prisma/client';
 import {
+    AtsStandardObjects,
     CRM_TP_ID,
     ChatStandardObjects,
     StandardObjects,
@@ -17,7 +18,7 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
 }: {
     obj: T;
     tpId: CRM_TP_ID | TICKET_TP_ID;
-    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects;
+    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects | AtsStandardObjects;
 }) => {
     const preprocessMap: any = {
         [TP_ID.hubspot]: {
