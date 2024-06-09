@@ -78,7 +78,7 @@ class DiscordAuthHandler extends BaseOAuthHandler {
                 },
             });
 
-            sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.discord, result.data.access_token, guildId);
+            await sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.discord, result.data.access_token, guildId);
 
             return processOAuthResult({
                 status: true,

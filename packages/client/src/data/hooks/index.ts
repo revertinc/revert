@@ -11,14 +11,16 @@ const useApi = () => {
         url,
         method,
         payload,
+        params,
     }: {
         url: string;
         method: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
-        payload: any;
+        payload?: any;
+        params?: any;
     }) => {
         setLoading(true);
         try {
-            const result = await axiosInstance({ url, method, data: payload });
+            const result = await axiosInstance({ url, method, data: payload, params });
 
             setData(result.data);
             setStatus(result.status);

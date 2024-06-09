@@ -15,6 +15,7 @@ import { register } from '../generated/typescript';
 import { metadataService } from '../services/metadata';
 import { accountService } from '../services/Internal/account';
 
+import SvixService from '../services/svix';
 import AuthService from '../services/auth';
 import { logError } from '../helpers/logger';
 import verifyRevertWebhook from '../helpers/verifyRevertWebhook';
@@ -120,7 +121,27 @@ router.post('/clerk/webhook', async (req, res) => {
     if (req.body) {
         let webhookData = req.body.data;
         let webhookEventType = req.body.type;
-        res.status(200).send(await AuthService.createAccountOnClerkUserCreation(webhookData, webhookEventType));
+
+        if (webhookData) {
+            switch (webhookEventType) {
+                case 'user.created': {
+                    res.status(200).send(
+                        await AuthService.createAccountOnClerkUserCreation(webhookData, webhookEventType)
+                    );
+                    break;
+                }
+                // currently looks like db records isn't cleared
+                case 'user.deleted': {
+                    const userId = webhookData.id;
+                    await SvixService.deleteAssociatedSvixAccountForUser(userId);
+                    res.status(200).send({ status: 200 });
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
     }
 });
 

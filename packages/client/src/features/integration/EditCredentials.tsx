@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Box as MuiBox, Button, Chip as MuiChip, Switch } from '@mui/material';
 import { LoadingButton as MuiLoadingButton } from '@mui/lab';
 
-import { useApi } from '../data/hooks';
+import { useApi } from '../../data/hooks';
 
 const Chip = styled(MuiChip)`
     cursor: pointer;
@@ -71,6 +71,7 @@ interface AppConfig {
     org_url?: string;
 }
 
+// Todo: Refactor this and make the styling more usable, also solve the errors in console which were to note were already there
 const EditCredentials: React.FC<{
     app: any;
     handleClose: ({ refetchOnClose }: { refetchOnClose?: boolean | undefined }) => Promise<void>;

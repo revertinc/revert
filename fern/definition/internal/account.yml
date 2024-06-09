@@ -8,6 +8,15 @@ types:
     GetAccountDetailsResponse:
         properties:
             account: types.Account
+    SvixAccountResponse:
+        properties:
+            account: optional<types.SvixAccount>
+            exist: boolean
+            environment: optional<string>
+    SvixMagicLinkResponse:
+        properties:
+            key: string
+            environment: string
 
 service:
     base-path: /internal/account
@@ -54,16 +63,57 @@ service:
             docs: create Revert App for Account
             method: POST
             path: /apps
-            request: 
+            request:
                 name: CreateRevertAppForAccount
-                body: 
-                    properties: 
+                body:
+                    properties:
                         userId: string
                         tpId: types.TPID
                         environment: string
             response: GetAccountDetailsResponse
-            errors: 
+            errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
-                        
+        getSvixAccount:
+            docs: Get Svix Account
+            method: GET
+            path: /svix/{id}
+            path-parameters:
+                id: string
+            request:
+                name: getSvixAccount
+                query-parameters:
+                    environment: string
+            response: SvixAccountResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
 
+        createSvixAccount:
+            docs: Create Svix Account
+            method: POST
+            path: /svix
+            request:
+                name: createSvixAccount
+                body:
+                    properties:
+                        environment: string
+                        accountId: string
+            response: SvixAccountResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+        createSvixAccountMagicLink:
+            docs: Create Svix Account Consumer Panel MagicLink
+            method: POST
+            path: /svix/panel/link
+            request:
+                name: createSvixAccountPanelMagicLink
+                body:
+                    properties:
+                        appId: string
+            response: SvixMagicLinkResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError

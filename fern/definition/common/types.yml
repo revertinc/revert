@@ -106,3 +106,10 @@ types:
         properties:
             bot_token: optional<string>
             org_url: optional<string>
+
+    SvixAccount:
+        properties:
+            uid: optional<string>
+            name: string
+            rateLimit: optional<integer>
+            id: string

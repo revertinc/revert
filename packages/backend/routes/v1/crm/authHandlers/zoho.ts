@@ -95,7 +95,13 @@ class ZohoAuthHandler extends BaseOAuthHandler {
                         tp_account_url: request.query.accountURL as string,
                     },
                 });
-                sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.zohocrm, result.data.access_token, info.data.Email);
+                await sendConnectionAddedEvent(
+                    svixAppId,
+                    tenantId,
+                    TP_ID.zohocrm,
+                    result.data.access_token,
+                    info.data.Email
+                );
 
                 return processOAuthResult({
                     status: true,

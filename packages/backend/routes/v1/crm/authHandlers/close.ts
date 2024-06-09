@@ -78,7 +78,13 @@ class CloseAuthHandler extends BaseOAuthHandler {
                 },
             });
 
-            sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.closecrm, result.data.access_token, info.data.email);
+            await sendConnectionAddedEvent(
+                svixAppId,
+                tenantId,
+                TP_ID.closecrm,
+                result.data.access_token,
+                info.data.email
+            );
 
             return processOAuthResult({
                 status: true,

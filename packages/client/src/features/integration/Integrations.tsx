@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import { useUser } from '@clerk/clerk-react';
-import { TailSpin } from 'react-loader-spinner';
 import Modal from '@mui/material/Modal';
-import EditCredentials from './editCredentials';
-import { LOCALSTORAGE_KEYS } from '../data/localstorage';
-import { useApi } from '../data/hooks';
+import EditCredentials from './EditCredentials';
+import { LOCALSTORAGE_KEYS } from '../../data/localstorage';
+import { useApi } from '../../data/hooks';
 import { LoadingButton } from '@mui/lab';
-import MainHeader from '../layout/MainHeader';
-import AddIntegration from '../features/integration/AddIntegration';
-import CreatedIntegration from '../features/integration/CreatedIntegration';
+import MainHeader from '../../layout/MainHeader';
+import AddIntegration from './AddIntegration';
+import CreatedIntegration from './CreatedIntegration';
+import { useEnvironment } from '../../context/EnvironmentProvider';
+import NoRevertAccess from '../../ui/NoRevertAccess';
+import Spinner from '../../ui/Spinner';
+import toast from 'react-hot-toast';
+import { appsInfo } from './enums/metadata';
 
-const Integrations = ({ environment }) => {
+// Todo: Migrate to useAccount
+const Integrations = () => {
+    const { environment } = useEnvironment();
     const user = useUser();
     const { data, loading, fetch, status } = useApi();
 
@@ -47,13 +53,17 @@ const Integrations = ({ environment }) => {
         if (status?.toString().startsWith('2')) {
             setInit(false);
         }
+
+        toast.success(`Added ${appsInfo[id].name} !`, {
+            position: 'top-center',
+        });
     };
 
     const fetchAccount = React.useCallback(async () => {
         const payload = {
             userId: user.user?.id,
         };
-        const res = await fetch({
+        await fetch({
             url: '/internal/account',
             method: 'POST',
             payload,
@@ -87,11 +97,15 @@ const Integrations = ({ environment }) => {
                     <h1 className="text-3xl font-bold mb-3">Integrations</h1>
                     <span className="text-[#b1b8ba]">Configure & Manage your connected apps here.</span>
                 </Box>
-                {!init && (
+                {!init && account && (
                     <Box>
                         <LoadingButton
-                            variant="contained"
-                            style={{ background: '#293347', padding: '0.6rem 1.4rem' }}
+                            style={{
+                                background: '#293347',
+                                padding: '0.6rem 1.4rem',
+                                color: '#fff',
+                                textTransform: 'capitalize',
+                            }}
                             onClick={() => setInit(true)}
                         >
                             Create App
@@ -100,9 +114,7 @@ const Integrations = ({ environment }) => {
                 )}
             </MainHeader>
             {loading ? (
-                <div className="mt-10">
-                    <TailSpin wrapperStyle={{ justifyContent: 'center' }} color="#1C1C1C" height={80} width={80} />
-                </div>
+                <Spinner />
             ) : (
                 <>
                     {account ? (
@@ -113,31 +125,22 @@ const Integrations = ({ environment }) => {
                             <CreatedIntegration values={{ apps, handleOpen }} />
                         </>
                     ) : (
-                        <>
-                            <Box
-                                component="div"
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    padding: '0 5rem',
-                                    paddingTop: '120px',
-                                }}
-                                className="text-lg"
-                            >
-                                You don't seem to have access to the Revert, please contact us at team@revert.dev.
-                            </Box>
-                        </>
+                        <NoRevertAccess>
+                            You don't seem to have access to the Revert, please contact us at team@revert.dev.
+                        </NoRevertAccess>
                     )}
                 </>
             )}
 
             <Modal open={open} onClose={handleClose}>
-                <EditCredentials
-                    app={account?.environments
-                        ?.find((env) => env.env === environment)
-                        ?.apps?.find((a) => a.tp_id === appId)}
-                    handleClose={handleClose}
-                />
+                <div>
+                    <EditCredentials
+                        app={account?.environments
+                            ?.find((env) => env.env === environment)
+                            ?.apps?.find((a) => a.tp_id === appId)}
+                        handleClose={handleClose}
+                    />
+                </div>
             </Modal>
         </div>
     );
