@@ -1,5 +1,5 @@
 import { TP_ID } from '@prisma/client';
-import { ChatStandardObjects, StandardObjects, TicketStandardObjects } from '../constants/common';
+import { AtsStandardObjects, ChatStandardObjects, StandardObjects, TicketStandardObjects } from '../constants/common';
 
 // root schema mapping
 export const allFields = {
@@ -1230,6 +1230,495 @@ export const ticketingFields = {
                 [TP_ID.bitbucket]: undefined,
             },
             target_field_name: 'parentId',
+        },
+    ],
+};
+
+export const atsFields = {
+    [AtsStandardObjects.candidate]: [
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'id',
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'first_name',
+            },
+            target_field_name: 'first_name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'last_name',
+            },
+            target_field_name: 'last_name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'company',
+            },
+            target_field_name: 'company',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'title',
+            },
+            target_field_name: 'title',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'created_at',
+            },
+            target_field_name: 'created_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'updated_at',
+            },
+            target_field_name: 'updated_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'last_activity',
+            },
+            target_field_name: 'last_activity',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'is_private',
+            },
+            target_field_name: 'is_private',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'photo_url',
+            },
+            target_field_name: 'photo_url',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'application_ids',
+            },
+            target_field_name: 'application_ids',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'can_email',
+            },
+            target_field_name: 'can_email',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'tags',
+            },
+            target_field_name: 'tags',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'attachments',
+            },
+            target_field_name: 'attachments',
+        },
+
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'phone_numbers',
+            },
+            target_field_name: 'phone_numbers',
+        },
+
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'addresses',
+            },
+            target_field_name: 'addresses',
+        },
+
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'email_addresses',
+            },
+            target_field_name: 'email_addresses',
+        },
+
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'website_addresses',
+            },
+            target_field_name: 'website_addresses',
+        },
+
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'social_media_addresses',
+            },
+            target_field_name: 'social_media_addresses',
+        },
+
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'recruiter.id',
+            },
+            target_field_name: 'recruiter.id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'recruiter.first_name',
+            },
+            target_field_name: 'recruiter.first_name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'recruiter.last_name',
+            },
+            target_field_name: 'recruiter.last_name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'recruiter.name',
+            },
+            target_field_name: 'recruiter.name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'recruiter.employee_id',
+            },
+            target_field_name: 'recruiter.employee_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'recruiter.responsible',
+            },
+            target_field_name: 'recruiter.responsible',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'coordinator.id',
+            },
+            target_field_name: 'coordinator.id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'coordinator.first_name',
+            },
+            target_field_name: 'coordinator.first_name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'coordinator.last_name',
+            },
+            target_field_name: 'coordinator.last_name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'coordinator.name',
+            },
+            target_field_name: 'coordinator.name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'coordinator.employee_id',
+            },
+            target_field_name: 'coordinator.employee_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'coordinator.responsible',
+            },
+            target_field_name: 'coordinator.responsible',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'applications',
+            },
+            target_field_name: 'applications',
+        },
+    ],
+
+    [AtsStandardObjects.job]: [
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'id',
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'name',
+            },
+            target_field_name: 'name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'requisition_id',
+            },
+            target_field_name: 'requisition_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'notes',
+            },
+            target_field_name: 'notes',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'confidential',
+            },
+            target_field_name: 'confidential',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'status',
+            },
+            target_field_name: 'status',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'created_at',
+            },
+            target_field_name: 'created_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opened_at',
+            },
+            target_field_name: 'opened_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'closed_at',
+            },
+            target_field_name: 'closed_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'updated_at',
+            },
+            target_field_name: 'updated_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'is_template',
+            },
+            target_field_name: 'is_template',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'copied_from_id',
+            },
+            target_field_name: 'copied_from_id',
+        },
+
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'departments',
+            },
+            target_field_name: 'departments',
+        },
+
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'offices',
+            },
+            target_field_name: 'offices',
+        },
+
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'openings',
+            },
+            target_field_name: 'openings',
+        },
+
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'hiring_team.hiring_managers',
+            },
+            target_field_name: 'hiring_team.hiring_managers',
+        },
+
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'hiring_team.recruiters',
+            },
+            target_field_name: 'hiring_team.recruiters',
+        },
+
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'hiring_team.coordinators',
+            },
+            target_field_name: 'hiring_team.coordinators',
+        },
+
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'hiring_team.sourcers',
+            },
+            target_field_name: 'hiring_team.sourcers',
+        },
+    ],
+
+    [AtsStandardObjects.offer]: [
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'id',
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'version',
+            },
+            target_field_name: 'version',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'application_id',
+            },
+            target_field_name: 'application_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'job_id',
+            },
+            target_field_name: 'job_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'candidate_id',
+            },
+            target_field_name: 'candidate_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.id',
+            },
+            target_field_name: 'opening.id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.opening_id',
+            },
+            target_field_name: 'opening.opening_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.status',
+            },
+            target_field_name: 'opening.status',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.opened_at',
+            },
+            target_field_name: 'opening.opened_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.closed_at',
+            },
+            target_field_name: 'opening.closed_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.application_id',
+            },
+            target_field_name: 'opening.application_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.close_reason.id',
+            },
+            target_field_name: 'opening.close_reason.id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.close_reason.name',
+            },
+            target_field_name: 'opening.close_reason.name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'created_at',
+            },
+            target_field_name: 'created_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'updated_at',
+            },
+            target_field_name: 'updated_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'sent_at',
+            },
+            target_field_name: 'sent_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'resolved_at',
+            },
+            target_field_name: 'resolved_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'starts_at',
+            },
+            target_field_name: 'starts_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'status',
+            },
+            target_field_name: 'status',
+        },
+    ],
+
+    [AtsStandardObjects.department]: [
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'id',
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'name',
+            },
+            target_field_name: 'name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'parent_id',
+            },
+            target_field_name: 'parent_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'parent_department_external_ids',
+            },
+            target_field_name: 'parent_department_external_ids',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'child_ids',
+            },
+            target_field_name: 'child_ids',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'child_department_external_ids',
+            },
+            target_field_name: 'child_department_external_ids',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'external_id',
+            },
+            target_field_name: 'external_id',
         },
     ],
 };
