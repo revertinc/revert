@@ -60,11 +60,10 @@ export const transformFieldMappingToModel = async ({
                                   .includes(field)
                             : accountFieldMappingConfig?.allow_connection_override_custom_fields))
             ) || rootSchema?.fieldMappings?.find((r) => r?.target_field_name === field);
-        console.log('ttttttttttttt', fieldMapping, field);
+
         const transformedKey = fieldMapping?.source_field_name;
         if (transformedKey) {
             if (fieldMapping.is_standard_field) {
-                console.log(Array.isArray(get(obj, transformedKey)), field, get(obj, transformedKey));
                 transformedObj = assignValueToObject(transformedObj, field, get(obj, transformedKey));
             } else {
                 // map custom fields under "additional"
