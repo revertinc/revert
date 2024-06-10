@@ -1174,206 +1174,161 @@ const createIntegrationBlock = function (self, integration) {
             return container;
         };
 
-        modalForApiKeyInputBasicAuth = function (urlString: string) {
+        showAndRemoveLoader = function () {
+            return new Promise<void>((resolve) => {
+                //show loader
+                this.renderProcessingStage('Loading');
+
+                //remove loader
+                setTimeout(() => {
+                    const loaderElement = document.querySelector('.loader');
+
+                    if (loaderElement) {
+                        const parentElement = loaderElement.parentElement;
+                        if (parentElement) {
+                            parentElement.remove();
+                        }
+                    }
+
+                    // Check again if the loader element exists
+                    const loaderElementAfterTimeout = document.querySelector('.loader');
+                    if (!loaderElementAfterTimeout) {
+                        resolve();
+                    }
+                }, 250);
+            });
+        };
+
+        apiKeyInputContainerFunction = function () {
+            const parentDiv = document.createElement('div');
+            parentDiv.id = 'parentDiv';
+            parentDiv.style.display = 'flex';
+            parentDiv.style.flexDirection = 'column';
+            parentDiv.style.alignItems = 'center';
+            parentDiv.style.justifyContent = 'center';
+            parentDiv.style.position = 'relative';
+            parentDiv.style.width = '100%';
+
+            // Create heading
+            const heading = document.createElement('h3');
+            heading.textContent = 'Enter your API key';
+            heading.style.textAlign = 'center';
+            heading.style.textDecoration = 'underline';
+            heading.style.marginBottom = '25px';
+            parentDiv.appendChild(heading);
+
+            const inputParentContainer = document.createElement('div');
+            inputParentContainer.style.display = 'flex';
+            inputParentContainer.style.alignItems = 'end';
+            inputParentContainer.style.justifyContent = 'space-between';
+            inputParentContainer.style.width = '100%';
+            inputParentContainer.style.marginTop = '20px';
+            inputParentContainer.style.flexDirection = 'column';
+            inputParentContainer.style.gap = '10px';
+
+            // Create input field and label container
+            const inputContainer = document.createElement('div');
+            inputContainer.style.display = 'flex';
+            inputContainer.style.alignItems = 'center';
+            inputContainer.style.flexGrow = '1';
+            inputContainer.style.width = '100%';
+
+            const apiKeyLabel = document.createElement('label');
+            apiKeyLabel.textContent = 'API Key:';
+            apiKeyLabel.setAttribute('for', 'api-key-input');
+            apiKeyLabel.style.marginRight = '10px';
+            apiKeyLabel.style.fontWeight = 'bold';
+
+            const apiKeyInput = document.createElement('input');
+            apiKeyInput.setAttribute('type', 'text');
+            apiKeyInput.setAttribute('id', 'api-key-input');
+            apiKeyInput.style.flexGrow = '1';
+            apiKeyInput.style.padding = '4px';
+
+            inputContainer.appendChild(apiKeyLabel);
+            inputContainer.appendChild(apiKeyInput);
+
+            // Create submit button
+            const submitButton = document.createElement('button');
+            submitButton.id = 'submitButtonBasicAuth';
+            submitButton.textContent = 'Submit';
+            submitButton.style.marginLeft = '10px';
+            submitButton.style.background = 'rgb(39 45 192)';
+            submitButton.style.borderRadius = '5px';
+            submitButton.style.display = 'flex';
+            submitButton.style.alignItems = 'center';
+            submitButton.style.justifyContent = 'center';
+            submitButton.style.padding = '10px';
+            submitButton.style.color = '#fff';
+            submitButton.style.cursor = 'pointer';
+            submitButton.style.position = 'relative';
+            submitButton.disabled = true; // Initially disable the button
+            submitButton.style.opacity = '0.5';
+
+            // Append input container and button to the inputParentContainer
+            inputParentContainer.appendChild(inputContainer);
+            inputParentContainer.appendChild(submitButton);
+
+            // Append inputParentContainer to parentDiv
+            parentDiv.appendChild(inputParentContainer);
+
+            return parentDiv;
+        };
+
+        modalForApiKeyInputBasicAuth = function () {
             return new Promise((resolve, reject) => {
-                const container = document.getElementById('revert-ui-root');
+                const container = document.getElementById('revert-signin-container');
+                container.style.height = '534px';
 
                 // Remove all children of the container
                 while (container.firstChild) {
                     container.removeChild(container.firstChild);
                 }
 
-                // Create background overlay
-                const backgroundOverlay = document.createElement('div');
-                backgroundOverlay.setAttribute('id', 'background-overlay');
-                backgroundOverlay.style.position = 'fixed';
-                backgroundOverlay.style.top = '0';
-                backgroundOverlay.style.left = '0';
-                backgroundOverlay.style.width = '100%';
-                backgroundOverlay.style.height = '100%';
-                backgroundOverlay.style.background = 'rgba(54, 54, 54, 0.4)';
-                backgroundOverlay.style.zIndex = '999';
+                this.showAndRemoveLoader().then(() => {
+                    //close button
+                    const closeButton = createCloseButton();
+                    closeButton.style.position = 'absolute';
+                    closeButton.style.right = '20px';
+                    closeButton.style.top = '20px';
+                    closeButton.addEventListener('click', () => {
+                        reject('Modal closed by user');
+                        this.close();
+                    });
 
-                // Create modal
-                const modal = document.createElement('div');
-                modal.setAttribute('id', 'modal-basicAuth');
-                modal.style.position = 'fixed';
-                modal.style.top = '50%';
-                modal.style.left = '50%';
-                modal.style.transform = 'translate(-50%, -50%)';
-                modal.style.background = '#fff';
-                modal.style.padding = '0px 20px 20px 20px';
-                modal.style.borderRadius = '8px';
-                modal.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
-                modal.style.zIndex = '1000';
-                modal.style.width = '400px';
+                    const apiKeyInputContainer = this.apiKeyInputContainerFunction();
+                    container.appendChild(closeButton);
+                    container.appendChild(apiKeyInputContainer);
 
-                // Create heading
-                const heading = document.createElement('h3');
-                heading.textContent = 'Enter your API key';
-                heading.style.textAlign = 'center';
-                heading.style.textDecoration = 'underline';
-                heading.style.marginBottom = '35px';
+                    const inputElementForApiInput = apiKeyInputContainer.querySelector('#api-key-input');
+                    const submitButtonForApiInputSubmission =
+                        apiKeyInputContainer.querySelector('#submitButtonBasicAuth');
 
-                // Create close button
-                const closeButton = document.createElement('button');
-                closeButton.textContent = '✖';
-                closeButton.style.position = 'absolute';
-                closeButton.style.top = '10px';
-                closeButton.style.right = '10px';
-                closeButton.style.background = 'transparent';
-                closeButton.style.border = 'none';
-                closeButton.style.fontSize = '20px';
-                closeButton.style.cursor = 'pointer';
-
-                closeButton.addEventListener('click', () => {
-                    document.body.removeChild(backgroundOverlay);
-                    reject('Modal closed by user');
-                });
-
-                // Create input field and label container
-                const inputContainer = document.createElement('div');
-                inputContainer.style.display = 'flex';
-                inputContainer.style.alignItems = 'center';
-
-                const apiKeyLabel = document.createElement('label');
-                apiKeyLabel.textContent = 'API Key:';
-                apiKeyLabel.setAttribute('for', 'api-key-input');
-                apiKeyLabel.style.marginRight = '10px';
-                apiKeyLabel.style.fontWeight = 'bold';
-
-                const apiKeyInput = document.createElement('input');
-                apiKeyInput.setAttribute('type', 'text');
-                apiKeyInput.setAttribute('id', 'api-key-input');
-                apiKeyInput.style.flexGrow = '1';
-                apiKeyInput.style.padding = '4px';
-
-                inputContainer.appendChild(apiKeyLabel);
-                inputContainer.appendChild(apiKeyInput);
-
-                // Create error message container
-                const errorMessage = document.createElement('div');
-                errorMessage.setAttribute('id', 'error-message');
-                errorMessage.style.color = 'red';
-                errorMessage.style.marginTop = '10px';
-                errorMessage.style.display = 'none'; // Initially hidden
-
-                // Create submit button
-                const submitButton = document.createElement('button');
-                submitButton.textContent = 'Submit';
-                submitButton.style.float = 'right';
-                submitButton.style.marginTop = '20px';
-                submitButton.style.background = 'rgb(39 45 192)';
-                submitButton.style.borderRadius = '5px';
-                submitButton.style.display = 'flex';
-                submitButton.style.alignItems = 'center';
-                submitButton.style.justifyContent = 'center';
-                submitButton.style.padding = '10px';
-                submitButton.style.color = '#fff';
-                submitButton.style.cursor = 'pointer';
-                submitButton.style.position = 'relative';
-                submitButton.disabled = true; // Initially disable the button
-                submitButton.style.opacity = '0.5';
-
-                // Create loader
-                const loader = document.createElement('span');
-                loader.setAttribute('class', 'loader');
-                loader.style.width = '24px';
-                loader.style.height = '24px';
-                loader.style.padding = '5px';
-                loader.style.position = 'absolute';
-                loader.style.display = 'none'; // Initially hidden
-                loader.style.borderRadius = '100%';
-                loader.style.background = 'linear-gradient(0deg, #2047D033, #2047D0 100%)';
-                loader.style.boxSizing = 'border-box';
-                loader.style.animation = 'rotation 1s linear infinite';
-
-                loader.innerHTML = `
-                    <style>
-                        @keyframes rotation {
-                            0% { transform: rotate(0deg); }
-                            100% { transform: rotate(360deg); }
+                    //event listener on input to change the disability of submit
+                    inputElementForApiInput.addEventListener('input', function () {
+                        if (inputElementForApiInput.value.trim() !== '') {
+                            submitButtonForApiInputSubmission.disabled = false;
+                            submitButtonForApiInputSubmission.style.opacity = '1';
+                        } else {
+                            submitButtonForApiInputSubmission.disabled = true;
+                            submitButtonForApiInputSubmission.style.opacity = '0.5';
                         }
-                        .loader::after {
-                            content: '';  
-                            box-sizing: border-box;
-                            position: absolute;
-                            left: 50%;
-                            top: 50%;
-                            transform: translate(-50%, -50%);
-                            width: 25px;
-                            height: 25px;
-                            border-radius: 100%;
-                            background: #fff;
-                        }
-                    </style>
-                `;
+                    });
 
-                submitButton.appendChild(loader);
+                    //event listener for submission go Api key
+                    submitButtonForApiInputSubmission.addEventListener('click', () => {
+                        submitButtonForApiInputSubmission.disabled = true;
+                        submitButtonForApiInputSubmission.style.opacity = '0.5';
 
-                apiKeyInput.addEventListener('input', function () {
-                    if (apiKeyInput.value.trim() !== '') {
-                        submitButton.disabled = false;
-                        submitButton.style.opacity = '1';
-                    } else {
-                        submitButton.disabled = true;
-                        submitButton.style.opacity = '0.5';
-                    }
+                        const apiKey = inputElementForApiInput.value;
+
+                        resolve(apiKey);
+                    });
                 });
-
-                submitButton.addEventListener('click', function () {
-                    loader.style.display = 'inline-block';
-                    submitButton.disabled = true;
-                    submitButton.style.opacity = '0.5';
-
-                    // Handle submission of API key here
-                    const apiKey = apiKeyInput.value;
-                    const url = `${urlString}&code=${apiKey}`;
-
-                    fetch(url, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    })
-                        .then((d) => {
-                            return d.json();
-                        })
-                        .then((data) => {
-                            console.log('OAuth flow succeeded', data);
-                            document.body.removeChild(backgroundOverlay);
-                            resolve(apiKey);
-                        })
-                        .catch((error) => {
-                            console.log(error);
-                            loader.style.display = 'none';
-                            submitButton.disabled = false;
-                            submitButton.style.opacity = '1';
-                            // Display error message in the modal
-                            errorMessage.textContent = 'An error occurred. Please try again.';
-                            errorMessage.style.display = 'block';
-                        });
-                });
-
-                // Animation on modal entrance
-                modal.style.animation = 'fadein .8s forwards';
-                modal.style.transition = 'color 500ms ease-in-out';
-
-                // Append elements to the modal
-                modal.appendChild(heading);
-                modal.appendChild(closeButton);
-                modal.appendChild(inputContainer);
-                modal.appendChild(errorMessage);
-                modal.appendChild(submitButton);
-
-                // Append modal and overlay to the container
-                backgroundOverlay.appendChild(modal);
-
-                document.body.appendChild(backgroundOverlay);
             });
         };
 
-        handleIntegrationRedirect = function (selectedIntegration) {
+        handleIntegrationRedirect = async function (selectedIntegration) {
             if (selectedIntegration) {
                 const scopes = selectedIntegration.scopes;
                 const state = JSON.stringify({
@@ -1495,13 +1450,37 @@ const createIntegrationBlock = function (self, integration) {
                         }&response_type=code&state=${encodeURIComponent(state)}`
                     );
                 } else if (selectedIntegration.integrationId === 'greenhouse') {
+                    const apiKey = await this.modalForApiKeyInputBasicAuth();
                     const url = `${this.CORE_API_BASE_URL}v1/ats/oauth-callback?integrationId=${
                         selectedIntegration.integrationId
-                    }&t_id=${this.tenantId}&x_revert_public_token=${this.API_REVERT_PUBLIC_TOKEN}${
+                    }&t_id=${this.tenantId}&code=${apiKey}&x_revert_public_token=${this.API_REVERT_PUBLIC_TOKEN}${
                         this.#USER_REDIRECT_URL ? `&redirectUrl=${this.#USER_REDIRECT_URL}` : ``
                     }`;
-
-                    this.modalForApiKeyInputBasicAuth(url);
+                    fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                        .then((d) => {
+                            return d.json();
+                        })
+                        .then((data) => {
+                            if (data.error) {
+                                const errorMessage =
+                                    data.error?.code === 'P2002'
+                                        ? ': Already connected another CRM. Please disconnect first.'
+                                        : '';
+                                this.renderFailedStage();
+                                console.log('error:', errorMessage);
+                            } else {
+                                console.log('OAuth flow succeeded', data);
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            this.renderFailedStage();
+                        });
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {
