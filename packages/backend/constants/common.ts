@@ -97,10 +97,10 @@ export enum TicketStandardObjects {
 }
 
 export enum AtsStandardObjects {
-    jobs = 'jobs',
-    offers = 'offers',
-    candidates = 'candidates',
-    departments = 'departments',
+    job = 'job',
+    offer = 'offer',
+    candidate = 'candidate',
+    department = 'department',
 }
 
 export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefined>> = {

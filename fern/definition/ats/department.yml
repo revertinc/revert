@@ -1,0 +1,64 @@
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    GetDepartmentResponse:
+        properties:
+            status: types.ResponseStatus
+            result: unknown
+    GetDepartmentsResponse:
+        properties:
+            status: types.ResponseStatus
+            next: optional<string>
+            previous: optional<string>
+            results: unknown
+service:
+    base-path: /ats/departments
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getDepartment:
+            docs: Get details of a department.
+            method: GET
+            path: /{id}
+            path-parameters:
+                id:
+                    type: string
+                    docs: The unique `id` of the department.
+            request:
+                name: GetDepartmentRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetDepartmentResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getDepartments:
+            docs: Get all the departments.
+            method: GET
+            path: ''
+            request:
+                name: GetDepartmentsRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetDepartmentsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

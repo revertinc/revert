@@ -47,7 +47,7 @@ class GreenhouseAuthHandler extends BaseOAuthHandler {
             });
 
             // svix stuff here
-            sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.greenhouse, code, 'Greenhouse user');
+            await sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.greenhouse, code, 'Greenhouse user');
 
             return processOAuthResult({
                 status: true,
