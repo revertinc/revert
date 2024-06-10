@@ -101,7 +101,7 @@ const metadataService = new MetadataService({
                     scopes: getScope(apps, TP_ID.discord),
                     clientId: getClientId(apps, TP_ID.discord) || config.DISCORD_CLIENT_ID,
                 },
-                // @TODO add cloudinary links
+
                 {
                     integrationId: TP_ID.linear,
                     name: 'Linear',
@@ -155,6 +155,15 @@ const metadataService = new MetadataService({
                     status: 'active',
                     scopes: getScope(apps, TP_ID.bitbucket),
                     clientId: getClientId(apps, TP_ID.bitbucket) || config.BITBUCKET_CLIENT_ID,
+                },
+                {
+                    integrationId: TP_ID.github,
+                    name: 'GitHub',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1702983006/Revert/szfzkoagws7h3miptezo.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.github),
+                    clientId: getClientId(apps, TP_ID.github) || config.GITHUB_CLIENT_ID,
                 },
             ];
             res.send({

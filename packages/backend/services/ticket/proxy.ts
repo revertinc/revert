@@ -111,6 +111,24 @@ const proxyServiceTicket = new ProxyService(
                         });
                         break;
                     }
+                    case TP_ID.github: {
+                        const result: any = await axios({
+                            method: method,
+                            url: `https://api.github.com/${path}`,
+                            headers: {
+                                Accept: 'application/vnd.github.v3+json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                // Add any other required headers here
+                            },
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app!' });
                     }

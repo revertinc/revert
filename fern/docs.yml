@@ -84,6 +84,8 @@ navigation:
                   path: ./docs/contents/guides/trello.mdx
                 - page: BitBucket
                   path: ./docs/contents/guides/bitbucket.mdx
+                - page: GitHub
+                  path: ./docs/contents/guides/github.mdx
 colors:
     accentPrimary: '#89a3ff'
 logo:
