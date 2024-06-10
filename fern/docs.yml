@@ -50,7 +50,7 @@ navigation:
                 - page: Messaging tools
                   path: ./docs/contents/messaging-supported.mdx
                 - page: Ticketing Systems
-                  path: ./docs/contents/messaging-supported.mdx
+                  path: ./docs/contents/ticketing-supported.mdx
                 - page: ATSs
                   path: ./docs/contents/ats-supported.mdx
     - tab: api
