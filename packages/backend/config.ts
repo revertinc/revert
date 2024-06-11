@@ -54,6 +54,8 @@ const config = {
     OPEN_INT_BASE_API_URL: process.env.OPEN_INT_BASE_API_URL,
     TWENTY_ACCOUNT_ID: process.env.TWENTY_ACCOUNT_ID,
     DEFAULT_RATE_LIMIT_DEVELOPER_PLAN: process.env.DEFAULT_RATE_LIMIT_DEVELOPER_PLAN,
+    LEVER_CLIENT_ID: process.env.LEVER_CLIENT_ID!,
+    LEVER_CLIENT_SECRET: process.env.LEVER_CLIENT_SECRET!,
 };
 
 export default config;

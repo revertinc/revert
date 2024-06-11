@@ -23,6 +23,7 @@ enum TP_ID {
   jira
   bitbucket
   greenhouse
+  lever
 }
 
 enum ENV {

@@ -1481,6 +1481,16 @@ const createIntegrationBlock = function (self, integration) {
                             console.log(error);
                             this.renderFailedStage();
                         });
+                } else if (selectedIntegration.integrationId === 'lever') {
+                    const encodedScopes = encodeURIComponent(scopes.join(' '));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/lever`);
+                    window.open(
+                        `https://auth.lever.co/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                            state
+                        )}&prompt=consent&scope=${encodedScopes}&audience=https://api.lever.co/v1/`
+                    );
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {

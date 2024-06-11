@@ -165,6 +165,15 @@ const metadataService = new MetadataService({
                     scopes: getScope(apps, TP_ID.greenhouse),
                     clientId: undefined,
                 },
+                {
+                    integrationId: TP_ID.lever,
+                    name: 'Lever',
+                    imageSrc:
+                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1707715552/Revert/mecum34mxpxirpi1obxd.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.lever),
+                    clientId: getClientId(apps, TP_ID.lever) || config.LEVER_CLIENT_ID,
+                },
             ];
             res.send({
                 status: 'ok',

@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot' | 'closecrm' | 'ms_dynamics_365_sales';
 export type CHAT_TP_ID = 'slack' | 'discord';
 export type TICKET_TP_ID = 'linear' | 'clickup' | 'asana' | 'jira' | 'trello' | 'bitbucket';
-export type ATS_TP_ID = 'greenhouse';
+export type ATS_TP_ID = 'greenhouse' | 'lever';
 
 export const DEFAULT_SCOPE = {
     [TP_ID.hubspot]: [
@@ -51,6 +51,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.ms_dynamics_365_sales]: ['offline_access', 'User.Read'],
     [TP_ID.bitbucket]: ['issue', 'issue:write', 'repository', 'account'],
     [TP_ID.greenhouse]: [],
+    [TP_ID.lever]: [],
 };
 
 export const mapIntegrationIdToIntegrationName = {
@@ -69,6 +70,7 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.ms_dynamics_365_sales]: 'Microsoft Dynamics 365 Sales',
     [TP_ID.bitbucket]: 'Bitbucket',
     [TP_ID.greenhouse]: 'Greenhouse',
+    [TP_ID.lever]: 'Lever',
 };
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';

@@ -198,16 +198,17 @@ async function main() {
 
     Object.values(AtsStandardObjects).forEach((obj) => {
         Object.values(TP_ID).forEach(async (tpId) => {
-            if (!(tpId === 'greenhouse')) return;
+            if (!(tpId === 'greenhouse' || tpId === 'lever')) return;
             const objSchema = atsSchemas.find((s: any) => s.object === obj);
             const fieldMappings = objSchema?.fields.map((field: any) => {
+                const sourceFields: any = (atsFields[obj] as { target_field_name: string }[]).find(
+                    (a) => a.target_field_name === field
+                );
                 return {
                     id: randomUUID(),
                     source_tp_id: tpId,
                     schema_id: objSchema.id,
-                    source_field_name: atsFields[obj].find((a) => a.target_field_name === field)?.source_field_name[
-                        tpId
-                    ]!,
+                    source_field_name: sourceFields?.source_field_name[tpId]!,
                     target_field_name: field,
                     is_standard_field: true,
                 };
