@@ -83,7 +83,7 @@ const departmentServiceAts = new DepartmentService(
             try {
                 const connection = res.locals.connection;
                 const account = res.locals.account;
-                // const fields: any = JSON.parse(req.query.fields as string);
+                const fields: any = req.query.fields && JSON.parse(req.query.fields as string);
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
                 const thirdPartyId = connection.tp_id;
@@ -106,9 +106,16 @@ const departmentServiceAts = new DepartmentService(
                             Authorization: 'Basic ' + credentials,
                         };
 
+                        let otherParams = '';
+                        if (fields) {
+                            otherParams = Object.keys(fields)
+                                .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(fields[key])}`)
+                                .join('&');
+                        }
+
                         let pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
                             pageSize && cursor ? `&page=${cursor}` : ''
-                        }`;
+                        }${otherParams ? `&${otherParams}` : ''}`;
 
                         const result = await axios({
                             method: 'get',
@@ -153,9 +160,16 @@ const departmentServiceAts = new DepartmentService(
                     case TP_ID.lever: {
                         const headers = { Authorization: `Bearer ${thirdPartyToken}` };
 
+                        let otherParams = '';
+                        if (fields) {
+                            otherParams = Object.keys(fields)
+                                .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(fields[key])}`)
+                                .join('&');
+                        }
+
                         let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&offset=${cursor}` : ''
-                        }`;
+                        }${otherParams ? `&${otherParams}` : ''}`;
 
                         const result = await axios({
                             method: 'get',
