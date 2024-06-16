@@ -59,7 +59,28 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.lever: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const result = await axios({
+                            method: 'get',
+                            url: `https://api.lever.co/v1/postings/${jobId}`,
+                            headers: headers,
+                        });
 
+                        const unifiedJob: any = await unifyObject<any, UnifiedJob>({
+                            obj: result.data.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedJob,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -145,7 +166,48 @@ const jobServiceAts = new JobService(
 
                         break;
                     }
+                    case TP_ID.lever: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
 
+                        let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&offset=${cursor}` : ''
+                        }`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `https://api.lever.co/v1/postings?${pagingString}`,
+                            headers: headers,
+                        });
+
+                        const unifiedJobs = await Promise.all(
+                            result.data.data.map(async (job: any) => {
+                                return await unifyObject<any, UnifiedJob>({
+                                    obj: job,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
+                        );
+
+                        let nextCursor;
+
+                        if (result.data.hasNext) {
+                            nextCursor = result.data.next;
+                        } else {
+                            nextCursor = undefined;
+                        }
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
+                            results: unifiedJobs,
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }

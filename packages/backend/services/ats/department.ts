@@ -58,6 +58,13 @@ const departmentServiceAts = new DepartmentService(
                         });
                         break;
                     }
+                    case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            result: 'This endpoint is currently not supported.',
+                        });
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -138,6 +145,47 @@ const departmentServiceAts = new DepartmentService(
                             status: 'ok',
                             next: nextCursor ? String(nextCursor) : undefined,
                             previous: previousCursor !== undefined ? String(previousCursor) : undefined,
+                            results: unifiedDepartments,
+                        });
+
+                        break;
+                    }
+                    case TP_ID.lever: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&offset=${cursor}` : ''
+                        }`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `https://api.lever.co/v1/tags?${pagingString}`,
+                            headers: headers,
+                        });
+
+                        const unifiedDepartments = await Promise.all(
+                            result.data.data.map(async (department: any) => {
+                                return await unifyObject<any, UnifiedDepartment>({
+                                    obj: department,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
+                        );
+                        let nextCursor;
+
+                        if (result.data.hasNext) {
+                            nextCursor = result.data.next;
+                        } else {
+                            nextCursor = undefined;
+                        }
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
                             results: unifiedDepartments,
                         });
 

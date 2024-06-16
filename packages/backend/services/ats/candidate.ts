@@ -59,6 +59,29 @@ const candidateServiceAts = new CandidateService(
                         });
                         break;
                     }
+                    case TP_ID.lever: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `https://api.lever.co/v1/opportunities/${candidateId}`,
+                            headers: headers,
+                        });
+
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: result.data.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedCandidate,
+                        });
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -139,6 +162,47 @@ const candidateServiceAts = new CandidateService(
                             status: 'ok',
                             next: nextCursor ? String(nextCursor) : undefined,
                             previous: previousCursor !== undefined ? String(previousCursor) : undefined,
+                            results: unifiedCandidates,
+                        });
+
+                        break;
+                    }
+                    case TP_ID.lever: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&offset=${cursor}` : ''
+                        }`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `https://api.lever.co/v1/opportunities?${pagingString}`,
+                            headers: headers,
+                        });
+                        const unifiedCandidates = await Promise.all(
+                            result.data.data.map(async (candidate: any) => {
+                                return await unifyObject<any, UnifiedCandidate>({
+                                    obj: candidate,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
+                        );
+
+                        let nextCursor;
+
+                        if (result.data.hasNext) {
+                            nextCursor = result.data.next;
+                        } else {
+                            nextCursor = undefined;
+                        }
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
                             results: unifiedCandidates,
                         });
 

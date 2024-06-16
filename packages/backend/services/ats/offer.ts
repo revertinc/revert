@@ -18,7 +18,7 @@ const offerServiceAts = new OfferService(
             try {
                 const connection = res.locals.connection;
                 const account = res.locals.account;
-                const offerId = req.params.id;
+                const offerId = req.params.id; // for lever must be the contact_id to fetch for that one candidate.
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
@@ -58,6 +58,28 @@ const offerServiceAts = new OfferService(
                         });
                         break;
                     }
+                    case TP_ID.lever: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `https://api.lever.co/v1/opportunities?contact_id=${offerId}`,
+                            headers: headers,
+                        });
+                        const unifiedOffer: any = await unifyObject<any, UnifiedOffer>({
+                            obj: result.data.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedOffer,
+                        });
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -76,7 +98,7 @@ const offerServiceAts = new OfferService(
             try {
                 const connection = res.locals.connection;
                 const account = res.locals.account;
-                // const fields: any = JSON.parse(req.query.fields as string);
+                const fields: any = JSON.parse(req.query.fields as string);
                 const pageSize = parseInt(String(req.query.pageSize));
                 const cursor = req.query.cursor;
                 const thirdPartyId = connection.tp_id;
@@ -141,7 +163,48 @@ const offerServiceAts = new OfferService(
                         });
                         break;
                     }
+                    case TP_ID.lever: {
+                        if (!fields || (fields && !fields.opportunityId)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "opportunityId" is required and should be included in the "fields" parameter.',
+                            });
+                        }
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
 
+                        let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&offset=${cursor}` : ''
+                        }`;
+                        const result = await axios({
+                            method: 'get',
+                            url: `https://api.lever.co/v1/opportunities/${fields.opportunityId}/offers?${pagingString}`,
+                            headers: headers,
+                        });
+                        const unifiedOffers = await Promise.all(
+                            result.data.data.map(async (job: any) => {
+                                return await unifyObject<any, UnifiedOffer>({
+                                    obj: job,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
+                        );
+                        let nextCursor;
+
+                        if (result.data.hasNext) {
+                            nextCursor = result.data.next;
+                        } else {
+                            nextCursor = undefined;
+                        }
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
+                            results: unifiedOffers,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }

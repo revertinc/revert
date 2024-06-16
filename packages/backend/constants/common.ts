@@ -51,7 +51,27 @@ export const DEFAULT_SCOPE = {
     [TP_ID.ms_dynamics_365_sales]: ['offline_access', 'User.Read'],
     [TP_ID.bitbucket]: ['issue', 'issue:write', 'repository', 'account'],
     [TP_ID.greenhouse]: [],
-    [TP_ID.lever]: [],
+    [TP_ID.lever]: [
+        'applications:read:admin',
+        'archive_reasons:read:admin',
+        'audit_events:read:admin,contact:write:admin',
+        'diversity_surveys:read:admin',
+        'eeo_responses:read:admin',
+        'eeo_responses_pii:read:admin',
+        'feedback:write:admin',
+        'feedback_templates:write:admin',
+        'files:write:admin',
+        'form_templates:write:admin',
+        'forms:write:admin',
+        'offers:read:admin',
+        'opportunities:write:admin',
+        'postings:write:admin',
+        'stages:read:admin',
+        'tasks:read:admin',
+        'users:write:admin',
+        'webhooks:write:admin',
+        'offline_access',
+    ],
 };
 
 export const mapIntegrationIdToIntegrationName = {
