@@ -71,6 +71,7 @@ export const DEFAULT_SCOPE = {
         'users:write:admin',
         'webhooks:write:admin',
         'offline_access',
+        'tags:read:admin',
     ],
 };
 
