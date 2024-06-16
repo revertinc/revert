@@ -18,7 +18,7 @@ const offerServiceAts = new OfferService(
             try {
                 const connection = res.locals.connection;
                 const account = res.locals.account;
-                const offerId = req.params.id; // for lever must be the contact_id to fetch for that one candidate.
+                const offerId = req.params.id;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
@@ -59,24 +59,9 @@ const offerServiceAts = new OfferService(
                         break;
                     }
                     case TP_ID.lever: {
-                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
-
-                        const result = await axios({
-                            method: 'get',
-                            url: `https://api.lever.co/v1/opportunities?contact_id=${offerId}`,
-                            headers: headers,
-                        });
-                        const unifiedOffer: any = await unifyObject<any, UnifiedOffer>({
-                            obj: result.data.data,
-                            tpId: thirdPartyId,
-                            objType,
-                            tenantSchemaMappingId: connection.schema_mapping_id,
-                            accountFieldMappingConfig: account.accountFieldMappingConfig,
-                        });
-
                         res.send({
                             status: 'ok',
-                            result: unifiedOffer,
+                            result: 'This endpoint is currently not supported.',
                         });
                         break;
                     }
