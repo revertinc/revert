@@ -1295,7 +1295,7 @@ export const atsFields = {
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'is_private',
-                [TP_ID.lever]: 'isAnonymized',
+                [TP_ID.lever]: 'confidentiality',
             },
             target_field_name: 'is_private',
         },
@@ -1309,7 +1309,7 @@ export const atsFields = {
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'application_ids',
-                [TP_ID.lever]: 'applications', //adjust
+                [TP_ID.lever]: 'applicationIds',
             },
             target_field_name: 'application_ids',
         },
@@ -1330,14 +1330,14 @@ export const atsFields = {
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'attachments',
-                [TP_ID.lever]: 'attachments', //adjust
+                [TP_ID.lever]: undefined,
             },
             target_field_name: 'attachments',
         },
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'phone_numbers',
-                [TP_ID.lever]: 'phones', //adjust
+                [TP_ID.lever]: 'phones',
             },
             target_field_name: 'phone_numbers',
         },
@@ -1351,28 +1351,28 @@ export const atsFields = {
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'email_addresses',
-                [TP_ID.lever]: 'emails', //adjust
+                [TP_ID.lever]: 'emails',
             },
             target_field_name: 'email_addresses',
         },
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'website_addresses',
-                [TP_ID.lever]: 'links', //adjust
+                [TP_ID.lever]: 'links',
             },
             target_field_name: 'website_addresses',
         },
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'social_media_addresses',
-                [TP_ID.lever]: 'links', //adjust
+                [TP_ID.lever]: 'links',
             },
             target_field_name: 'social_media_addresses',
         },
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'recruiter.id',
-                [TP_ID.lever]: 'owner.id', //adjust
+                [TP_ID.lever]: 'owner.id',
             },
             target_field_name: 'recruiter.id',
         },

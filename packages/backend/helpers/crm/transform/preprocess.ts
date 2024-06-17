@@ -287,6 +287,86 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.lever]: {
+            [AtsStandardObjects.candidate]: (obj: T) => {
+                let is_private = false;
+                if (obj.confidentiality && obj.confidentiality === 'non-confidential') {
+                    is_private = false;
+                } else if (obj.confidentiality && obj.confidentiality === 'confidential') {
+                    is_private = true;
+                }
+
+                let application_ids: string[] = [];
+                if (obj.applications && obj.applications.length > 0) {
+                    obj.applications.map((application: any) => {
+                        if (application.id) {
+                            application_ids.push(application.id);
+                        } else {
+                            application_ids.push(application);
+                        }
+                    });
+                }
+
+                let emails: { value: string; type: string | undefined }[] = [];
+                if (obj.emails && obj.emails.length > 0) {
+                    obj.emails.map((email: any) => {
+                        let item = { value: '', type: undefined };
+                        if (email) {
+                            item.value = email.value;
+                            item.type = undefined;
+                        }
+                        emails.push(item);
+                    });
+                }
+
+                const created_at = obj.createdAt ? dayjs(Number(obj.createdAt)).toISOString() : null;
+                const updated_at = obj.updatedAt ? dayjs(Number(obj.updatedAt)).toISOString() : null;
+                const last_activity = obj.lastInteractionAt ? dayjs(Number(obj.lastInteractionAt)).toISOString() : null;
+
+                let applications: any = [];
+
+                if (obj.applications && obj.applications.length > 0) {
+                    obj.applications.forEach((application: any) => {
+                        let app = {
+                            id: application.id,
+                            candidate_id: application.candidateId,
+                            prospect: undefined,
+                            applied_at: undefined,
+                            rejected_at: undefined,
+                            last_activity_at: undefined,
+                            location: undefined,
+                            source: undefined,
+                            credited_to: undefined,
+                            rejection_reason: undefined,
+                            rejection_details: undefined,
+                            jobs: undefined,
+                            job_post_id: application.posting,
+                            status: undefined,
+                            current_stage: undefined,
+                            answers: undefined,
+                            prospective_office: undefined,
+                            prospective_department: undefined,
+                            prospect_detail: undefined,
+                            custom_fields: undefined,
+                            keyed_custom_fields: undefined,
+                            attachments: undefined,
+                        };
+                        applications.push(app);
+                    });
+                }
+
+                return {
+                    ...obj,
+                    confidentiality: is_private,
+                    applicationIds: application_ids,
+                    emails: emails,
+                    createdAt: created_at,
+                    updatedAt: updated_at,
+                    lastInteractionAt: last_activity,
+                    applications: applications,
+                };
+            },
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
