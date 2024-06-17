@@ -1494,14 +1494,14 @@ export const atsFields = {
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'confidential',
-                [TP_ID.lever]: 'confidentiality', //adjust
+                [TP_ID.lever]: 'confidentiality',
             },
             target_field_name: 'confidential',
         },
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'status',
-                [TP_ID.lever]: 'state', //adjust
+                [TP_ID.lever]: 'state',
             },
             target_field_name: 'status',
         },
@@ -1550,7 +1550,7 @@ export const atsFields = {
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'departments',
-                [TP_ID.lever]: 'tags', //adjust
+                [TP_ID.lever]: undefined,
             },
             target_field_name: 'departments',
         },
@@ -1571,7 +1571,7 @@ export const atsFields = {
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'hiring_team.hiring_managers',
-                [TP_ID.lever]: 'hiringTeam.hiringManagers', //adjust
+                [TP_ID.lever]: 'hiringManager',
             },
             target_field_name: 'hiring_team.hiring_managers',
         },
@@ -1623,7 +1623,7 @@ export const atsFields = {
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'job_id',
-                [TP_ID.lever]: 'posting_id', //adjust
+                [TP_ID.lever]: 'posting_id',
             },
             target_field_name: 'job_id',
         },
@@ -1721,14 +1721,14 @@ export const atsFields = {
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'starts_at',
-                [TP_ID.lever]: 'startsAt', //adjust
+                [TP_ID.lever]: 'startsAt',
             },
             target_field_name: 'starts_at',
         },
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'status',
-                [TP_ID.lever]: 'approved', //adjust
+                [TP_ID.lever]: 'status',
             },
             target_field_name: 'status',
         },
@@ -1745,7 +1745,7 @@ export const atsFields = {
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'name',
-                [TP_ID.lever]: 'name', // dont knwo how will i show it , because tags is what need to be mapped
+                [TP_ID.lever]: 'name',
             },
             target_field_name: 'name',
         },

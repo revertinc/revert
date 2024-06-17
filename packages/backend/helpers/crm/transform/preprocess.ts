@@ -366,6 +366,128 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                     applications: applications,
                 };
             },
+            [AtsStandardObjects.job]: (obj: T) => {
+                let confidential = false;
+                if (obj.confidentiality && obj.confidentiality === 'non-confidential') {
+                    confidential = false;
+                } else if (obj.confidentiality && obj.confidentiality === 'confidential') {
+                    confidential = true;
+                }
+
+                let state: string | undefined = '';
+                switch (obj.state) {
+                    case 'published':
+                        state = 'open';
+                        break;
+                    case 'internal':
+                        state = 'closed';
+                        break;
+                    case 'closed':
+                        state = 'closed';
+                        break;
+                    case 'draft':
+                        state = 'draft';
+                        break;
+                    case 'pending':
+                        state = 'draft';
+                        break;
+                    case 'rejected':
+                        state = 'closed';
+                        break;
+                    default:
+                        state = undefined;
+                        break;
+                }
+                const created_at = obj.createdAt ? dayjs(Number(obj.createdAt)).toISOString() : null;
+                const updated_at = obj.updatedAt ? dayjs(Number(obj.updatedAt)).toISOString() : null;
+
+                let hiringManager;
+                if (obj.hiringManager && obj.hiringManager.id) {
+                    hiringManager = {
+                        id: obj.hiringManager.id,
+                        first_name: undefined,
+                        last_name: undefined,
+                        name: obj.hiringManager.name,
+                        employee_id: undefined,
+                        responsible: undefined,
+                    };
+                } else {
+                    hiringManager = {
+                        id: obj.hiringManager,
+                        first_name: undefined,
+                        last_name: undefined,
+                        name: undefined,
+                        employee_id: undefined,
+                        responsible: undefined,
+                    };
+                }
+
+                return {
+                    ...obj,
+                    confidentiality: confidential,
+                    state: state,
+                    createdAt: created_at,
+                    updatedAt: updated_at,
+                    hiringManager,
+                };
+            },
+            [AtsStandardObjects.offer]: (obj: T) => {
+                const created_at = obj.createdAt ? dayjs(Number(obj.createdAt)).toISOString() : null;
+                const sentAt = obj.createdAt ? dayjs(Number(obj.sentAt)).toISOString() : null;
+                const approvedAt = obj.createdAt ? dayjs(Number(obj.approvedAt)).toISOString() : null;
+
+                let offerStatus: string | undefined;
+                switch (obj.status) {
+                    case 'draft':
+                    case 'approval-sent':
+                    case 'approved':
+                    case 'sent':
+                    case 'sent-manually':
+                    case 'opened':
+                        offerStatus = 'unresolved';
+                        break;
+                    case 'denied':
+                        offerStatus = 'rejected';
+                        break;
+                    case 'signed':
+                        offerStatus = 'accepted';
+                        break;
+                    default:
+                        offerStatus = undefined;
+                        break;
+                }
+
+                let startsAt, posting_id;
+
+                obj.fields &&
+                    obj.fields.length > 0 &&
+                    obj.fields.map((field: any) => {
+                        console.log('fdddddddddddd0', field);
+                        if (field.identifier === 'job_posting') {
+                            posting_id = field.value;
+                        }
+                        if (field.identifier === 'anticipated_start_date') {
+                            startsAt = dayjs(Number(field.value)).toISOString();
+                        }
+                    });
+
+                return {
+                    ...obj,
+                    sentAt: sentAt,
+                    status: offerStatus,
+                    createdAt: created_at,
+                    approvedAt,
+                    startsAt,
+                    posting_id,
+                };
+            },
+            [AtsStandardObjects.department]: (obj: T) => {
+                const name = obj.text && obj.text;
+                return {
+                    ...obj,
+                    name,
+                };
+            },
         },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
