@@ -485,7 +485,7 @@ export const OAuthCallback = (props) => {
                         setStatus('Errored out');
                     });
             } else if (integrationId === 'lever') {
-                console.log('Post ticketing app installation', integrationId, params);
+                console.log('Post ats app installation', integrationId, params);
                 const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
                     `${REVERT_BASE_API_URL}/v1/ats/oauth-callback?integrationId=${integrationId}&code=${
