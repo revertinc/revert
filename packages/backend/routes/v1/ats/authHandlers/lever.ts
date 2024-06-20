@@ -71,7 +71,7 @@ class LeverAuthHandler extends BaseOAuthHandler {
                 },
             });
 
-            sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.lever, result.data.access_token, 'Lever_user');
+           await sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.lever, result.data.access_token, 'Lever_user');
 
             return processOAuthResult({
                 status: true,
