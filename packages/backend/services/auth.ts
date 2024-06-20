@@ -405,7 +405,7 @@ class AuthService {
                                 url: ' https://auth.lever.co/oauth/token',
                                 data: JSON.stringify(formData),
                                 headers: {
-                                    'Content-Type': 'application/json',
+                                    'Content-Type': 'application/x-www-form-urlencoded',
                                 },
                             });
                             await prisma.connections.update({
