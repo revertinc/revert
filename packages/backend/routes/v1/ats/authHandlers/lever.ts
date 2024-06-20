@@ -35,7 +35,7 @@ class LeverAuthHandler extends BaseOAuthHandler {
             method: 'post',
             url: ' https://auth.lever.co/oauth/token',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
             data: qs.stringify(formData),
         });
