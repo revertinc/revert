@@ -1,6 +1,6 @@
 import { Response } from 'express';
-import rateLimitMiddleware from '../helpers/rateLimitMiddleware';
-import { skipRateLimitRoutes } from '../helpers/utils';
+import rateLimitMiddleware from './rateLimitMiddleware';
+import { skipRateLimitRoutes } from './utils';
 
 jest.mock('../redis/client', () => {
     return {

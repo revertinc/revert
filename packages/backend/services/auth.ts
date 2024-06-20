@@ -378,7 +378,58 @@ class AuthService {
         }
         return { status: 'ok', message: 'Ticket services tokens refreshed' };
     }
+    async refreshOAuthTokensForThirdPartyAtsServices() {
+        try {
+            const connections = await prisma.connections.findMany({
+                include: { app: true },
+            });
 
+            for (let i = 0; i < connections.length; i++) {
+                const connection = connections[i];
+                if (connection.tp_refresh_token) {
+                    try {
+                        if (connection.tp_id === TP_ID.lever) {
+                            // Refresh lever token
+                            const formData = {
+                                grant_type: 'refresh_token',
+                                client_id: connection.app?.is_revert_app
+                                    ? config.LEVER_CLIENT_ID
+                                    : connection.app_client_id || config.LEVER_CLIENT_ID,
+                                client_secret: connection.app?.is_revert_app
+                                    ? config.LEVER_CLIENT_SECRET
+                                    : connection.app_client_secret || config.LEVER_CLIENT_SECRET,
+                                refresh_token: connection.tp_refresh_token,
+                            };
+                            const result: any = await axios({
+                                method: 'post',
+                                url: ' https://auth.lever.co/oauth/token',
+                                data: JSON.stringify(formData),
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                            });
+                            await prisma.connections.update({
+                                where: {
+                                    id: connection.id,
+                                },
+                                data: {
+                                    tp_access_token: result.data.access_token,
+                                    tp_refresh_token: result.data.refresh_token,
+                                },
+                            });
+                        }
+                    } catch (error: any) {
+                        logError(error.response?.data);
+                        console.error('Could not refresh token', connection.t_id, error.response?.data);
+                    }
+                }
+            }
+        } catch (error: any) {
+            logError(error);
+            console.error('Could not update db', error.response?.data);
+        }
+        return { status: 'ok', message: 'ATS services tokens refreshed' };
+    }
     async createAccountOnClerkUserCreation(webhookData: any, webhookEventType: string) {
         let response;
         logInfo('webhookData', webhookData, webhookEventType);

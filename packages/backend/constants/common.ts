@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot' | 'closecrm' | 'ms_dynamics_365_sales';
 export type CHAT_TP_ID = 'slack' | 'discord';
 export type TICKET_TP_ID = 'linear' | 'clickup' | 'asana' | 'jira' | 'trello' | 'bitbucket';
+export type ATS_TP_ID = 'greenhouse' | 'lever';
 
 export const DEFAULT_SCOPE = {
     [TP_ID.hubspot]: [
@@ -49,6 +50,29 @@ export const DEFAULT_SCOPE = {
     [TP_ID.jira]: ['read:jira-work', 'read:jira-user', 'write:jira-work', 'offline_access'],
     [TP_ID.ms_dynamics_365_sales]: ['offline_access', 'User.Read'],
     [TP_ID.bitbucket]: ['issue', 'issue:write', 'repository', 'account'],
+    [TP_ID.greenhouse]: [],
+    [TP_ID.lever]: [
+        'applications:read:admin',
+        'archive_reasons:read:admin',
+        'audit_events:read:admin,contact:write:admin',
+        'diversity_surveys:read:admin',
+        'eeo_responses:read:admin',
+        'eeo_responses_pii:read:admin',
+        'feedback:write:admin',
+        'feedback_templates:write:admin',
+        'files:write:admin',
+        'form_templates:write:admin',
+        'forms:write:admin',
+        'offers:read:admin',
+        'opportunities:write:admin',
+        'postings:write:admin',
+        'stages:read:admin',
+        'tasks:read:admin',
+        'users:write:admin',
+        'webhooks:write:admin',
+        'offline_access',
+        'tags:read:admin',
+    ],
 };
 
 export const mapIntegrationIdToIntegrationName = {
@@ -66,6 +90,8 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.jira]: 'Jira',
     [TP_ID.ms_dynamics_365_sales]: 'Microsoft Dynamics 365 Sales',
     [TP_ID.bitbucket]: 'Bitbucket',
+    [TP_ID.greenhouse]: 'Greenhouse',
+    [TP_ID.lever]: 'Lever',
 };
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';
@@ -91,6 +117,13 @@ export enum TicketStandardObjects {
     ticketUser = 'ticketUser',
     ticketTask = 'ticketTask',
     ticketComment = 'ticketComment',
+}
+
+export enum AtsStandardObjects {
+    job = 'job',
+    offer = 'offer',
+    candidate = 'candidate',
+    department = 'department',
 }
 
 export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefined>> = {
