@@ -1290,7 +1290,7 @@ const createIntegrationBlock = function (self, integration) {
                         )}&response_type=code&prompt=consent`
                     );
                 } else if (selectedIntegration.integrationId === 'bitbucket') {
-                    console.log(selectedIntegration);
+                    
                     window.open(
                         `https://bitbucket.org/site/oauth2/authorize?client_id=${
                             selectedIntegration.clientId
