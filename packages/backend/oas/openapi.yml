@@ -3,6 +3,449 @@ info:
   title: revert-api
   version: ''
 paths:
+  /accounting/accounts/{id}:
+    get:
+      description: Get details of a account
+      operationId: accounting_account_getAccount
+      tags:
+        - AccountingAccount
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingGetAccountResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update Account
+      operationId: accounting_account_updateAccount
+      tags:
+        - AccountingAccount
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingCreateOrUpdateAccountResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountingCreateOrUpdateAccountRequest'
+  /accounting/accounts:
+    post:
+      description: Post Account
+      operationId: accounting_account_createAccount
+      tags:
+        - AccountingAccount
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingCreateOrUpdateAccountResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountingCreateOrUpdateAccountRequest'
+  /accounting/expenses/{id}:
+    get:
+      description: Get details of a Expense
+      operationId: accounting_expense_getExpense
+      tags:
+        - AccountingExpense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingGetExpenseResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update Expense
+      operationId: accounting_expense_updateExpense
+      tags:
+        - AccountingExpense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingCreateOrUpdateExpenseResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountingCreateOrUpdateExpenseRequest'
+  /accounting/expenses:
+    post:
+      description: Post Expense
+      operationId: accounting_expense_createExpense
+      tags:
+        - AccountingExpense
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingCreateOrUpdateExpenseResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountingCreateOrUpdateExpenseRequest'
+  /accounting/proxy:
+    post:
+      description: Call the native Accounting app's api for a specific connection
+      operationId: accounting_proxy_tunnel
+      tags:
+        - AccountingProxy
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingProxyResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountingPostProxyRequestBody'
+  /accounting/vendors/{id}:
+    get:
+      description: Get details of a Vendor
+      operationId: accounting_vendor_getVendor
+      tags:
+        - AccountingVendor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingGetVendorResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update Vendor
+      operationId: accounting_vendor_updateVendor
+      tags:
+        - AccountingVendor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingCreateOrUpdateVendorResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountingCreateOrUpdateVendorRequest'
+  /accounting/vendors:
+    post:
+      description: Post Vendor
+      operationId: accounting_vendor_createVendor
+      tags:
+        - AccountingVendor
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingCreateOrUpdateVendorResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountingCreateOrUpdateVendorRequest'
   /chat/channels:
     get:
       description: Get all the channels
@@ -3509,6 +3952,103 @@ paths:
                 $ref: '#/components/schemas/commonBaseError'
 components:
   schemas:
+    accountingGetAccountResponse:
+      title: accountingGetAccountResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result: {}
+      required:
+        - status
+        - result
+    accountingCreateOrUpdateAccountRequest:
+      title: accountingCreateOrUpdateAccountRequest
+    accountingCreateOrUpdateAccountResponse:
+      title: accountingCreateOrUpdateAccountResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    accountingGetExpenseResponse:
+      title: accountingGetExpenseResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result: {}
+      required:
+        - status
+        - result
+    accountingCreateOrUpdateExpenseRequest:
+      title: accountingCreateOrUpdateExpenseRequest
+    accountingCreateOrUpdateExpenseResponse:
+      title: accountingCreateOrUpdateExpenseResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    accountingProxyResponse:
+      title: accountingProxyResponse
+      type: object
+      properties:
+        result: {}
+      required:
+        - result
+    accountingPostProxyRequestBody:
+      title: accountingPostProxyRequestBody
+      type: object
+      properties:
+        path:
+          type: string
+        body:
+          nullable: true
+        method:
+          type: string
+        queryParams:
+          nullable: true
+      required:
+        - path
+        - method
+    accountingGetVendorResponse:
+      title: accountingGetVendorResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result: {}
+      required:
+        - status
+        - result
+    accountingCreateOrUpdateVendorRequest:
+      title: accountingCreateOrUpdateVendorRequest
+    accountingCreateOrUpdateVendorResponse:
+      title: accountingCreateOrUpdateVendorResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
     chatGetChannelsResponse:
       title: chatGetChannelsResponse
       type: object

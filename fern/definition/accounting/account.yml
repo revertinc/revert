@@ -1,0 +1,79 @@
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+    associations: ../common/associations.yml
+
+types:
+    GetAccountResponse:
+        properties:
+            status: types.ResponseStatus
+            result: unknown
+    CreateOrUpdateAccountRequest: unknown
+    CreateOrUpdateAccountResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
+            result: unknown
+
+service:
+    base-path: /accounting/accounts
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getAccount:
+            docs: Get details of a account
+            method: GET
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: GetAccountRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetAccountResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createAccount:
+            docs: Post Account
+            method: POST
+            path: ''
+            request:
+                name: CreateAccountRequest
+                body: CreateOrUpdateAccountRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateAccountResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateAccount:
+            docs: Update Account
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateAccountRequest
+                body: CreateOrUpdateAccountRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateAccountResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

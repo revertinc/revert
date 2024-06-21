@@ -22,6 +22,8 @@ enum TP_ID {
   trello
   jira
   bitbucket
+  quickbooks
+  xero
 }
 
 enum ENV {

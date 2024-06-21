@@ -1,5 +1,10 @@
 import { TP_ID } from '@prisma/client';
-import { ChatStandardObjects, StandardObjects, TicketStandardObjects } from '../constants/common';
+import {
+    AccountingStandardObjects,
+    ChatStandardObjects,
+    StandardObjects,
+    TicketStandardObjects,
+} from '../constants/common';
 
 // root schema mapping
 export const allFields = {
@@ -1230,6 +1235,32 @@ export const ticketingFields = {
                 [TP_ID.bitbucket]: undefined,
             },
             target_field_name: 'parentId',
+        },
+    ],
+};
+export const accountingFields = {
+    [AccountingStandardObjects.expense]: [
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'id',
+            },
+            target_field_name: 'id',
+        },
+    ],
+    [AccountingStandardObjects.vendor]: [
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'id',
+            },
+            target_field_name: 'id',
+        },
+    ],
+    [AccountingStandardObjects.account]: [
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'id',
+            },
+            target_field_name: 'id',
         },
     ],
 };
