@@ -5,13 +5,12 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
-import { UnifiedTicketTask } from '../../models/unified/ticketTask';
-import { disunifyTicketObject, unifyObject } from '../../helpers/crm/transform';
-import { TicketStandardObjects } from '../../constants/common';
-import { LinearClient } from '@linear/sdk';
+import { disunifyAccountingObject, unifyObject } from '../../helpers/crm/transform';
+import { AccountingStandardObjects } from '../../constants/common';
 import { AccountService } from '../../generated/typescript/api/resources/accounting/resources/account/service/AccountService';
+import { UnifiedAccount } from '../../models/unified/account';
 
-const objType = TicketStandardObjects.ticketTask;
+const objType = AccountingStandardObjects.account;
 
 const accountServiceAccounting = new AccountService(
     {
@@ -19,132 +18,39 @@ const accountServiceAccounting = new AccountService(
             try {
                 const connection = res.locals.connection;
                 const account = res.locals.account;
-                const taskId = req.params.id;
+                const accountId = req.params.id; //this is id that will be used to get the particular acccount for the below integrations.
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const fields: any = JSON.parse(req.query.fields as string);
                 logInfo(
-                    'Revert::GET TASK',
+                    'Revert::GET ACCOUNT',
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    taskId
+                    accountId
                 );
 
                 switch (thirdPartyId) {
-                    case TP_ID.linear: {
-                        const linear = new LinearClient({
-                            accessToken: thirdPartyToken,
-                        });
-                        const task: any = await linear.issue(taskId);
-                        const state = await linear.workflowState(task._state.id);
-                        let modifiedTask = { ...task, state: { name: state.name } };
-
-                        const unifiedTask: any = await unifyObject<any, UnifiedTicketTask>({
-                            obj: modifiedTask,
-                            tpId: thirdPartyId,
-                            objType,
-                            tenantSchemaMappingId: connection.schema_mapping_id,
-                            accountFieldMappingConfig: account.accountFieldMappingConfig,
-                        });
-
-                        res.send({
-                            status: 'ok',
-                            result: unifiedTask,
-                        });
-                        break;
-                    }
-                    case TP_ID.clickup: {
-                        const result = await axios({
-                            method: 'get',
-                            url: `https://api.clickup.com/api/v2/task/${taskId}`,
-                            headers: {
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                                'Content-Type': 'application/json',
-                            },
-                        });
-
-                        const unifiedTask: any = await unifyObject<any, UnifiedTicketTask>({
-                            obj: result.data,
-                            tpId: thirdPartyId,
-                            objType,
-                            tenantSchemaMappingId: connection.schema_mapping_id,
-                            accountFieldMappingConfig: account.accountFieldMappingConfig,
-                        });
-
-                        res.send({
-                            status: 'ok',
-                            result: unifiedTask,
-                        });
-                        break;
-                    }
-                    case TP_ID.jira: {
-                        const result = await axios({
-                            method: 'get',
-                            url: `${connection.tp_account_url}/rest/api/2/issue/${taskId}`,
-                            headers: {
-                                Accept: 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                        });
-                        result.data.fields.id = result.data.id;
-                        const unifiedTask: any = await unifyObject<any, UnifiedTicketTask>({
-                            obj: result.data.fields,
-                            tpId: thirdPartyId,
-                            objType,
-                            tenantSchemaMappingId: connection.schema_mapping_id,
-                            accountFieldMappingConfig: account.accountFieldMappingConfig,
-                        });
-
-                        res.send({
-                            status: 'ok',
-                            result: unifiedTask,
-                        });
-                        break;
-                    }
-                    case TP_ID.trello: {
-                        const card = await axios({
-                            method: 'get',
-                            url: `https://api.trello.com/1/cards/${taskId}?key=${connection.app_client_id}&token=${thirdPartyToken}`,
-                            headers: {
-                                Accept: 'application/json',
-                            },
-                        });
-
-                        const unifiedTask: any = await unifyObject<any, UnifiedTicketTask>({
-                            obj: card.data,
-                            tpId: thirdPartyId,
-                            objType,
-                            tenantSchemaMappingId: connection.schema_mapping_id,
-                            accountFieldMappingConfig: account.accountFieldMappingConfig,
-                        });
-
-                        res.send({
-                            status: 'ok',
-                            result: unifiedTask,
-                        });
-                        break;
-                    }
-                    case TP_ID.bitbucket: {
-                        if (!fields || (fields && !fields.repo && !fields.workspace)) {
+                    case TP_ID.quickbooks: {
+                        if (!fields || (fields && !fields.realmID)) {
                             throw new NotFoundError({
-                                error: 'The query parameters "repo" and "workspace" are required and should be included in the "fields" parameter."repo" and "workspace" can either be slug or UUID.',
+                                error: 'The query parameter "realmID" is required and should be included in the "fields" parameter.',
                             });
                         }
 
                         const result = await axios({
                             method: 'GET',
-                            url: `https://api.bitbucket.org/2.0/repositories/${fields.workspace}/${fields.repo}/issues/${taskId}`,
+                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/account/${accountId}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
                             },
                         });
 
-                        const unifiedTask: any = await unifyObject<any, UnifiedTicketTask>({
-                            obj: result.data,
+                        const unifiedAccount: any = await unifyObject<any, UnifiedAccount>({
+                            obj: result.data.Account,
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -153,7 +59,7 @@ const accountServiceAccounting = new AccountService(
 
                         res.send({
                             status: 'ok',
-                            result: unifiedTask,
+                            result: unifiedAccount,
                         });
                         break;
                     }
@@ -163,7 +69,7 @@ const accountServiceAccounting = new AccountService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not fetch task', error);
+                console.error('Could not fetch account', error);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -173,186 +79,43 @@ const accountServiceAccounting = new AccountService(
 
         async createAccount(req, res) {
             try {
-                const taskData: any = req.body as unknown as UnifiedTicketTask;
+                const accountData: any = req.body as unknown as UnifiedAccount;
                 const connection = res.locals.connection;
                 const account = res.locals.account;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const fields: any = JSON.parse((req.query as any).fields as string);
-                if (thirdPartyId !== TP_ID.bitbucket && taskData && !taskData.listId) {
-                    throw new Error('The parameter "listId" is required in request body.');
-                }
-                const task: any = await disunifyTicketObject<UnifiedTicketTask>({
-                    obj: taskData,
+
+                const disunifiedAccountData: any = await disunifyAccountingObject<UnifiedAccount>({
+                    obj: accountData,
                     tpId: thirdPartyId,
                     objType,
                     tenantSchemaMappingId: connection.schema_mapping_id,
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
 
-                logInfo('Revert::CREATE TASK', connection.app?.env?.accountId, tenantId, task);
+                logInfo('Revert::CREATE ACCOUNT', connection.app?.env?.accountId, tenantId, disunifiedAccountData);
 
                 switch (thirdPartyId) {
-                    // @TODO Query will fail if additional fields are posted
-                    case TP_ID.linear: {
-                        const linear = new LinearClient({
-                            accessToken: thirdPartyToken,
-                        });
-
-                        if (task.state && task.teamId) {
-                            const linearGraphqlClient = linear.client;
-                            let states: any = await linearGraphqlClient.rawRequest(
-                                `query Query($teamId: String!) {
-                                    team(id: $teamId) {
-                                        states {
-                                            nodes {
-                                            id
-                                            name
-                                            }
-                                        }
-                                    }
-                                }`,
-                                { teamId: task.teamId }
-                            );
-                            states = states.data.team.states.nodes;
-
-                            const state = states.find(
-                                (state: any) => String(state.name).toLowerCase() === task.state.toLowerCase()
-                            );
-
-                            task.stateId = state.id;
-                            delete task.state;
-                        }
-
-                        const issueCreated = await linear.createIssue(task);
-                        res.send({ status: 'ok', message: 'Linear task created', result: issueCreated });
-                        break;
-                    }
-                    case TP_ID.clickup: {
-                        const result: any = await axios({
-                            method: 'post',
-                            url: `https://api.clickup.com/api/v2/list/${task.listId}/task`,
-                            headers: {
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                                'Content-Type': 'application/json',
-                            },
-                            data: JSON.stringify(task),
-                        });
-                        res.send({ status: 'ok', message: 'Clickup task created', result: result.data });
-
-                        break;
-                    }
-                    case TP_ID.jira: {
-                        if (!taskData.issueTypeId) {
+                    case TP_ID.quickbooks: {
+                        if (!fields || (fields && !fields.realmID)) {
                             throw new NotFoundError({
-                                error: 'Jira requires issueTypeId parameter in request body.',
-                            });
-                        }
-
-                        // if status exists set it to undefined or jira create will fail
-                        let statusval = null;
-                        if (taskData.status && task.fields.status && task.fields.status.name) {
-                            statusval = task.fields.status.name;
-                            task.fields.status = undefined;
-                        }
-
-                        const result = await axios({
-                            method: 'post',
-                            url: `${connection.tp_account_url}/rest/api/2/issue`,
-                            headers: {
-                                Accept: 'application/json',
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                            data: JSON.stringify(task),
-                        });
-
-                        // status provided in request body
-                        if (statusval) {
-                            // since creating a transition requires id, get call for validation. Not sure if id's are same
-                            const allTransitions = await axios({
-                                method: 'get',
-                                url: `${connection.tp_account_url}/rest/api/2/issue/${result.data.id}/transitions`,
-                                headers: {
-                                    Accept: 'application/json',
-                                    Authorization: `Bearer ${thirdPartyToken}`,
-                                },
-                            });
-                            let transition = null;
-                            if (statusval === 'open') {
-                                transition = allTransitions.data.transitions.find(
-                                    (item: any) => item.name.toLowerCase() === 'to do'
-                                );
-                            } else if (statusval === 'in_progress') {
-                                transition = allTransitions.data.transitions.find(
-                                    (item: any) => item.name.toLowerCase() === 'in progress'
-                                );
-                            } else if (statusval === 'closed') {
-                                transition = allTransitions.data.transitions.find(
-                                    (item: any) => item.name.toLowerCase() === 'done'
-                                );
-                            }
-                            await axios({
-                                method: 'post',
-                                url: `${connection.tp_account_url}/rest/api/2/issue/${result.data.id}/transitions`,
-                                headers: {
-                                    Accept: 'application/json',
-                                    'Content-Type': 'application/json',
-                                    Authorization: `Bearer ${thirdPartyToken}`,
-                                },
-                                data: JSON.stringify({
-                                    transition: {
-                                        id: transition.id,
-                                    },
-                                }),
-                            });
-                        }
-
-                        res.send({
-                            status: 'ok',
-                            message: 'Task created in jira',
-                            result: result.data,
-                        });
-
-                        break;
-                    }
-                    case TP_ID.trello: {
-                        const result: any = await axios({
-                            method: 'post',
-                            url: `https://api.trello.com/1/cards?key=${connection.app_client_id}&token=${thirdPartyToken}`,
-                            headers: {
-                                Accept: 'application/json',
-                            },
-                            data: task,
-                        });
-
-                        res.send({
-                            status: 'ok',
-                            message: 'Task created in trello',
-                            result: result.data,
-                        });
-
-                        break;
-                    }
-                    case TP_ID.bitbucket: {
-                        if (!fields || (fields && !fields.repo && !fields.workspace)) {
-                            throw new NotFoundError({
-                                error: 'The query parameters "repo" and "workspace" are required and should be included in the "fields" parameter."repo" and "workspace" can either be slug or UUID.',
+                                error: 'The query parameter "realmID" is required and should be included in the "fields" parameter.',
                             });
                         }
 
                         const result: any = await axios({
                             method: 'post',
-                            url: `https://api.bitbucket.org/2.0/repositories/${fields.workspace}/${fields.repo}/issues`,
+                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/account`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
                             },
-                            data: JSON.stringify(task),
+                            data: JSON.stringify(disunifiedAccountData),
                         });
-                        res.send({ status: 'ok', message: 'Bitbucket task created', result: result.data });
+                        res.send({ status: 'ok', message: 'QuickBooks account created', result: result.data.Account });
 
                         break;
                     }
@@ -362,7 +125,7 @@ const accountServiceAccounting = new AccountService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not create task', error.response);
+                console.error('Could not create account', error.response);
                 if (isStandardError(error)) {
                     throw error;
                 }
@@ -373,201 +136,52 @@ const accountServiceAccounting = new AccountService(
             try {
                 const connection = res.locals.connection;
                 const account = res.locals.account;
-                const taskData = req.body as unknown as UnifiedTicketTask;
-                const taskId = req.params.id;
+                const accountData = req.body as unknown as UnifiedAccount;
+                const accountId = req.params.id;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const fields: any = JSON.parse((req.query as any).fields as string);
-                const task: any = await disunifyTicketObject<UnifiedTicketTask>({
-                    obj: taskData,
+
+                if (thirdPartyId === TP_ID.quickbooks && accountData && !accountData.id) {
+                    throw new Error('The parameter "id" is required in request body.');
+                }
+
+                const disunifiedAccountData: any = await disunifyAccountingObject<UnifiedAccount>({
+                    obj: accountData,
                     tpId: thirdPartyId,
                     objType,
                     tenantSchemaMappingId: connection.schema_mapping_id,
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
-                logInfo('Revert::UPDATE TASK', connection.app?.env?.accountId, tenantId, taskData);
+
+                disunifiedAccountData.Id = accountId;
+
+                logInfo('Revert::UPDATE ACCOUNT', connection.app?.env?.accountId, tenantId, accountData);
 
                 switch (thirdPartyId) {
-                    /* @TODO This might encounter issues with unrecognized patterns or schema, for instance, attempting to set 'issueID' within the request body of the 'revert' API 
-                    might not conform to the expected GraphQL syntax, such as {issue: {id}}. */
-                    case TP_ID.linear: {
-                        const linear = new LinearClient({
-                            accessToken: thirdPartyToken,
-                        });
-
-                        if (task.state) {
-                            const linearGraphqlClient = linear.client;
-                            let teamId: any = await linearGraphqlClient.rawRequest(
-                                `query Issue($issueId: String!) {
-                                    issue(id: $issueId) {
-                                      team {
-                                        id
-                                      }
-                                    }
-                                  }`,
-                                { issueId: taskId }
-                            );
-                            teamId = teamId.data.issue.team.id;
-                            // fetch states for a teamId
-                            let states: any = await linearGraphqlClient.rawRequest(
-                                `query Query($teamId: String!) {
-                                team(id: $teamId) {
-                                  states {
-                                    nodes {
-                                      id
-                                      name
-                                    }
-                                  }
-                                }
-                              }
-                              `,
-                                { teamId: teamId }
-                            );
-
-                            states = states.data.team.states.nodes;
-
-                            const state = states.find(
-                                (state: any) => String(state.name).toLowerCase() === task.state.toLowerCase()
-                            );
-
-                            task.stateId = state.id;
-                            delete task.state;
-                        }
-
-                        const updatedTask = await linear.updateIssue(taskId, task);
-
-                        res.send({
-                            status: 'ok',
-                            message: 'Linear Task updated',
-                            result: updatedTask,
-                        });
-
-                        break;
-                    }
-                    case TP_ID.clickup: {
-                        const result = await axios({
-                            method: 'put',
-                            url: `https://api.clickup.com/api/v2/task/${taskId}`,
-                            headers: {
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                                'Content-Type': 'application/json',
-                            },
-                            data: JSON.stringify(task),
-                        });
-
-                        res.send({
-                            status: 'ok',
-                            message: 'Clickup Task updated',
-                            result: result.data,
-                        });
-
-                        break;
-                    }
-                    case TP_ID.jira: {
-                        // if status exists set it to undefined or jira create will fail
-                        let statusval = null;
-                        if (task.fields.status && task.fields.status.name) {
-                            statusval = task.fields.status.name;
-                            task.fields.status = undefined;
-                        }
-                        const result: any = await axios({
-                            method: 'put',
-                            url: `${connection.tp_account_url}/rest/api/2/issue/${taskId}`,
-                            headers: {
-                                Accept: 'application/json',
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                            data: JSON.stringify(task),
-                        });
-
-                        // status provided in request body
-                        if (statusval) {
-                            // since creating a transition requires id, get call for validation. Not sure if id's are same
-                            const allTransitions = await axios({
-                                method: 'get',
-                                url: `${connection.tp_account_url}/rest/api/2/issue/${taskId}/transitions`,
-                                headers: {
-                                    Accept: 'application/json',
-                                    Authorization: `Bearer ${thirdPartyToken}`,
-                                },
-                            });
-                            let transition = null;
-                            if (statusval === 'open') {
-                                transition = allTransitions.data.transitions.find(
-                                    (item: any) => item.name.toLowerCase() === 'to do'
-                                );
-                            } else if (statusval === 'in_progress') {
-                                transition = allTransitions.data.transitions.find(
-                                    (item: any) => item.name.toLowerCase() === 'in progress'
-                                );
-                            } else if (statusval === 'closed') {
-                                transition = allTransitions.data.transitions.find(
-                                    (item: any) => item.name.toLowerCase() === 'done'
-                                );
-                            }
-                            await axios({
-                                method: 'post',
-                                url: `${connection.tp_account_url}/rest/api/2/issue/${taskId}/transitions`,
-                                headers: {
-                                    Accept: 'application/json',
-                                    'Content-Type': 'application/json',
-                                    Authorization: `Bearer ${thirdPartyToken}`,
-                                },
-                                data: JSON.stringify({
-                                    transition: {
-                                        id: transition.id,
-                                    },
-                                }),
-                            });
-                        }
-
-                        res.send({
-                            status: 'ok',
-                            message: 'Jira task updated',
-                            result: result.data,
-                        });
-                        break;
-                    }
-                    case TP_ID.trello: {
-                        const result = await axios({
-                            method: 'put',
-                            url: `https://api.trello.com/1/cards/${taskId}?key=${connection.app_client_id}&token=${thirdPartyToken}`,
-                            headers: {
-                                Accept: 'application/json',
-                            },
-                            data: task,
-                        });
-
-                        res.send({
-                            status: 'ok',
-                            message: 'Trello Task updated',
-                            result: result.data,
-                        });
-                        break;
-                    }
-                    case TP_ID.bitbucket: {
-                        if (!fields || (fields && !fields.repo && !fields.workspace)) {
+                    case TP_ID.quickbooks: {
+                        if (!fields || (fields && !fields.realmID)) {
                             throw new NotFoundError({
-                                error: 'The query parameters "repo" and "workspace" are required and should be included in the "fields" parameter."repo" and "workspace" can either be slug or UUID.',
+                                error: 'The query parameter "realmID" is required and should be included in the "fields" parameter.',
                             });
                         }
 
-                        const result = await axios({
-                            method: 'put',
-                            url: `https://api.bitbucket.org/2.0/repositories/${fields.workspace}/${fields.repo}/issues/${taskId}`,
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/account`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
+                                'Content-Type': 'application/json',
                             },
-                            data: task,
+                            data: JSON.stringify(disunifiedAccountData),
                         });
 
                         res.send({
                             status: 'ok',
-                            message: 'Bitbucket Task updated',
-                            result: result.data,
+                            message: 'QuickBooks Account updated',
+                            result: result.data.Account,
                         });
 
                         break;
@@ -578,7 +192,7 @@ const accountServiceAccounting = new AccountService(
                 }
             } catch (error: any) {
                 logError(error);
-                console.error('Could not update task', error);
+                console.error('Could not update account', error);
                 if (isStandardError(error)) {
                     throw error;
                 }

@@ -6,6 +6,7 @@ import {
     TICKET_TP_ID,
     TicketStandardObjects,
     AccountingStandardObjects,
+    ACCOUNTING_TP_ID,
 } from '../../../constants/common';
 import { PipedriveDealStatus } from '../../../constants/pipedrive';
 import { convertToHHMMInUTC, getDuration, getFormattedDate } from '../../../helpers/timeZoneHelper';
@@ -428,6 +429,22 @@ export const postprocessDisUnifyTicketObject = <T extends Record<string, any>>({
         [TP_ID.trello]: {},
         [TP_ID.asana]: {},
         [TP_ID.bitbucket]: {},
+    };
+    const transformFn = (preprocessMap[tpId] || {})[objType];
+    return transformFn ? transformFn(obj) : obj;
+};
+export const postprocessDisUnifyAccoutingObject = <T extends Record<string, any>>({
+    obj,
+    tpId,
+    objType,
+}: {
+    obj: T;
+    tpId: ACCOUNTING_TP_ID;
+    objType: AccountingStandardObjects;
+}) => {
+    const preprocessMap: Record<ACCOUNTING_TP_ID, Record<any, Function>> = {
+        [TP_ID.quickbooks]: {},
+        [TP_ID.xero]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

@@ -1239,28 +1239,298 @@ export const ticketingFields = {
     ],
 };
 export const accountingFields = {
-    [AccountingStandardObjects.expense]: [
+    [AccountingStandardObjects.account]: [
         {
             source_field_name: {
-                [TP_ID.quickbooks]: 'id',
+                [TP_ID.quickbooks]: 'Id',
             },
             target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'domain',
+            },
+            target_field_name: 'domain',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'status',
+            },
+            target_field_name: 'status',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'MetaData.CreateTime',
+            },
+            target_field_name: 'metadata.createTime',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'MetaData.LastUpdatedTime',
+            },
+            target_field_name: 'metadata.lastUpdatedTime',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'AccountSubType',
+            },
+            target_field_name: 'accountSubType',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'AccountType',
+            },
+            target_field_name: 'accountType',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'Active',
+            },
+            target_field_name: 'active',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'Classification',
+            },
+            target_field_name: 'classification',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'CurrencyRef.name',
+            },
+            target_field_name: 'currencyRef.name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'CurrencyRef.value',
+            },
+            target_field_name: 'currencyRef.value',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'CurrentBalance',
+            },
+            target_field_name: 'currentBalance',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'CurrentBalanceWithSubAccounts',
+            },
+            target_field_name: 'currentBalanceWithSubAccounts',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'FullyQualifiedName',
+            },
+            target_field_name: 'fullyQualifiedName',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'Name',
+            },
+            target_field_name: 'name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'SubAccount',
+            },
+            target_field_name: 'subAccount',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'SyncToken',
+            },
+            target_field_name: 'syncToken',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'sparse',
+            },
+            target_field_name: 'sparse',
         },
     ],
     [AccountingStandardObjects.vendor]: [
         {
             source_field_name: {
-                [TP_ID.quickbooks]: 'id',
+                [TP_ID.quickbooks]: 'Id',
             },
             target_field_name: 'id',
         },
-    ],
-    [AccountingStandardObjects.account]: [
         {
             source_field_name: {
-                [TP_ID.quickbooks]: 'id',
+                [TP_ID.quickbooks]: 'domain',
+            },
+            target_field_name: 'domain',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'status',
+            },
+            target_field_name: 'status',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'MetaData.CreateTime',
+            },
+            target_field_name: 'metadata.createTime',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'MetaData.LastUpdatedTime',
+            },
+            target_field_name: 'metadata.lastUpdatedTime',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'DisplayName',
+            },
+            target_field_name: 'displayName',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'PrintOnCheckName',
+            },
+            target_field_name: 'printOnCheckName',
+        },
+    ],
+    [AccountingStandardObjects.expense]: [
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'Id',
             },
             target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'domain',
+            },
+            target_field_name: 'domain',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'status',
+            },
+            target_field_name: 'status',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'MetaData.CreateTime',
+            },
+            target_field_name: 'metadata.createTime',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'MetaData.LastUpdatedTime',
+            },
+            target_field_name: 'metadata.lastUpdatedTime',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'AccountRef.value',
+            },
+            target_field_name: 'accountRef.value',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'AccountRef.name',
+            },
+            target_field_name: 'accountRef.name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'PaymentMethodRef.value',
+            },
+            target_field_name: 'paymentMethodRef.value',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'PaymentType',
+            },
+            target_field_name: 'paymentType',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'EntityRef.value',
+            },
+            target_field_name: 'entityRef.value',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'EntityRef.name',
+            },
+            target_field_name: 'entityRef.name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'EntityRef.type',
+            },
+            target_field_name: 'entityRef.type',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'Credit',
+            },
+            target_field_name: 'credit',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'TotalAmt',
+            },
+            target_field_name: 'totalAmt',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'PurchaseEx.any',
+            },
+            target_field_name: 'purchaseEx.any',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'sparse',
+            },
+            target_field_name: 'sparse',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'SyncToken',
+            },
+            target_field_name: 'syncToken',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'TxnDate',
+            },
+            target_field_name: 'txnDate',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'CurrencyRef.name',
+            },
+            target_field_name: 'currencyRef.name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'CurrencyRef.value',
+            },
+            target_field_name: 'currencyRef.value',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'PrivateNote',
+            },
+            target_field_name: 'privateNote',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'Line',
+            },
+            target_field_name: 'line',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'DocNumber',
+            },
+            target_field_name: 'docNumber',
         },
     ],
 };

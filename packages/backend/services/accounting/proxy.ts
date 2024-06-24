@@ -6,7 +6,6 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { ProxyService } from '../../generated/typescript/api/resources/accounting/resources/proxy/service/ProxyService';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
-import { LinearClient } from '@linear/sdk';
 
 const ProxyServiceAccounting = new ProxyService(
     {
@@ -23,7 +22,7 @@ const ProxyServiceAccounting = new ProxyService(
                 const queryParams = request.queryParams;
 
                 logInfo(
-                    'Revert::POST PROXY FOR TICKETING APP',
+                    'Revert::POST PROXY FOR ACCOUNTING APP',
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
@@ -31,81 +30,19 @@ const ProxyServiceAccounting = new ProxyService(
                 );
 
                 switch (thirdPartyId) {
-                    case TP_ID.linear: {
-                        const linear = new LinearClient({
-                            accessToken: thirdPartyToken,
-                        });
-
-                        const linearGraphqlClient = await linear.client;
-                        const result: any = await linearGraphqlClient.request(String(body.query), body.input);
-
-                        res.send({
-                            result: result,
-                        });
-                        break;
-                    }
-                    case TP_ID.clickup: {
+                    case TP_ID.quickbooks: {
                         const result = await axios({
                             method: method,
-                            url: `https://api.clickup.com/api/v2/${path}`,
+                            url: `https://quickbooks.api.intuit.com/v3/company/${path}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
                                 'Content-Type': 'application/json',
                             },
                             data: JSON.stringify(body),
                             params: queryParams,
                         });
 
-                        res.send({
-                            result: result.data,
-                        });
-                        break;
-                    }
-                    case TP_ID.jira: {
-                        const result = await axios({
-                            method: method,
-                            url: `${connection.tp_account_url}/${path}`,
-                            headers: {
-                                Accept: 'application/json',
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                            data: JSON.stringify(body),
-                            params: queryParams,
-                        });
-
-                        res.send({
-                            result: result.data,
-                        });
-                        break;
-                    }
-                    case TP_ID.trello: {
-                        const result: any = await axios({
-                            method: method,
-                            url: `https://api.trello.com/1/${path}?key=${connection.app_client_id}&token=${thirdPartyToken}`,
-                            headers: {
-                                Accept: 'application/json',
-                            },
-                            data: body,
-                            params: queryParams,
-                        });
-                        res.send({
-                            result: result.data,
-                        });
-                        break;
-                    }
-                    case TP_ID.bitbucket: {
-                        const result: any = await axios({
-                            method: method,
-                            url: `https://api.bitbucket.org/2.0/${path}`,
-                            headers: {
-                                Accept: 'application/json',
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${thirdPartyToken}`,
-                            },
-                            data: body,
-                            params: queryParams,
-                        });
                         res.send({
                             result: result.data,
                         });
