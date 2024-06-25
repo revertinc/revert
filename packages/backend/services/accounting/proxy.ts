@@ -7,7 +7,7 @@ import { ProxyService } from '../../generated/typescript/api/resources/accountin
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 
-const ProxyServiceAccounting = new ProxyService(
+const proxyServiceAccounting = new ProxyService(
     {
         async tunnel(req, res) {
             try {
@@ -65,4 +65,4 @@ const ProxyServiceAccounting = new ProxyService(
     [revertAuthMiddleware(), revertTenantMiddleware()]
 );
 
-export { ProxyServiceAccounting };
+export { proxyServiceAccounting };

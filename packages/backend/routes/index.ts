@@ -49,7 +49,7 @@ import accountingRouter from './v1/accounting';
 import { vendorServiceAccounting } from '../services/accounting/vendor';
 import { expenseServiceAccounting } from '../services/accounting/expense';
 import { accountServiceAccounting } from '../services/accounting/account';
-import { ProxyServiceAccounting } from '../services/accounting/proxy';
+import { proxyServiceAccounting } from '../services/accounting/proxy';
 
 const router = express.Router();
 
@@ -192,7 +192,7 @@ register(router, {
         account: accountServiceAccounting,
         expense: expenseServiceAccounting,
         vendor: vendorServiceAccounting,
-        proxy: ProxyServiceAccounting,
+        proxy: proxyServiceAccounting,
     },
     sync: syncService,
 });
