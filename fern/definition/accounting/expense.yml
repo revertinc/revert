@@ -9,6 +9,12 @@ types:
         properties:
             status: types.ResponseStatus
             result: unknown
+    GetExpensesResponse:
+        properties:
+            status: types.ResponseStatus
+            next: optional<string>
+            previous: optional<string>
+            results: unknown
     CreateOrUpdateExpenseRequest: unknown
     CreateOrUpdateExpenseResponse:
         properties:
@@ -33,7 +39,7 @@ service:
         - external
     endpoints:
         getExpense:
-            docs: Get details of a Expense
+            docs: Get details of an Expense
             method: GET
             path: /{id}
             path-parameters:
@@ -47,6 +53,17 @@ service:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
+        getExpenses:
+            docs: Get all the expenses
+            method: GET
+            path: ''
+            request:
+                name: GetExpensesRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetExpensesResponse
         createExpense:
             docs: Post Expense
             method: POST

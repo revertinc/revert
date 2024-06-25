@@ -76,6 +76,45 @@ const vendorServiceAccounting = new VendorService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
+        async getVendors(req, res) {
+            try {
+                const connection = res.locals.connection;
+                const account = res.locals.account;
+                const fields: any = req.query.fields ? JSON.parse(req.query.fields as string) : undefined;
+                const pageSize = parseInt(String(req.query.pageSize));
+                const cursor = req.query.cursor;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+
+                logInfo(
+                    'Revert::GET ALL VENDORS',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken
+                );
+                switch (thirdPartyId) {
+                    case TP_ID.quickbooks: {
+                        res.send({
+                            status: 'ok',
+                            results: 'This endpoint is currently not supported',
+                        });
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not fetch vendors', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
 
         async createVendor(req, res) {
             try {

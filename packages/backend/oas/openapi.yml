@@ -5,7 +5,7 @@ info:
 paths:
   /accounting/accounts/{id}:
     get:
-      description: Get details of a account
+      description: Get details of an account
       operationId: accounting_account_getAccount
       tags:
         - AccountingAccount
@@ -95,6 +95,55 @@ paths:
             schema:
               $ref: '#/components/schemas/accountingCreateOrUpdateAccountRequest'
   /accounting/accounts:
+    get:
+      description: Get all the accounts
+      operationId: accounting_account_getAccounts
+      tags:
+        - AccountingAccount
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingGetAccountsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
     post:
       description: Post Account
       operationId: accounting_account_createAccount
@@ -140,7 +189,7 @@ paths:
               $ref: '#/components/schemas/accountingCreateOrUpdateAccountRequest'
   /accounting/expenses/{id}:
     get:
-      description: Get details of a Expense
+      description: Get details of an Expense
       operationId: accounting_expense_getExpense
       tags:
         - AccountingExpense
@@ -230,6 +279,37 @@ paths:
             schema:
               $ref: '#/components/schemas/accountingCreateOrUpdateExpenseRequest'
   /accounting/expenses:
+    get:
+      description: Get all the expenses
+      operationId: accounting_expense_getExpenses
+      tags:
+        - AccountingExpense
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingGetExpensesResponse'
     post:
       description: Post Expense
       operationId: accounting_expense_createExpense
@@ -403,6 +483,37 @@ paths:
             schema:
               $ref: '#/components/schemas/accountingCreateOrUpdateVendorRequest'
   /accounting/vendors:
+    get:
+      description: Get all the Vendors
+      operationId: accounting_vendor_getVendors
+      tags:
+        - AccountingVendor
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingGetVendorsResponse'
     post:
       description: Post Vendor
       operationId: accounting_vendor_createVendor
@@ -3962,6 +4073,22 @@ components:
       required:
         - status
         - result
+    accountingGetAccountsResponse:
+      title: accountingGetAccountsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results: {}
+      required:
+        - status
+        - results
     accountingCreateOrUpdateAccountRequest:
       title: accountingCreateOrUpdateAccountRequest
     accountingCreateOrUpdateAccountResponse:
@@ -3987,6 +4114,22 @@ components:
       required:
         - status
         - result
+    accountingGetExpensesResponse:
+      title: accountingGetExpensesResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results: {}
+      required:
+        - status
+        - results
     accountingCreateOrUpdateExpenseRequest:
       title: accountingCreateOrUpdateExpenseRequest
     accountingCreateOrUpdateExpenseResponse:
@@ -4034,6 +4177,22 @@ components:
       required:
         - status
         - result
+    accountingGetVendorsResponse:
+      title: accountingGetVendorsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results: {}
+      required:
+        - status
+        - results
     accountingCreateOrUpdateVendorRequest:
       title: accountingCreateOrUpdateVendorRequest
     accountingCreateOrUpdateVendorResponse:

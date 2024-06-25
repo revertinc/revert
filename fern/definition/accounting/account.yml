@@ -9,6 +9,12 @@ types:
         properties:
             status: types.ResponseStatus
             result: unknown
+    GetAccountsResponse:
+        properties:
+            status: types.ResponseStatus
+            next: optional<string>
+            previous: optional<string>
+            results: unknown
     CreateOrUpdateAccountRequest: unknown
     CreateOrUpdateAccountResponse:
         properties:
@@ -33,7 +39,7 @@ service:
         - external
     endpoints:
         getAccount:
-            docs: Get details of a account
+            docs: Get details of an account
             method: GET
             path: /{id}
             path-parameters:
@@ -43,6 +49,21 @@ service:
                 query-parameters:
                     fields: optional<string>
             response: GetAccountResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getAccounts:
+            docs: Get all the accounts
+            method: GET
+            path: ''
+            request:
+                name: GetAccountsRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetAccountsResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

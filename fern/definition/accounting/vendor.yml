@@ -9,6 +9,12 @@ types:
         properties:
             status: types.ResponseStatus
             result: unknown
+    GetVendorsResponse:
+        properties:
+            status: types.ResponseStatus
+            next: optional<string>
+            previous: optional<string>
+            results: unknown
     CreateOrUpdateVendorRequest: unknown
     CreateOrUpdateVendorResponse:
         properties:
@@ -47,6 +53,17 @@ service:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
+        getVendors:
+            docs: Get all the Vendors
+            method: GET
+            path: ''
+            request:
+                name: GetVendorsRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetVendorsResponse
         createVendor:
             docs: Post Vendor
             method: POST
