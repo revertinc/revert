@@ -63,6 +63,30 @@ const accountServiceAccounting = new AccountService(
                         });
                         break;
                     }
+                    case TP_ID.xero: {
+                        const result = await axios({
+                            method: 'GET',
+                            url: `https://api.xero.com/api.xro/2.0/Accounts/${accountId}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedAccount: any = await unifyObject<any, UnifiedAccount>({
+                            obj: result.data.Accounts[0],
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedAccount,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -97,9 +121,76 @@ const accountServiceAccounting = new AccountService(
                 );
                 switch (thirdPartyId) {
                     case TP_ID.quickbooks: {
+                        if (!fields || (fields && !fields.realmID)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "realmID" is required and should be included in the "fields" parameter.',
+                            });
+                        }
+
+                        let pagingString = `${cursor ? ` STARTPOSITION +${cursor}+` : ''}${
+                            pageSize ? ` MAXRESULTS +${pageSize}` : ''
+                        }`;
+
+                        const result = await axios({
+                            method: 'GET',
+                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/query?query=select * from Account ${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedAccounts: any = await Promise.all(
+                            result.data.QueryResponse.Account.map(
+                                async (accountItem: any) =>
+                                    await unifyObject<any, UnifiedAccount>({
+                                        obj: accountItem,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+                        const nextCursor = pageSize
+                            ? String(result.data.QueryResponse?.maxResults + (parseInt(String(cursor)) || 0))
+                            : undefined;
                         res.send({
                             status: 'ok',
-                            results: 'This endpoint is currently not supported',
+                            next: nextCursor,
+                            results: unifiedAccounts,
+                        });
+                        break;
+                    }
+                    case TP_ID.xero: {
+                        const pagingString = `${cursor ? `page=${cursor}` : ''}`;
+                        const result = await axios({
+                            method: 'GET',
+                            url: `https://api.xero.com/api.xro/2.0/Accounts?${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedAccounts: any = await Promise.all(
+                            result.data.Accounts.map(
+                                async (accountItem: any) =>
+                                    await unifyObject<any, UnifiedAccount>({
+                                        obj: accountItem,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+                        const hasMoreResults = result.data.Accounts.length === 100;
+                        const nextCursor = hasMoreResults ? (cursor ? cursor + 1 : 2) : undefined;
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor ? String(nextCursor) : undefined,
+                            results: unifiedAccounts,
                         });
                         break;
                     }
@@ -159,6 +250,21 @@ const accountServiceAccounting = new AccountService(
 
                         break;
                     }
+                    case TP_ID.xero: {
+                        const result: any = await axios({
+                            method: 'put',
+                            url: `https://api.xero.com/api.xro/2.0/Accounts`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(disunifiedAccountData),
+                        });
+                        res.send({ status: 'ok', message: 'Xero account created', result: result.data.Account });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -195,8 +301,6 @@ const accountServiceAccounting = new AccountService(
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
 
-                disunifiedAccountData.Id = accountId;
-
                 logInfo('Revert::UPDATE ACCOUNT', connection.app?.env?.accountId, tenantId, accountData);
 
                 switch (thirdPartyId) {
@@ -206,6 +310,7 @@ const accountServiceAccounting = new AccountService(
                                 error: 'The query parameter "realmID" is required and should be included in the "fields" parameter.',
                             });
                         }
+                        disunifiedAccountData.Id = accountId;
 
                         const result: any = await axios({
                             method: 'post',
@@ -221,6 +326,26 @@ const accountServiceAccounting = new AccountService(
                         res.send({
                             status: 'ok',
                             message: 'QuickBooks Account updated',
+                            result: result.data.Account,
+                        });
+
+                        break;
+                    }
+                    case TP_ID.xero: {
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `https://api.xero.com/api.xro/2.0/Accounts/${accountId}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(disunifiedAccountData),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Xero Account updated',
                             result: result.data.Account,
                         });
 

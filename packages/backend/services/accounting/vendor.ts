@@ -63,6 +63,30 @@ const vendorServiceAccounting = new VendorService(
                         });
                         break;
                     }
+                    case TP_ID.xero: {
+                        const result = await axios({
+                            method: 'GET',
+                            url: `https://api.xero.com/api.xro/2.0/contacts/${vendorId}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedVendor: any = await unifyObject<any, UnifiedVendor>({
+                            obj: result.data.Contacts[0],
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedVendor,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -96,9 +120,77 @@ const vendorServiceAccounting = new VendorService(
                 );
                 switch (thirdPartyId) {
                     case TP_ID.quickbooks: {
+                        if (!fields || (fields && !fields.realmID)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "realmID" is required and should be included in the "fields" parameter.',
+                            });
+                        }
+
+                        let pagingString = `${cursor ? ` STARTPOSITION +${cursor}+` : ''}${
+                            pageSize ? ` MAXRESULTS +${pageSize}` : ''
+                        }`;
+
+                        const result = await axios({
+                            method: 'GET',
+                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/query?query=select * from Vendor ${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedVendors: any = await Promise.all(
+                            result.data.QueryResponse.Vendor.map(
+                                async (vendor: any) =>
+                                    await unifyObject<any, UnifiedVendor>({
+                                        obj: vendor,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+                        const nextCursor = pageSize
+                            ? String(result.data.QueryResponse?.maxResults + (parseInt(String(cursor)) || 0))
+                            : undefined;
                         res.send({
                             status: 'ok',
-                            results: 'This endpoint is currently not supported',
+                            next: nextCursor,
+                            results: unifiedVendors,
+                        });
+                        break;
+                    }
+                    case TP_ID.xero: {
+                        const pagingString = `${cursor ? `page=${cursor}` : ''}`;
+                        const result = await axios({
+                            method: 'GET',
+                            url: `https://api.xero.com/api.xro/2.0/contacts?${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedVendors: any = await Promise.all(
+                            result.data.Contacts.map(
+                                async (contact: any) =>
+                                    await unifyObject<any, UnifiedVendor>({
+                                        obj: contact,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+                        const hasMoreResults = result.data.Contacts.length === 100;
+                        const nextCursor = hasMoreResults ? (cursor ? cursor + 1 : 2) : undefined;
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor ? String(nextCursor) : undefined,
+                            results: unifiedVendors,
                         });
                         break;
                     }
@@ -158,6 +250,21 @@ const vendorServiceAccounting = new VendorService(
 
                         break;
                     }
+                    case TP_ID.xero: {
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `https://api.xero.com/api.xro/2.0/contacts`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(disunifiedVendorData),
+                        });
+                        res.send({ status: 'ok', message: 'Xero Vendor created', result: result.data.Contacts });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -194,8 +301,6 @@ const vendorServiceAccounting = new VendorService(
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
 
-                disunifiedVendorData.Id = vendorId;
-
                 logInfo('Revert::UPDATE VENDOR', connection.app?.env?.accountId, tenantId, vendorData);
 
                 switch (thirdPartyId) {
@@ -205,7 +310,7 @@ const vendorServiceAccounting = new VendorService(
                                 error: 'The query parameter "realmID" is required and should be included in the "fields" parameter.',
                             });
                         }
-
+                        disunifiedVendorData.Id = vendorId;
                         const result: any = await axios({
                             method: 'post',
                             url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/vendor`,
@@ -222,6 +327,21 @@ const vendorServiceAccounting = new VendorService(
                             message: 'QuickBooks Vendor updated',
                             result: result.data.Vendor,
                         });
+
+                        break;
+                    }
+                    case TP_ID.xero: {
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `https://api.xero.com/api.xro/2.0/contacts/${vendorId}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(disunifiedVendorData),
+                        });
+                        res.send({ status: 'ok', message: 'Xero Vendor updated', result: result.data.Contacts });
 
                         break;
                     }

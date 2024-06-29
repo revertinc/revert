@@ -96,9 +96,44 @@ const expenseServiceAccounting = new ExpenseService(
                 );
                 switch (thirdPartyId) {
                     case TP_ID.quickbooks: {
+                        if (!fields || (fields && !fields.realmID)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "realmID" is required and should be included in the "fields" parameter.',
+                            });
+                        }
+
+                        let pagingString = `${cursor ? ` STARTPOSITION +${cursor}+` : ''}${
+                            pageSize ? ` MAXRESULTS +${pageSize}` : ''
+                        }`;
+
+                        const result = await axios({
+                            method: 'GET',
+                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/query?query=select * from Purchase ${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedExpenses: any = await Promise.all(
+                            result.data.QueryResponse.Purchase.map(
+                                async (purchase: any) =>
+                                    await unifyObject<any, UnifiedExpense>({
+                                        obj: purchase,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+                        const nextCursor = pageSize
+                            ? String(result.data.QueryResponse?.maxResults + (parseInt(String(cursor)) || 0))
+                            : undefined;
                         res.send({
                             status: 'ok',
-                            results: 'This endpoint is currently not supported',
+                            next: nextCursor,
+                            results: unifiedExpenses,
                         });
                         break;
                     }
@@ -194,8 +229,6 @@ const expenseServiceAccounting = new ExpenseService(
                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                 });
 
-                disunifiedExpenseData.Id = expenseId;
-
                 logInfo('Revert::UPDATE EXPENSE', connection.app?.env?.accountId, tenantId, expenseData);
 
                 switch (thirdPartyId) {
@@ -205,7 +238,7 @@ const expenseServiceAccounting = new ExpenseService(
                                 error: 'The query parameter "realmID" is required and should be included in the "fields" parameter.',
                             });
                         }
-
+                        disunifiedExpenseData.Id = expenseId;
                         const result: any = await axios({
                             method: 'post',
                             url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/purchase`,

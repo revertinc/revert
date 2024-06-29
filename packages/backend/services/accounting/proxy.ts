@@ -48,6 +48,24 @@ const proxyServiceAccounting = new ProxyService(
                         });
                         break;
                     }
+                    case TP_ID.xero: {
+                        const result = await axios({
+                            method: method,
+                            url: `https://api.xero.com/api.xro/2.0/${path}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(body),
+                            params: queryParams,
+                        });
+
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app!' });
                     }
