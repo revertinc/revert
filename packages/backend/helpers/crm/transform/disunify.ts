@@ -296,10 +296,26 @@ export async function disunifyAccountingObject<T extends Record<string, any>>({
         tenantSchemaMappingId,
         accountFieldMappingConfig,
     });
+    if (obj.additional) {
+        Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
+    }
+
     const processedObj = postprocessDisUnifyAccoutingObject({ obj: transformedObj, tpId, objType });
 
     switch (tpId) {
         case TP_ID.quickbooks: {
+            if (objType === 'expense') {
+                transformedObj['Line'] = obj.line;
+
+                return {
+                    ...transformedObj,
+                };
+            }
+
+            return processedObj;
+        }
+
+        case TP_ID.xero: {
             return processedObj;
         }
     }

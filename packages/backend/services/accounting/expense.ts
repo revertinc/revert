@@ -18,7 +18,7 @@ const expenseServiceAccounting = new ExpenseService(
             try {
                 const connection = res.locals.connection;
                 const account = res.locals.account;
-                const purchaseId = req.params.id;
+                const expenseId = req.params.id;
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
@@ -29,7 +29,7 @@ const expenseServiceAccounting = new ExpenseService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    purchaseId
+                    expenseId
                 );
 
                 switch (thirdPartyId) {
@@ -42,7 +42,7 @@ const expenseServiceAccounting = new ExpenseService(
 
                         const result = await axios({
                             method: 'GET',
-                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/purchase/${purchaseId}`,
+                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/purchase/${expenseId}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
@@ -51,6 +51,30 @@ const expenseServiceAccounting = new ExpenseService(
 
                         const unifiedExpense: any = await unifyObject<any, UnifiedExpense>({
                             obj: result.data.Purchase,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedExpense,
+                        });
+                        break;
+                    }
+                    case TP_ID.xero: {
+                        const result = await axios({
+                            method: 'GET',
+                            url: `https://api.xero.com/api.xro/2.0/Invoices/${expenseId}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
+                        const unifiedExpense: any = await unifyObject<any, UnifiedExpense>({
+                            obj: result.data.Invoices[0],
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -115,11 +139,46 @@ const expenseServiceAccounting = new ExpenseService(
                             },
                         });
 
+                        const unifiedExpenses: any = result.data.QueryResponse.Purchase
+                            ? await Promise.all(
+                                  result.data.QueryResponse.Purchase.map(
+                                      async (purchase: any) =>
+                                          await unifyObject<any, UnifiedExpense>({
+                                              obj: purchase,
+                                              tpId: thirdPartyId,
+                                              objType,
+                                              tenantSchemaMappingId: connection.schema_mapping_id,
+                                              accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                          })
+                                  )
+                              )
+                            : {};
+                        const nextCursor =
+                            pageSize && result.data.QueryResponse?.maxResults
+                                ? String(pageSize + (parseInt(String(cursor)) || 0))
+                                : undefined;
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            results: unifiedExpenses,
+                        });
+                        break;
+                    }
+                    case TP_ID.xero: {
+                        const result = await axios({
+                            method: 'GET',
+                            url: `https://api.xero.com/api.xro/2.0/Invoices`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+
                         const unifiedExpenses: any = await Promise.all(
-                            result.data.QueryResponse.Purchase.map(
-                                async (purchase: any) =>
+                            result.data.Invoices.map(
+                                async (invoice: any) =>
                                     await unifyObject<any, UnifiedExpense>({
-                                        obj: purchase,
+                                        obj: invoice,
                                         tpId: thirdPartyId,
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
@@ -127,12 +186,11 @@ const expenseServiceAccounting = new ExpenseService(
                                     })
                             )
                         );
-                        const nextCursor = pageSize
-                            ? String(result.data.QueryResponse?.maxResults + (parseInt(String(cursor)) || 0))
-                            : undefined;
+                        const hasMoreResults = result.data.Invoices.length === 100;
+                        const nextCursor = hasMoreResults ? (cursor ? cursor + 1 : 2) : undefined;
                         res.send({
                             status: 'ok',
-                            next: nextCursor,
+                            next: nextCursor ? String(nextCursor) : undefined,
                             results: unifiedExpenses,
                         });
                         break;
@@ -190,6 +248,21 @@ const expenseServiceAccounting = new ExpenseService(
                             data: JSON.stringify(disunifiedExpenseData),
                         });
                         res.send({ status: 'ok', message: 'QuickBooks Expense created', result: result.data.Purchase });
+
+                        break;
+                    }
+                    case TP_ID.xero: {
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `https://api.xero.com/api.xro/2.0/Invoices`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(disunifiedExpenseData),
+                        });
+                        res.send({ status: 'ok', message: 'Xero Expense created', result: result.data });
 
                         break;
                     }
@@ -254,6 +327,27 @@ const expenseServiceAccounting = new ExpenseService(
                             status: 'ok',
                             message: 'QuickBooks Expense updated',
                             result: result.data.Purchase,
+                        });
+
+                        break;
+                    }
+                    case TP_ID.xero: {
+                        disunifiedExpenseData.Id = expenseId;
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `https://api.xero.com/api.xro/2.0/Invoices`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(disunifiedExpenseData),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Xero Expense updated',
+                            result: result.data,
                         });
 
                         break;

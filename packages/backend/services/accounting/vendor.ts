@@ -139,21 +139,24 @@ const vendorServiceAccounting = new VendorService(
                             },
                         });
 
-                        const unifiedVendors: any = await Promise.all(
-                            result.data.QueryResponse.Vendor.map(
-                                async (vendor: any) =>
-                                    await unifyObject<any, UnifiedVendor>({
-                                        obj: vendor,
-                                        tpId: thirdPartyId,
-                                        objType,
-                                        tenantSchemaMappingId: connection.schema_mapping_id,
-                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
-                        );
-                        const nextCursor = pageSize
-                            ? String(result.data.QueryResponse?.maxResults + (parseInt(String(cursor)) || 0))
-                            : undefined;
+                        const unifiedVendors: any = result.data.QueryResponse.Vendor
+                            ? await Promise.all(
+                                  result.data.QueryResponse.Vendor.map(
+                                      async (vendor: any) =>
+                                          await unifyObject<any, UnifiedVendor>({
+                                              obj: vendor,
+                                              tpId: thirdPartyId,
+                                              objType,
+                                              tenantSchemaMappingId: connection.schema_mapping_id,
+                                              accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                          })
+                                  )
+                              )
+                            : {};
+                        const nextCursor =
+                            pageSize && result.data.QueryResponse?.maxResults
+                                ? String(pageSize + (parseInt(String(cursor)) || 0))
+                                : undefined;
                         res.send({
                             status: 'ok',
                             next: nextCursor,

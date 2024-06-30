@@ -1243,108 +1243,126 @@ export const accountingFields = {
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'Id',
+                [TP_ID.xero]: 'AccountID',
             },
             target_field_name: 'id',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'domain',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'domain',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'status',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'status',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'MetaData.CreateTime',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'metadata.createTime',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'MetaData.LastUpdatedTime',
+                [TP_ID.xero]: 'UpdatedDateUTC',
             },
             target_field_name: 'metadata.lastUpdatedTime',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'AccountSubType',
+                [TP_ID.xero]: 'SystemAccount',
             },
             target_field_name: 'accountSubType',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'AccountType',
+                [TP_ID.xero]: 'SystemAccount',
             },
             target_field_name: 'accountType',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'Active',
+                [TP_ID.xero]: 'Status',
             },
             target_field_name: 'active',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'Classification',
+                [TP_ID.xero]: 'Class',
             },
             target_field_name: 'classification',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'CurrencyRef.name',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'currencyRef.name',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'CurrencyRef.value',
+                [TP_ID.xero]: 'CurrencyCode',
             },
             target_field_name: 'currencyRef.value',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'CurrentBalance',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'currentBalance',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'CurrentBalanceWithSubAccounts',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'currentBalanceWithSubAccounts',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'FullyQualifiedName',
+                [TP_ID.xero]: 'Name',
             },
             target_field_name: 'fullyQualifiedName',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'Name',
+                [TP_ID.xero]: 'Name',
             },
             target_field_name: 'name',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'SubAccount',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'subAccount',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'SyncToken',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'syncToken',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'sparse',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'sparse',
         },
@@ -1353,42 +1371,49 @@ export const accountingFields = {
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'Id',
+                [TP_ID.xero]: 'ContactID',
             },
             target_field_name: 'id',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'domain',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'domain',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'status',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'status',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'MetaData.CreateTime',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'metadata.createTime',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'MetaData.LastUpdatedTime',
+                [TP_ID.xero]: 'UpdatedDateUTC',
             },
             target_field_name: 'metadata.lastUpdatedTime',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'DisplayName',
+                [TP_ID.xero]: 'Name',
             },
             target_field_name: 'displayName',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'PrintOnCheckName',
+                [TP_ID.xero]: 'Name',
             },
             target_field_name: 'printOnCheckName',
         },
@@ -1397,138 +1422,161 @@ export const accountingFields = {
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'Id',
+                [TP_ID.xero]: 'InvoiceID',
             },
             target_field_name: 'id',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'domain',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'domain',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'status',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'status',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'MetaData.CreateTime',
+                [TP_ID.xero]: 'DateString',
             },
             target_field_name: 'metadata.createTime',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'MetaData.LastUpdatedTime',
+                [TP_ID.xero]: 'UpdatedDateUTC',
             },
             target_field_name: 'metadata.lastUpdatedTime',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'AccountRef.value',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'accountRef.value',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'AccountRef.name',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'accountRef.name',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'PaymentMethodRef.value',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'paymentMethodRef.value',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'PaymentType',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'paymentType',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'EntityRef.value',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'entityRef.value',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'EntityRef.name',
+                [TP_ID.xero]: 'Contact.Name',
             },
             target_field_name: 'entityRef.name',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'EntityRef.type',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'entityRef.type',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'Credit',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'credit',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'TotalAmt',
+                [TP_ID.xero]: 'Total',
             },
             target_field_name: 'totalAmt',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'PurchaseEx.any',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'purchaseEx.any',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'sparse',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'sparse',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'SyncToken',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'syncToken',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'TxnDate',
+                [TP_ID.xero]: 'DateString',
             },
             target_field_name: 'txnDate',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'CurrencyRef.name',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'currencyRef.name',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'CurrencyRef.value',
+                [TP_ID.xero]: 'CurrencyCode',
             },
             target_field_name: 'currencyRef.value',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'PrivateNote',
+                [TP_ID.xero]: undefined,
             },
             target_field_name: 'privateNote',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'Line',
+                [TP_ID.xero]: 'LineItems',
             },
             target_field_name: 'line',
         },
         {
             source_field_name: {
                 [TP_ID.quickbooks]: 'DocNumber',
+                [TP_ID.xero]: 'InvoiceNumber',
             },
             target_field_name: 'docNumber',
         },

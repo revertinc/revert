@@ -140,21 +140,24 @@ const accountServiceAccounting = new AccountService(
                             },
                         });
 
-                        const unifiedAccounts: any = await Promise.all(
-                            result.data.QueryResponse.Account.map(
-                                async (accountItem: any) =>
-                                    await unifyObject<any, UnifiedAccount>({
-                                        obj: accountItem,
-                                        tpId: thirdPartyId,
-                                        objType,
-                                        tenantSchemaMappingId: connection.schema_mapping_id,
-                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
-                        );
-                        const nextCursor = pageSize
-                            ? String(result.data.QueryResponse?.maxResults + (parseInt(String(cursor)) || 0))
-                            : undefined;
+                        const unifiedAccounts: any = result.data.QueryResponse.Account
+                            ? await Promise.all(
+                                  result.data.QueryResponse.Account.map(
+                                      async (accountItem: any) =>
+                                          await unifyObject<any, UnifiedAccount>({
+                                              obj: accountItem,
+                                              tpId: thirdPartyId,
+                                              objType,
+                                              tenantSchemaMappingId: connection.schema_mapping_id,
+                                              accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                          })
+                                  )
+                              )
+                            : {};
+                        const nextCursor =
+                            pageSize && result.data.QueryResponse?.maxResults
+                                ? String(pageSize + (parseInt(String(cursor)) || 0))
+                                : undefined;
                         res.send({
                             status: 'ok',
                             next: nextCursor,

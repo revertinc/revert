@@ -288,6 +288,40 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.xero]: {
+            [AccountingStandardObjects.account]: (obj: T) => {
+                const updated_at = obj.UpdatedDateUTC ? dayjs(Number(obj.UpdatedDateUTC)).toISOString() : null;
+
+                const active = obj.Status && obj.Status === 'ACTIVE' ? true : false;
+                return { ...obj, UpdatedDateUTC: updated_at, Status: active };
+            },
+            [AccountingStandardObjects.vendor]: (obj: T) => {
+                const updated_at = obj.UpdatedDateUTC ? dayjs(Number(obj.UpdatedDateUTC)).toISOString() : null;
+
+                return { ...obj, UpdatedDateUTC: updated_at };
+            },
+            [AccountingStandardObjects.expense]: (obj: T) => {
+                const updated_at = obj.UpdatedDateUTC ? dayjs(Number(obj.UpdatedDateUTC)).toISOString() : null;
+                const date = obj.DateString ? dayjs(Number(obj.DateString)).toISOString() : null;
+
+                const line: any[] = [];
+
+                obj.LineItems &&
+                    obj.LineItems.map((item: any) => {
+                        const lineItem = {
+                            id: item.LineItemID,
+                            description: item.Description,
+                            amount: item.LineAmount,
+                            detailType: undefined,
+                            accountBasedExpenseLineDetail: undefined,
+                        };
+
+                        line.push(lineItem);
+                    });
+
+                return { ...obj, UpdatedDateUTC: updated_at, DateString: date, LineItems: line };
+            },
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
