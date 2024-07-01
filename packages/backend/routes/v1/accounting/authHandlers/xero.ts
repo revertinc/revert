@@ -8,6 +8,7 @@ import { IntegrationAuthProps, mapIntegrationIdToIntegrationName } from '../../.
 import processOAuthResult from '../../../../helpers/auth/processOAuthResult';
 import sendConnectionAddedEvent from '../../../../helpers/webhooks/connection';
 import BaseOAuthHandler from '../../../../helpers/auth/baseOAuthHandler';
+import { jwtDecode } from 'jwt-decode';
 
 class XeroAuthHandler extends BaseOAuthHandler {
     async handleOAuth({
@@ -50,10 +51,11 @@ class XeroAuthHandler extends BaseOAuthHandler {
         logInfo('OAuth creds for Xero', result.data);
 
         const auth = 'Bearer ' + result.data?.access_token;
+        const decodedData: any = jwtDecode(result.data?.access_token);
 
         const info = await axios({
             method: 'GET',
-            url: `https://api.xero.com/connections`,
+            url: `https://api.xero.com/connections?authentication_event_id=${decodedData.authentication_event_id}`,
             headers: {
                 Authorization: auth,
                 Accept: 'application/json',
