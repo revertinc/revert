@@ -22,7 +22,7 @@ const vendorServiceAccounting = new VendorService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const fields: any = JSON.parse(req.query.fields as string);
+                const fields: any = req.query.fields && JSON.parse(req.query.fields as string);
                 logInfo(
                     'Revert::GET VENDOR',
                     connection.app?.env?.accountId,
@@ -70,6 +70,7 @@ const vendorServiceAccounting = new VendorService(
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
+                                'Xero-Tenant-Id': connection.tp_customer_id,
                             },
                         });
 
@@ -172,6 +173,7 @@ const vendorServiceAccounting = new VendorService(
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
+                                'Xero-Tenant-Id': connection.tp_customer_id,
                             },
                         });
 
@@ -219,7 +221,7 @@ const vendorServiceAccounting = new VendorService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const fields: any = JSON.parse((req.query as any).fields as string);
+                const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
 
                 const disunifiedVendorData: any = await disunifyAccountingObject<UnifiedVendor>({
                     obj: vendorData,
@@ -261,10 +263,11 @@ const vendorServiceAccounting = new VendorService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
+                                'Xero-Tenant-Id': connection.tp_customer_id,
                             },
                             data: JSON.stringify(disunifiedVendorData),
                         });
-                        res.send({ status: 'ok', message: 'Xero Vendor created', result: result.data.Contacts });
+                        res.send({ status: 'ok', message: 'Xero Vendor created', result: result.data.Contacts[0] });
 
                         break;
                     }
@@ -290,7 +293,7 @@ const vendorServiceAccounting = new VendorService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const fields: any = JSON.parse((req.query as any).fields as string);
+                const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
 
                 if (thirdPartyId === TP_ID.quickbooks && vendorData && !vendorData.id) {
                     throw new Error('The parameter "id" is required in request body.');
@@ -341,10 +344,11 @@ const vendorServiceAccounting = new VendorService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
+                                'Xero-Tenant-Id': connection.tp_customer_id,
                             },
                             data: JSON.stringify(disunifiedVendorData),
                         });
-                        res.send({ status: 'ok', message: 'Xero Vendor updated', result: result.data.Contacts });
+                        res.send({ status: 'ok', message: 'Xero Vendor updated', result: result.data.Contacts[0] });
 
                         break;
                     }

@@ -290,19 +290,23 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
         },
         [TP_ID.xero]: {
             [AccountingStandardObjects.account]: (obj: T) => {
-                const updated_at = obj.UpdatedDateUTC ? dayjs(Number(obj.UpdatedDateUTC)).toISOString() : null;
+                const dateString = obj.UpdatedDateUTC.match(/\/Date\((\d+)\+0000\)\//)[1];
+                const date = dateString ? dayjs(Number(dateString)).format('YYYY-MM-DD') : null;
 
                 const active = obj.Status && obj.Status === 'ACTIVE' ? true : false;
-                return { ...obj, UpdatedDateUTC: updated_at, Status: active };
+                return { ...obj, UpdatedDateUTC: date, Status: active };
             },
             [AccountingStandardObjects.vendor]: (obj: T) => {
-                const updated_at = obj.UpdatedDateUTC ? dayjs(Number(obj.UpdatedDateUTC)).toISOString() : null;
+                const dateString = obj.UpdatedDateUTC.match(/\/Date\((\d+)\+0000\)\//)[1];
+                const date = dateString ? dayjs(Number(dateString)).format('YYYY-MM-DD') : null;
 
-                return { ...obj, UpdatedDateUTC: updated_at };
+                return { ...obj, UpdatedDateUTC: date };
             },
             [AccountingStandardObjects.expense]: (obj: T) => {
-                const updated_at = obj.UpdatedDateUTC ? dayjs(Number(obj.UpdatedDateUTC)).toISOString() : null;
-                const date = obj.DateString ? dayjs(Number(obj.DateString)).toISOString() : null;
+                const updateDateString = obj.UpdatedDateUTC.match(/\/Date\((\d+)\+0000\)\//)[1];
+
+                const updated_at = updateDateString ? dayjs(Number(updateDateString)).format('YYYY-MM-DD') : null;
+                const date = obj.DateString ? dayjs(obj.DateString).format('YYYY-MM-DD') : null;
 
                 const line: any[] = [];
 

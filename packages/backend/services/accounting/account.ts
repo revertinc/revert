@@ -22,7 +22,7 @@ const accountServiceAccounting = new AccountService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const fields: any = JSON.parse(req.query.fields as string);
+                const fields: any = req.query.fields && JSON.parse(req.query.fields as string);
                 logInfo(
                     'Revert::GET ACCOUNT',
                     connection.app?.env?.accountId,
@@ -70,6 +70,7 @@ const accountServiceAccounting = new AccountService(
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
+                                'Xero-Tenant-Id': connection.tp_customer_id,
                             },
                         });
 
@@ -173,6 +174,7 @@ const accountServiceAccounting = new AccountService(
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
+                                'Xero-Tenant-Id': connection.tp_customer_id,
                             },
                         });
 
@@ -219,7 +221,7 @@ const accountServiceAccounting = new AccountService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const fields: any = JSON.parse((req.query as any).fields as string);
+                const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
 
                 const disunifiedAccountData: any = await disunifyAccountingObject<UnifiedAccount>({
                     obj: accountData,
@@ -261,10 +263,11 @@ const accountServiceAccounting = new AccountService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
+                                'Xero-Tenant-Id': connection.tp_customer_id,
                             },
                             data: JSON.stringify(disunifiedAccountData),
                         });
-                        res.send({ status: 'ok', message: 'Xero account created', result: result.data.Account });
+                        res.send({ status: 'ok', message: 'Xero account created', result: result.data.Accounts[0] });
 
                         break;
                     }
@@ -290,7 +293,7 @@ const accountServiceAccounting = new AccountService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const fields: any = JSON.parse((req.query as any).fields as string);
+                const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
 
                 if (thirdPartyId === TP_ID.quickbooks && accountData && !accountData.id) {
                     throw new Error('The parameter "id" is required in request body.');
@@ -342,6 +345,7 @@ const accountServiceAccounting = new AccountService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
+                                'Xero-Tenant-Id': connection.tp_customer_id,
                             },
                             data: JSON.stringify(disunifiedAccountData),
                         });
@@ -349,7 +353,7 @@ const accountServiceAccounting = new AccountService(
                         res.send({
                             status: 'ok',
                             message: 'Xero Account updated',
-                            result: result.data.Account,
+                            result: result.data.Accounts[0],
                         });
 
                         break;

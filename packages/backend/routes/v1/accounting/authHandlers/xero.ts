@@ -36,6 +36,7 @@ class XeroAuthHandler extends BaseOAuthHandler {
         const encodedClientIdSecret = Buffer.from(headerData.client_id + ':' + headerData.client_secret).toString(
             'base64'
         );
+
         const result: any = await axios({
             method: 'post',
             url: 'https://identity.xero.com/connect/token',
@@ -48,6 +49,17 @@ class XeroAuthHandler extends BaseOAuthHandler {
 
         logInfo('OAuth creds for Xero', result.data);
 
+        const auth = 'Bearer ' + result.data?.access_token;
+
+        const info = await axios({
+            method: 'GET',
+            url: `https://api.xero.com/connections`,
+            headers: {
+                Authorization: auth,
+                Accept: 'application/json',
+            },
+        });
+
         try {
             await xprisma.connections.upsert({
                 where: {
@@ -59,7 +71,7 @@ class XeroAuthHandler extends BaseOAuthHandler {
                     tp_id: integrationId,
                     tp_access_token: result.data.access_token,
                     tp_refresh_token: result.data.refresh_token,
-                    tp_customer_id: 'xero customer',
+                    tp_customer_id: info.data[0]?.tenantId, //this is the tenantid for xero ,will be using in api calls
                     app_client_id: clientId || config.XERO_CLIENT_ID,
                     app_client_secret: clientSecret || config.XERO_CLIENT_SECRET,
                     owner_account_public_token: revertPublicKey,
@@ -73,11 +85,17 @@ class XeroAuthHandler extends BaseOAuthHandler {
                     app_client_secret: clientSecret || config.XERO_CLIENT_SECRET,
                     tp_id: integrationId,
                     appId: account?.apps[0].id,
-                    tp_customer_id: 'xero customer',
+                    tp_customer_id: info.data[0]?.tenantId,
                 },
             });
 
-            await sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.xero, result.data.access_token, 'xero customer');
+            await sendConnectionAddedEvent(
+                svixAppId,
+                tenantId,
+                TP_ID.xero,
+                result.data.access_token,
+                info.data[0]?.tenantId
+            );
 
             return processOAuthResult({
                 status: true,
@@ -86,7 +104,7 @@ class XeroAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
-                tpCustomerId: 'xero customer',
+                tpCustomerId: info.data[0]?.tenantId,
                 redirectUrl,
             });
         } catch (error: any) {

@@ -51,7 +51,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.ms_dynamics_365_sales]: ['offline_access', 'User.Read'],
     [TP_ID.bitbucket]: ['issue', 'issue:write', 'repository', 'account'],
     [TP_ID.quickbooks]: ['com.intuit.quickbooks.accounting'],
-    [TP_ID.xero]: ['offline_access'],
+    [TP_ID.xero]: ['offline_access', 'accounting.contacts', 'accounting.transactions', 'accounting.settings'],
 };
 
 export const mapIntegrationIdToIntegrationName = {

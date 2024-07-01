@@ -22,7 +22,7 @@ const expenseServiceAccounting = new ExpenseService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const fields: any = JSON.parse(req.query.fields as string);
+                const fields: any = req.query.fields && JSON.parse(req.query.fields as string);
                 logInfo(
                     'Revert::GET EXPENSE',
                     connection.app?.env?.accountId,
@@ -70,6 +70,7 @@ const expenseServiceAccounting = new ExpenseService(
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
+                                'Xero-Tenant-Id': connection.tp_customer_id,
                             },
                         });
 
@@ -171,6 +172,7 @@ const expenseServiceAccounting = new ExpenseService(
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
+                                'Xero-Tenant-Id': connection.tp_customer_id,
                             },
                         });
 
@@ -217,7 +219,7 @@ const expenseServiceAccounting = new ExpenseService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const fields: any = JSON.parse((req.query as any).fields as string);
+                const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
 
                 const disunifiedExpenseData: any = await disunifyAccountingObject<UnifiedExpense>({
                     obj: expenseData,
@@ -259,10 +261,11 @@ const expenseServiceAccounting = new ExpenseService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
+                                'Xero-Tenant-Id': connection.tp_customer_id,
                             },
                             data: JSON.stringify(disunifiedExpenseData),
                         });
-                        res.send({ status: 'ok', message: 'Xero Expense created', result: result.data });
+                        res.send({ status: 'ok', message: 'Xero Expense created', result: result.data.Invoices[0] });
 
                         break;
                     }
@@ -288,7 +291,7 @@ const expenseServiceAccounting = new ExpenseService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                const fields: any = JSON.parse((req.query as any).fields as string);
+                const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
 
                 if (thirdPartyId === TP_ID.quickbooks && expenseData && !expenseData.id) {
                     throw new Error('The parameter "id" is required in request body.');
@@ -340,6 +343,7 @@ const expenseServiceAccounting = new ExpenseService(
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
+                                'Xero-Tenant-Id': connection.tp_customer_id,
                             },
                             data: JSON.stringify(disunifiedExpenseData),
                         });
@@ -347,7 +351,7 @@ const expenseServiceAccounting = new ExpenseService(
                         res.send({
                             status: 'ok',
                             message: 'Xero Expense updated',
-                            result: result.data,
+                            result: result.data.Invoices[0],
                         });
 
                         break;
