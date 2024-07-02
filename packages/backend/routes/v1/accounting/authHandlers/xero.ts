@@ -55,10 +55,11 @@ class XeroAuthHandler extends BaseOAuthHandler {
 
         const info = await axios({
             method: 'GET',
-            url: `https://api.xero.com/connections?authentication_event_id=${decodedData.authentication_event_id}`,
+            url: `https://api.xero.com/connections?authEventId=${decodedData.authentication_event_id}`,
             headers: {
                 Authorization: auth,
                 Accept: 'application/json',
+                'Content-Type': 'application/json',
             },
         });
 
