@@ -1,7 +1,13 @@
 import { randomUUID } from 'crypto';
 import { ENV, PrismaClient, TP_ID, fieldMappings } from '@prisma/client';
-import { ChatStandardObjects, StandardObjects, TicketStandardObjects, rootSchemaMappingId } from '../constants/common';
-import { allFields, chatFields, ticketingFields } from './fields';
+import {
+    ChatStandardObjects,
+    StandardObjects,
+    TicketStandardObjects,
+    rootSchemaMappingId,
+    AccountingStandardObjects,
+} from '../constants/common';
+import { allFields, chatFields, ticketingFields, accountingFields } from './fields';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -71,7 +77,15 @@ async function main() {
         };
     });
 
-    const mergedSchema = [...allSchemas, ...chatSchemas, ...ticketSchemas];
+    const accountingSchemas = Object.keys(accountingFields).map((obj) => {
+        return {
+            id: randomUUID(),
+            fields: accountingFields[obj as keyof typeof accountingFields].map((n) => n.target_field_name),
+            object: obj as AccountingStandardObjects,
+        };
+    });
+
+    const mergedSchema = [...allSchemas, ...chatSchemas, ...ticketSchemas, ...accountingSchemas];
 
     await prisma.schema_mapping.deleteMany({
         where: {
@@ -165,6 +179,29 @@ async function main() {
             const objSchema = ticketSchemas.find((s: any) => s.object === obj);
             const fieldMappings = objSchema?.fields.map((field: any) => {
                 const sourceFields: any = (ticketingFields[obj] as { target_field_name: string }[]).find(
+                    (a) => a.target_field_name === field
+                );
+                return {
+                    id: randomUUID(),
+                    source_tp_id: tpId,
+                    schema_id: objSchema.id,
+                    source_field_name: sourceFields?.source_field_name[tpId]!,
+                    target_field_name: field,
+                    is_standard_field: true,
+                };
+            });
+            if (fieldMappings) {
+                fieldMappingForAll.push(...fieldMappings);
+            }
+        });
+    });
+
+    Object.values(AccountingStandardObjects).forEach((obj) => {
+        Object.values(TP_ID).forEach(async (tpId) => {
+            if (!(tpId === 'quickbooks' || tpId === 'xero')) return;
+            const objSchema = accountingSchemas.find((s: any) => s.object === obj);
+            const fieldMappings = objSchema?.fields.map((field: any) => {
+                const sourceFields: any = (accountingFields[obj] as { target_field_name: string }[]).find(
                     (a) => a.target_field_name === field
                 );
                 return {

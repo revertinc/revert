@@ -1,5 +1,7 @@
 import { TP_ID, accountFieldMappingConfig } from '@prisma/client';
 import {
+    ACCOUNTING_TP_ID,
+    AccountingStandardObjects,
     CHAT_TP_ID,
     CRM_TP_ID,
     ChatStandardObjects,
@@ -15,7 +17,11 @@ import {
     handleSfdcDisunify,
     handleZohoDisunify,
 } from '..';
-import { postprocessDisUnifyObject, postprocessDisUnifyTicketObject } from './preprocess';
+import {
+    postprocessDisUnifyAccoutingObject,
+    postprocessDisUnifyObject,
+    postprocessDisUnifyTicketObject,
+} from './preprocess';
 import { flattenObj } from '../../../helpers/flattenObj';
 import handleCloseCRMDisunify from '../closecrm';
 
@@ -265,6 +271,51 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
                     kind: obj.issueTypeId ? obj.issueTypeId : undefined,
                 };
             }
+            return processedObj;
+        }
+    }
+}
+export async function disunifyAccountingObject<T extends Record<string, any>>({
+    obj,
+    tpId,
+    objType,
+    tenantSchemaMappingId,
+    accountFieldMappingConfig,
+}: {
+    obj: T;
+    tpId: ACCOUNTING_TP_ID;
+    objType: AccountingStandardObjects;
+    tenantSchemaMappingId?: string;
+    accountFieldMappingConfig?: accountFieldMappingConfig;
+}) {
+    const flattenedObj = flattenObj(obj, ['additional']);
+    const transformedObj = await transformModelToFieldMapping({
+        unifiedObj: flattenedObj,
+        tpId,
+        objType,
+        tenantSchemaMappingId,
+        accountFieldMappingConfig,
+    });
+    if (obj.additional) {
+        Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
+    }
+
+    const processedObj = postprocessDisUnifyAccoutingObject({ obj: transformedObj, tpId, objType });
+
+    switch (tpId) {
+        case TP_ID.quickbooks: {
+            if (objType === 'expense') {
+                transformedObj['Line'] = obj.line;
+
+                return {
+                    ...transformedObj,
+                };
+            }
+
+            return processedObj;
+        }
+
+        case TP_ID.xero: {
             return processedObj;
         }
     }

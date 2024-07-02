@@ -5,6 +5,8 @@ import {
     StandardObjects,
     TICKET_TP_ID,
     TicketStandardObjects,
+    AccountingStandardObjects,
+    ACCOUNTING_TP_ID,
 } from '../../../constants/common';
 import { PipedriveDealStatus } from '../../../constants/pipedrive';
 import { convertToHHMMInUTC, getDuration, getFormattedDate } from '../../../helpers/timeZoneHelper';
@@ -17,7 +19,7 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
 }: {
     obj: T;
     tpId: CRM_TP_ID | TICKET_TP_ID;
-    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects;
+    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects | AccountingStandardObjects;
 }) => {
     const preprocessMap: any = {
         [TP_ID.hubspot]: {
@@ -286,6 +288,44 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.xero]: {
+            [AccountingStandardObjects.account]: (obj: T) => {
+                const dateString = obj.UpdatedDateUTC.match(/\/Date\((\d+)\+0000\)\//)[1];
+                const date = dateString ? dayjs(Number(dateString)).format('YYYY-MM-DD') : null;
+
+                const active = obj.Status && obj.Status === 'ACTIVE' ? true : false;
+                return { ...obj, UpdatedDateUTC: date, Status: active };
+            },
+            [AccountingStandardObjects.vendor]: (obj: T) => {
+                const dateString = obj.UpdatedDateUTC.match(/\/Date\((\d+)\+0000\)\//)[1];
+                const date = dateString ? dayjs(Number(dateString)).format('YYYY-MM-DD') : null;
+
+                return { ...obj, UpdatedDateUTC: date };
+            },
+            [AccountingStandardObjects.expense]: (obj: T) => {
+                const updateDateString = obj.UpdatedDateUTC.match(/\/Date\((\d+)\+0000\)\//)[1];
+
+                const updated_at = updateDateString ? dayjs(Number(updateDateString)).format('YYYY-MM-DD') : null;
+                const date = obj.DateString ? dayjs(obj.DateString).format('YYYY-MM-DD') : null;
+
+                const line: any[] = [];
+
+                obj.LineItems &&
+                    obj.LineItems.map((item: any) => {
+                        const lineItem = {
+                            id: item.LineItemID,
+                            description: item.Description,
+                            amount: item.LineAmount,
+                            detailType: undefined,
+                            accountBasedExpenseLineDetail: undefined,
+                        };
+
+                        line.push(lineItem);
+                    });
+
+                return { ...obj, UpdatedDateUTC: updated_at, DateString: date, LineItems: line };
+            },
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
@@ -427,6 +467,22 @@ export const postprocessDisUnifyTicketObject = <T extends Record<string, any>>({
         [TP_ID.trello]: {},
         [TP_ID.asana]: {},
         [TP_ID.bitbucket]: {},
+    };
+    const transformFn = (preprocessMap[tpId] || {})[objType];
+    return transformFn ? transformFn(obj) : obj;
+};
+export const postprocessDisUnifyAccoutingObject = <T extends Record<string, any>>({
+    obj,
+    tpId,
+    objType,
+}: {
+    obj: T;
+    tpId: ACCOUNTING_TP_ID;
+    objType: AccountingStandardObjects;
+}) => {
+    const preprocessMap: Record<ACCOUNTING_TP_ID, Record<any, Function>> = {
+        [TP_ID.quickbooks]: {},
+        [TP_ID.xero]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
