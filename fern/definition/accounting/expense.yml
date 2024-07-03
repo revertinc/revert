@@ -21,6 +21,10 @@ types:
             status: types.ResponseStatus
             message: string
             result: unknown
+    DeleteExpenseResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
 
 service:
     base-path: /accounting/expenses
@@ -90,6 +94,21 @@ service:
                 query-parameters:
                     fields: optional<string>
             response: CreateOrUpdateExpenseResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        deleteExpense:
+            docs: Delete Expense
+            method: DELETE
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: DeleteExpenseRequest
+                query-parameters:
+                    fields: optional<string>
+            response: DeleteExpenseResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

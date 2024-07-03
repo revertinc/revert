@@ -371,6 +371,57 @@ const accountServiceAccounting = new AccountService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
+        async deleteAccount(req, res) {
+            try {
+                const connection = res.locals.connection;
+                const accountId = req.params.id; //this is id that will be used to get the particular acccount for the below integrations.
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+
+                logInfo(
+                    'Revert::DELETE ACCOUNT',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    accountId
+                );
+
+                switch (thirdPartyId) {
+                    case TP_ID.quickbooks: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+                        break;
+                    }
+                    case TP_ID.xero: {
+                        await axios({
+                            method: 'delete',
+                            url: `https://api.xero.com/api.xro/2.0/Accounts/${accountId}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                            },
+                        });
+                        res.send({ status: 'ok', message: 'deleted' });
+                        break;
+                    }
+
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not delete account', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
     },
     [revertAuthMiddleware(), revertTenantMiddleware()]
 );

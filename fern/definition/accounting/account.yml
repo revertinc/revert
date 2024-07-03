@@ -21,6 +21,10 @@ types:
             status: types.ResponseStatus
             message: string
             result: unknown
+    DeleteAccountResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
 
 service:
     base-path: /accounting/accounts
@@ -94,6 +98,19 @@ service:
                 query-parameters:
                     fields: optional<string>
             response: CreateOrUpdateAccountResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        deleteAccount:
+            docs: Delete account
+            method: DELETE
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: DeleteAccountRequest
+            response: DeleteAccountResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

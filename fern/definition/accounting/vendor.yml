@@ -21,6 +21,10 @@ types:
             status: types.ResponseStatus
             message: string
             result: unknown
+    DeleteVendorResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
 
 service:
     base-path: /accounting/vendors
@@ -90,6 +94,19 @@ service:
                 query-parameters:
                     fields: optional<string>
             response: CreateOrUpdateVendorResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        deleteVendor:
+            docs: Delete Vendor
+            method: DELETE
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: DeleteVendorRequest
+            response: DeleteVendorResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

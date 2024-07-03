@@ -94,6 +94,42 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/accountingCreateOrUpdateAccountRequest'
+    delete:
+      description: Delete account
+      operationId: accounting_account_deleteAccount
+      tags:
+        - AccountingAccount
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingDeleteAccountResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
   /accounting/accounts:
     get:
       description: Get all the accounts
@@ -278,6 +314,48 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/accountingCreateOrUpdateExpenseRequest'
+    delete:
+      description: Delete Expense
+      operationId: accounting_expense_deleteExpense
+      tags:
+        - AccountingExpense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingDeleteExpenseResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
   /accounting/expenses:
     get:
       description: Get all the expenses
@@ -482,6 +560,42 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/accountingCreateOrUpdateVendorRequest'
+    delete:
+      description: Delete Vendor
+      operationId: accounting_vendor_deleteVendor
+      tags:
+        - AccountingVendor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingDeleteVendorResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
   /accounting/vendors:
     get:
       description: Get all the Vendors
@@ -4104,6 +4218,17 @@ components:
         - status
         - message
         - result
+    accountingDeleteAccountResponse:
+      title: accountingDeleteAccountResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+      required:
+        - status
+        - message
     accountingGetExpenseResponse:
       title: accountingGetExpenseResponse
       type: object
@@ -4145,6 +4270,17 @@ components:
         - status
         - message
         - result
+    accountingDeleteExpenseResponse:
+      title: accountingDeleteExpenseResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+      required:
+        - status
+        - message
     accountingProxyResponse:
       title: accountingProxyResponse
       type: object
@@ -4208,6 +4344,17 @@ components:
         - status
         - message
         - result
+    accountingDeleteVendorResponse:
+      title: accountingDeleteVendorResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+      required:
+        - status
+        - message
     chatGetChannelsResponse:
       title: chatGetChannelsResponse
       type: object

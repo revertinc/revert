@@ -369,6 +369,77 @@ const expenseServiceAccounting = new ExpenseService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
+        async deleteExpense(req, res) {
+            try {
+                const connection = res.locals.connection;
+                const expenseId = req.params.id;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+                const expenseData: any = req.body as unknown as UnifiedExpense;
+                const account = res.locals.account;
+
+                const disunifiedExpenseData: any = await disunifyAccountingObject<UnifiedExpense>({
+                    obj: expenseData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+                logInfo(
+                    'Revert::DELETE EXPENSE',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    expenseId
+                );
+
+                switch (thirdPartyId) {
+                    case TP_ID.quickbooks: {
+                        if (!fields || (fields && !fields.realmID)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "realmID" is required and should be included in the "fields" parameter.',
+                            });
+                        }
+
+                        disunifiedExpenseData.Id = expenseId;
+                        await axios({
+                            method: 'post',
+                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/purchase?operation=delete`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify(disunifiedExpenseData),
+                        });
+                        res.send({ status: 'ok', message: ' Expense deleted' });
+
+                        break;
+                    }
+                    case TP_ID.xero: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+                        break;
+                    }
+
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not delete expense', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
     },
     [revertAuthMiddleware(), revertTenantMiddleware()]
 );

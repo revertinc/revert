@@ -365,6 +365,52 @@ const vendorServiceAccounting = new VendorService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
+        async deleteVendor(req, res) {
+            try {
+                const connection = res.locals.connection;
+                const vendorId = req.params.id;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+
+                logInfo(
+                    'Revert::DELETE VENDOR',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    vendorId
+                );
+
+                switch (thirdPartyId) {
+                    case TP_ID.quickbooks: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+                        break;
+                    }
+                    case TP_ID.xero: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+                        break;
+                    }
+
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not delete vendor', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
     },
     [revertAuthMiddleware(), revertTenantMiddleware()]
 );
