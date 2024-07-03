@@ -219,6 +219,182 @@ const departmentServiceAts = new DepartmentService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
+        async createDepartment(req, res) {
+            try {
+                const departmentData: any = req.body as unknown as UnifiedDepartment;
+                const connection = res.locals.connection;
+                const account = res.locals.account;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+
+                const department: any = await disunifyAtsObject<UnifiedDepartment>({
+                    obj: departmentData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+
+                logInfo('Revert::CREATE DEPARTMENT', connection.app?.env?.accountId, tenantId, department);
+
+                switch (thirdPartyId) {
+                    case TP_ID.greenhouse: {
+                        const apiToken = thirdPartyToken;
+                        const credentials = Buffer.from(apiToken + ':').toString('base64');
+
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `https://harvest.greenhouse.io/v1/departments`,
+                            headers: {
+                                Authorization: 'Basic ' + credentials,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                            },
+                            data: JSON.stringify(department),
+                        });
+                        res.send({ status: 'ok', message: 'Greenhouse department created', result: result.data });
+
+                        break;
+                    }
+                    case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not create department', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async updateDepartment(req, res) {
+            try {
+                const connection = res.locals.connection;
+                const account = res.locals.account;
+                const departmentData = req.body as unknown as UnifiedDepartment;
+                const departmentId = req.params.id;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+
+                const department: any = await disunifyAtsObject<UnifiedDepartment>({
+                    obj: departmentData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+                logInfo('Revert::UPDATE DEPARTMENT', connection.app?.env?.accountId, tenantId, departmentData);
+
+                switch (thirdPartyId) {
+                    case TP_ID.greenhouse: {
+                        const apiToken = thirdPartyToken;
+                        const credentials = Buffer.from(apiToken + ':').toString('base64');
+
+                        const result = await axios({
+                            method: 'patch',
+                            url: `https://harvest.greenhouse.io/v1/departments/${departmentId}`,
+                            headers: {
+                                Authorization: 'Basic ' + credentials,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                            },
+                            data: JSON.stringify(department),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Greenhouse department updated',
+                            result: result.data,
+                        });
+
+                        break;
+                    }
+                    case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not update department', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+
+        async deleteDepartment(req, res) {
+            try {
+                const connection = res.locals.connection;
+                const departmentId = req.params.id;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+
+                logInfo(
+                    'Revert::DELETE DEPARTMENT',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    departmentId
+                );
+
+                switch (thirdPartyId) {
+                    case TP_ID.greenhouse: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not delete department', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
     },
     [revertAuthMiddleware(), revertTenantMiddleware()]
 );

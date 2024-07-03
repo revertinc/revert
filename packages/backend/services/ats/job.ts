@@ -236,6 +236,206 @@ const jobServiceAts = new JobService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
+        async createJob(req, res) {
+            try {
+                const jobData: any = req.body as unknown as UnifiedJob;
+                const connection = res.locals.connection;
+                const account = res.locals.account;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+
+                const job: any = await disunifyAtsObject<UnifiedJob>({
+                    obj: jobData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+
+                logInfo('Revert::CREATE JOB', connection.app?.env?.accountId, tenantId, job);
+
+                switch (thirdPartyId) {
+                    case TP_ID.greenhouse: {
+                        const apiToken = thirdPartyToken;
+                        const credentials = Buffer.from(apiToken + ':').toString('base64');
+
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `https://harvest.greenhouse.io/v1/jobs`,
+                            headers: {
+                                Authorization: 'Basic ' + credentials,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                            },
+                            data: JSON.stringify(job),
+                        });
+                        res.send({ status: 'ok', message: 'Greenhouse job created', result: result.data });
+
+                        break;
+                    }
+                    case TP_ID.lever: {
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        };
+                        const result = await axios({
+                            method: 'post',
+                            url: `https://api.lever.co/v1/postings/?perform_as=`, //chnage
+                            headers: headers,
+                            data: JSON.stringify(job),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Lever job created',
+                            result: result.data.data,
+                        });
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not create job', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async updateJob(req, res) {
+            try {
+                const connection = res.locals.connection;
+                const account = res.locals.account;
+                const jobData = req.body as unknown as UnifiedJob;
+                const jobId = req.params.id;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+
+                const job: any = await disunifyAtsObject<UnifiedJob>({
+                    obj: jobData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+                logInfo('Revert::UPDATE JOB', connection.app?.env?.accountId, tenantId, jobData);
+
+                switch (thirdPartyId) {
+                    case TP_ID.greenhouse: {
+                        const apiToken = thirdPartyToken;
+                        const credentials = Buffer.from(apiToken + ':').toString('base64');
+
+                        const result = await axios({
+                            method: 'patch',
+                            url: `https://harvest.greenhouse.io/v1/jobs/${jobId}`,
+                            headers: {
+                                Authorization: 'Basic ' + credentials,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                            },
+                            data: JSON.stringify(job),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Greenhouse job updated',
+                            result: result.data,
+                        });
+
+                        break;
+                    }
+                    case TP_ID.lever: {
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        };
+                        const result = await axios({
+                            method: 'post',
+                            url: `https://api.lever.co/v1/postings/${jobId}?perform_as=`, //chnage
+                            headers: headers,
+                            data: JSON.stringify(job),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Lever job updated',
+                            result: result.data.data,
+                        });
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not update job', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+
+        async deleteJob(req, res) {
+            try {
+                const connection = res.locals.connection;
+                const jobId = req.params.id;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+
+                logInfo(
+                    'Revert::DELETE JOB',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    jobId
+                );
+
+                switch (thirdPartyId) {
+                    case TP_ID.greenhouse: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not delete job', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
     },
     [revertAuthMiddleware(), revertTenantMiddleware()]
 );

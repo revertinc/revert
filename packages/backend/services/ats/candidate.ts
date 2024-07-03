@@ -235,7 +235,210 @@ const candidateServiceAts = new CandidateService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
+        async createCandidate(req, res) {
+            try {
+                const candidateData: any = req.body as unknown as UnifiedCandidate;
+                const connection = res.locals.connection;
+                const account = res.locals.account;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+
+                const candidate: any = await disunifyAtsObject<UnifiedCandidate>({
+                    obj: candidateData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+
+                logInfo('Revert::CREATE CANDIDATE', connection.app?.env?.accountId, tenantId, candidate);
+
+                switch (thirdPartyId) {
+                    case TP_ID.greenhouse: {
+                        const apiToken = thirdPartyToken;
+                        const credentials = Buffer.from(apiToken + ':').toString('base64');
+
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `https://harvest.greenhouse.io/v1/candidates`,
+                            headers: {
+                                Authorization: 'Basic ' + credentials,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                            },
+                            data: JSON.stringify(candidate),
+                        });
+                        res.send({ status: 'ok', message: 'Greenhouse candidate created', result: result.data });
+
+                        break;
+                    }
+                    case TP_ID.lever: {
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            Accept: 'application/json',
+                            'Content-Type': 'multipart/form-data type',
+                        };
+
+                        const result = await axios({
+                            method: 'post',
+                            url: `https://api.lever.co/v1/opportunities?perform_as=`, //change
+
+                            headers: headers,
+                            data: JSON.stringify(candidate),
+                        });
+
+                        res.send({ status: 'ok', message: 'Lever candidate created', result: result.data.data });
+
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not create candidate', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async updateCandidate(req, res) {
+            try {
+                const connection = res.locals.connection;
+                const account = res.locals.account;
+                const candidateData = req.body as unknown as UnifiedCandidate;
+                const candidateId = req.params.id;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+
+                const candidate: any = await disunifyAtsObject<UnifiedCandidate>({
+                    obj: candidateData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+                logInfo('Revert::UPDATE CANDIDATE', connection.app?.env?.accountId, tenantId, candidateData);
+
+                switch (thirdPartyId) {
+                    case TP_ID.greenhouse: {
+                        const apiToken = thirdPartyToken;
+                        const credentials = Buffer.from(apiToken + ':').toString('base64');
+
+                        const result = await axios({
+                            method: 'patch',
+                            url: `https://harvest.greenhouse.io/v1/candidates/${candidateId}`,
+                            headers: {
+                                Authorization: 'Basic ' + credentials,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                            },
+                            data: JSON.stringify(candidate),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Greenhouse Candidate updated',
+                            result: result.data,
+                        });
+
+                        break;
+                    }
+                    case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not update candidate', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+
+        async deleteCandidate(req, res) {
+            try {
+                const connection = res.locals.connection;
+                const candidateId = req.params.id;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+
+                logInfo(
+                    'Revert::DELETE CANDIDATE',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    candidateId
+                );
+
+                switch (thirdPartyId) {
+                    case TP_ID.greenhouse: {
+                        const apiToken = thirdPartyToken;
+                        const credentials = Buffer.from(apiToken + ':').toString('base64');
+
+                        await axios({
+                            method: 'delete',
+                            url: `https://harvest.greenhouse.io/v1/candidates/${candidateId}`,
+                            headers: {
+                                Authorization: 'Basic ' + credentials,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                            },
+                            data: JSON.stringify(candidate),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Greenhouse Candidate deleted',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not delete candidate', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
     },
+
     [revertAuthMiddleware(), revertTenantMiddleware()]
 );
 

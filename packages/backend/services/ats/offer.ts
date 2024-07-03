@@ -218,6 +218,177 @@ const offerServiceAts = new OfferService(
                 throw new InternalServerError({ error: 'Internal server error' });
             }
         },
+        async createOffer(req, res) {
+            try {
+                const offerData: any = req.body as unknown as UnifiedOffer;
+                const connection = res.locals.connection;
+                const account = res.locals.account;
+                const thirdPartyId = connection.tp_id;
+                //  const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+
+                const offer: any = await disunifyAtsObject<UnifiedOffer>({
+                    obj: offerData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+
+                logInfo('Revert::CREATE OFFER', connection.app?.env?.accountId, tenantId, offer);
+
+                switch (thirdPartyId) {
+                    case TP_ID.greenhouse: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not create offer', error.response);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+        async updateOffer(req, res) {
+            try {
+                const connection = res.locals.connection;
+                const account = res.locals.account;
+                const offerData = req.body as unknown as UnifiedOffer;
+                //const offerId = req.params.id;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+
+                const offer: any = await disunifyAtsObject<UnifiedOffer>({
+                    obj: offerData,
+                    tpId: thirdPartyId,
+                    objType,
+                    tenantSchemaMappingId: connection.schema_mapping_id,
+                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                });
+                logInfo('Revert::UPDATE OFFER', connection.app?.env?.accountId, tenantId, offerData);
+
+                switch (thirdPartyId) {
+                    case TP_ID.greenhouse: {
+                        if (!fields || (fields && !fields.applicationId)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "applicationId" is required and should be included in the "fields" parameter.',
+                            });
+                        }
+
+                        const apiToken = thirdPartyToken;
+                        const credentials = Buffer.from(apiToken + ':').toString('base64');
+
+                        const result = await axios({
+                            method: 'patch',
+                            url: `https://harvest.greenhouse.io/v1/applications/${fields.applicationId}/offers/current_offer`,
+                            headers: {
+                                Authorization: 'Basic ' + credentials,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                            },
+                            data: JSON.stringify(offer),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Greenhouse Offer updated',
+                            result: result.data,
+                        });
+
+                        break;
+                    }
+                    case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not update offer', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
+
+        async deleteOffer(req, res) {
+            try {
+                const connection = res.locals.connection;
+                const offerId = req.params.id;
+                const thirdPartyId = connection.tp_id;
+                const thirdPartyToken = connection.tp_access_token;
+                const tenantId = connection.t_id;
+                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+
+                logInfo(
+                    'Revert::DELETE OFFER',
+                    connection.app?.env?.accountId,
+                    tenantId,
+                    thirdPartyId,
+                    thirdPartyToken,
+                    offerId
+                );
+
+                switch (thirdPartyId) {
+                    case TP_ID.greenhouse: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    default: {
+                        throw new NotFoundError({ error: 'Unrecognized app' });
+                    }
+                }
+            } catch (error: any) {
+                logError(error);
+                console.error('Could not delete offer', error);
+                if (isStandardError(error)) {
+                    throw error;
+                }
+                throw new InternalServerError({ error: 'Internal server error' });
+            }
+        },
     },
     [revertAuthMiddleware(), revertTenantMiddleware()]
 );
