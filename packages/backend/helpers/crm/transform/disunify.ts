@@ -316,6 +316,13 @@ export async function disunifyAccountingObject<T extends Record<string, any>>({
         }
 
         case TP_ID.xero: {
+            if(objType==='account'){
+                const active = obj.active && obj.active === true?"ACTIVE":"ARCHIVED";
+                  return {
+                    ...transformedObj,
+                      Status:active
+                };
+            }
             return processedObj;
         }
     }
