@@ -26,7 +26,7 @@ function Dashboard({ userId }: { userId: string }) {
             </div>
             <div className="flex">
                 <ApiRequestChart />
-                <div className="border border-gray-25 rounded-xl p-6 w-4/12">
+                <div className="border border-gray-25 rounded-xl p-6 w-5/12">
                     <div className="mb-4">
                         <h2 className="text-lg font-semibold mb-1">Recent Api Calls</h2>
                         <p className="text-sm text-gray-50/70">
@@ -35,7 +35,7 @@ function Dashboard({ userId }: { userId: string }) {
                     </div>
                     <div className="grid grid-cols-2 text-xs">
                         <div>
-                            <h3 className="uppercase text-gray-50/80 font-bold mb-2">endpoint</h3>
+                            <h3 className="uppercase text-gray-50/80 font-bold mb-3">endpoint</h3>
                             {recentCalls?.length ? (
                                 recentCalls.map((c) => {
                                     return (
@@ -50,7 +50,7 @@ function Dashboard({ userId }: { userId: string }) {
                             )}
                         </div>
                         <div className="justify-self-end">
-                            <h3 className="uppercase text-gray-50/80 font-bold mb-2">enabled</h3>
+                            <h3 className="uppercase text-gray-50/80 font-bold mb-3">enabled</h3>
                             <div className="flex items-center flex-col gap-6 justify-center pt-1">
                                 {recentCalls?.length > 0 &&
                                     recentCalls.map((c) => {
