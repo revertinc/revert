@@ -5,7 +5,7 @@ import useSWR from 'swr';
 export function useAnalytics(userId: string) {
     const environment = getCookie('revert_environment_selected') ?? DEFAULT_ENV;
 
-    const { data, error, isLoading } = useSWR(
+    const { data, error, isLoading, mutate, isValidating } = useSWR(
         `${REVERT_BASE_API_URL}/internal/analytics`,
         async () => {
             const data = await fetch(`${REVERT_BASE_API_URL}/internal/analytics`, {
@@ -20,12 +20,14 @@ export function useAnalytics(userId: string) {
             const analytics = data.json();
             return analytics;
         },
-        { revalidateIfStale: true, revalidateOnFocus: true, refreshInterval: 1000 }
+        { revalidateIfStale: true, revalidateOnFocus: true }
     );
 
     return {
         data,
         error,
         isLoading,
+        mutate,
+        isValidating,
     };
 }

@@ -7,13 +7,13 @@ import { useAnalytics } from '@revertdotdev/hooks/useAnalytics';
 import { cn } from '@revertdotdev/lib/utils';
 
 function Dashboard({ userId }: { userId: string }) {
-    const { data, error, isLoading } = useAnalytics(userId);
+    const { data, error, isLoading, isValidating } = useAnalytics(userId);
 
     if (error) {
         return null;
     }
 
-    if (isLoading) {
+    if (isLoading || isValidating) {
         return <DashboardSkeleton />;
     }
 

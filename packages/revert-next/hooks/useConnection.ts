@@ -1,5 +1,5 @@
 import { REVERT_BASE_API_URL } from '@revertdotdev/lib/constants';
-import { useSearchParams } from 'next/navigation';
+import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
 
 const fetcher = (url: string) =>
@@ -9,11 +9,11 @@ const fetcher = (url: string) =>
     }).then((res) => res.json());
 
 export function useConnection(integrationId: string) {
-    const searchParams = useSearchParams();
+    const searchParams = useSearchParams() as ReadonlyURLSearchParams;
     const { code, state } = Object.fromEntries(searchParams.entries());
     const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(state);
 
-    // Todo: Add Integrations and make this url to use URL object 
+    // Todo: Add Integrations and make this url to use URL object
     let url: string = '';
 
     switch (integrationId) {
