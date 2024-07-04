@@ -14,6 +14,17 @@ types:
             next: optional<string>
             previous: optional<string>
             results: unknown
+    CreateOrUpdateJobRequest: unknown
+    CreateOrUpdateJobResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
+            result: unknown
+
+    DeleteJobResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
 
 service:
     base-path: /ats/jobs
@@ -59,6 +70,51 @@ service:
                     pageSize: optional<string>
                     cursor: optional<string>
             response: GetJobsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createJob:
+            docs: Create a new Job
+            method: POST
+            path: ''
+            request:
+                name: CreateJobRequest
+                body: CreateOrUpdateJobRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateJobResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateJob:
+            docs: Update a Job
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateJobRequest
+                body: CreateOrUpdateJobRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateJobResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        deleteJob:
+            docs: Delete details of an Job
+            method: DELETE
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: DeleteJobRequest
+                query-parameters:
+                    fields: optional<string>
+            response: DeleteJobResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

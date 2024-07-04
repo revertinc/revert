@@ -14,6 +14,17 @@ types:
             next: optional<string>
             previous: optional<string>
             results: unknown
+    CreateOrUpdateCandidateRequest: unknown
+    CreateOrUpdateCandidateResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
+            result: unknown
+
+    DeleteCandidateResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
 
 service:
     base-path: /ats/candidates
@@ -59,6 +70,51 @@ service:
                     pageSize: optional<string>
                     cursor: optional<string>
             response: GetCandidatesResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createCandidate:
+            docs: Create a new Candidate
+            method: POST
+            path: ''
+            request:
+                name: CreateCandidateRequest
+                body: CreateOrUpdateCandidateRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateCandidateResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateCandidate:
+            docs: Update a Candidate
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateCandidateRequest
+                body: CreateOrUpdateCandidateRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateCandidateResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        deleteCandidate:
+            docs: Delete details of an Candidate
+            method: DELETE
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: DeleteCandidateRequest
+                query-parameters:
+                    fields: optional<string>
+            response: DeleteCandidateResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

@@ -1,5 +1,7 @@
 import { TP_ID, accountFieldMappingConfig } from '@prisma/client';
 import {
+    ATS_TP_ID,
+    AtsStandardObjects,
     CHAT_TP_ID,
     CRM_TP_ID,
     ChatStandardObjects,
@@ -266,6 +268,37 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
                 };
             }
             return processedObj;
+        }
+    }
+}
+export async function disunifyAtsObject<T extends Record<string, any>>({
+    obj,
+    tpId,
+    objType,
+    tenantSchemaMappingId,
+    accountFieldMappingConfig,
+}: {
+    obj: T;
+    tpId: ATS_TP_ID;
+    objType: AtsStandardObjects;
+    tenantSchemaMappingId?: string;
+    accountFieldMappingConfig?: accountFieldMappingConfig;
+}) {
+    const flattenedObj = flattenObj(obj, ['additional']);
+    const transformedObj = await transformModelToFieldMapping({
+        unifiedObj: flattenedObj,
+        tpId,
+        objType,
+        tenantSchemaMappingId,
+        accountFieldMappingConfig,
+    });
+
+    switch (tpId) {
+        case TP_ID.greenhouse: {
+            //     return transformedObj;
+        }
+        case TP_ID.lever: {
+            // return transformedObj;
         }
     }
 }

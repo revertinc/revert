@@ -14,6 +14,17 @@ types:
             next: optional<string>
             previous: optional<string>
             results: unknown
+    CreateOrUpdateOfferRequest: unknown
+    CreateOrUpdateOfferResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
+            result: unknown
+
+    DeleteOfferResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
 
 service:
     base-path: /ats/offers
@@ -59,6 +70,51 @@ service:
                     pageSize: optional<string>
                     cursor: optional<string>
             response: GetOffersResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createOffer:
+            docs: Create a new Offer
+            method: POST
+            path: ''
+            request:
+                name: CreateOfferRequest
+                body: CreateOrUpdateOfferRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateOfferResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateOffer:
+            docs: Update a Offer
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateOfferRequest
+                body: CreateOrUpdateOfferRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateOfferResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        deleteOffer:
+            docs: Delete details of an Offer
+            method: DELETE
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: DeleteOfferRequest
+                query-parameters:
+                    fields: optional<string>
+            response: DeleteOfferResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

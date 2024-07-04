@@ -5,7 +5,7 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
-import { unifyObject } from '../../helpers/crm/transform';
+import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedDepartment } from '../../models/unified/department';
 import { DepartmentService } from '../../generated/typescript/api/resources/ats/resources/department/service/DepartmentService';
 import { AtsStandardObjects } from '../../constants/common';

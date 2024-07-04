@@ -14,6 +14,17 @@ types:
             next: optional<string>
             previous: optional<string>
             results: unknown
+    CreateOrUpdateDepartmentRequest: unknown
+    CreateOrUpdateDepartmentResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
+            result: unknown
+
+    DeleteDepartmentResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
 service:
     base-path: /ats/departments
     auth: false
@@ -58,6 +69,51 @@ service:
                     pageSize: optional<string>
                     cursor: optional<string>
             response: GetDepartmentsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createDepartment:
+            docs: Create a new Department
+            method: POST
+            path: ''
+            request:
+                name: CreateDepartmentRequest
+                body: CreateOrUpdateDepartmentRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateDepartmentResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateDepartment:
+            docs: Update a Department
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateDepartmentRequest
+                body: CreateOrUpdateDepartmentRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateDepartmentResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        deleteDepartment:
+            docs: Delete details of an Department
+            method: DELETE
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: DeleteDepartmentRequest
+                query-parameters:
+                    fields: optional<string>
+            response: DeleteDepartmentResponse
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

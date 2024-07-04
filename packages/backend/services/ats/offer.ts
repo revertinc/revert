@@ -6,7 +6,7 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { AtsStandardObjects } from '../../constants/common';
-import { unifyObject } from '../../helpers/crm/transform';
+import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedOffer } from '../../models/unified/offer';
 import { OfferService } from '../../generated/typescript/api/resources/ats/resources/offer/service/OfferService';
 
