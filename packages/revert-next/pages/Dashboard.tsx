@@ -46,7 +46,7 @@ function Dashboard({ userId }: { userId: string }) {
                         <div className="justify-self-end">
                             <h3 className="uppercase text-gray-50/80 font-bold mb-2">enabled</h3>
                             <div className="flex items-center flex-col gap-6 justify-center pt-1">
-                                {recentCalls?.length &&
+                                {recentCalls?.length > 0 &&
                                     recentCalls.map((c) => {
                                         return (
                                             <div
