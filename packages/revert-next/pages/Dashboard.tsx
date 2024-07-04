@@ -1,10 +1,11 @@
 'use client';
+
 import { Badge } from '@revertdotdev/components/ui/dashboard/bagde';
 import CardWrapper from '@revertdotdev/components/ui/dashboard/cards';
 import ApiRequestChart from '@revertdotdev/components/ui/dashboard/chart';
 import DashboardSkeleton from '@revertdotdev/components/ui/skeleton/dashbaord/DashboardSkeleton';
 import { useAnalytics } from '@revertdotdev/hooks/useAnalytics';
-import { cn } from '@revertdotdev/lib/utils';
+import { cn, uuid } from '@revertdotdev/lib/utils';
 
 function Dashboard({ userId }: { userId: string }) {
     const { data, error, isLoading, isValidating } = useAnalytics(userId);
@@ -38,7 +39,7 @@ function Dashboard({ userId }: { userId: string }) {
                             {recentCalls?.length ? (
                                 recentCalls.map((c) => {
                                     return (
-                                        <div className="flex items-center mb-2">
+                                        <div className="flex items-center mb-2" key={uuid()}>
                                             <Badge variant={c.method}> GET </Badge>
                                             <p className="ml-2 text-gray-50/70">{c.path}</p>
                                         </div>
@@ -58,6 +59,7 @@ function Dashboard({ userId }: { userId: string }) {
                                                 className={cn('bg-green-500 w-3 h-3 rounded-full', {
                                                     'bg-red-500': !new String(c.status).startsWith('2'),
                                                 })}
+                                                key={uuid()}
                                             />
                                         );
                                     })}

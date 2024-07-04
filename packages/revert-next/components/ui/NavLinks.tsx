@@ -4,7 +4,7 @@ import { AdjustmentsVerticalIcon, SquaresPlusIcon, KeyIcon } from '@heroicons/re
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icons } from '../icons';
-import { cn } from '@revertdotdev/lib/utils';
+import { cn, uuid } from '@revertdotdev/lib/utils';
 
 const links = [
     { name: 'Dashboard', href: '/dashboard', icon: AdjustmentsVerticalIcon },
@@ -25,7 +25,7 @@ export default function NavLinks() {
                 const LinkIcon = link.icon;
                 return (
                     <Link
-                        key={link.name}
+                        key={uuid()}
                         href={link.href}
                         className={cn(
                             'flex h-10 grow text-gray-50 items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-slate-50 hover:text-black md:flex-none md:justify-start md:p-2 md:px-3',

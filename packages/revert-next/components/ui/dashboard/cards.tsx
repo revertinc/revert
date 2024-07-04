@@ -17,7 +17,7 @@ export default function CardWrapper({ value }) {
                 <Icons.request />
             </Card>
             <Card title="Connected Integrations" value={formatNumber(value?.connectedApps.length)}>
-                <Icons.ConnectedApp />
+                <Icons.ConnectedApp />             
             </Card>
         </>
     );

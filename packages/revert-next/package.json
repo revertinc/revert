@@ -21,7 +21,8 @@
     "react-dom": "^18",
     "swr": "^2.2.5",
     "tailwind-merge": "^2.3.0",
-    "use-clipboard-copy": "^0.2.0"
+    "use-clipboard-copy": "^0.2.0",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -8,3 +8,5 @@ export function cn(...inputs: ClassValue[]) {
 export function formatNumber(number: number) {
     return Intl.NumberFormat('en-IN').format(number);
 }
+
+export { v4 as uuid } from 'uuid';
