@@ -2,6 +2,7 @@
 import { Badge } from '@revertdotdev/components/ui/dashboard/bagde';
 import CardWrapper from '@revertdotdev/components/ui/dashboard/cards';
 import ApiRequestChart from '@revertdotdev/components/ui/dashboard/chart';
+import DashboardSkeleton from '@revertdotdev/components/ui/skeleton/dashbaord/DashboardSkeleton';
 import { useAnalytics } from '@revertdotdev/hooks/useAnalytics';
 import { cn } from '@revertdotdev/lib/utils';
 
@@ -10,6 +11,10 @@ function Dashboard({ userId }: { userId: string }) {
 
     if (error) {
         return null;
+    }
+
+    if (isLoading) {
+        return <DashboardSkeleton />;
     }
 
     const recentCalls = data?.result?.recentApiCalls;
