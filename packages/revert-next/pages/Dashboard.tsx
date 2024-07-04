@@ -1,7 +1,9 @@
 'use client';
 import { Badge } from '@revertdotdev/components/ui/dashboard/bagde';
 import CardWrapper from '@revertdotdev/components/ui/dashboard/cards';
+import ApiRequestChart from '@revertdotdev/components/ui/dashboard/chart';
 import { useAnalytics } from '@revertdotdev/hooks/useAnalytics';
+import { cn } from '@revertdotdev/lib/utils';
 
 function Dashboard({ userId }: { userId: string }) {
     const { data, error, isLoading } = useAnalytics(userId);
@@ -10,29 +12,51 @@ function Dashboard({ userId }: { userId: string }) {
         return null;
     }
 
+    const recentCalls = data?.result?.recentApiCalls;
     return (
         <>
             <div className="grid gap-6 grid-cols-3 mb-8">
                 <CardWrapper value={data?.result} />
             </div>
             <div className="flex">
+                <ApiRequestChart />
                 <div className="border border-gray-25 rounded-xl p-6 w-4/12">
                     <div className="mb-4">
                         <h2 className="text-lg font-semibold mb-1">Recent Api Calls</h2>
-                        <p className="text-sm">
+                        <p className="text-sm text-gray-50/70">
                             Includes outbound requests made to API Providers to retrieve and send data
                         </p>
                     </div>
-
                     <div className="grid grid-cols-2 text-xs">
                         <div>
-                            <h3 className="uppercase text-gray-50/70 font-bold mb-2">endpoint</h3>
-                            <Badge variant="get"> GET </Badge>
-                            <Badge variant="post"> POST </Badge>
-                            <Badge variant="put"> PUT </Badge>
+                            <h3 className="uppercase text-gray-50/80 font-bold mb-2">endpoint</h3>
+                            {recentCalls?.length ? (
+                                recentCalls.map((c) => {
+                                    return (
+                                        <div className="flex items-center mb-2">
+                                            <Badge variant={c.method}> GET </Badge>
+                                            <p className="ml-2 text-gray-50/70">{c.path}</p>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <p className="text-gray-50/70 font-semibold">No API Calls</p>
+                            )}
                         </div>
                         <div className="justify-self-end">
-                            <h3 className="uppercase text-gray-50/70 font-bold mb-2">enabled</h3>
+                            <h3 className="uppercase text-gray-50/80 font-bold mb-2">enabled</h3>
+                            <div className="flex items-center flex-col gap-6 justify-center pt-1">
+                                {recentCalls?.length &&
+                                    recentCalls.map((c) => {
+                                        return (
+                                            <div
+                                                className={cn('bg-green-500 w-3 h-3 rounded-full', {
+                                                    'bg-red-500': !new String(c.status).startsWith('2'),
+                                                })}
+                                            />
+                                        );
+                                    })}
+                            </div>
                         </div>
                     </div>
                 </div>

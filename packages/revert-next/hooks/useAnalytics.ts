@@ -20,7 +20,7 @@ export function useAnalytics(userId: string) {
             const analytics = data.json();
             return analytics;
         },
-        { revalidateIfStale: true, revalidateOnFocus: true }
+        { revalidateIfStale: true, revalidateOnFocus: true, refreshInterval: 1000 }
     );
 
     return {

@@ -7,13 +7,13 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        get: "border-transparent bg-[#052E16] text-[#4ADE80] shadow",
-        post: "border-transparent bg-[#172554] text-[#93C5FD] shadow",
-        put: "border-transparent bg-[#431407] text-[#FDBA74] shadow",
+        GET: "border-transparent bg-[#052E16] text-[#4ADE80] shadow",
+        POST: "border-transparent bg-[#172554] text-[#93C5FD] shadow",
+        PUT: "border-transparent bg-[#431407] text-[#FDBA74] shadow",
       },
     },
     defaultVariants: {
-      variant: "get",
+      variant: "GET",
     },
   }
 );
