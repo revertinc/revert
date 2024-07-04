@@ -13,7 +13,7 @@ export default function CardWrapper({ value }) {
             <Card title="Total Connections" value={formatNumber(value?.totalConnections)}>
                 <Icons.connection />
             </Card>
-            <Card title="Total Api Requests" value={formatNumber(value?.recentApiCalls.length)}>
+            <Card title="Total Api Requests" value={formatNumber(value?.totalApiCalls)}>
                 <Icons.request />
             </Card>
             <Card title="Connected Integrations" value={formatNumber(value?.connectedApps.length)}>

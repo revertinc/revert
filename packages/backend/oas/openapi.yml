@@ -3881,6 +3881,9 @@ components:
           items:
             $ref: '#/components/schemas/commonRecentApiCalls'
           nullable: true
+        totalApiCalls:
+          type: integer
+          nullable: true
       required:
         - totalConnections
     commonTicketStatus:

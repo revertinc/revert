@@ -13,6 +13,7 @@ const analyticsService = new AnalyticsService({
             const environment = req.body.environment;
             const user = await AuthService.getAccountForUser(userId);
             let token = user.account.environments.find((e: any) => e.env === environment);
+            const environmentId = token.id;
             if (token && token.env) token = token.private_token;
 
             const countConnections = await prisma.connections.aggregate({
@@ -133,9 +134,10 @@ const analyticsService = new AnalyticsService({
 
             let recentApiCalls: any = await redis.lRange(`recent_routes_${token}`, 0, -1);
             recentApiCalls = recentApiCalls.map((apiCall: any) => JSON.parse(apiCall));
+            const totalApiCalls = Number(await redis.get(`request_count_${environmentId}`)) ?? 0;
             res.send({
                 status: 'ok',
-                result: { totalConnections, connectedApps, recentConnections, recentApiCalls },
+                result: { totalConnections, connectedApps, recentConnections, recentApiCalls, totalApiCalls },
             });
         } catch (error: any) {
             logError(error);

@@ -24,7 +24,7 @@ function Dashboard({ userId }: { userId: string }) {
             <div className="grid gap-6 grid-cols-3 mb-8">
                 <CardWrapper value={data?.result} />
             </div>
-            <div className="flex">
+            <div className="flex justify-between gap-6">
                 <ApiRequestChart />
                 <div className="border border-gray-25 rounded-xl p-6 w-5/12">
                     <div className="mb-4">

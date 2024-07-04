@@ -90,6 +90,7 @@ types:
             connectedApps: optional<list<ConnectedApps>>
             recentConnections: optional<list<RecentConnections>>
             recentApiCalls: optional<list<RecentApiCalls>>
+            totalApiCalls: optional<integer>
     TicketStatus:
         enum:
             - open
