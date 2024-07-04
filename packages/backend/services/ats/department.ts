@@ -227,7 +227,7 @@ const departmentServiceAts = new DepartmentService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+                const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
 
                 const department: any = await disunifyAtsObject<UnifiedDepartment>({
                     obj: departmentData,
@@ -241,6 +241,12 @@ const departmentServiceAts = new DepartmentService(
 
                 switch (thirdPartyId) {
                     case TP_ID.greenhouse: {
+                        if (!fields || (fields && !fields.onBehalfOf)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "onBehalfOf",which is a greenhouseUser Id, is required and should be included in the "fields" parameter.',
+                            });
+                        }
+
                         const apiToken = thirdPartyToken;
                         const credentials = Buffer.from(apiToken + ':').toString('base64');
 
@@ -251,7 +257,7 @@ const departmentServiceAts = new DepartmentService(
                                 Authorization: 'Basic ' + credentials,
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
-                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                                'On-Behalf-Of': `${fields.onBehalfOf}`,
                             },
                             data: JSON.stringify(department),
                         });
@@ -289,7 +295,7 @@ const departmentServiceAts = new DepartmentService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+                const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
 
                 const department: any = await disunifyAtsObject<UnifiedDepartment>({
                     obj: departmentData,
@@ -302,6 +308,11 @@ const departmentServiceAts = new DepartmentService(
 
                 switch (thirdPartyId) {
                     case TP_ID.greenhouse: {
+                        if (!fields || (fields && !fields.onBehalfOf)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "onBehalfOf",which is a greenhouseUser Id, is required and should be included in the "fields" parameter.',
+                            });
+                        }
                         const apiToken = thirdPartyToken;
                         const credentials = Buffer.from(apiToken + ':').toString('base64');
 
@@ -312,7 +323,7 @@ const departmentServiceAts = new DepartmentService(
                                 Authorization: 'Basic ' + credentials,
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
-                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                                'On-Behalf-Of': `${fields.onBehalfOf}`,
                             },
                             data: JSON.stringify(department),
                         });

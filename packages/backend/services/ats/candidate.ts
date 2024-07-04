@@ -243,7 +243,7 @@ const candidateServiceAts = new CandidateService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+                const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
 
                 const candidate: any = await disunifyAtsObject<UnifiedCandidate>({
                     obj: candidateData,
@@ -257,6 +257,12 @@ const candidateServiceAts = new CandidateService(
 
                 switch (thirdPartyId) {
                     case TP_ID.greenhouse: {
+                        if (!fields || (fields && !fields.onBehalfOf)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "onBehalfOf",which is a greenhouseUser Id, is required and should be included in the "fields" parameter.',
+                            });
+                        }
+
                         const apiToken = thirdPartyToken;
                         const credentials = Buffer.from(apiToken + ':').toString('base64');
 
@@ -267,7 +273,7 @@ const candidateServiceAts = new CandidateService(
                                 Authorization: 'Basic ' + credentials,
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
-                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                                'On-Behalf-Of': `${fields.onBehalfOf}`,
                             },
                             data: JSON.stringify(candidate),
                         });
@@ -276,6 +282,11 @@ const candidateServiceAts = new CandidateService(
                         break;
                     }
                     case TP_ID.lever: {
+                        if (!fields || (fields && !fields.perform_as)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "perform_as" is required and should be included in the "fields" parameter.',
+                            });
+                        }
                         const headers = {
                             Authorization: `Bearer ${thirdPartyToken}`,
                             Accept: 'application/json',
@@ -284,7 +295,7 @@ const candidateServiceAts = new CandidateService(
 
                         const result = await axios({
                             method: 'post',
-                            url: `https://api.lever.co/v1/opportunities?perform_as=`, //change
+                            url: `https://api.lever.co/v1/opportunities?perform_as=${fields.perform_as}`,
 
                             headers: headers,
                             data: JSON.stringify(candidate),
@@ -316,7 +327,7 @@ const candidateServiceAts = new CandidateService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+                const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
 
                 const candidate: any = await disunifyAtsObject<UnifiedCandidate>({
                     obj: candidateData,
@@ -329,6 +340,12 @@ const candidateServiceAts = new CandidateService(
 
                 switch (thirdPartyId) {
                     case TP_ID.greenhouse: {
+                        if (!fields || (fields && !fields.onBehalfOf)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "onBehalfOf",which is a greenhouseUser Id, is required and should be included in the "fields" parameter.',
+                            });
+                        }
+
                         const apiToken = thirdPartyToken;
                         const credentials = Buffer.from(apiToken + ':').toString('base64');
 
@@ -339,7 +356,7 @@ const candidateServiceAts = new CandidateService(
                                 Authorization: 'Basic ' + credentials,
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
-                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                                'On-Behalf-Of': `${fields.onBehalfOf}`,
                             },
                             data: JSON.stringify(candidate),
                         });
@@ -381,7 +398,7 @@ const candidateServiceAts = new CandidateService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+                const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
 
                 logInfo(
                     'Revert::DELETE CANDIDATE',
@@ -394,6 +411,12 @@ const candidateServiceAts = new CandidateService(
 
                 switch (thirdPartyId) {
                     case TP_ID.greenhouse: {
+                        if (!fields || (fields && !fields.onBehalfOf)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "onBehalfOf",which is a greenhouseUser Id, is required and should be included in the "fields" parameter.',
+                            });
+                        }
+
                         const apiToken = thirdPartyToken;
                         const credentials = Buffer.from(apiToken + ':').toString('base64');
 
@@ -404,9 +427,8 @@ const candidateServiceAts = new CandidateService(
                                 Authorization: 'Basic ' + credentials,
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
-                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                                'On-Behalf-Of': `${fields.onBehalfOf}`,
                             },
-                            data: JSON.stringify(candidate),
                         });
 
                         res.send({

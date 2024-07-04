@@ -244,7 +244,7 @@ const jobServiceAts = new JobService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+                const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
 
                 const job: any = await disunifyAtsObject<UnifiedJob>({
                     obj: jobData,
@@ -258,6 +258,11 @@ const jobServiceAts = new JobService(
 
                 switch (thirdPartyId) {
                     case TP_ID.greenhouse: {
+                        if (!fields || (fields && !fields.onBehalfOf)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "onBehalfOf",which is a greenhouseUser Id, is required and should be included in the "fields" parameter.',
+                            });
+                        }
                         const apiToken = thirdPartyToken;
                         const credentials = Buffer.from(apiToken + ':').toString('base64');
 
@@ -268,7 +273,7 @@ const jobServiceAts = new JobService(
                                 Authorization: 'Basic ' + credentials,
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
-                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                                'On-Behalf-Of': `${fields.onBehalfOf}`,
                             },
                             data: JSON.stringify(job),
                         });
@@ -277,6 +282,11 @@ const jobServiceAts = new JobService(
                         break;
                     }
                     case TP_ID.lever: {
+                        if (!fields || (fields && !fields.perform_as)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "perform_as", is required and should be included in the "fields" parameter.',
+                            });
+                        }
                         const headers = {
                             Authorization: `Bearer ${thirdPartyToken}`,
                             Accept: 'application/json',
@@ -284,7 +294,7 @@ const jobServiceAts = new JobService(
                         };
                         const result = await axios({
                             method: 'post',
-                            url: `https://api.lever.co/v1/postings/?perform_as=`, //chnage
+                            url: `https://api.lever.co/v1/postings/?perform_as=${fields.perform_as}`,
                             headers: headers,
                             data: JSON.stringify(job),
                         });
@@ -318,7 +328,7 @@ const jobServiceAts = new JobService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
-                // const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
+                const fields: any = req.query.fields && JSON.parse((req.query as any).fields as string);
 
                 const job: any = await disunifyAtsObject<UnifiedJob>({
                     obj: jobData,
@@ -331,6 +341,11 @@ const jobServiceAts = new JobService(
 
                 switch (thirdPartyId) {
                     case TP_ID.greenhouse: {
+                        if (!fields || (fields && !fields.onBehalfOf)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "onBehalfOf",which is a greenhouseUser Id, is required and should be included in the "fields" parameter.',
+                            });
+                        }
                         const apiToken = thirdPartyToken;
                         const credentials = Buffer.from(apiToken + ':').toString('base64');
 
@@ -341,7 +356,7 @@ const jobServiceAts = new JobService(
                                 Authorization: 'Basic ' + credentials,
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
-                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                                'On-Behalf-Of': `${fields.onBehalfOf}`,
                             },
                             data: JSON.stringify(job),
                         });
@@ -355,6 +370,11 @@ const jobServiceAts = new JobService(
                         break;
                     }
                     case TP_ID.lever: {
+                        if (!fields || (fields && !fields.perform_as)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "perform_as", is required and should be included in the "fields" parameter.',
+                            });
+                        }
                         const headers = {
                             Authorization: `Bearer ${thirdPartyToken}`,
                             Accept: 'application/json',
@@ -362,7 +382,7 @@ const jobServiceAts = new JobService(
                         };
                         const result = await axios({
                             method: 'post',
-                            url: `https://api.lever.co/v1/postings/${jobId}?perform_as=`, //chnage
+                            url: `https://api.lever.co/v1/postings/${jobId}?perform_as=${fields.perform_as}`,
                             headers: headers,
                             data: JSON.stringify(job),
                         });

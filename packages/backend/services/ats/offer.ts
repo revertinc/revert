@@ -290,9 +290,9 @@ const offerServiceAts = new OfferService(
 
                 switch (thirdPartyId) {
                     case TP_ID.greenhouse: {
-                        if (!fields || (fields && !fields.applicationId)) {
+                        if (!fields || (fields && !fields.applicationId && !fields.onBehalfOf)) {
                             throw new NotFoundError({
-                                error: 'The query parameter "applicationId" is required and should be included in the "fields" parameter.',
+                                error: 'The query parameters "applicationId","onBehalfOf" are required and should be included in the "fields" parameter.',
                             });
                         }
 
@@ -306,7 +306,7 @@ const offerServiceAts = new OfferService(
                                 Authorization: 'Basic ' + credentials,
                                 Accept: 'application/json',
                                 'Content-Type': 'application/json',
-                                'On-Behalf-Of': '{greenhouse user ID}', //change
+                                'On-Behalf-Of': `${fields.onBehalfOf}`,
                             },
                             data: JSON.stringify(offer),
                         });
