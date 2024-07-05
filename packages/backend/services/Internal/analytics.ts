@@ -149,7 +149,7 @@ const analyticsService = new AnalyticsService({
                     numberOfCalls: Number(numberOfCalls),
                 };
             });
-            
+
             res.send({
                 status: 'ok',
                 result: {

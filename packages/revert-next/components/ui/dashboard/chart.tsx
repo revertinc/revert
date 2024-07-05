@@ -1,83 +1,32 @@
-"use client";
+'use client';
 
-import { AreaChart } from "@tremor/react";
-const chartdata = [
-  {
-    date: "Jan 22",
-    SolarPanels: 0,
-    Inverters: 0,
-  },
-  {
-    date: "Feb 22",
-    SolarPanels: 2756,
-    Inverters: 2103,
-  },
-  {
-    date: "Mar 22",
-    SolarPanels: 3322,
-    Inverters: 2194,
-  },
-  {
-    date: "Apr 22",
-    SolarPanels: 3470,
-    Inverters: 2108,
-  },
-  {
-    date: "May 22",
-    SolarPanels: 3475,
-    Inverters: 1812,
-  },
-  {
-    date: "Jun 22",
-    SolarPanels: 3129,
-    Inverters: 1726,
-  },
-  {
-    date: "Jul 22",
-    SolarPanels: 3490,
-    Inverters: 1982,
-  },
-  {
-    date: "Aug 22",
-    SolarPanels: 2903,
-    Inverters: 2012,
-  },
-  {
-    date: "Sep 22",
-    SolarPanels: 2643,
-    Inverters: 2342,
-  },
-  {
-    date: "Oct 22",
-    SolarPanels: 2837,
-    Inverters: 2473,
-  },
-  {
-    date: "Nov 22",
-    SolarPanels: 2954,
-    Inverters: 3848,
-  },
-  {
-    date: "Dec 22",
-    SolarPanels: 3239,
-    Inverters: 3736,
-  },
-];
+import { AreaChart } from '@tremor/react';
 
-const dataFormatter = (number: number) =>
-  `$${Intl.NumberFormat("us").format(number).toString()}`;
+const valueFormatter = function (number: number) {
+    return new Intl.NumberFormat('us').format(number).toString();
+};
 
-export default function ApiRequestChart() {
-  return (
-    <AreaChart
-      className="h-80 w-8/12 rounded-xl border border-gray-25 bg-primary-950 mr-4"
-      data={chartdata}
-      index="date"
-      categories={["SolarPanels", "Inverters"]}
-      colors={["indigo", "rose"]}
-      valueFormatter={dataFormatter}
-      yAxisWidth={60}
-      onValueChange={(v) => console.log(v)}
-    />
-  );
+export default function ApiRequestChart({ value }) {
+    const summaryApiCalls = value?.summaryApiCalls;
+
+    return (
+        <div className="flex flex-col w-[86.6%] border border-gray-25 rounded-xl p-6 pl-0">
+            <div className="mb-5 pl-9">
+                <h3 className="text-lg font-semibold mb-1">Total API Requests</h3>
+                <p className="text-gray-50/70">
+                    Includes outbound requets made to API Providers to retrieve and send data
+                </p>
+            </div>
+            <AreaChart
+                className="bg-primary-950"
+                data={summaryApiCalls}
+                index="date"
+                categories={['numberOfCalls']}
+                colors={['blue']}
+                valueFormatter={valueFormatter}
+                showLegend={false}
+                showTooltip={false}
+            />
+        </div>
+    );
 }

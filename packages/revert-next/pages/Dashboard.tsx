@@ -25,7 +25,7 @@ function Dashboard({ userId }: { userId: string }) {
                 <CardWrapper value={data?.result} />
             </div>
             <div className="flex justify-between gap-6">
-                <ApiRequestChart />
+                <ApiRequestChart value={data?.result} />
                 <div className="border border-gray-25 rounded-xl p-6 w-5/12">
                     <div className="mb-4">
                         <h2 className="text-lg font-semibold mb-1">Recent Api Calls</h2>
