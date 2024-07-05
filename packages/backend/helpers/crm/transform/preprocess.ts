@@ -6,6 +6,7 @@ import {
     TICKET_TP_ID,
     TicketStandardObjects,
     AtsStandardObjects,
+    ATS_TP_ID,
 } from '../../../constants/common';
 import { PipedriveDealStatus } from '../../../constants/pipedrive';
 import { convertToHHMMInUTC, getDuration, getFormattedDate } from '../../../helpers/timeZoneHelper';
@@ -462,7 +463,6 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 obj.fields &&
                     obj.fields.length > 0 &&
                     obj.fields.map((field: any) => {
-                        console.log('fdddddddddddd0', field);
                         if (field.identifier === 'job_posting') {
                             posting_id = field.value;
                         }
@@ -630,6 +630,22 @@ export const postprocessDisUnifyTicketObject = <T extends Record<string, any>>({
         [TP_ID.trello]: {},
         [TP_ID.asana]: {},
         [TP_ID.bitbucket]: {},
+    };
+    const transformFn = (preprocessMap[tpId] || {})[objType];
+    return transformFn ? transformFn(obj) : obj;
+};
+export const postprocessDisUnifyAtsObject = <T extends Record<string, any>>({
+    obj,
+    tpId,
+    objType,
+}: {
+    obj: T;
+    tpId: ATS_TP_ID;
+    objType: AtsStandardObjects;
+}) => {
+    const preprocessMap: Record<ATS_TP_ID, Record<any, Function>> = {
+        [TP_ID.greenhouse]: {},
+        [TP_ID.lever]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

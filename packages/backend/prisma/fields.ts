@@ -1456,7 +1456,7 @@ export const atsFields = {
         {
             source_field_name: {
                 [TP_ID.greenhouse]: 'applications',
-                [TP_ID.lever]: 'applications', //adjust
+                [TP_ID.lever]: 'applications',
             },
             target_field_name: 'applications',
         },
