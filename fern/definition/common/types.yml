@@ -83,6 +83,11 @@ types:
             method: string
             path: string
             status: integer
+    
+    SummaryApiCalls:
+        properties:
+            date: string
+            numberOfCalls: integer
 
     Analytics:
         properties:
@@ -91,6 +96,7 @@ types:
             recentConnections: optional<list<RecentConnections>>
             recentApiCalls: optional<list<RecentApiCalls>>
             totalApiCalls: optional<integer>
+            summaryApiCalls: optional<list<SummaryApiCalls>>
     TicketStatus:
         enum:
             - open

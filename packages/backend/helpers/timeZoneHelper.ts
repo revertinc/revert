@@ -42,4 +42,33 @@ const convertToHHMMInUTC = (dateTimeString: string) => {
     return formattedTimeUTC;
 };
 
-export { convertToHHMMInUTC, getDuration, getFormattedDate };
+const getCurrentLocale = () => {
+    const dateTimeFormat = new Intl.DateTimeFormat();
+    const options = dateTimeFormat.resolvedOptions();
+    return options.locale;
+};
+
+const getDateWithShortMonth = () => {
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString(getCurrentLocale(), { day: 'numeric', month: 'short' });
+    return formattedDate;
+};
+
+function getLastSevenDays() {
+    const daysArray = [];
+    const today = new Date();
+
+    for (let i = 6; i > -1; --i) {
+        const currentDate = new Date();
+        currentDate.setDate(today.getDate() - i);
+
+        // Formatting the date in form:  "22 Jan"
+        const formattedDate = currentDate.toLocaleDateString(getCurrentLocale(), { day: 'numeric', month: 'short' });
+
+        daysArray.push(formattedDate);
+    }
+
+    return daysArray;
+}
+
+export { convertToHHMMInUTC, getDuration, getFormattedDate, getDateWithShortMonth, getLastSevenDays };

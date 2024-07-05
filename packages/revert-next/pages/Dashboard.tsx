@@ -35,28 +35,30 @@ function Dashboard({ userId }: { userId: string }) {
                     </div>
                     <div className="grid grid-cols-2 text-xs">
                         <div>
-                            <h3 className="uppercase text-gray-50/80 font-bold mb-3">endpoint</h3>
-                            {recentCalls?.length ? (
-                                recentCalls.map((c) => {
-                                    return (
-                                        <div className="flex items-center mb-2" key={uuid()}>
-                                            <Badge variant={c.method}> GET </Badge>
-                                            <p className="ml-2 text-gray-50/70">{c.path}</p>
-                                        </div>
-                                    );
-                                })
-                            ) : (
-                                <p className="text-gray-50/70 font-semibold">No API Calls</p>
-                            )}
+                            <h3 className="uppercase text-gray-50/80 font-bold mb-2">endpoint</h3>
+                            <div className="flex flex-col gap-3 items-start justify-center">
+                                {recentCalls?.length ? (
+                                    recentCalls.map((c) => {
+                                        return (
+                                            <div className="flex items-center" key={uuid()}>
+                                                <Badge variant={c.method}> GET </Badge>
+                                                <p className="ml-2 text-gray-50/70">{c.path}</p>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <p className="text-gray-50/70 font-semibold">No API Calls</p>
+                                )}
+                            </div>
                         </div>
                         <div className="justify-self-end">
                             <h3 className="uppercase text-gray-50/80 font-bold mb-3">enabled</h3>
-                            <div className="flex items-center flex-col gap-6 justify-center pt-1">
+                            <div className="flex items-center flex-col gap-6 justify-center">
                                 {recentCalls?.length > 0 &&
                                     recentCalls.map((c) => {
                                         return (
                                             <div
-                                                className={cn('bg-green-500 w-3 h-3 rounded-full', {
+                                                className={cn('bg-green-500 w-3 h-3 rounded-full mt-0.5', {
                                                     'bg-red-500': !new String(c.status).startsWith('2'),
                                                 })}
                                                 key={uuid()}
