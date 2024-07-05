@@ -19,7 +19,7 @@ const endpointLogger = () => async (req: Request, res: Response, next: NextFunct
 
         if (res.headersSent) logEntry.status = res.statusCode;
         const queueLength = await redis.lPush(`recent_routes_${token}`, JSON.stringify(logEntry));
-        if (queueLength && queueLength > 5) await redis.rPop(`recent_routes_${token}`);
+        if (queueLength && queueLength > 8) await redis.rPop(`recent_routes_${token}`);
 
         const environment = await prisma.environments.findFirst({
             where: {
