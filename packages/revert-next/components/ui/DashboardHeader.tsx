@@ -1,3 +1,4 @@
+'use client';
 import { inter } from '@revertdotdev/components/fonts';
 
 type DashboardProps = {

@@ -1,14 +1,14 @@
 import { CardsSkeleton } from './CardSkeleton';
 import GraphSkeleton from './GraphSkeleton';
-import RecentCalls from './RecentCallsSkeleton';
+import RecentCallsSkeleton from './RecentCallsSkeleton';
 
 function DashboardSkeleton() {
     return (
         <>
             <CardsSkeleton />
-            <div>
+            <div className="flex justify-between gap-6">
                 <GraphSkeleton />
-                <RecentCalls />
+                <RecentCallsSkeleton />
             </div>
         </>
     );

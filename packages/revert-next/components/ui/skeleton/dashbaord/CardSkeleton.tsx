@@ -7,10 +7,10 @@ function CardSkeleton() {
     return (
         <div className={cn('rounded-xl p-2 shadow-sm  bg-gray-25/5')}>
             <div className="flex p-3">
-                <div className="bg-gray-25/10 rounded-xl shadow-sm p-10 my-auto"></div>
+                <div className="bg-gray-25/10 rounded-xl shadow-sm p-8 md:p-10 my-auto"></div>
                 <div className="px-4 mt-2">
-                    <div className="mb-4 bg-gray-25/5 w-24 rounded-lg">&nbsp;</div>
-                    <div className="bg-gray-25/5 w-20 rounded-lg">&nbsp;</div>
+                    <div className="mb-4 bg-gray-25/5 w-24 lg:w-40 rounded-lg">&nbsp;</div>
+                    <div className="bg-gray-25/5  w-20 lg:w-36 rounded-lg">&nbsp;</div>
                 </div>
             </div>
         </div>
