@@ -1,6 +1,6 @@
 'use client';
 import { Icons } from '@revertdotdev/components/icons';
-import { AnalyticsSchema } from '@revertdotdev/types/schemas/AnalyticsSchema';
+import { AnalyticsSchema } from '@revertdotdev/types/schemas/analyticsSchema';
 import { formatNumber } from '@revertdotdev/utils';
 type CardProps = {
     title: string;

@@ -10,7 +10,7 @@ export default async function Page() {
         return null;
     }
 
-    const { currentPrivateToken, currentPublicToken, message } = await fetchAccountDetails(userId);
+    const { message, currentPrivateToken, currentPublicToken } = await fetchAccountDetails(userId);
 
     if (message) {
         return null;
