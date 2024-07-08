@@ -1,5 +1,5 @@
 import { currentUser } from '@clerk/nextjs/server';
-import DashboardHeader from '@revertdotdev/components/ui/DashboardHeader';
+import { Header } from '@revertdotdev/components';
 import Dashboard from '@revertdotdev/pages/Dashboard';
 
 export default async function Page() {
@@ -11,7 +11,7 @@ export default async function Page() {
 
     return (
         <main>
-            <DashboardHeader title="Dashboard" description="Check how your integrations are performing" />
+            <Header title="Dashboard" description="Check how your integrations are performing" />
             <Dashboard userId={user.id} />
         </main>
     );

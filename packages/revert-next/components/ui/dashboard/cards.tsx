@@ -1,5 +1,5 @@
 'use client';
-import { Icons } from '@revertdotdev/components/icons';
+import { Icons } from '@revertdotdev/icons';
 import { AnalyticsSchema } from '@revertdotdev/types/schemas/analyticsSchema';
 import { formatNumber } from '@revertdotdev/utils';
 type CardProps = {
@@ -8,7 +8,7 @@ type CardProps = {
     children: React.ReactElement;
 };
 
-export default function CardWrapper({ value }: { value: AnalyticsSchema }) {
+export function CardWrapper({ value }: { value: AnalyticsSchema }) {
     const { totalConnections, totalApiCalls, connectedApps } = value.result;
     return (
         <>

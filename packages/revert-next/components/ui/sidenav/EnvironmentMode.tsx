@@ -1,12 +1,11 @@
 'use client';
 
 import { changeEnvironmentMode } from '@revertdotdev/lib/actions';
-import { Icons } from '../icons';
-import { Switch } from './common/Switch';
-import { useAnalytics } from '@revertdotdev/hooks/useAnalytics';
-import { REVERT_BASE_API_URL } from '@revertdotdev/lib/constants';
+import { Icons } from '@revertdotdev/icons';
+import { Switch } from '@revertdotdev/components';
+import { useAnalytics } from '@revertdotdev/hooks';
 
-function EnvironmentMode({ isDefaultEnvironment, userId }: { isDefaultEnvironment: boolean; userId: string }) {
+export function EnvironmentMode({ isDefaultEnvironment, userId }: { isDefaultEnvironment: boolean; userId: string }) {
     const { mutate } = useAnalytics(userId);
     return (
         <>
@@ -18,11 +17,11 @@ function EnvironmentMode({ isDefaultEnvironment, userId }: { isDefaultEnvironmen
                 checked={isDefaultEnvironment}
                 onClick={async () => {
                     await changeEnvironmentMode();
-                    setTimeout(async () => await mutate(`${REVERT_BASE_API_URL}/internal/analytics`), 1000);
+                    setTimeout(async () => {
+                        await mutate();
+                    }, 1000);
                 }}
             />
         </>
     );
 }
-
-export default EnvironmentMode;

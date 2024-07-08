@@ -1,12 +1,13 @@
 'use client';
-import { inter } from '@revertdotdev/components/fonts';
+
+import { inter } from '@revertdotdev/fonts';
 
 type DashboardProps = {
     title: string;
     description: string;
 };
 
-function DashboardHeader({ title, description }: DashboardProps) {
+export function Header({ title, description }: DashboardProps) {
     return (
         <div className="mb-12">
             <h1 className={`${inter.className} mb-4 text-xl md:text-2xl font-bold`}>{title}</h1>
@@ -14,5 +15,3 @@ function DashboardHeader({ title, description }: DashboardProps) {
         </div>
     );
 }
-
-export default DashboardHeader;

@@ -1,4 +1,4 @@
-function GraphSkeleton() {
+export function GraphSkeleton() {
     return (
         <div className="w-[86.6%] bg-gray-25/5 rounded-xl">
             <div className="flex flex-col p-6">
@@ -11,5 +11,3 @@ function GraphSkeleton() {
         </div>
     );
 }
-
-export default GraphSkeleton;

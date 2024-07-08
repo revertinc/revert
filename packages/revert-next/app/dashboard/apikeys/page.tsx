@@ -1,6 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
-import DashboardHeader from '@revertdotdev/components/ui/DashboardHeader';
-import Clipboard from '@revertdotdev/components/ui/common/Clipboard';
+import { Clipboard, Header } from '@revertdotdev/components';
 import { fetchAccountDetails } from '@revertdotdev/lib/api';
 
 export default async function Page() {
@@ -18,7 +17,7 @@ export default async function Page() {
 
     return (
         <main>
-            <DashboardHeader title="API Keys" description="Manage your Revert API Keys here." />
+            <Header title="API Keys" description="Manage your Revert API Keys here." />
             <div className="mb-4">
                 <h2 className="text-lg font-semibold mb-1">Publishable key</h2>
                 <p className="text-sm text-gray-50/70 mb-2">

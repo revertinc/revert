@@ -1,16 +1,15 @@
-import NavLinks from '@revertdotdev/components/ui/NavLinks';
-import ClerkButton from './ClerkButton';
-import OnboardingNavLink from './onboarding/NavLink';
 import Link from 'next/link';
-import { BookOpenIcon } from '@heroicons/react/24/outline';
+import { OnboardingNavLink, EnvironmentMode, NavLinks } from '@revertdotdev/components';
+import { BookOpenIcon } from '@revertdotdev/icons';
 import { fetchAccountDetails } from '@revertdotdev/lib/api';
-import { auth } from '@clerk/nextjs/server';
-import EnvironmentMode from '@revertdotdev/components/ui/EnvironmentMode';
+import { auth, currentUser } from '@clerk/nextjs/server';
+import { UserButton } from '@clerk/nextjs';
 
-export default async function SideNav() {
+export async function SideNav() {
     const { userId } = auth();
+    const user = await currentUser();
 
-    if (!userId) {
+    if (!userId || !user) {
         return null;
     }
 
@@ -40,8 +39,10 @@ export default async function SideNav() {
                 <div className="flex grow text-gray-50 items-center justify-center gap-2 rounded-md p-3 text-sm font-medium md:flex-none md:justify-start md:p-2 md:px-3">
                     <EnvironmentMode isDefaultEnvironment={isDefaultEnvironment ?? true} userId={userId} />
                 </div>
-
-                <ClerkButton />
+                <div className="flex items-center pl-2 h-12">
+                    <UserButton />
+                    <p className="ml-3 hidden md:block">{user?.fullName ?? 'User Name'}</p>
+                </div>
             </div>
         </div>
     );

@@ -1,4 +1,4 @@
-import { inter } from '@revertdotdev/components/fonts';
+import { inter } from '@revertdotdev/fonts';
 
 export default function Page() {
     return (

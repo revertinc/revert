@@ -1,9 +1,8 @@
 'use client';
 
-import { AdjustmentsVerticalIcon, SquaresPlusIcon, KeyIcon } from '@heroicons/react/24/outline';
+import { AdjustmentsVerticalIcon, SquaresPlusIcon, KeyIcon, Icons } from '@revertdotdev/icons';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Icons } from '../icons';
 import { cn, uuid } from '@revertdotdev/utils';
 
 const links = [
@@ -17,7 +16,7 @@ const links = [
     { name: 'Webhooks', href: '/dashboard/webhooks', icon: Icons.webhook },
 ];
 
-export default function NavLinks() {
+export function NavLinks() {
     const pathname = usePathname();
     return (
         <>

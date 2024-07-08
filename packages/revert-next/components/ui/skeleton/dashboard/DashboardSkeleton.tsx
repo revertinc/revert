@@ -1,8 +1,5 @@
-import { CardsSkeleton } from './CardSkeleton';
-import GraphSkeleton from './GraphSkeleton';
-import RecentCallsSkeleton from './RecentCallsSkeleton';
-
-function DashboardSkeleton() {
+import { CardsSkeleton, GraphSkeleton, RecentCallsSkeleton } from '@revertdotdev/components/skeleton/dashboard';
+export function DashboardSkeleton() {
     return (
         <>
             <CardsSkeleton />
@@ -13,5 +10,3 @@ function DashboardSkeleton() {
         </>
     );
 }
-
-export default DashboardSkeleton;

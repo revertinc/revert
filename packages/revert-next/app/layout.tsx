@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { ClerkProvider, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
-import { inter } from '@revertdotdev/components/fonts';
+import { inter } from '@revertdotdev/fonts';
 import { cn } from '@revertdotdev/utils';
 
 export const metadata: Metadata = {

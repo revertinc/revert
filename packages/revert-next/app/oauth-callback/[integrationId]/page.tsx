@@ -1,5 +1,6 @@
 'use client';
-import { useConnection } from '@revertdotdev/hooks/useConnection';
+
+import { useConnection } from '@revertdotdev/hooks';
 
 export default function Page({ params }: { params: { integrationId: string } }) {
     const { integrationId } = params;

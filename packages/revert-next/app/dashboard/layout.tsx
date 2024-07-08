@@ -1,4 +1,4 @@
-import SideNav from '@revertdotdev/components/ui/SideNav';
+import { SideNav } from '@revertdotdev/components/sidenav/SideNav';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {

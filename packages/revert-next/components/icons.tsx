@@ -125,3 +125,11 @@ export const Icons = {
         </svg>
     ),
 };
+
+export {
+    RocketLaunchIcon,
+    AdjustmentsVerticalIcon,
+    SquaresPlusIcon,
+    KeyIcon,
+    BookOpenIcon,
+} from '@heroicons/react/24/outline';

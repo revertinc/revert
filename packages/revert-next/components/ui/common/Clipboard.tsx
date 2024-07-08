@@ -1,11 +1,11 @@
 'use client';
-import { Icons } from '@revertdotdev/components/icons';
+import { Icons } from '@revertdotdev/icons';
 import { useClipboard } from 'use-clipboard-copy';
 
 type ClipboardProps = {
     value: string;
 };
-function Clipboard({ value }: ClipboardProps) {
+export function Clipboard({ value }: ClipboardProps) {
     const clipboard = useClipboard({
         copiedTimeout: 600,
     });
@@ -31,4 +31,3 @@ function Clipboard({ value }: ClipboardProps) {
     );
 }
 
-export default Clipboard;

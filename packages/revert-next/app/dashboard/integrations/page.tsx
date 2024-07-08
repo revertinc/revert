@@ -1,9 +1,9 @@
-import DashboardHeader from '@revertdotdev/components/ui/DashboardHeader';
+import { Header } from '@revertdotdev/components';
 
 export default async function Page() {
     return (
         <main>
-            <DashboardHeader title="Integrations" description="Configure and Manage your connected apps here" />
+            <Header title="Integrations" description="Configure and Manage your connected apps here" />
         </main>
     );
 }

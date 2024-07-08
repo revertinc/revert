@@ -1,4 +1,4 @@
-export default function RecentCallsSkeleton() {
+export function RecentCallsSkeleton() {
     return (
         <div className="p-6 w-5/12 bg-gray-25/5 rounded-xl">
             <div className="mb-4 ">

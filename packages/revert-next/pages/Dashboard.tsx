@@ -1,10 +1,8 @@
 'use client';
 
-import { Badge } from '@revertdotdev/components/ui/dashboard/bagde';
-import CardWrapper from '@revertdotdev/components/ui/dashboard/cards';
-import ApiRequestChart from '@revertdotdev/components/ui/dashboard/chart';
-import DashboardSkeleton from '@revertdotdev/components/ui/skeleton/dashbaord/DashboardSkeleton';
-import { useAnalytics } from '@revertdotdev/hooks/useAnalytics';
+import { DashboardSkeleton } from '@revertdotdev/components/skeleton';
+import { ApiRequestChart, Badge, CardWrapper } from '@revertdotdev/components';
+import { useAnalytics } from '@revertdotdev/hooks';
 import { cn, uuid } from '@revertdotdev/utils';
 
 function Dashboard({ userId }: { userId: string }) {
