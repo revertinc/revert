@@ -1,7 +1,7 @@
 "use client";
 
 import { RocketLaunchIcon } from "@heroicons/react/24/outline";
-import { cn } from "@revertdotdev/lib/utils";
+import { cn } from "@revertdotdev/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 

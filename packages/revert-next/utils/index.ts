@@ -9,4 +9,6 @@ export function formatNumber(number: number) {
     return Intl.NumberFormat('en-IN').format(number);
 }
 
+export { ZodError, z } from 'zod';
+
 export { v4 as uuid } from 'uuid';

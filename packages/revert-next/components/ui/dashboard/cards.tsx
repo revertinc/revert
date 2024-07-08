@@ -1,23 +1,25 @@
 'use client';
 import { Icons } from '@revertdotdev/components/icons';
-import { formatNumber } from '@revertdotdev/lib/utils';
+import { AnalyticsSchema } from '@revertdotdev/types/schemas/AnalyticsSchema';
+import { formatNumber } from '@revertdotdev/utils';
 type CardProps = {
     title: string;
     value: string;
     children: React.ReactElement;
 };
 
-export default function CardWrapper({ value }) {
+export default function CardWrapper({ value }: { value: AnalyticsSchema }) {
+    const { totalConnections, totalApiCalls, connectedApps } = value.result;
     return (
         <>
-            <Card title="Total Connections" value={formatNumber(value?.totalConnections)}>
+            <Card title="Total Connections" value={formatNumber(totalConnections)}>
                 <Icons.connection />
             </Card>
-            <Card title="Total Api Requests" value={formatNumber(value?.totalApiCalls)}>
+            <Card title="Total Api Requests" value={formatNumber(totalApiCalls)}>
                 <Icons.request />
             </Card>
-            <Card title="Connected Integrations" value={formatNumber(value?.connectedApps.length)}>
-                <Icons.ConnectedApp />             
+            <Card title="Connected Integrations" value={formatNumber(connectedApps.length)}>
+                <Icons.ConnectedApp />
             </Card>
         </>
     );

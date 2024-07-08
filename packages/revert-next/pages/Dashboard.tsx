@@ -5,24 +5,24 @@ import CardWrapper from '@revertdotdev/components/ui/dashboard/cards';
 import ApiRequestChart from '@revertdotdev/components/ui/dashboard/chart';
 import DashboardSkeleton from '@revertdotdev/components/ui/skeleton/dashbaord/DashboardSkeleton';
 import { useAnalytics } from '@revertdotdev/hooks/useAnalytics';
-import { cn, uuid } from '@revertdotdev/lib/utils';
+import { cn, uuid } from '@revertdotdev/utils';
 
 function Dashboard({ userId }: { userId: string }) {
     const { data, error, isLoading, isValidating } = useAnalytics(userId);
 
-    if (error) {
-        return null;
-    }
-
     if (isLoading || isValidating) {
         return <DashboardSkeleton />;
+    }
+
+    if (error || !data) {
+        return null;
     }
 
     const recentCalls = data?.result?.recentApiCalls;
     return (
         <>
             <div className="grid gap-6 grid-cols-3 mb-8">
-                <CardWrapper value={data?.result} />
+                <CardWrapper value={data} />
             </div>
             <div className="flex justify-between gap-6">
                 <ApiRequestChart value={data?.result} />

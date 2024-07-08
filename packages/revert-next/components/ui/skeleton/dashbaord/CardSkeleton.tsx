@@ -1,4 +1,5 @@
-import { cn } from '@revertdotdev/lib/utils';
+import { cn } from "@revertdotdev/utils";
+
 //Todo:  later configure shimmer
 const shimmer =
     'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-red-50 before:to-transparent';

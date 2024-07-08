@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { ClerkProvider, SignInButton, SignedIn, SignedOut } from '@clerk/nextjs';
 import { inter } from '@revertdotdev/components/fonts';
-import { cn } from '@revertdotdev/lib/utils';
+import { cn } from '@revertdotdev/utils';
 
 export const metadata: Metadata = {
     title: {

@@ -4,7 +4,7 @@ import { AdjustmentsVerticalIcon, SquaresPlusIcon, KeyIcon } from '@heroicons/re
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icons } from '../icons';
-import { cn, uuid } from '@revertdotdev/lib/utils';
+import { cn, uuid } from '@revertdotdev/utils';
 
 const links = [
     { name: 'Dashboard', href: '/dashboard', icon: AdjustmentsVerticalIcon },
