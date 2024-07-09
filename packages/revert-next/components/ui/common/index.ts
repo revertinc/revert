@@ -14,3 +14,5 @@ export {
     ModalTitle,
     ModalDescription,
 } from './Modal';
+export { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
+export { Separator } from './Seperator';
