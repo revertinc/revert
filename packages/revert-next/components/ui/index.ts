@@ -14,6 +14,11 @@ export {
     ModalFooter,
     ModalTitle,
     ModalDescription,
+    Tabs,
+    TabsList,
+    TabsTrigger,
+    TabsContent,
+    Separator,
 } from '@revertdotdev/components/common';
 export { OnboardingNavLink } from '@revertdotdev/components/onboarding';
 export { EnvironmentMode, NavLinks } from '@revertdotdev/components/sidenav';
