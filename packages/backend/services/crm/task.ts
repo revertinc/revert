@@ -766,13 +766,18 @@ const taskService = new TaskService(
                         break;
                     }
                     case TP_ID.zohocrm: {
+                        const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page_token=${cursor}` : ''
+                        }`;
                         let tasks: any = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/Tasks/search?criteria=${searchCriteria}`,
+                            url: `https://www.zohoapis.com/crm/v3/Tasks/search?criteria=${searchCriteria}${pagingString}`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
+                        const nextCursor = tasks.data?.info?.next_page_token || undefined;
+                        const prevCursor = tasks.data?.info?.previous_page_token || undefined;
                         tasks = tasks.data.data;
                         tasks = await Promise.all(
                             tasks?.map(
@@ -786,7 +791,7 @@ const taskService = new TaskService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: tasks });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: tasks });
                         break;
                     }
                     case TP_ID.sfdc: {
@@ -822,15 +827,17 @@ const taskService = new TaskService(
                         if (searchCriteria) {
                             searchString += fields ? `&$filter=${searchCriteria}` : `$filter=${searchCriteria}`;
                         }
+                        const pagingString = cursor ? encodeURI(cursor).split('?')[1] : '';
 
                         const result = await axios({
                             method: 'get',
-                            url: `${connection.tp_account_url}/api/data/v9.2/tasks?${searchString}`,
+                            url: `${connection.tp_account_url}/api/data/v9.2/tasks?${searchString}${pagingString}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'OData-MaxVersion': '4.0',
                                 'OData-Version': '4.0',
                                 Accept: 'application/json',
+                                Prefer: pageSize ? `odata.maxpagesize=${pageSize}` : '',
                             },
                         });
 
@@ -847,7 +854,12 @@ const taskService = new TaskService(
                             )
                         );
 
-                        res.send({ status: 'ok', results: unifiedTasks });
+                        res.send({
+                            status: 'ok',
+                            next: result.data['@odata.nextLink'],
+                            previous: undefined,
+                            results: unifiedTasks,
+                        });
                         break;
                     }
                     default: {

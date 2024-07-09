@@ -2745,6 +2745,49 @@ paths:
                 - tpId
                 - isRevertApp
                 - appId
+  /internal/account/apps:
+    post:
+      description: create Revert App for Account
+      operationId: internal_account_createRevertAppForAccount
+      tags:
+        - InternalAccount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalGetAccountDetailsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                tpId:
+                  $ref: '#/components/schemas/commonTPID'
+                environment:
+                  type: string
+              required:
+                - userId
+                - tpId
+                - environment
   /internal/analytics:
     post:
       description: Get Analytics of your revert account

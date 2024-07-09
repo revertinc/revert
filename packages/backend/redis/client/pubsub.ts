@@ -27,4 +27,5 @@ export interface IntegrationStatusSseMessage {
     integrationName: string;
     tenantId: string;
     tenantSecretToken?: string;
+    redirectUrl?:string
 }

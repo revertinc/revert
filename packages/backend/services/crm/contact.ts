@@ -232,6 +232,7 @@ const contactService = new ContactService(
                             },
                         });
                         const nextCursor = contacts.data?.paging?.next?.after || undefined;
+
                         contacts = contacts.data.results as any[];
                         contacts = await Promise.all(
                             contacts?.map(
@@ -832,17 +833,25 @@ const contactService = new ContactService(
                         break;
                     }
                     case TP_ID.zohocrm: {
+                        const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page_token=${cursor}` : ''
+                        }`;
                         let contacts: any = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/Contacts/search?criteria=${searchCriteria}`,
+                            url: `https://www.zohoapis.com/crm/v3/Contacts/search?criteria=${searchCriteria}${pagingString}`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
+
+                        let nextCursor;
+                        let prevCursor;
                         const isValidContactData =
                             contacts.data && contacts.data.data !== undefined && Array.isArray(contacts.data.data);
                         if (isValidContactData) {
                             contacts = contacts?.data?.data;
+                            nextCursor = contacts.data?.info?.next_page_token || undefined;
+                            prevCursor = contacts.data?.info?.previous_page_token || undefined;
 
                             contacts = await Promise.all(
                                 contacts?.map(
@@ -859,7 +868,7 @@ const contactService = new ContactService(
                         } else {
                             contacts = [];
                         }
-                        res.send({ status: 'ok', results: contacts });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
                         break;
                     }
                     case TP_ID.sfdc: {
@@ -890,19 +899,25 @@ const contactService = new ContactService(
                         break;
                     }
                     case TP_ID.pipedrive: {
+                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&start=${cursor}` : ''
+                        }`;
                         const instanceUrl = connection.tp_account_url;
                         const result = await axios.get<
                             { data: { items: { item: any; result_score: number }[] } } & PipedrivePagination
                         >(
                             `${instanceUrl}/v1/persons/search?term=${searchCriteria}${
                                 formattedFields.length ? `&fields=${formattedFields.join(',')}` : ''
-                            }`,
+                            }${pagingString}`,
                             {
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
                             }
                         );
+                        const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
+                        const prevCursor = undefined;
+
                         const contacts = result.data.data.items.map((item) => item.item);
                         const personFields = (
                             await axios.get(`${connection.tp_account_url}/v1/personFields`, {
@@ -926,7 +941,7 @@ const contactService = new ContactService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: unifiedContacts });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedContacts });
                         break;
                     }
                     // @TODO
@@ -939,8 +954,16 @@ const contactService = new ContactService(
                                 'Content-Type': 'application/json',
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
-                            data: { ...searchCriteria, _fields: { contact: fields } },
+                            data: {
+                                ...searchCriteria,
+                                _fields: { contact: fields },
+                                _limit: pageSize || 100,
+                                cursor: cursor,
+                            },
                         });
+
+                        const nextCursor = response.data?.cursor || undefined;
+                        const prevCursor = undefined;
 
                         const contacts = await Promise.all(
                             response.data.data.map(
@@ -955,7 +978,7 @@ const contactService = new ContactService(
                             )
                         );
 
-                        res.send({ status: 'ok', results: contacts });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
                         break;
                     }
                     case TP_ID.ms_dynamics_365_sales: {
@@ -963,15 +986,16 @@ const contactService = new ContactService(
                         if (searchCriteria) {
                             searchString += fields ? `&$filter=${searchCriteria}` : `$filter=${searchCriteria}`;
                         }
-
+                        const pagingString = cursor ? encodeURI(cursor).split('?')[1] : '';
                         const result = await axios({
                             method: 'get',
-                            url: `${connection.tp_account_url}/api/data/v9.2/contacts?${searchString}`,
+                            url: `${connection.tp_account_url}/api/data/v9.2/contacts?${searchString}${pagingString}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'OData-MaxVersion': '4.0',
                                 'OData-Version': '4.0',
                                 Accept: 'application/json',
+                                Prefer: pageSize ? `odata.maxpagesize=${pageSize}` : '',
                             },
                         });
 
@@ -988,7 +1012,12 @@ const contactService = new ContactService(
                             )
                         );
 
-                        res.send({ status: 'ok', results: unifiedContacts });
+                        res.send({
+                            status: 'ok',
+                            next: result.data['@odata.nextLink'],
+                            previous: undefined,
+                            results: unifiedContacts,
+                        });
                         break;
                     }
                     default: {

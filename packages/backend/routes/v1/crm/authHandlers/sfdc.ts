@@ -22,6 +22,7 @@ class SfdcAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
+        redirectUrl
     }: IntegrationAuthProps) {
         try {
             // Handle the received code
@@ -89,6 +90,7 @@ class SfdcAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data.email,
+                redirectUrl
             });
         } catch (error: any) {
             console.log('OAuthERROR', error);
@@ -100,6 +102,7 @@ class SfdcAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl
             });
         }
     }

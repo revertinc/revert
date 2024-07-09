@@ -31,6 +31,7 @@ const revertAuthMiddleware = () => async (req: Request, res: Response, next: () 
             include: {
                 environments: true,
                 accountFieldMappingConfig: true,
+                subscription: true,
             },
         });
         if (!account || !account.length) {

@@ -22,6 +22,7 @@ class BitbucketAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
+        redirectUrl,
     }: IntegrationAuthProps) {
         const formData = {
             grant_type: 'authorization_code',
@@ -103,6 +104,7 @@ class BitbucketAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data?.account_id,
+                redirectUrl,
             });
         } catch (error: any) {
             return processOAuthResult({
@@ -113,6 +115,7 @@ class BitbucketAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
+                redirectUrl,
             });
         }
     }

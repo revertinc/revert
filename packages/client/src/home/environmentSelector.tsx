@@ -64,6 +64,7 @@ export default function EnvironmentSelector({ environmentProp, setEnvironmentPro
                         <MenuItem
                             value={e.env}
                             className="capitalize"
+                            key={e.env}
                             sx={{
                                 background: '#080d19',
                                 '&:hover': {

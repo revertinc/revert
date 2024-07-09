@@ -436,32 +436,6 @@ class AuthService {
                     },
                     include: { environments: true },
                 });
-                // Create default apps that don't yet exist.
-                await Promise.all(
-                    Object.keys(ENV).map((env) => {
-                        Object.keys(TP_ID).map(async (tp) => {
-                            try {
-                                const environment = account.environments?.find((e) => e.env === env)!;
-                                await prisma.apps.upsert({
-                                    where: {
-                                        id: `${tp}_${account.id}_${env}`,
-                                    },
-                                    update: {},
-                                    create: {
-                                        id: `${tp}_${account.id}_${env}`,
-                                        tp_id: tp as TP_ID,
-                                        scope: [],
-                                        is_revert_app: true,
-                                        environmentId: environment.id,
-                                    },
-                                });
-                                // Create apps for both in development & production.
-                            } catch (error: any) {
-                                logError(error);
-                            }
-                        });
-                    })
-                );
                 // Create Svix application for this account if it doesn't exist.
                 await config.svix?.application.getOrCreate({
                     name: accountId,

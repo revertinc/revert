@@ -722,13 +722,18 @@ const noteService = new NoteService(
                         break;
                     }
                     case TP_ID.zohocrm: {
+                        const pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page_token=${cursor}` : ''
+                        }`;
                         let notes: any = await axios({
                             method: 'get',
-                            url: `https://www.zohoapis.com/crm/v3/notes/search?criteria=${searchCriteria}`,
+                            url: `https://www.zohoapis.com/crm/v3/notes/search?criteria=${searchCriteria}${pagingString}`,
                             headers: {
                                 authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                             },
                         });
+                        const nextCursor = notes.data?.info?.next_page_token || undefined;
+                        const prevCursor = notes.data?.info?.previous_page_token || undefined;
                         notes = notes.data.data;
                         notes = await Promise.all(
                             notes?.map(
@@ -742,7 +747,7 @@ const noteService = new NoteService(
                                     })
                             )
                         );
-                        res.send({ status: 'ok', results: notes });
+                        res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: notes });
                         break;
                     }
                     case TP_ID.sfdc: {
@@ -808,15 +813,16 @@ const noteService = new NoteService(
                         if (searchCriteria) {
                             searchString += fields ? `&$filter=${searchCriteria}` : `$filter=${searchCriteria}`;
                         }
-
+                        const pagingString = cursor ? encodeURI(cursor).split('?')[1] : '';
                         const result = await axios({
                             method: 'get',
-                            url: `${connection.tp_account_url}/api/data/v9.2/annotations?${searchString}`,
+                            url: `${connection.tp_account_url}/api/data/v9.2/annotations?${searchString}${pagingString}`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 'OData-MaxVersion': '4.0',
                                 'OData-Version': '4.0',
                                 Accept: 'application/json',
+                                Prefer: pageSize ? `odata.maxpagesize=${pageSize}` : '',
                             },
                         });
 
@@ -833,7 +839,12 @@ const noteService = new NoteService(
                             )
                         );
 
-                        res.send({ status: 'ok', results: unifiedNotes });
+                        res.send({
+                            status: 'ok',
+                            next: result.data['@odata.nextLink'],
+                            previous: undefined,
+                            results: unifiedNotes,
+                        });
                         break;
                     }
                     default: {
