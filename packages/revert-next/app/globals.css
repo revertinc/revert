@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    .gradient-border {
+        background: linear-gradient(to right, #0a0e17, rgba(38, 138, 253, 0)) padding-box,
+            linear-gradient(to right, rgba(38, 138, 253), rgba(38, 138, 253, 0.2)) border-box;
+        border-style: solid;
+        border-color: transparent;
+        border-width: 1px;
+    }
+}
