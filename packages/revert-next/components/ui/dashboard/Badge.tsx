@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@revertdotdev/utils';
+import { cn, VariantProps, cva } from '@revertdotdev/utils';
 
 const badgeVariants = cva(
     'inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
