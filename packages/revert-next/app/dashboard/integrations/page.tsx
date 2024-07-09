@@ -9,6 +9,7 @@ import {
     ModalTitle,
     ModalTrigger,
 } from '@revertdotdev/components';
+import { CreatedApplications,ApplicationCards } from '@revertdotdev/components';
 import { Icons } from '@revertdotdev/icons';
 
 export default async function Page() {
@@ -25,13 +26,14 @@ export default async function Page() {
                         </Button>
                     </ModalTrigger>
                     <ModalContent>
-                        <ModalHeader>
+                        <ModalHeader className='mb-8'>
                             <ModalTitle>Let&apos;s ship an integration in under 60 minutes</ModalTitle>
                             <ModalDescription>
                                 Add a pre-built UI to your frontend with options to select an integration with zero
                                 custom code
                             </ModalDescription>
                         </ModalHeader>
+                        <ApplicationCards />
                         <ModalFooter>
                             <Button type="submit">
                                 <span>Add Integration</span>
@@ -39,6 +41,7 @@ export default async function Page() {
                         </ModalFooter>
                     </ModalContent>
                 </Header>
+                <CreatedApplications />
             </Modal>
         </main>
     );
