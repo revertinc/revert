@@ -19,6 +19,22 @@ export {
     TabsTrigger,
     TabsContent,
     Separator,
+    Input,
+    Label,
+    Command,
+    CommandDialog,
+    CommandInput,
+    CommandList,
+    CommandEmpty,
+    CommandGroup,
+    CommandItem,
+    CommandShortcut,
+    CommandSeparator,
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    PopoverAnchor,
+    FancyInputBox,
 } from '@revertdotdev/components/common';
 export { OnboardingNavLink } from '@revertdotdev/components/onboarding';
 export { EnvironmentMode, NavLinks } from '@revertdotdev/components/sidenav';
