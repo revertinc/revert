@@ -1,4 +1,14 @@
-import { Header, Input, Label, Separator, Tabs, TabsContent, TabsList, TabsTrigger } from '@revertdotdev/components';
+import {
+    Button,
+    Header,
+    Input,
+    Label,
+    Separator,
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from '@revertdotdev/components';
 import { Icons, KeyIcon } from '@revertdotdev/icons';
 
 export default async function Page() {
@@ -25,7 +35,7 @@ export default async function Page() {
                 <TabsContent value="settings">
                     <div className="max-w-[64rem]">
                         <h3 className="text-lg font-medium mb-2">Choose your preference</h3>
-                        <div className="flex gap-4 mb-8">
+                        <div className="flex gap-4 mb-4">
                             <button className="border border-gray-25 rounded-xl w-6/12 p-4">
                                 <div className="flex items-start justify-start gap-3">
                                     <KeyIcon className="size-6 stroke-1" />
@@ -53,7 +63,7 @@ export default async function Page() {
                                 </div>
                             </button>
                         </div>
-                        <div className="border border-gray-25 rounded-xl p-8">
+                        <div className="border border-gray-25 rounded-xl p-8 mb-8">
                             <div className="flex flex-col gap-2 mb-4">
                                 <Label htmlFor="client_id" className="text-slate-50/70 font-medium">
                                     Client ID
@@ -73,9 +83,28 @@ export default async function Page() {
                                     type="password"
                                     id="client_secret"
                                     className=""
-                                    placeholder="Enter your client secret"
+                                    placeholder="Enter your Client Secret"
                                 />
                             </div>
+                        </div>
+
+                        <Button disabled className="bg-gray-25/20 text-gray-50/70 hover:bg-gray-25/20 mb-12">
+                            <span>Save Changes </span>
+                        </Button>
+
+                        <div className="p-5 border border-red-500 rounded-xl flex justify-between items-center bg-red-950/80">
+                            <div className="flex flex-col gap-1">
+                                <h4 className="text-left text-gray-50/70 text-base font-bold">Delete Integration</h4>
+                                <p className="text-left text-slate-50/80">
+                                    Your API Requests are authenticated using Api keys in the header.
+                                </p>
+                            </div>
+                            <Button variant="destructive">
+                                <div className="flex gap-2 justify-center items-center">
+                                    <Icons.trash />
+                                    <span>Delete Integration</span>
+                                </div>
+                            </Button>
                         </div>
                     </div>
                 </TabsContent>
