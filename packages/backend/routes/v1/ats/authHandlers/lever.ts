@@ -29,6 +29,7 @@ class LeverAuthHandler extends BaseOAuthHandler {
             client_id: clientId,
             client_secret: clientSecret,
             code: code,
+            redirect_uri: `${config.OAUTH_REDIRECT_BASE}/lever`,
         };
 
         const result: any = await axios({
@@ -71,7 +72,7 @@ class LeverAuthHandler extends BaseOAuthHandler {
                 },
             });
 
-           await sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.lever, result.data.access_token, 'Lever_user');
+            await sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.lever, result.data.access_token, 'Lever_user');
 
             return processOAuthResult({
                 status: true,

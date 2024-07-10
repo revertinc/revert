@@ -403,7 +403,7 @@ class AuthService {
                             const result: any = await axios({
                                 method: 'post',
                                 url: ' https://auth.lever.co/oauth/token',
-                                data: JSON.stringify(formData),
+                                data: qs.stringify(formData),
                                 headers: {
                                     'Content-Type': 'application/x-www-form-urlencoded',
                                 },
