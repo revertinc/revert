@@ -9,11 +9,13 @@ export default async function Page() {
         return null;
     }
 
-    const { message, currentPrivateToken, currentPublicToken } = await fetchAccountDetails(userId);
+    const account = await fetchAccountDetails(userId);
 
-    if (message) {
+    if ('message' in account) {
         return null;
     }
+
+    const { currentPrivateToken, currentPublicToken } = account;
 
     return (
         <main>
