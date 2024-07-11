@@ -10,4 +10,11 @@
         border-color: transparent;
         border-width: 1px;
     }
+    .gradient-border-destructive {
+        background: linear-gradient(to right, #374151, rgba(10, 14, 23, 0)) padding-box,
+            linear-gradient(to right, #1f2937, rgba(31, 41, 55, 0.2)) border-box;
+        border-style: solid;
+        border-color: transparent;
+        border-width: 1px;
+    }
 }

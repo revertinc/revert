@@ -13,11 +13,13 @@ export async function SideNav() {
         return null;
     }
 
-    const { message, isDefaultEnvironment } = await fetchAccountDetails(userId);
+    const account = await fetchAccountDetails(userId);
 
-    if (message) {
+    if ('message' in account) {
         return null;
     }
+
+    const { isDefaultEnvironment } = account;
 
     return (
         <div className="flex h-full flex-col px-3 py-4">
@@ -37,7 +39,7 @@ export async function SideNav() {
                     <p className="hidden md:block">Developer Docs</p>
                 </Link>
                 <div className="flex grow text-gray-50 items-center justify-center gap-2 rounded-md p-3 text-sm font-medium md:flex-none md:justify-start md:p-2 md:px-3">
-                    <EnvironmentMode isDefaultEnvironment={isDefaultEnvironment ?? true} userId={userId} />
+                    <EnvironmentMode isDefaultEnvironment={isDefaultEnvironment} userId={userId} />
                 </div>
                 <div className="flex items-center pl-2 h-12">
                     <UserButton />

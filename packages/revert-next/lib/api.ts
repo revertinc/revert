@@ -1,7 +1,9 @@
 import { cookies } from 'next/headers';
 import { REVERT_BASE_API_URL, DEFAULT_ENV } from './constants';
+import { accountResponseSchema, accountSchema } from '@revertdotdev/types/schemas/accountSchema';
+import { ZodError } from 'zod';
 
-// Todo: Add Generalised Error Handler and Add Zod Later
+// Todo: Add Generalised Error Handler
 export async function fetchAccountDetails(userId: string) {
     try {
         const response = await fetch(`${REVERT_BASE_API_URL}/internal/account`, {
@@ -16,35 +18,34 @@ export async function fetchAccountDetails(userId: string) {
 
         const environment = cookies().get('revert_environment_selected')?.value ?? DEFAULT_ENV;
         const jsonResponse = await response.json();
+        const { success, data, error } = accountSchema.safeParse(jsonResponse);
 
-        // const { success, data, error } = accountSchema.safeParse(jsonResponse);
+        if (!success) {
+            throw new ZodError(error.errors);
+        }
 
-        // if (!success) {
-        //     throw new ZodError(error.errors);
-        // }
+        const { environments } = data.account;
 
-        // const { environments } = data.account;
-
-        const { private_token: currentPrivateToken, public_token: currentPublicToken } =
-            jsonResponse?.account?.environments.filter((e) => e.env.includes(environment))[0];
+        const {
+            private_token: currentPrivateToken,
+            public_token: currentPublicToken,
+            apps,
+        } = environments.filter((e) => e.env.includes(environment))[0];
 
         const isDefaultEnvironment = environment.includes(DEFAULT_ENV);
 
-        // const parsedResponse = accountResponseSchema.safeParse({
-        //     isDefaultEnvironment,
-        //     currentPrivateToken,
-        //     currentPublicToken,
-        // });
-
-        // if (!parsedResponse.success) {
-        //     throw new ZodError(parsedResponse.error.errors);
-        // }
-
-        return {
+        const parsedResponse = accountResponseSchema.safeParse({
+            apps,
             isDefaultEnvironment,
             currentPrivateToken,
             currentPublicToken,
-        };
+        });
+
+        if (!parsedResponse.success) {
+            throw new ZodError(parsedResponse.error.errors);
+        }
+
+        return parsedResponse.data;
     } catch (err) {
         return {
             name: 'Something went wrong',

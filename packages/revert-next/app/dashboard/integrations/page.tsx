@@ -1,3 +1,4 @@
+import { auth } from '@clerk/nextjs/server';
 import {
     Button,
     Header,
@@ -9,10 +10,25 @@ import {
     ModalTitle,
     ModalTrigger,
 } from '@revertdotdev/components';
-import { CreatedApplications,ApplicationCards } from '@revertdotdev/components';
+import { CreatedApplications, ApplicationCards } from '@revertdotdev/components';
 import { Icons } from '@revertdotdev/icons';
+import { fetchAccountDetails } from '@revertdotdev/lib/api';
 
 export default async function Page() {
+    const { userId } = auth();
+
+    if (!userId) {
+        return null;
+    }
+
+    const account = await fetchAccountDetails(userId);
+
+    if ('message' in account) {
+        return null;
+    }
+
+    const { apps } = account;
+    console.log(apps);
     return (
         <main>
             <Modal>
@@ -26,14 +42,14 @@ export default async function Page() {
                         </Button>
                     </ModalTrigger>
                     <ModalContent>
-                        <ModalHeader className='mb-8'>
+                        <ModalHeader className="mb-8">
                             <ModalTitle>Let&apos;s ship an integration in under 60 minutes</ModalTitle>
                             <ModalDescription>
                                 Add a pre-built UI to your frontend with options to select an integration with zero
                                 custom code
                             </ModalDescription>
                         </ModalHeader>
-                        <ApplicationCards />
+                        <ApplicationCards apps={apps} />
                         <ModalFooter>
                             <Button type="submit">
                                 <span>Add Integration</span>
@@ -41,7 +57,7 @@ export default async function Page() {
                         </ModalFooter>
                     </ModalContent>
                 </Header>
-                <CreatedApplications />
+                <CreatedApplications apps={apps} />
             </Modal>
         </main>
     );
