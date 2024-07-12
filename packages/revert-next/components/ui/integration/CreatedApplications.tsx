@@ -5,9 +5,11 @@ import { appsInfo } from '@revertdotdev/lib/constants';
 import { AppSchema } from '@revertdotdev/types/schemas/appSchema';
 import { uuid } from '@revertdotdev/utils';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 //Todo: Change logos inside and make this dynamic
 export function CreatedApplications({ apps }: { apps: AppSchema }) {
+    const router = useRouter();
     return (
         <div className="flex flex-col gap-4">
             {apps.map((app) => {
@@ -21,7 +23,10 @@ export function CreatedApplications({ apps }: { apps: AppSchema }) {
                             <Image src="/Logo.png" alt={name} height="44" width="44" />
                             <p className="font-semibold pl-4">{name}</p>
                         </div>
-                        <button className="hover:bg-gray-25/20 p-2 rounded-lg">
+                        <button
+                            className="hover:bg-gray-25/20 p-2 rounded-lg"
+                            onClick={() => router.push(`/dashboard/integrations/config/settings/${app.id}`)}
+                        >
                             <Icons.cog />
                         </button>
                     </div>
