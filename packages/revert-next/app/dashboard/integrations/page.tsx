@@ -5,7 +5,6 @@ import {
     Modal,
     ModalContent,
     ModalDescription,
-    ModalFooter,
     ModalHeader,
     ModalTitle,
     ModalTrigger,
@@ -27,7 +26,7 @@ export default async function Page() {
         return null;
     }
 
-    const { apps } = account;
+    const { apps, isDefaultEnvironment } = account;
     return (
         <main>
             <Modal>
@@ -48,12 +47,11 @@ export default async function Page() {
                                 custom code
                             </ModalDescription>
                         </ModalHeader>
-                        <ApplicationCards apps={apps} />
-                        <ModalFooter>
-                            <Button type="submit">
-                                <span>Add Integration</span>
-                            </Button>
-                        </ModalFooter>
+                        <ApplicationCards
+                            apps={apps}
+                            userId={userId}
+                            environment={isDefaultEnvironment ? 'development' : 'production'}
+                        />
                     </ModalContent>
                 </Header>
                 <CreatedApplications apps={apps} />
