@@ -28,7 +28,6 @@ export default async function Page() {
     }
 
     const { apps } = account;
-    console.log(apps);
     return (
         <main>
             <Modal>
