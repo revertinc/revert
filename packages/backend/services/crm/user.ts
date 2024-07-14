@@ -51,7 +51,7 @@ const userService = new UserService(
 
                         let url;
                         if (associations.length > 0) {
-                            url = `https://api.hubapi.com/settings/v3/users?associations=${associations}&properties=${formattedFields}`;
+                            url = `https://api.hubapi.com/settings/v3/users/${userId}?associations=${associations}&properties=${formattedFields}`;
                         } else {
                             url = `https://api.hubapi.com/settings/v3/users/${userId}?properties=${formattedFields}`;
                         }
