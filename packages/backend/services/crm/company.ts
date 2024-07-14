@@ -12,6 +12,7 @@ import { unifyObject, disunifyObject } from '../../helpers/crm/transform';
 import { UnifiedCompany } from '../../models/unified/company';
 import { PipedriveCompany, PipedrivePagination } from '../../constants/pipedrive';
 import { StandardObjects } from '../../constants/common';
+import { getAssociationObjects } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.company;
 
@@ -26,6 +27,7 @@ const companyService = new CompanyService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
                 logInfo(
                     'Revert::GET COMPANY',
                     connection.app?.env?.accountId,
@@ -50,20 +52,34 @@ const companyService = new CompanyService(
                             'phone',
                             'annualrevenue',
                         ];
+                        let url;
+                        if (associations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/companies/${companyId}?associations=${associations}&properties=${formattedFields}`;
+                        } else {
+                            url = `https://api.hubapi.com/crm/v3/objects/companies/${companyId}?properties=${formattedFields}`;
+                        }
+
                         const company = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/companies/${companyId}?properties=${formattedFields}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
-
+                        const associatedData = await getAssociationObjects(
+                            company.data?.associations,
+                            thirdPartyToken,
+                            thirdPartyId,
+                            connection,
+                            account
+                        );
                         res.send({
                             status: 'ok',
                             result: await unifyObject<any, UnifiedCompany>({
                                 obj: {
                                     ...company.data,
                                     ...company.data?.properties,
+                                    associations: associatedData,
                                 },
                                 tpId: thirdPartyId,
                                 objType,
@@ -180,6 +196,8 @@ const companyService = new CompanyService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET ALL COMPANIES',
                     connection.app?.env?.accountId,
@@ -206,9 +224,17 @@ const companyService = new CompanyService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
+
+                        let url;
+                        if (associations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/companies?associations=${associations}&properties=${formattedFields}&${pagingString}`;
+                        } else {
+                            url = `https://api.hubapi.com/crm/v3/objects/companies?properties=${formattedFields}&${pagingString}`;
+                        }
+
                         let companies: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/companies?properties=${formattedFields}&${pagingString}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
@@ -216,16 +242,22 @@ const companyService = new CompanyService(
                         const nextCursor = companies.data?.paging?.next?.after || undefined;
                         companies = companies.data.results as any[];
                         companies = await Promise.all(
-                            companies?.map(
-                                async (c: any) =>
-                                    await unifyObject<any, UnifiedCompany>({
-                                        obj: { ...c, ...c?.properties },
-                                        tpId: thirdPartyId,
-                                        objType,
-                                        tenantSchemaMappingId: connection.schema_mapping_id,
-                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                            companies?.map(async (c: any) => {
+                                const associatedData = await getAssociationObjects(
+                                    c?.associations,
+                                    thirdPartyToken,
+                                    thirdPartyId,
+                                    connection,
+                                    account
+                                );
+                                return await unifyObject<any, UnifiedCompany>({
+                                    obj: { ...c, ...c?.properties, associations: associatedData },
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
                         );
                         res.send({
                             status: 'ok',

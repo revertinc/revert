@@ -12,6 +12,7 @@ import { disunifyObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedUser } from '../../models/unified/user';
 import { PipedriveUser } from '../../constants/pipedrive';
 import { StandardObjects } from '../../constants/common';
+import { getAssociationObjects } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.user;
 
@@ -26,6 +27,8 @@ const userService = new UserService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET USER',
                     connection.app?.env?.accountId,
@@ -45,16 +48,33 @@ const userService = new UserService(
                             'hs_object_id',
                             'phone',
                         ];
+
+                        let url;
+                        if (associations.length > 0) {
+                            url = `https://api.hubapi.com/settings/v3/users?associations=${associations}&properties=${formattedFields}`;
+                        } else {
+                            url = `https://api.hubapi.com/settings/v3/users/${userId}?properties=${formattedFields}`;
+                        }
+
                         let user: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/settings/v3/users/${userId}?properties=${formattedFields}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
                         user = ([user.data] as any[])?.[0];
+
+                        const associatedData = await getAssociationObjects(
+                            user?.associations,
+                            thirdPartyToken,
+                            thirdPartyId,
+                            connection,
+                            account
+                        );
+
                         user = await unifyObject<any, UnifiedUser>({
-                            obj: { ...user, ...user?.properties },
+                            obj: { ...user, ...user?.properties, associations: associatedData },
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -188,6 +208,8 @@ const userService = new UserService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET ALL USER',
                     connection.app?.env?.accountId,
@@ -209,9 +231,17 @@ const userService = new UserService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
+
+                        let url;
+                        if (associations.length > 0) {
+                            url = `https://api.hubapi.com/settings/v3/users?associations=${associations}&properties=${formattedFields}&${pagingString}`;
+                        } else {
+                            url = `https://api.hubapi.com/settings/v3/users?properties=${formattedFields}&${pagingString}`;
+                        }
+
                         let users: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/settings/v3/users?properties=${formattedFields}&${pagingString}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
@@ -219,16 +249,23 @@ const userService = new UserService(
                         const nextCursor = users.data?.paging?.next?.after || undefined;
                         users = users.data.results as any[];
                         users = await Promise.all(
-                            users?.map(
-                                async (l: any) =>
-                                    await unifyObject<any, UnifiedUser>({
-                                        obj: { ...l, ...l?.properties },
-                                        tpId: thirdPartyId,
-                                        objType,
-                                        tenantSchemaMappingId: connection.schema_mapping_id,
-                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                            users?.map(async (l: any) => {
+                                const associatedData = await getAssociationObjects(
+                                    l?.associations,
+                                    thirdPartyToken,
+                                    thirdPartyId,
+                                    connection,
+                                    account
+                                );
+
+                                return await unifyObject<any, UnifiedUser>({
+                                    obj: { ...l, ...l?.properties, associations: associatedData },
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
                         );
                         res.send({
                             status: 'ok',

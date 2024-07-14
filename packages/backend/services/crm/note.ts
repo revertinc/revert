@@ -12,6 +12,7 @@ import { unifyObject, disunifyObject } from '../../helpers/crm/transform';
 import { UnifiedNote } from '../../models/unified';
 import { PipedriveNote, PipedrivePagination } from '../../constants/pipedrive';
 import { StandardObjects } from '../../constants/common';
+import { getAssociationObjects } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.note;
 
@@ -26,6 +27,8 @@ const noteService = new NoteService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET NOTE',
                     connection.app?.env?.accountId,
@@ -38,16 +41,31 @@ const noteService = new NoteService(
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
                         const formattedFields = [...String(fields || '').split(','), 'hs_note_body'];
+
+                        let url;
+                        if (associations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/notes/${noteId}?associations=${associations}&properties=${formattedFields}`;
+                        } else {
+                            url = `https://api.hubapi.com/crm/v3/objects/notes/${noteId}?properties=${formattedFields}`;
+                        }
+
                         let note: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/notes/${noteId}?properties=${formattedFields}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
                         note = ([note.data] as any[])?.[0];
+                        const associatedData = await getAssociationObjects(
+                            note?.associations,
+                            thirdPartyToken,
+                            thirdPartyId,
+                            connection,
+                            account
+                        );
                         note = await unifyObject<any, UnifiedNote>({
-                            obj: { ...note, ...note?.properties },
+                            obj: { ...note, ...note?.properties, associations: associatedData },
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -181,6 +199,8 @@ const noteService = new NoteService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET ALL NOTE',
                     connection.app?.env?.accountId,
@@ -195,9 +215,17 @@ const noteService = new NoteService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
+
+                        let url;
+                        if (associations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/notes?associations=${associations}&properties=${formattedFields}&${pagingString}`;
+                        } else {
+                            url = `https://api.hubapi.com/crm/v3/objects/notes?properties=${formattedFields}&${pagingString}`;
+                        }
+
                         let notes: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/notes?properties=${formattedFields}&${pagingString}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
@@ -205,16 +233,23 @@ const noteService = new NoteService(
                         const nextCursor = notes.data?.paging?.next?.after || undefined;
                         notes = notes.data.results as any[];
                         notes = await Promise.all(
-                            notes?.map(
-                                async (l: any) =>
-                                    await unifyObject<any, UnifiedNote>({
-                                        obj: { ...l, ...l?.properties },
-                                        tpId: thirdPartyId,
-                                        objType,
-                                        tenantSchemaMappingId: connection.schema_mapping_id,
-                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                            notes?.map(async (l: any) => {
+                                const associatedData = await getAssociationObjects(
+                                    l?.associations,
+                                    thirdPartyToken,
+                                    thirdPartyId,
+                                    connection,
+                                    account
+                                );
+
+                                return await unifyObject<any, UnifiedNote>({
+                                    obj: { ...l, ...l?.properties, associations: associatedData },
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
                         );
                         res.send({
                             status: 'ok',

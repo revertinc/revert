@@ -12,6 +12,7 @@ import { unifyObject, disunifyObject } from '../../helpers/crm/transform';
 import { UnifiedDeal } from '../../models/unified';
 import { PipedriveDeal, PipedrivePagination } from '../../constants/pipedrive';
 import { StandardObjects } from '../../constants/common';
+import { getAssociationObjects } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.deal;
 
@@ -26,6 +27,8 @@ const dealService = new DealService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET DEAL',
                     connection.app?.env?.accountId,
@@ -48,16 +51,32 @@ const dealService = new DealService(
                             'hs_is_closed_won',
                             'hs_createdate',
                         ];
+
+                        let url;
+                        if (associations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?associations=${associations}&properties=${formattedFields}`;
+                        } else {
+                            url = `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?properties=${formattedFields}`;
+                        }
+
                         let deal: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?properties=${formattedFields}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
+
                         deal = ([deal.data] as any[])?.[0];
+                        const associatedData = await getAssociationObjects(
+                            deal?.associations,
+                            thirdPartyToken,
+                            thirdPartyId,
+                            connection,
+                            account
+                        );
                         deal = await unifyObject<any, UnifiedDeal>({
-                            obj: { ...deal, ...deal?.properties },
+                            obj: { ...deal, ...deal?.properties, associations: associatedData },
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -191,6 +210,8 @@ const dealService = new DealService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET ALL DEAL',
                     connection.app?.env?.accountId,
@@ -215,9 +236,17 @@ const dealService = new DealService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
+
+                        let url;
+                        if (associations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/deals?associations=${associations}&properties=${formattedFields}&${pagingString}`;
+                        } else {
+                            url = `https://api.hubapi.com/crm/v3/objects/deals?properties=${formattedFields}&${pagingString}`;
+                        }
+
                         let deals: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/deals?properties=${formattedFields}&${pagingString}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
@@ -225,16 +254,22 @@ const dealService = new DealService(
                         const nextCursor = deals.data?.paging?.next?.after || undefined;
                         deals = deals.data.results as any[];
                         deals = await Promise.all(
-                            deals?.map(
-                                async (l: any) =>
-                                    await unifyObject<any, UnifiedDeal>({
-                                        obj: { ...l, ...l?.properties },
-                                        tpId: thirdPartyId,
-                                        objType,
-                                        tenantSchemaMappingId: connection.schema_mapping_id,
-                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                            deals?.map(async (l: any) => {
+                                const associatedData = await getAssociationObjects(
+                                    l?.associations,
+                                    thirdPartyToken,
+                                    thirdPartyId,
+                                    connection,
+                                    account
+                                );
+                                return await unifyObject<any, UnifiedDeal>({
+                                    obj: { ...l, ...l?.properties, associations: associatedData },
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
                         );
                         res.send({
                             status: 'ok',
