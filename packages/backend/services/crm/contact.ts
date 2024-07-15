@@ -53,7 +53,8 @@ const contactService = new ContactService(
                             isValidAssociationTypeRequestedByUser(item)
                         );
                         const invalidAssociations = [...associations].filter(
-                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
 
                         let url;
@@ -255,7 +256,8 @@ const contactService = new ContactService(
                             isValidAssociationTypeRequestedByUser(item)
                         );
                         const invalidAssociations = [...associations].filter(
-                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
                         let url;
                         if (validAssociations.length > 0) {

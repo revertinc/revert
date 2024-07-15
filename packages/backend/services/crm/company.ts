@@ -56,7 +56,8 @@ const companyService = new CompanyService(
                             isValidAssociationTypeRequestedByUser(item)
                         );
                         const invalidAssociations = [...associations].filter(
-                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
 
                         let url;
@@ -236,7 +237,8 @@ const companyService = new CompanyService(
                             isValidAssociationTypeRequestedByUser(item)
                         );
                         const invalidAssociations = [...associations].filter(
-                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
                         let url;
                         if (validAssociations.length > 0) {

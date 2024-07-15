@@ -54,7 +54,8 @@ const eventService = new EventService(
                             isValidAssociationTypeRequestedByUser(item)
                         );
                         const invalidAssociations = [...associations].filter(
-                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
                         let url;
                         if (validAssociations.length > 0) {
@@ -242,7 +243,8 @@ const eventService = new EventService(
                             isValidAssociationTypeRequestedByUser(item)
                         );
                         const invalidAssociations = [...associations].filter(
-                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
 
                         let url;
