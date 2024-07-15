@@ -11,7 +11,7 @@ function App() {
         >
             <RevertConnect
                 config={{
-                    revertToken: 'pk_test_e3fce7aa-5f23-4d05-bd06-1d50dfd93814',
+                    revertToken: 'localPublicToken',
                     tenantId: 'testTenantId',
                     onClose: () => {
                         console.log('On close working!');
