@@ -82,11 +82,9 @@ export function FancyInputBox() {
     <div className="max-w-full">
       <Popover open={openCombobox} onOpenChange={onComboboxOpenChange}>
         <PopoverTrigger asChild>
-          <Button
-            // variant="secondary"
-            role="combobox"
+          <div
             aria-expanded={openCombobox}
-            className="max-w-full justify-between text-foreground"
+            className="flex h-9 w-full rounded-md border border-gray-25 bg-primary-950 px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-primary-950 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 focus:bg-transparent focus:border-gray-50/70 items-center"
           >
             <span className="truncate">
               {selectedValues.length === 0 && "Select labels"}
@@ -96,9 +94,9 @@ export function FancyInputBox() {
               {selectedValues.length > 2 &&
                 `${selectedValues.length} labels selected`}
             </span>
-          </Button>
+          </div>
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
+        <PopoverContent className="w-full p-0">
           <Command loop>
             <CommandInput
               ref={inputRef}
@@ -107,7 +105,7 @@ export function FancyInputBox() {
               onValueChange={setInputValue}
             />
             <CommandList>
-              <CommandGroup className="max-h-[145px] overflow-auto">
+              <CommandGroup className="max-h-[100px] overflow-auto">
                 {frameworks.map((framework) => {
                   const isActive = selectedValues.includes(framework);
                   return (
@@ -123,10 +121,6 @@ export function FancyInputBox() {
                         )}
                       />
                       <div className="flex-1">{framework.label}</div>
-                      <div
-                        className="h-4 w-4 rounded-full"
-                        style={{ backgroundColor: framework.color }}
-                      />
                     </CommandItem>
                   );
                 })}
