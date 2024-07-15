@@ -1,7 +1,7 @@
 'use client';
 
 import { Icons, KeyIcon } from '@revertdotdev/icons';
-import { Button, Clipboard, Input, Label } from '@revertdotdev/components';
+import { Button, Clipboard, FancyInputBox, Input, Label } from '@revertdotdev/components';
 import { AppInfo } from '@revertdotdev/types/schemas/appSchema';
 import { useState } from 'react';
 import { cn } from '@revertdotdev/utils';
@@ -121,11 +121,16 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
                         <Input
                             type="password"
                             id="client_secret"
-                            className=""
                             placeholder="Enter your Client Secret"
                             defaultValue={app_client_secret ?? ''}
                             onChange={(e) => setClientSecret(e.target.value)}
                         />
+                    </div>
+                    <div className="flex flex-col gap-2 mb-4">
+                        <Label htmlFor="scopes" className="text-slate-50/70 font-medium">
+                            Scopes
+                        </Label>
+                        <FancyInputBox />
                     </div>
                 </div>
             ) : (
@@ -149,7 +154,8 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
                 disabled
                 className={cn('mb-12', {
                     'bg-gray-25/20 text-gray-50/70 hover:bg-gray-25/20 cursor-not-allowed':
-                        (is_revert_app && !isValueChange && customPreferenceView) || (!customPreferenceView && !is_revert_app),
+                        (is_revert_app && !isValueChange && customPreferenceView) ||
+                        (!customPreferenceView && !is_revert_app),
                 })}
                 onClick={handleSaveChanges}
             >
