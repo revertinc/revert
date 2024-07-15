@@ -95,3 +95,26 @@ export async function updateCredentials({
         };
     }
 }
+
+export async function deleteIntegration({ appId, privateToken }: { appId: string; privateToken: string }) {
+    try {
+        const response = await fetch(`${REVERT_BASE_API_URL}/internal/account/apps`, {
+            method: 'DELETE',
+            body: JSON.stringify({
+                appId,
+            }),
+            headers: {
+                'Content-type': 'application/json',
+                'x-revert-api-token': privateToken,
+            },
+        });
+
+        await response.json();
+        revalidatePath('/dashboard/integrations');
+    } catch (err) {
+        return {
+            name: 'Something went wrong',
+            message: JSON.stringify(err),
+        };
+    }
+}

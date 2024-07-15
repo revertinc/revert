@@ -5,7 +5,8 @@ import { Button, Clipboard, FancyInputBox, Input, Label } from '@revertdotdev/co
 import { AppInfo } from '@revertdotdev/types/schemas/appSchema';
 import { useState } from 'react';
 import { cn } from '@revertdotdev/utils';
-import { updateCredentials } from '@revertdotdev/lib/actions';
+import { deleteIntegration, updateCredentials } from '@revertdotdev/lib/actions';
+import { useRouter } from 'next/navigation';
 
 type AppSettingsProps = {
     app: AppInfo;
@@ -24,8 +25,24 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
     const [customPreferenceView, setCustomPreferenceView] = useState<boolean>(is_revert_app);
     const [clientId, setClientId] = useState<string>(currentClientId);
     const [clientSecret, setClientSecret] = useState<string>(currentClientSecret);
+    const router = useRouter();
 
     const isValueChange = clientId !== currentClientId || clientSecret !== currentClientSecret;
+
+    async function handleDeleteIntegration() {
+        const privateToken = localStorage.getItem('privateToken');
+
+        if (!privateToken) {
+            // handle this error
+            return;
+        }
+
+        await deleteIntegration({
+            appId: id,
+            privateToken,
+        });
+        router.push('/dashboard/integrations');
+    }
 
     async function handleSaveChanges() {
         //Todo: handle save changes with server actions;
@@ -169,7 +186,7 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
                         Your API Requests are authenticated using Api keys in the header.
                     </p>
                 </div>
-                <Button variant="destructive">
+                <Button variant="destructive" onClick={handleDeleteIntegration}>
                     <div className="flex gap-2 justify-center items-center">
                         <Icons.trash />
                         <span>Delete Integration</span>
