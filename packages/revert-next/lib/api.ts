@@ -32,6 +32,8 @@ export async function fetchAccountDetails(userId: string) {
             apps,
         } = environments.filter((e) => e.env.includes(environment))[0];
 
+        const { private_token: prodPrivateToken } = environments.filter((e) => e.env.includes('production'))[0];
+
         const isDefaultEnvironment = environment.includes(DEFAULT_ENV);
 
         const parsedResponse = accountResponseSchema.safeParse({
@@ -39,6 +41,7 @@ export async function fetchAccountDetails(userId: string) {
             isDefaultEnvironment,
             currentPrivateToken,
             currentPublicToken,
+            prodPrivateToken,
         });
 
         if (!parsedResponse.success) {

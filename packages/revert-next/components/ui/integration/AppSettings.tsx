@@ -5,6 +5,7 @@ import { Button, Clipboard, Input, Label } from '@revertdotdev/components';
 import { AppInfo } from '@revertdotdev/types/schemas/appSchema';
 import { useState } from 'react';
 import { cn } from '@revertdotdev/utils';
+import { updateCredentials } from '@revertdotdev/lib/actions';
 
 type AppSettingsProps = {
     app: AppInfo;
@@ -15,10 +16,47 @@ type AppSettingsProps = {
 };
 
 export function AppSettings({ app, keys }: AppSettingsProps) {
-    const { app_client_id, app_client_secret, id, is_revert_app } = app;
+    const { app_client_id, app_client_secret, id, is_revert_app, scope, tp_id } = app;
     const { currentPrivateToken, currentPublicToken } = keys;
+    const currentClientSecret = app_client_secret ?? '';
+    const currentClientId = app_client_id ?? '';
 
     const [customPreferenceView, setCustomPreferenceView] = useState<boolean>(is_revert_app);
+    const [clientId, setClientId] = useState<string>(currentClientId);
+    const [clientSecret, setClientSecret] = useState<string>(currentClientSecret);
+
+    const isValueChange = clientId !== currentClientId || clientSecret !== currentClientSecret;
+
+    async function handleSaveChanges() {
+        //Todo: handle save changes with server actions;
+        const privateToken = localStorage.getItem('privateToken');
+
+        if (!privateToken) {
+            // handle this error
+            return;
+        }
+        if (customPreferenceView) {
+            await updateCredentials({
+                appId: app.id,
+                clientId,
+                clientSecret,
+                scopes: scope,
+                tpId: tp_id,
+                isRevertApp: true,
+                privateToken,
+            });
+        } else {
+            await updateCredentials({
+                appId: app.id,
+                clientId: currentClientId,
+                clientSecret: currentClientSecret,
+                scopes: scope,
+                tpId: tp_id,
+                isRevertApp: false,
+                privateToken,
+            });
+        }
+    }
 
     return (
         <div className="max-w-[64rem]">
@@ -73,6 +111,7 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
                             className="focus:bg-transparent"
                             placeholder="Enter your Client ID"
                             defaultValue={app_client_id ?? ''}
+                            onChange={(e) => setClientId(e.target.value)}
                         />
                     </div>
                     <div className="flex flex-col gap-2 mb-4">
@@ -85,6 +124,7 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
                             className=""
                             placeholder="Enter your Client Secret"
                             defaultValue={app_client_secret ?? ''}
+                            onChange={(e) => setClientSecret(e.target.value)}
                         />
                     </div>
                 </div>
@@ -105,8 +145,15 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
                 </div>
             )}
 
-            <Button disabled className="bg-gray-25/20 text-gray-50/70 hover:bg-gray-25/20 mb-12">
-                <span>Save Changes </span>
+            <Button
+                disabled
+                className={cn('mb-12', {
+                    'bg-gray-25/20 text-gray-50/70 hover:bg-gray-25/20 cursor-not-allowed':
+                        (is_revert_app && !isValueChange && customPreferenceView) || (!customPreferenceView && !is_revert_app),
+                })}
+                onClick={handleSaveChanges}
+            >
+                <span>Save Changes</span>
             </Button>
 
             <div className="p-5 border border-red-500 rounded-xl flex justify-between items-center bg-red-950/80">

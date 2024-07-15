@@ -28,6 +28,7 @@ export const accountResponseSchema = z.object({
     isDefaultEnvironment: z.boolean().default(true),
     currentPrivateToken: z.string(),
     currentPublicToken: z.string(),
+    prodPrivateToken: z.string(),
 });
 
 export type AccountResponseSchema = z.infer<typeof accountResponseSchema>;
