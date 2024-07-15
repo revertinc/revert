@@ -8,6 +8,10 @@ types:
     GetAccountDetailsResponse:
         properties:
             account: types.Account
+    DeleteRevertAppResponse:
+        properties: 
+            appId: string
+            delete: boolean
 
 service:
     base-path: /internal/account
@@ -54,16 +58,28 @@ service:
             docs: create Revert App for Account
             method: POST
             path: /apps
-            request: 
+            request:
                 name: CreateRevertAppForAccount
-                body: 
-                    properties: 
+                body:
+                    properties:
                         userId: string
                         tpId: types.TPID
                         environment: string
             response: GetAccountDetailsResponse
-            errors: 
+            errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
-                        
-
+        deleteRevertAppforAccount:
+            docs: delete Revert App for Account
+            method: DELETE
+            path: /apps
+            request:
+                name: DeleteRevertAppForAccount
+                body:
+                    properties:
+                        appId: string
+            response: DeleteRevertAppResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
