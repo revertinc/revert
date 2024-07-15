@@ -12,7 +12,7 @@ import { unifyObject, disunifyObject } from '../../helpers/crm/transform';
 import { UnifiedDeal } from '../../models/unified';
 import { PipedriveDeal, PipedrivePagination } from '../../constants/pipedrive';
 import { StandardObjects } from '../../constants/common';
-import { getAssociationObjects } from '../../helpers/crm/hubspot';
+import { getAssociationObjects, isValidAssociationTypeRequestedByUser } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.deal;
 
@@ -51,10 +51,15 @@ const dealService = new DealService(
                             'hs_is_closed_won',
                             'hs_createdate',
                         ];
-
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                        );
                         let url;
-                        if (associations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?associations=${associations}&properties=${formattedFields}`;
+                        if (validAssociations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?associations=${validAssociations}&properties=${formattedFields}`;
                         } else {
                             url = `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?properties=${formattedFields}`;
                         }
@@ -73,7 +78,8 @@ const dealService = new DealService(
                             thirdPartyToken,
                             thirdPartyId,
                             connection,
-                            account
+                            account,
+                            invalidAssociations
                         );
                         deal = await unifyObject<any, UnifiedDeal>({
                             obj: { ...deal, ...deal?.properties, associations: associatedData },
@@ -236,10 +242,15 @@ const dealService = new DealService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
-
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                        );
                         let url;
-                        if (associations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/deals?associations=${associations}&properties=${formattedFields}&${pagingString}`;
+                        if (validAssociations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/deals?associations=${validAssociations}&properties=${formattedFields}&${pagingString}`;
                         } else {
                             url = `https://api.hubapi.com/crm/v3/objects/deals?properties=${formattedFields}&${pagingString}`;
                         }
@@ -260,7 +271,8 @@ const dealService = new DealService(
                                     thirdPartyToken,
                                     thirdPartyId,
                                     connection,
-                                    account
+                                    account,
+                                    invalidAssociations
                                 );
                                 return await unifyObject<any, UnifiedDeal>({
                                     obj: { ...l, ...l?.properties, associations: associatedData },

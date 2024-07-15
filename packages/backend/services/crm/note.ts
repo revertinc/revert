@@ -12,7 +12,7 @@ import { unifyObject, disunifyObject } from '../../helpers/crm/transform';
 import { UnifiedNote } from '../../models/unified';
 import { PipedriveNote, PipedrivePagination } from '../../constants/pipedrive';
 import { StandardObjects } from '../../constants/common';
-import { getAssociationObjects } from '../../helpers/crm/hubspot';
+import { getAssociationObjects, isValidAssociationTypeRequestedByUser } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.note;
 
@@ -41,10 +41,15 @@ const noteService = new NoteService(
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
                         const formattedFields = [...String(fields || '').split(','), 'hs_note_body'];
-
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                        );
                         let url;
-                        if (associations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/notes/${noteId}?associations=${associations}&properties=${formattedFields}`;
+                        if (validAssociations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/notes/${noteId}?associations=${validAssociations}&properties=${formattedFields}`;
                         } else {
                             url = `https://api.hubapi.com/crm/v3/objects/notes/${noteId}?properties=${formattedFields}`;
                         }
@@ -62,7 +67,8 @@ const noteService = new NoteService(
                             thirdPartyToken,
                             thirdPartyId,
                             connection,
-                            account
+                            account,
+                            invalidAssociations
                         );
                         note = await unifyObject<any, UnifiedNote>({
                             obj: { ...note, ...note?.properties, associations: associatedData },
@@ -215,10 +221,15 @@ const noteService = new NoteService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
-
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                        );
                         let url;
-                        if (associations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/notes?associations=${associations}&properties=${formattedFields}&${pagingString}`;
+                        if (validAssociations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/notes?associations=${validAssociations}&properties=${formattedFields}&${pagingString}`;
                         } else {
                             url = `https://api.hubapi.com/crm/v3/objects/notes?properties=${formattedFields}&${pagingString}`;
                         }
@@ -239,7 +250,8 @@ const noteService = new NoteService(
                                     thirdPartyToken,
                                     thirdPartyId,
                                     connection,
-                                    account
+                                    account,
+                                    invalidAssociations
                                 );
 
                                 return await unifyObject<any, UnifiedNote>({

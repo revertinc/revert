@@ -12,7 +12,7 @@ import { disunifyObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedTask } from '../../models/unified';
 import { PipedrivePagination, PipedriveTask } from '../../constants/pipedrive';
 import { StandardObjects } from '../../constants/common';
-import { getAssociationObjects } from '../../helpers/crm/hubspot';
+import { getAssociationObjects, isValidAssociationTypeRequestedByUser } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.task;
 
@@ -48,10 +48,15 @@ const taskService = new TaskService(
                             'hs_task_status',
                             'hs_timestamp',
                         ];
-
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                        );
                         let url;
-                        if (associations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/tasks/${taskId}?associations=${associations}&properties=${formattedFields}`;
+                        if (validAssociations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/tasks/${taskId}?associations=${validAssociations}&properties=${formattedFields}`;
                         } else {
                             url = `https://api.hubapi.com/crm/v3/objects/tasks/${taskId}?properties=${formattedFields}`;
                         }
@@ -70,7 +75,8 @@ const taskService = new TaskService(
                             thirdPartyToken,
                             thirdPartyId,
                             connection,
-                            account
+                            account,
+                            invalidAssociations
                         );
 
                         task = await unifyObject<any, UnifiedTask>({
@@ -234,10 +240,15 @@ const taskService = new TaskService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
-
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                        );
                         let url;
-                        if (associations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/tasks?associations=${associations}&properties=${formattedFields}&${pagingString}`;
+                        if (validAssociations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/tasks?associations=${validAssociations}&properties=${formattedFields}&${pagingString}`;
                         } else {
                             url = `https://api.hubapi.com/crm/v3/objects/tasks?properties=${formattedFields}&${pagingString}`;
                         }
@@ -257,7 +268,8 @@ const taskService = new TaskService(
                                     thirdPartyToken,
                                     thirdPartyId,
                                     connection,
-                                    account
+                                    account,
+                                    invalidAssociations
                                 );
                                 return await unifyObject<any, UnifiedTask>({
                                     obj: { ...l, ...l?.properties, associations: associatedData },

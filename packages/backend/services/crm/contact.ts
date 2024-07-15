@@ -12,7 +12,7 @@ import { mapPipedriveObjectCustomFields } from '../../helpers/crm';
 import { unifyObject, disunifyObject } from '../../helpers/crm/transform';
 import { UnifiedContact } from '../../models/unified/contact';
 import { StandardObjects } from '../../constants/common';
-import { getAssociationObjects } from '../../helpers/crm/hubspot';
+import { getAssociationObjects, isValidAssociationTypeRequestedByUser } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.contact;
 
@@ -49,10 +49,16 @@ const contactService = new ContactService(
                             'hs_object_id',
                             'phone',
                         ];
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                        );
 
                         let url;
-                        if (associations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}?associations=${associations}&properties=${formattedFields}`;
+                        if (validAssociations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}?associations=${validAssociations}&properties=${formattedFields}`;
                         } else {
                             url = `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}?properties=${formattedFields}`;
                         }
@@ -69,7 +75,8 @@ const contactService = new ContactService(
                             thirdPartyToken,
                             thirdPartyId,
                             connection,
-                            account
+                            account,
+                            invalidAssociations
                         );
                         contact = await unifyObject<any, UnifiedContact>({
                             obj: { ...contact.data, ...contact.data?.properties, associations: associatedData },
@@ -244,10 +251,15 @@ const contactService = new ContactService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
-
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                        );
                         let url;
-                        if (associations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/contacts?associations=${associations}&properties=${formattedFields}&${pagingString}`;
+                        if (validAssociations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/contacts?associations=${validAssociations}&properties=${formattedFields}&${pagingString}`;
                         } else {
                             url = `https://api.hubapi.com/crm/v3/objects/contacts?properties=${formattedFields}&${pagingString}`;
                         }
@@ -269,7 +281,8 @@ const contactService = new ContactService(
                                     thirdPartyToken,
                                     thirdPartyId,
                                     connection,
-                                    account
+                                    account,
+                                    invalidAssociations
                                 );
                                 return await unifyObject<any, UnifiedContact>({
                                     obj: { ...l, ...l?.properties, associations: associatedData },

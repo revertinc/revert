@@ -12,7 +12,7 @@ import { disunifyObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedUser } from '../../models/unified/user';
 import { PipedriveUser } from '../../constants/pipedrive';
 import { StandardObjects } from '../../constants/common';
-import { getAssociationObjects } from '../../helpers/crm/hubspot';
+import { getAssociationObjects, isValidAssociationTypeRequestedByUser } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.user;
 
@@ -48,10 +48,15 @@ const userService = new UserService(
                             'hs_object_id',
                             'phone',
                         ];
-
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                        );
                         let url;
-                        if (associations.length > 0) {
-                            url = `https://api.hubapi.com/settings/v3/users/${userId}?associations=${associations}&properties=${formattedFields}`;
+                        if (validAssociations.length > 0) {
+                            url = `https://api.hubapi.com/settings/v3/users/${userId}?associations=${validAssociations}&properties=${formattedFields}`;
                         } else {
                             url = `https://api.hubapi.com/settings/v3/users/${userId}?properties=${formattedFields}`;
                         }
@@ -70,7 +75,8 @@ const userService = new UserService(
                             thirdPartyToken,
                             thirdPartyId,
                             connection,
-                            account
+                            account,
+                            invalidAssociations
                         );
 
                         user = await unifyObject<any, UnifiedUser>({
@@ -231,10 +237,15 @@ const userService = new UserService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
-
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                        );
                         let url;
-                        if (associations.length > 0) {
-                            url = `https://api.hubapi.com/settings/v3/users?associations=${associations}&properties=${formattedFields}&${pagingString}`;
+                        if (validAssociations.length > 0) {
+                            url = `https://api.hubapi.com/settings/v3/users?associations=${validAssociations}&properties=${formattedFields}&${pagingString}`;
                         } else {
                             url = `https://api.hubapi.com/settings/v3/users?properties=${formattedFields}&${pagingString}`;
                         }
@@ -255,7 +266,8 @@ const userService = new UserService(
                                     thirdPartyToken,
                                     thirdPartyId,
                                     connection,
-                                    account
+                                    account,
+                                    invalidAssociations
                                 );
 
                                 return await unifyObject<any, UnifiedUser>({

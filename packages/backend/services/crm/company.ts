@@ -12,7 +12,7 @@ import { unifyObject, disunifyObject } from '../../helpers/crm/transform';
 import { UnifiedCompany } from '../../models/unified/company';
 import { PipedriveCompany, PipedrivePagination } from '../../constants/pipedrive';
 import { StandardObjects } from '../../constants/common';
-import { getAssociationObjects } from '../../helpers/crm/hubspot';
+import { getAssociationObjects, isValidAssociationTypeRequestedByUser } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.company;
 
@@ -52,9 +52,16 @@ const companyService = new CompanyService(
                             'phone',
                             'annualrevenue',
                         ];
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                        );
+
                         let url;
-                        if (associations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/companies/${companyId}?associations=${associations}&properties=${formattedFields}`;
+                        if (validAssociations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/companies/${companyId}?associations=${validAssociations}&properties=${formattedFields}`;
                         } else {
                             url = `https://api.hubapi.com/crm/v3/objects/companies/${companyId}?properties=${formattedFields}`;
                         }
@@ -71,7 +78,8 @@ const companyService = new CompanyService(
                             thirdPartyToken,
                             thirdPartyId,
                             connection,
-                            account
+                            account,
+                            invalidAssociations
                         );
                         res.send({
                             status: 'ok',
@@ -224,10 +232,15 @@ const companyService = new CompanyService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
-
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) => !isValidAssociationTypeRequestedByUser(item)
+                        );
                         let url;
-                        if (associations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/companies?associations=${associations}&properties=${formattedFields}&${pagingString}`;
+                        if (validAssociations.length > 0) {
+                            url = `https://api.hubapi.com/crm/v3/objects/companies?associations=${validAssociations}&properties=${formattedFields}&${pagingString}`;
                         } else {
                             url = `https://api.hubapi.com/crm/v3/objects/companies?properties=${formattedFields}&${pagingString}`;
                         }
@@ -248,7 +261,8 @@ const companyService = new CompanyService(
                                     thirdPartyToken,
                                     thirdPartyId,
                                     connection,
-                                    account
+                                    account,
+                                    invalidAssociations
                                 );
                                 return await unifyObject<any, UnifiedCompany>({
                                     obj: { ...c, ...c?.properties, associations: associatedData },

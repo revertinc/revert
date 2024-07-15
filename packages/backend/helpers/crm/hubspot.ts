@@ -96,7 +96,8 @@ export const getAssociationObjects = async (
     thirdPartyToken: any,
     thirdPartyId: any,
     connection: any,
-    account: any
+    account: any,
+    invalidAssociations: any
 ) => {
     const associatedData: any = {};
 
@@ -172,32 +173,62 @@ export const getAssociationObjects = async (
 
                     //converting the objectType into the correct objType which is needed for unification.
                     const associatedObjectType = getStandardObjects(objectType as PluralObjectType);
-                    // if the objectType is among the objects we support,we unify it,else let it be as it is.
 
                     associatedData[objectType] =
-                        associatedObjectType && associatedObjectType !== null
-                            ? await Promise.all(
-                                  fullBatchData.map(
-                                      async (item: any) =>
-                                          await unifyObject<any, any>({
-                                              obj: {
-                                                  ...item,
-                                                  ...item?.properties,
-                                              },
-                                              tpId: thirdPartyId,
-                                              objType: associatedObjectType,
-                                              tenantSchemaMappingId: connection.schema_mapping_id,
-                                              accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                          })
-                                  )
-                              )
-                            : fullBatchData;
+                        associatedObjectType &&
+                        associatedObjectType !== null &&
+                        (await Promise.all(
+                            fullBatchData.map(
+                                async (item: any) =>
+                                    await unifyObject<any, any>({
+                                        obj: {
+                                            ...item,
+                                            ...item?.properties,
+                                        },
+                                        tpId: thirdPartyId,
+                                        objType: associatedObjectType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        ));
                 }
             }
         }
     }
+    if (invalidAssociations && invalidAssociations.length > 0) {
+        invalidAssociations.map((item: string) => {
+            associatedData[item] = [
+                {
+                    error: 'we currently do not support this association object,please contact us for more information.',
+                },
+            ];
+        });
+    }
 
     return associatedData;
+};
+
+export const isValidAssociationTypeRequestedByUser = (str: string) => {
+    const validStrings = [
+        'notes',
+        'deals',
+        'contacts',
+        'leads',
+        'companies',
+        'events',
+        'tasks',
+        'users',
+        'note',
+        'deal',
+        'contact',
+        'lead',
+        'company',
+        'event',
+        'task',
+        'user',
+    ];
+    return validStrings.includes(str);
 };
 
 export function handleHubspotDisunify<T extends Record<string, any>, AssociationType extends AllAssociation>({
