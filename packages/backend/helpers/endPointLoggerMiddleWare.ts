@@ -7,7 +7,7 @@ import { getDateWithShortMonth } from './timeZoneHelper';
 const endpointLogger = () => async (req: Request, res: Response, next: NextFunction) => {
     try {
         const path = req.path;
-        const { 'x-revert-api-token': token } = req.headers;
+        const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
         const toAllow =
             path.includes('/crm') ||
             path.includes('/chat') ||
@@ -16,7 +16,6 @@ const endpointLogger = () => async (req: Request, res: Response, next: NextFunct
             path.includes('/accounting');
 
         if (!toAllow) return next();
-
         const logEntry: any = {
             method: req.method,
             path: path,
@@ -48,6 +47,22 @@ const endpointLogger = () => async (req: Request, res: Response, next: NextFunct
             if (!isExpirySet) {
                 console.error(isExpirySet);
             }
+        }
+
+        // Recent Api Calls for Particular App
+
+        const connections = await prisma.connections.findFirst({
+            where: {
+                t_id: tenantId as string,
+            },
+        });
+
+        if (connections?.appId) {
+            const recentAppCalls = await redis.lPush(
+                `recent_routes_app_${connections.appId}`,
+                JSON.stringify(logEntry)
+            );
+            if (recentAppCalls && recentAppCalls > 8) await redis.rPop(`recent_routes_app_${connections.appId}`);
         }
 
         next();
