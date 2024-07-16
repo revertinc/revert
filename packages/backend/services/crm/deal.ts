@@ -58,12 +58,10 @@ const dealService = new DealService(
                             (item) =>
                                 item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
-                        let url;
-                        if (validAssociations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?associations=${validAssociations}&properties=${formattedFields}`;
-                        } else {
-                            url = `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?properties=${formattedFields}`;
-                        }
+
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?properties=${formattedFields}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
 
                         let deal: any = await axios({
                             method: 'get',
@@ -250,12 +248,10 @@ const dealService = new DealService(
                             (item) =>
                                 item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
-                        let url;
-                        if (validAssociations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/deals?associations=${validAssociations}&properties=${formattedFields}&${pagingString}`;
-                        } else {
-                            url = `https://api.hubapi.com/crm/v3/objects/deals?properties=${formattedFields}&${pagingString}`;
-                        }
+
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/deals?properties=${formattedFields}${pagingString}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
 
                         let deals: any = await axios({
                             method: 'get',

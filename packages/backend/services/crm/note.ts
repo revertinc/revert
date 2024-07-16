@@ -48,13 +48,10 @@ const noteService = new NoteService(
                             (item) =>
                                 item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
-                        let url;
-                        if (validAssociations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/notes/${noteId}?associations=${validAssociations}&properties=${formattedFields}`;
-                        } else {
-                            url = `https://api.hubapi.com/crm/v3/objects/notes/${noteId}?properties=${formattedFields}`;
-                        }
 
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/notes/${noteId}?properties=${formattedFields}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
                         let note: any = await axios({
                             method: 'get',
                             url: url,
@@ -229,12 +226,10 @@ const noteService = new NoteService(
                             (item) =>
                                 item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
-                        let url;
-                        if (validAssociations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/notes?associations=${validAssociations}&properties=${formattedFields}&${pagingString}`;
-                        } else {
-                            url = `https://api.hubapi.com/crm/v3/objects/notes?properties=${formattedFields}&${pagingString}`;
-                        }
+
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/notes?properties=${formattedFields}${pagingString}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
 
                         let notes: any = await axios({
                             method: 'get',

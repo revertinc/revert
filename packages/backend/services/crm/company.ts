@@ -60,12 +60,9 @@ const companyService = new CompanyService(
                                 item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
 
-                        let url;
-                        if (validAssociations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/companies/${companyId}?associations=${validAssociations}&properties=${formattedFields}`;
-                        } else {
-                            url = `https://api.hubapi.com/crm/v3/objects/companies/${companyId}?properties=${formattedFields}`;
-                        }
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/companies/${companyId}?properties=${formattedFields}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
 
                         const company = await axios({
                             method: 'get',
@@ -240,12 +237,10 @@ const companyService = new CompanyService(
                             (item) =>
                                 item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
-                        let url;
-                        if (validAssociations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/companies?associations=${validAssociations}&properties=${formattedFields}&${pagingString}`;
-                        } else {
-                            url = `https://api.hubapi.com/crm/v3/objects/companies?properties=${formattedFields}&${pagingString}`;
-                        }
+
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/companies?properties=${formattedFields}${pagingString}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
 
                         let companies: any = await axios({
                             method: 'get',

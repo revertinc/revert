@@ -55,12 +55,10 @@ const userService = new UserService(
                             (item) =>
                                 item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
-                        let url;
-                        if (validAssociations.length > 0) {
-                            url = `https://api.hubapi.com/settings/v3/users/${userId}?associations=${validAssociations}&properties=${formattedFields}`;
-                        } else {
-                            url = `https://api.hubapi.com/settings/v3/users/${userId}?properties=${formattedFields}`;
-                        }
+
+                        const url =
+                            `https://api.hubapi.com/settings/v3/users/${userId}?properties=${formattedFields}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
 
                         let user: any = await axios({
                             method: 'get',
@@ -245,13 +243,10 @@ const userService = new UserService(
                             (item) =>
                                 item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
-                        let url;
-                        if (validAssociations.length > 0) {
-                            url = `https://api.hubapi.com/settings/v3/users?associations=${validAssociations}&properties=${formattedFields}&${pagingString}`;
-                        } else {
-                            url = `https://api.hubapi.com/settings/v3/users?properties=${formattedFields}&${pagingString}`;
-                        }
 
+                        const url =
+                            `https://api.hubapi.com/settings/v3/users?properties=${formattedFields}${pagingString}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
                         let users: any = await axios({
                             method: 'get',
                             url: url,

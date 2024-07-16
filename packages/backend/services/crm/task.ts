@@ -55,12 +55,10 @@ const taskService = new TaskService(
                             (item) =>
                                 item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
-                        let url;
-                        if (validAssociations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/tasks/${taskId}?associations=${validAssociations}&properties=${formattedFields}`;
-                        } else {
-                            url = `https://api.hubapi.com/crm/v3/objects/tasks/${taskId}?properties=${formattedFields}`;
-                        }
+
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/tasks/${taskId}?properties=${formattedFields}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
 
                         let task: any = await axios({
                             method: 'get',
@@ -248,12 +246,10 @@ const taskService = new TaskService(
                             (item) =>
                                 item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
-                        let url;
-                        if (validAssociations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/tasks?associations=${validAssociations}&properties=${formattedFields}&${pagingString}`;
-                        } else {
-                            url = `https://api.hubapi.com/crm/v3/objects/tasks?properties=${formattedFields}&${pagingString}`;
-                        }
+
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/tasks?properties=${formattedFields}${pagingString}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
                         let tasks: any = await axios({
                             method: 'get',
                             url: url,

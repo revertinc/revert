@@ -57,12 +57,10 @@ const eventService = new EventService(
                             (item) =>
                                 item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
-                        let url;
-                        if (validAssociations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/meetings/${eventId}?associations=${validAssociations}&properties=${formattedFields}`;
-                        } else {
-                            url = `https://api.hubapi.com/crm/v3/objects/meetings/${eventId}?properties=${formattedFields}`;
-                        }
+
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/meetings/${eventId}?properties=${formattedFields}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
 
                         let event: any = await axios({
                             method: 'get',
@@ -247,12 +245,9 @@ const eventService = new EventService(
                                 item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
                         );
 
-                        let url;
-                        if (validAssociations.length > 0) {
-                            url = `https://api.hubapi.com/crm/v3/objects/meetings?associations=${validAssociations}&properties=${formattedFields}&${pagingString}`;
-                        } else {
-                            url = `https://api.hubapi.com/crm/v3/objects/meetings?properties=${formattedFields}&${pagingString}`;
-                        }
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/meetings?properties=${formattedFields}${pagingString}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
 
                         let events: any = await axios({
                             method: 'get',
