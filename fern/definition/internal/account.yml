@@ -9,7 +9,7 @@ types:
         properties:
             account: types.Account
     DeleteRevertAppResponse:
-        properties: 
+        properties:
             appId: string
             delete: boolean
 
