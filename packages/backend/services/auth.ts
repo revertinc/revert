@@ -565,12 +565,14 @@ class AuthService {
                 ...(scopes.filter(Boolean).length && { scope: scopes }),
                 ...(appConfig?.bot_token && { app_config: { bot_token: appConfig.bot_token } }),
                 ...(appConfig?.org_url && { app_config: { org_url: appConfig.org_url } }),
+                ...(appConfig && appConfig.bot_token === '' && { app_config: { bot_token: '' } }),
+                ...(appConfig && appConfig.org_url === '' && { app_config: { org_url: '' } }),
             },
         });
         if (!account) {
             return { error: 'Account does not exist' };
         }
-
+        
         return account;
     }
 }
