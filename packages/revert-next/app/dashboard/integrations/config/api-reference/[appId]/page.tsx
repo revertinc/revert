@@ -1,7 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
-import { Badge, TabsContent } from '@revertdotdev/components';
+import { TabsContent, ListOfRecentApiCalls } from '@revertdotdev/components';
 import { fetchAccountDetails } from '@revertdotdev/lib/api';
-import { cn } from '@revertdotdev/utils';
 
 export default async function Page({ params }: { params: { appId: string } }) {
     const { appId } = params;
@@ -18,6 +17,10 @@ export default async function Page({ params }: { params: { appId: string } }) {
 
     const app = account.apps.find((app) => app.id === appId);
 
+    if (!app) {
+        return null;
+    }
+
     return (
         <>
             <TabsContent value="api-reference">
@@ -32,20 +35,10 @@ export default async function Page({ params }: { params: { appId: string } }) {
                         <div className="col-span-2">
                             <div className="flex justify-between">
                                 <h3 className="uppercase text-gray-50/80 font-bold mb-3">endpoint</h3>
-                                <h3 className="uppercase text-gray-50/80 font-bold mb-3">enabled</h3>
+                                <h3 className="uppercase text-gray-50/80 font-bold mb-3">status</h3>
                             </div>
                             <div className="flex flex-col gap-3">
-                                <div className="flex justify-between items-center">
-                                    <div className="flex items-center">
-                                        <Badge variant="GET"> GET </Badge>
-                                        <p className="ml-2 text-gray-50/70">/crm/deals</p>
-                                    </div>
-                                    <div
-                                        className={cn('bg-green-500 w-3 h-3 rounded-full mr-5', {
-                                            'bg-red-500': !new String(200).startsWith('2'),
-                                        })}
-                                    ></div>
-                                </div>
+                                <ListOfRecentApiCalls appId={app.id} />
                             </div>
                         </div>
                     </div>
