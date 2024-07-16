@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { cn } from '@revertdotdev/utils';
 import { deleteIntegration, updateCredentials } from '@revertdotdev/lib/actions';
 import { useRouter } from 'next/navigation';
+import { Dispatch, SetStateAction } from 'react';
 
 type AppSettingsProps = {
     app: AppInfo;
@@ -17,7 +18,7 @@ type AppSettingsProps = {
 };
 
 export function AppSettings({ app, keys }: AppSettingsProps) {
-    const { app_client_id, app_client_secret, id, is_revert_app, scope, tp_id } = app;
+    const { app_client_id, app_client_secret, id, is_revert_app, scope, tp_id, app_config } = app;
     const { currentPrivateToken, currentPublicToken } = keys;
     const currentClientSecret = app_client_secret ?? '';
     const currentClientId = app_client_id ?? '';
@@ -25,9 +26,17 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
     const [customPreferenceView, setCustomPreferenceView] = useState<boolean>(is_revert_app);
     const [clientId, setClientId] = useState<string>(currentClientId);
     const [clientSecret, setClientSecret] = useState<string>(currentClientSecret);
+    let config =
+        app.tp_id === 'discord'
+            ? app_config?.bot_token
+            : app.tp_id === 'ms_dynamics_365_sales'
+            ? app_config?.org_url
+            : undefined;
+    config = config === '' ? undefined : config;
+    const [extraParam, setExtraParam] = useState<string | undefined>(config);
     const router = useRouter();
 
-    const isValueChange = clientId !== currentClientId || clientSecret !== currentClientSecret;
+    const isValueChange = clientId !== currentClientId || clientSecret !== currentClientSecret || extraParam !== config;
 
     async function handleDeleteIntegration() {
         const privateToken = localStorage.getItem('privateToken');
@@ -52,6 +61,14 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
             // handle this error
             return;
         }
+
+        const appConfig =
+            app.tp_id === 'discord'
+                ? { bot_token: extraParam ?? '' }
+                : app.tp_id === 'ms_dynamics_365_sales'
+                ? { org_url: extraParam ?? '' }
+                : null;
+
         if (customPreferenceView) {
             await updateCredentials({
                 appId: app.id,
@@ -61,6 +78,7 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
                 tpId: tp_id,
                 isRevertApp: true,
                 privateToken,
+                appConfig,
             });
         } else {
             await updateCredentials({
@@ -76,7 +94,7 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
     }
 
     return (
-        <div className="max-w-[64rem]">
+        <div className="max-w-[64rem] xl:max-w-[64%]">
             <h3 className="text-lg font-medium mb-2">Choose your preference</h3>
             <div className="flex gap-4 mb-4">
                 <button
@@ -143,12 +161,7 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
                             onChange={(e) => setClientSecret(e.target.value)}
                         />
                     </div>
-                    <div className="flex flex-col gap-2 mb-4">
-                        <Label htmlFor="scopes" className="text-slate-50/70 font-medium">
-                            Scopes
-                        </Label>
-                        <FancyInputBox />
-                    </div>
+                    <ExtraInputs app={app} setExtraParam={setExtraParam} />
                 </div>
             ) : (
                 <div className="border border-gray-25 rounded-xl p-8 mb-8">
@@ -195,4 +208,64 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
             </div>
         </div>
     );
+}
+
+function ExtraInputs({
+    app,
+    setExtraParam,
+}: {
+    app: AppInfo;
+    setExtraParam: Dispatch<SetStateAction<string | undefined>>;
+}) {
+    const { tp_id, app_config } = app;
+    switch (tp_id) {
+        case 'discord': {
+            return (
+                <div className="flex flex-col gap-2 mb-4">
+                    <Label htmlFor="bot_token" className="text-slate-50/70 font-medium">
+                        Bot Token
+                    </Label>
+                    <Input
+                        type="text"
+                        id="bot_token"
+                        placeholder="Enter Bot Token"
+                        defaultValue={app_config?.bot_token ?? undefined}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            if (!value.trim().length) {
+                                setExtraParam(undefined);
+                            } else {
+                                setExtraParam(e.target.value);
+                            }
+                        }}
+                    />
+                </div>
+            );
+        }
+        case 'ms_dynamics_365_sales': {
+            return (
+                <div className="flex flex-col gap-2 mb-4">
+                    <Label htmlFor="organisation_url" className="text-slate-50/70 font-medium">
+                        Organisation Url
+                    </Label>
+                    <Input
+                        type="text"
+                        id="organisation_url"
+                        placeholder="Enter Organisation Url"
+                        defaultValue={app_config?.org_url ?? undefined}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            if (!value.trim().length) {
+                                setExtraParam(undefined);
+                            } else {
+                                setExtraParam(e.target.value);
+                            }
+                        }}
+                    />
+                </div>
+            );
+        }
+    }
+
+    return null;
 }
