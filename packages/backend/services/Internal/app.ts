@@ -1,7 +1,7 @@
 import { AppService } from '../../generated/typescript/api/resources/internal/resources/app/service/AppService';
 import prisma from '../../prisma/client';
 import redis from '../../redis/client';
-import { NotFoundError, UnAuthorizedError } from '../../generated/typescript/api/resources/common';
+import { UnAuthorizedError } from '../../generated/typescript/api/resources/common';
 
 const appService = new AppService({
     async getRecentApiCallsForApp(req, res) {
@@ -29,9 +29,7 @@ const appService = new AppService({
         });
 
         if (!connections) {
-            throw new NotFoundError({
-                error: 'Connection not found',
-            });
+            return res.send({ result: undefined });
         }
 
         if (connections?.appId) {
