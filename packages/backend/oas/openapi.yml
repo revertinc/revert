@@ -4699,13 +4699,18 @@ paths:
               required:
                 - userId
                 - environment
-  /internal/request/app:
+  /internal/request/app/{appId}:
     get:
       description: Recent api calls for App
       operationId: internal_app_getRecentApiCallsForApp
       tags:
         - InternalApp
-      parameters: []
+      parameters:
+        - name: appId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: ''

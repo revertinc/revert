@@ -16,14 +16,15 @@ service:
     auth: false
     headers:
         x-revert-api-token: string
-        x-revert-t-id: string
     audiences:
         - internal
     endpoints:
         getRecentApiCallsForApp:
             docs: Recent api calls for App
             method: GET
-            path: /app
+            path: /app/{appId}
+            path-parameters:
+                appId: string
             request:
                 name: RecentApiCallsForApp
             response: RecentAppApiCallsResponse
