@@ -19,7 +19,8 @@ const ConfigLayout = ({ children }: ConfigLayoutProps) => {
     const params = useParams();
     const appId = params?.appId as string;
     const isSettings = pathname?.includes('settings');
-    const { name } = appsInfo[appId.split('_')[0]];
+    const appTpId = appId.split('_');
+    const { name } = appsInfo[appTpId.length > 4 ? 'ms_dynamics_365_sales' : appTpId[0]];
     return (
         <div>
             <FancyHeader title={name}>
