@@ -35,7 +35,7 @@ function Dashboard({ userId }: { userId: string }) {
                         <div className="col-span-2">
                             <div className="flex justify-between">
                                 <h3 className="uppercase text-gray-50/80 font-bold mb-3">endpoint</h3>
-                                <h3 className="uppercase text-gray-50/80 font-bold mb-3">enabled</h3>
+                                <h3 className="uppercase text-gray-50/80 font-bold mb-3">status</h3>
                             </div>
                             <div className="flex flex-col gap-3">
                                 {recentCalls?.length ? (
