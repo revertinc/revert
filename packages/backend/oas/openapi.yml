@@ -4699,6 +4699,38 @@ paths:
               required:
                 - userId
                 - environment
+  /internal/request/app:
+    get:
+      description: Recent api calls for App
+      operationId: internal_app_getRecentApiCallsForApp
+      tags:
+        - InternalApp
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalRecentAppApiCallsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
   /internal/telemetry:
     post:
       description: Create telemetry entry for a deployment
@@ -7688,6 +7720,29 @@ components:
       required:
         - status
         - result
+    internalRecentApiCalls:
+      title: internalRecentApiCalls
+      type: object
+      properties:
+        method:
+          type: string
+        path:
+          type: string
+        status:
+          type: integer
+      required:
+        - method
+        - path
+        - status
+    internalRecentAppApiCallsResponse:
+      title: internalRecentAppApiCallsResponse
+      type: object
+      properties:
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/internalRecentApiCalls'
+          nullable: true
     internalCreateTelemetryEntryResponse:
       title: internalCreateTelemetryEntryResponse
       type: object

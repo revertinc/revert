@@ -1,0 +1,33 @@
+imports:
+    errors: ../common/errors.yml
+
+types:
+    RecentApiCalls:
+        properties:
+            method: string
+            path: string
+            status: integer
+    RecentAppApiCallsResponse:
+        properties:
+            result: optional<list<RecentApiCalls>>
+
+service:
+    base-path: /internal/request
+    auth: false
+    headers:
+        x-revert-api-token: string
+        x-revert-t-id: string
+    audiences:
+        - internal
+    endpoints:
+        getRecentApiCallsForApp:
+            docs: Recent api calls for App
+            method: GET
+            path: /app
+            request:
+                name: RecentApiCallsForApp
+            response: RecentAppApiCallsResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
