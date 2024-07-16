@@ -5,7 +5,8 @@ import { NotFoundError, UnAuthorizedError } from '../../generated/typescript/api
 
 const appService = new AppService({
     async getRecentApiCallsForApp(req, res) {
-        const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
+        const { appId } = req.params;
+        const { 'x-revert-api-token': token } = req.headers;
         const account = await prisma.accounts.findFirst({
             where: {
                 private_token: token as string,
@@ -23,7 +24,7 @@ const appService = new AppService({
 
         const connections = await prisma.connections.findFirst({
             where: {
-                t_id: tenantId as string,
+                appId,
             },
         });
 
