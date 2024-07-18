@@ -4,7 +4,7 @@ import config from '../../../../config';
 import { logInfo } from '../../../../helpers/logger';
 import { xprisma } from '../../../../prisma/client';
 import { TP_ID } from '@prisma/client';
-import { IntegrationAuthProps, mapIntegrationIdToIntegrationName } from '../../../../constants/common';
+import { IntegrationAuthProps, mapIntegrationIdToIntegrationName, AppConfig } from '../../../../constants/common';
 import processOAuthResult from '../../../../helpers/auth/processOAuthResult';
 import sendConnectionAddedEvent from '../../../../helpers/webhooks/connection';
 import BaseOAuthHandler from '../../../../helpers/auth/baseOAuthHandler';
@@ -32,9 +32,14 @@ class LeverAuthHandler extends BaseOAuthHandler {
             redirect_uri: `${config.OAUTH_REDIRECT_BASE}/lever`,
         };
 
+        const env = (account?.apps[0]?.app_config as AppConfig)?.env;
+
+        let url =
+            env === 'Sandbox' ? 'https://sandbox-lever.auth0.com/oauth/token' : 'https://auth.lever.co/oauth/token';
+
         const result: any = await axios({
             method: 'post',
-            url: ' https://auth.lever.co/oauth/token',
+            url: url,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },

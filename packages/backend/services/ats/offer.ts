@@ -5,7 +5,7 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
-import { AtsStandardObjects } from '../../constants/common';
+import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedOffer } from '../../models/unified/offer';
 import { OfferService } from '../../generated/typescript/api/resources/ats/resources/offer/service/OfferService';
@@ -161,6 +161,9 @@ const offerServiceAts = new OfferService(
                                 error: 'The query parameter "opportunityId" is required and should be included in the "fields" parameter.',
                             });
                         }
+                        const env =
+                            connection?.app?.tp_id === 'lever' && (connection?.app?.app_config as AppConfig)?.env;
+
                         const headers = { Authorization: `Bearer ${thirdPartyToken}` };
 
                         let otherParams = '';
@@ -174,9 +177,14 @@ const offerServiceAts = new OfferService(
                             cursor ? `&offset=${cursor}` : ''
                         }${otherParams ? `&${otherParams}` : ''}`;
 
+                        const url =
+                            env === 'Sandbox'
+                                ? `https://api.sandbox.lever.co/v1/opportunities/${fields.opportunityId}/offers?${pagingString}`
+                                : `https://api.lever.co/v1/opportunities/${fields.opportunityId}/offers?${pagingString}`;
+
                         const result = await axios({
                             method: 'get',
-                            url: `https://api.lever.co/v1/opportunities/${fields.opportunityId}/offers?${pagingString}`,
+                            url: url,
                             headers: headers,
                         });
                         const unifiedOffers = await Promise.all(

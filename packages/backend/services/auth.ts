@@ -389,6 +389,13 @@ class AuthService {
                 if (connection.tp_refresh_token) {
                     try {
                         if (connection.tp_id === TP_ID.lever) {
+                            const env = (connection?.app?.app_config as AppConfig)?.env;
+
+                            let url =
+                                env === 'Sandbox'
+                                    ? 'https://sandbox-lever.auth0.com/oauth/token'
+                                    : 'https://auth.lever.co/oauth/token';
+
                             // Refresh lever token
                             const formData = {
                                 grant_type: 'refresh_token',
@@ -402,7 +409,7 @@ class AuthService {
                             };
                             const result: any = await axios({
                                 method: 'post',
-                                url: ' https://auth.lever.co/oauth/token',
+                                url: url,
                                 data: qs.stringify(formData),
                                 headers: {
                                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -616,6 +623,7 @@ class AuthService {
                 ...(scopes.filter(Boolean).length && { scope: scopes }),
                 ...(appConfig?.bot_token && { app_config: { bot_token: appConfig.bot_token } }),
                 ...(appConfig?.org_url && { app_config: { org_url: appConfig.org_url } }),
+                ...(appConfig?.env && { app_config: { env: appConfig.env } }),
             },
         });
         if (!account) {

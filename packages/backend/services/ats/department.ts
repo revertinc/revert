@@ -8,7 +8,7 @@ import axios from 'axios';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedDepartment } from '../../models/unified/department';
 import { DepartmentService } from '../../generated/typescript/api/resources/ats/resources/department/service/DepartmentService';
-import { AtsStandardObjects } from '../../constants/common';
+import { AppConfig, AtsStandardObjects } from '../../constants/common';
 
 const objType = AtsStandardObjects.department;
 
@@ -160,6 +160,9 @@ const departmentServiceAts = new DepartmentService(
                     case TP_ID.lever: {
                         const headers = { Authorization: `Bearer ${thirdPartyToken}` };
 
+                        const env =
+                            connection?.app?.tp_id === 'lever' && (connection?.app?.app_config as AppConfig)?.env;
+
                         let otherParams = '';
                         if (fields) {
                             otherParams = Object.keys(fields)
@@ -171,9 +174,14 @@ const departmentServiceAts = new DepartmentService(
                             cursor ? `&offset=${cursor}` : ''
                         }${otherParams ? `&${otherParams}` : ''}`;
 
+                        const url =
+                            env === 'Sandbox'
+                                ? `https://api.sandbox.lever.co/v1/tags?${pagingString}`
+                                : `https://api.lever.co/v1/tags?${pagingString}`;
+
                         const result = await axios({
                             method: 'get',
-                            url: `https://api.lever.co/v1/tags?${pagingString}`,
+                            url: url,
                             headers: headers,
                         });
 

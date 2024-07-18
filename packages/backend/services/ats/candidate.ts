@@ -5,7 +5,7 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
-import { AtsStandardObjects } from '../../constants/common';
+import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedCandidate } from '../../models/unified/candidate';
 import { CandidateService } from '../../generated/typescript/api/resources/ats/resources/candidate/service/CandidateService';
@@ -62,9 +62,17 @@ const candidateServiceAts = new CandidateService(
                     case TP_ID.lever: {
                         const headers = { Authorization: `Bearer ${thirdPartyToken}` };
 
+                        const env =
+                            connection?.app?.tp_id === 'lever' && (connection?.app?.app_config as AppConfig)?.env;
+
+                        const url =
+                            env === 'Sandbox'
+                                ? `https://api.sandbox.lever.co/v1/opportunities/${candidateId}`
+                                : `https://api.lever.co/v1/opportunities/${candidateId}`;
+
                         const result = await axios({
                             method: 'get',
-                            url: `https://api.lever.co/v1/opportunities/${candidateId}`,
+                            url: url,
                             headers: headers,
                         });
 
@@ -176,6 +184,9 @@ const candidateServiceAts = new CandidateService(
                     case TP_ID.lever: {
                         const headers = { Authorization: `Bearer ${thirdPartyToken}` };
 
+                        const env =
+                            connection?.app?.tp_id === 'lever' && (connection?.app?.app_config as AppConfig)?.env;
+
                         let otherParams = '';
                         if (fields) {
                             otherParams = Object.keys(fields)
@@ -187,9 +198,14 @@ const candidateServiceAts = new CandidateService(
                             cursor ? `&offset=${cursor}` : ''
                         }${otherParams ? `&${otherParams}` : ''}`;
 
+                        const url =
+                            env === 'Sandbox'
+                                ? `https://api.sandbox.lever.co/v1/opportunities?${pagingString}`
+                                : `https://api.lever.co/v1/opportunities?${pagingString}`;
+
                         const result = await axios({
                             method: 'get',
-                            url: `https://api.lever.co/v1/opportunities?${pagingString}`,
+                            url: url,
                             headers: headers,
                         });
                         const unifiedCandidates = await Promise.all(
@@ -287,6 +303,15 @@ const candidateServiceAts = new CandidateService(
                                 error: 'The query parameter "perform_as" is required and should be included in the "fields" parameter.',
                             });
                         }
+
+                        const env =
+                            connection?.app?.tp_id === 'lever' && (connection?.app?.app_config as AppConfig)?.env;
+
+                        const url =
+                            env === 'Sandbox'
+                                ? `https://api.sandbox.lever.co/v1/opportunities?perform_as=${fields.perform_as}`
+                                : `https://api.lever.co/v1/opportunities?perform_as=${fields.perform_as}`;
+
                         const headers = {
                             Authorization: `Bearer ${thirdPartyToken}`,
                             Accept: 'application/json',
@@ -295,7 +320,7 @@ const candidateServiceAts = new CandidateService(
 
                         const result = await axios({
                             method: 'post',
-                            url: `https://api.lever.co/v1/opportunities?perform_as=${fields.perform_as}`,
+                            url: url,
 
                             headers: headers,
                             data: JSON.stringify(candidate),

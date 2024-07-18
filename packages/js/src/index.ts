@@ -1484,13 +1484,30 @@ const createIntegrationBlock = function (self, integration) {
                 } else if (selectedIntegration.integrationId === 'lever') {
                     const encodedScopes = encodeURIComponent(scopes.join(' '));
                     const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/lever`);
-                    window.open(
-                        `https://auth.lever.co/authorize?client_id=${
-                            selectedIntegration.clientId
-                        }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
-                            state
-                        )}&prompt=consent&scope=${encodedScopes}&audience=https://api.lever.co/v1/`
-                    );
+
+                    fetch(
+                        `${this.CORE_API_BASE_URL}ats/lever-app_config?revertPublicToken=${this.API_REVERT_PUBLIC_TOKEN}`
+                    )
+                        .then((data) => data.json())
+                        .then((data) => {
+                            if (data.env === 'Sandbox') {
+                                window.open(
+                                    `https://sandbox-lever.auth0.com/authorize?client_id=${
+                                        selectedIntegration.clientId
+                                    }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                                        state
+                                    )}&prompt=consent&scope=${encodedScopes}&audience=https://api.sandbox.lever.co/v1/`
+                                );
+                            } else {
+                                window.open(
+                                    `https://auth.lever.co/authorize?client_id=${
+                                        selectedIntegration.clientId
+                                    }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                                        state
+                                    )}&prompt=consent&scope=${encodedScopes}&audience=https://api.lever.co/v1/`
+                                );
+                            }
+                        });
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {

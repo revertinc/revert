@@ -197,6 +197,7 @@ export const objectNameMapping: Record<string, Record<CRM_TP_ID, string | undefi
 export interface AppConfig {
     bot_token?: string;
     org_url?: string;
+    env?: string;
 }
 
 export type IntegrationAuthProps = {

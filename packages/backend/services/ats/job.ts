@@ -5,7 +5,7 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
-import { AtsStandardObjects } from '../../constants/common';
+import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedJob } from '../../models/unified/job';
 import { JobService } from '../../generated/typescript/api/resources/ats/resources/job/service/JobService';
@@ -61,9 +61,18 @@ const jobServiceAts = new JobService(
                     }
                     case TP_ID.lever: {
                         const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const env =
+                            connection?.app?.tp_id === 'lever' && (connection?.app?.app_config as AppConfig)?.env;
+
+                        const url =
+                            env === 'Sandbox'
+                                ? `https://api.sandbox.lever.co/v1/postings/${jobId}`
+                                : `https://api.lever.co/v1/postings/${jobId}`;
+
                         const result = await axios({
                             method: 'get',
-                            url: `https://api.lever.co/v1/postings/${jobId}`,
+                            url: url,
                             headers: headers,
                         });
 
@@ -177,6 +186,9 @@ const jobServiceAts = new JobService(
                     case TP_ID.lever: {
                         const headers = { Authorization: `Bearer ${thirdPartyToken}` };
 
+                        const env =
+                            connection?.app?.tp_id === 'lever' && (connection?.app?.app_config as AppConfig)?.env;
+
                         let otherParams = '';
                         if (fields) {
                             otherParams = Object.keys(fields)
@@ -188,9 +200,14 @@ const jobServiceAts = new JobService(
                             cursor ? `&offset=${cursor}` : ''
                         }${otherParams ? `&${otherParams}` : ''}`;
 
+                        const url =
+                            env === 'Sandbox'
+                                ? `https://api.sandbox.lever.co/v1/postings?${pagingString}`
+                                : `https://api.lever.co/v1/postings?${pagingString}`;
+
                         const result = await axios({
                             method: 'get',
-                            url: `https://api.lever.co/v1/postings?${pagingString}`,
+                            url: url,
                             headers: headers,
                         });
 
@@ -287,6 +304,14 @@ const jobServiceAts = new JobService(
                                 error: 'The query parameter "perform_as", is required and should be included in the "fields" parameter.',
                             });
                         }
+                        const env =
+                            connection?.app?.tp_id === 'lever' && (connection?.app?.app_config as AppConfig)?.env;
+
+                        const url =
+                            env === 'Sandbox'
+                                ? `https://api.sandbox.lever.co/v1/postings?perform_as=${fields.perform_as}`
+                                : `https://api.lever.co/v1/postings?perform_as=${fields.perform_as}`;
+
                         const headers = {
                             Authorization: `Bearer ${thirdPartyToken}`,
                             Accept: 'application/json',
@@ -294,7 +319,7 @@ const jobServiceAts = new JobService(
                         };
                         const result = await axios({
                             method: 'post',
-                            url: `https://api.lever.co/v1/postings/?perform_as=${fields.perform_as}`,
+                            url: url,
                             headers: headers,
                             data: JSON.stringify(job),
                         });
@@ -375,6 +400,15 @@ const jobServiceAts = new JobService(
                                 error: 'The query parameter "perform_as", is required and should be included in the "fields" parameter.',
                             });
                         }
+
+                        const env =
+                            connection?.app?.tp_id === 'lever' && (connection?.app?.app_config as AppConfig)?.env;
+
+                        const url =
+                            env === 'Sandbox'
+                                ? `https://api.sandbox.lever.co/v1/postings/${jobId}?perform_as=${fields.perform_as}`
+                                : `https://api.lever.co/v1/postings/${jobId}?perform_as=${fields.perform_as}`;
+
                         const headers = {
                             Authorization: `Bearer ${thirdPartyToken}`,
                             Accept: 'application/json',
@@ -382,7 +416,7 @@ const jobServiceAts = new JobService(
                         };
                         const result = await axios({
                             method: 'post',
-                            url: `https://api.lever.co/v1/postings/${jobId}?perform_as=${fields.perform_as}`,
+                            url: url,
                             headers: headers,
                             data: JSON.stringify(job),
                         });
