@@ -6,7 +6,7 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { disunifyAccountingObject, unifyObject } from '../../helpers/crm/transform';
-import { AccountingStandardObjects } from '../../constants/common';
+import { AccountingStandardObjects, AppConfig } from '../../constants/common';
 import { ExpenseService } from '../../generated/typescript/api/resources/accounting/resources/expense/service/ExpenseService';
 import { UnifiedExpense } from '../../models/unified/expense';
 
@@ -39,10 +39,16 @@ const expenseServiceAccounting = new ExpenseService(
                                 error: 'The query parameter "realmID" is required and should be included in the "fields" parameter.',
                             });
                         }
-
+                        const env =
+                            connection?.app?.tp_id === 'quickbooks' && (connection?.app?.app_config as AppConfig)?.env;
                         const result = await axios({
                             method: 'GET',
-                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/purchase/${expenseId}`,
+                            url: `${
+                                (env === 'Sandbox'
+                                    ? 'https://sandbox-quickbooks.api.intuit.com'
+                                    : 'https://quickbooks.api.intuit.com') +
+                                `/v3/company/${fields.realmID}/purchase/${expenseId}`
+                            }`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
@@ -130,10 +136,18 @@ const expenseServiceAccounting = new ExpenseService(
                         let pagingString = `${cursor ? ` STARTPOSITION +${cursor}+` : ''}${
                             pageSize ? ` MAXRESULTS +${pageSize}` : ''
                         }`;
+                        const env =
+                            connection?.app?.tp_id === 'quickbooks' && (connection?.app?.app_config as AppConfig)?.env;
 
                         const result = await axios({
                             method: 'GET',
-                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/query?query=select * from Purchase ${pagingString}`,
+
+                            url: `${
+                                (env === 'Sandbox'
+                                    ? 'https://sandbox-quickbooks.api.intuit.com'
+                                    : 'https://quickbooks.api.intuit.com') +
+                                `/v3/company/${fields.realmID}/query?query=select * from Purchase ${pagingString}`
+                            }`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
@@ -238,10 +252,16 @@ const expenseServiceAccounting = new ExpenseService(
                                 error: 'The query parameter "realmID" is required and should be included in the "fields" parameter.',
                             });
                         }
-
+                        const env =
+                            connection?.app?.tp_id === 'quickbooks' && (connection?.app?.app_config as AppConfig)?.env;
                         const result: any = await axios({
                             method: 'post',
-                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/purchase`,
+
+                            url: `${
+                                (env === 'Sandbox'
+                                    ? 'https://sandbox-quickbooks.api.intuit.com'
+                                    : 'https://quickbooks.api.intuit.com') + `/v3/company/${fields.realmID}/purchase`
+                            }`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
@@ -315,9 +335,18 @@ const expenseServiceAccounting = new ExpenseService(
                             });
                         }
                         disunifiedExpenseData.Id = expenseId;
+
+                        const env =
+                            connection?.app?.tp_id === 'quickbooks' && (connection?.app?.app_config as AppConfig)?.env;
+
                         const result: any = await axios({
                             method: 'post',
-                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/purchase`,
+
+                            url: `${
+                                (env === 'Sandbox'
+                                    ? 'https://sandbox-quickbooks.api.intuit.com'
+                                    : 'https://quickbooks.api.intuit.com') + `/v3/company/${fields.realmID}/purchase`
+                            }`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
@@ -336,6 +365,7 @@ const expenseServiceAccounting = new ExpenseService(
                     }
                     case TP_ID.xero: {
                         disunifiedExpenseData.Id = expenseId;
+
                         const result: any = await axios({
                             method: 'post',
                             url: `https://api.xero.com/api.xro/2.0/Invoices`,
@@ -403,11 +433,19 @@ const expenseServiceAccounting = new ExpenseService(
                                 error: 'The query parameter "realmID" is required and should be included in the "fields" parameter.',
                             });
                         }
+                        const env =
+                            connection?.app?.tp_id === 'quickbooks' && (connection?.app?.app_config as AppConfig)?.env;
 
                         disunifiedExpenseData.Id = expenseId;
                         await axios({
                             method: 'post',
-                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/purchase?operation=delete`,
+
+                            url: `${
+                                (env === 'Sandbox'
+                                    ? 'https://sandbox-quickbooks.api.intuit.com'
+                                    : 'https://quickbooks.api.intuit.com') +
+                                `/v3/company/${fields.realmID}/purchase?operation=delete`
+                            }`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',

@@ -6,7 +6,7 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { disunifyAccountingObject, unifyObject } from '../../helpers/crm/transform';
-import { AccountingStandardObjects } from '../../constants/common';
+import { AccountingStandardObjects, AppConfig } from '../../constants/common';
 import { UnifiedVendor } from '../../models/unified/vendor';
 import { VendorService } from '../../generated/typescript/api/resources/accounting/resources/vendor/service/VendorService';
 
@@ -39,10 +39,18 @@ const vendorServiceAccounting = new VendorService(
                                 error: 'The query parameter "realmID" is required and should be included in the "fields" parameter.',
                             });
                         }
+                        const env =
+                            connection?.app?.tp_id === 'quickbooks' && (connection?.app?.app_config as AppConfig)?.env;
 
                         const result = await axios({
                             method: 'GET',
-                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/vendor/${vendorId}`,
+
+                            url: `${
+                                (env === 'Sandbox'
+                                    ? 'https://sandbox-quickbooks.api.intuit.com'
+                                    : 'https://quickbooks.api.intuit.com') +
+                                `/v3/company/${fields.realmID}/vendor/${vendorId}`
+                            }`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
@@ -126,6 +134,8 @@ const vendorServiceAccounting = new VendorService(
                                 error: 'The query parameter "realmID" is required and should be included in the "fields" parameter.',
                             });
                         }
+                        const env =
+                            connection?.app?.tp_id === 'quickbooks' && (connection?.app?.app_config as AppConfig)?.env;
 
                         let pagingString = `${cursor ? ` STARTPOSITION +${cursor}+` : ''}${
                             pageSize ? ` MAXRESULTS +${pageSize}` : ''
@@ -133,7 +143,13 @@ const vendorServiceAccounting = new VendorService(
 
                         const result = await axios({
                             method: 'GET',
-                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/query?query=select * from Vendor ${pagingString}`,
+
+                            url: `${
+                                (env === 'Sandbox'
+                                    ? 'https://sandbox-quickbooks.api.intuit.com'
+                                    : 'https://quickbooks.api.intuit.com') +
+                                `/v3/company/${fields.realmID}/query?query=select * from Vendor ${pagingString}`
+                            }`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
@@ -167,6 +183,7 @@ const vendorServiceAccounting = new VendorService(
                     }
                     case TP_ID.xero: {
                         const pagingString = `${cursor ? `page=${cursor}` : ''}`;
+
                         const result = await axios({
                             method: 'GET',
                             url: `https://api.xero.com/api.xro/2.0/contacts?${pagingString}`,
@@ -241,9 +258,16 @@ const vendorServiceAccounting = new VendorService(
                             });
                         }
 
+                        const env =
+                            connection?.app?.tp_id === 'quickbooks' && (connection?.app?.app_config as AppConfig)?.env;
+
                         const result: any = await axios({
                             method: 'post',
-                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/vendor`,
+                            url: `${
+                                (env === 'Sandbox'
+                                    ? 'https://sandbox-quickbooks.api.intuit.com'
+                                    : 'https://quickbooks.api.intuit.com') + `/v3/company/${fields.realmID}/vendor`
+                            }`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
@@ -317,9 +341,18 @@ const vendorServiceAccounting = new VendorService(
                             });
                         }
                         disunifiedVendorData.Id = vendorId;
+
+                        const env =
+                            connection?.app?.tp_id === 'quickbooks' && (connection?.app?.app_config as AppConfig)?.env;
+
                         const result: any = await axios({
                             method: 'post',
-                            url: `https://quickbooks.api.intuit.com/v3/company/${fields.realmID}/vendor`,
+
+                            url: `${
+                                (env === 'Sandbox'
+                                    ? 'https://sandbox-quickbooks.api.intuit.com'
+                                    : 'https://quickbooks.api.intuit.com') + `/v3/company/${fields.realmID}/vendor`
+                            }`,
                             headers: {
                                 Authorization: `Bearer ${thirdPartyToken}`,
                                 Accept: 'application/json',
