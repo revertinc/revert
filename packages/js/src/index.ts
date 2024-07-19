@@ -1471,7 +1471,7 @@ const createIntegrationBlock = function (self, integration) {
                                     data.error?.code === 'P2002'
                                         ? ': Already connected another CRM. Please disconnect first.'
                                         : '';
-                                this.renderFailedStage();
+
                                 console.log('error:', errorMessage);
                             } else {
                                 console.log('OAuth flow succeeded', data);
@@ -1479,7 +1479,7 @@ const createIntegrationBlock = function (self, integration) {
                         })
                         .catch((error) => {
                             console.log(error);
-                            this.renderFailedStage();
+                            return this.renderFailedStage();
                         });
                 } else if (selectedIntegration.integrationId === 'lever') {
                     const encodedScopes = encodeURIComponent(scopes.join(' '));
