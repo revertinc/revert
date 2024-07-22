@@ -3,7 +3,6 @@
 import { ReactNode } from 'react';
 import { FancyHeader, Separator, Tabs, TabsList, TabsTrigger } from '@revertdotdev/components';
 import { Icons } from '@revertdotdev/icons';
-import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { cn } from '@revertdotdev/utils';
@@ -20,11 +19,11 @@ const ConfigLayout = ({ children }: ConfigLayoutProps) => {
     const appId = params?.appId as string;
     const isSettings = pathname?.includes('settings');
     const appTpId = appId.split('_');
-    const { name } = appsInfo[appTpId.length > 4 ? 'ms_dynamics_365_sales' : appTpId[0]];
+    const { name, logo } = appsInfo[appTpId.length > 4 ? 'ms_dynamics_365_sales' : appTpId[0]];
     return (
         <div>
             <FancyHeader title={name}>
-                <Image src="/Logo.png" alt="Linear" height={44} width={44} className="pr-2" />
+                <div className="pr-2"> {logo}</div>
             </FancyHeader>
             <Tabs defaultValue="settings" className="w-auto" value={isSettings ? 'settings' : 'api-reference'}>
                 <TabsList>

@@ -4,7 +4,6 @@ import { appsInfo } from '@revertdotdev/lib/constants';
 import { AppSchema } from '@revertdotdev/types/schemas/appSchema';
 import { tp_id } from '@revertdotdev/types/schemas/commonSchema';
 import { cn, uuid } from '@revertdotdev/utils';
-import Image from 'next/image';
 import { useState } from 'react';
 import { ModalFooter, Button, ModalClose } from '@revertdotdev/components';
 import { createApplication } from '@revertdotdev/lib/actions';
@@ -37,7 +36,7 @@ export function ApplicationCards({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[430px] overflow-scroll">
                 {Object.keys(appsInfo).map((app) => {
                     const isAppExist = appsId.includes(app as tp_id);
-                    const { name } = appsInfo[app] ?? {};
+                    const { name, logo } = appsInfo[app] ?? {};
                     return (
                         <>
                             <button
@@ -53,7 +52,7 @@ export function ApplicationCards({
                                 onClick={() => setSelectedApp(app as tp_id)}
                             >
                                 <div className="flex justify-start items-center pl-2">
-                                    <Image src="/Logo.png" alt="slack" height="44" width="44" />
+                                    {logo}
                                     <p className="font-semibold pl-4">{name}</p>
                                 </div>
                             </button>
