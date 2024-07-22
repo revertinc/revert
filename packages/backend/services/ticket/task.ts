@@ -531,7 +531,7 @@ const taskServiceTicket = new TaskService(
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
                             });
-                            let transition = null;
+                            let transition: any = null;
                             if (statusval === 'open') {
                                 transition = allTransitions.data.transitions.find(
                                     (item: any) => item.name.toLowerCase() === 'to do'
@@ -745,7 +745,7 @@ const taskServiceTicket = new TaskService(
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
                             });
-                            let transition = null;
+                            let transition: any = null;
                             if (statusval === 'open') {
                                 transition = allTransitions.data.transitions.find(
                                     (item: any) => item.name.toLowerCase() === 'to do'
