@@ -520,8 +520,9 @@ class AuthService {
                 apps: env.apps.map((app) => {
                     return {
                         ...app,
-                        scope: app.scope.length ? app.scope : DEFAULT_SCOPE[app.tp_id],
+                        scope: app.scope,
                         env: env.env,
+                        available_scope: DEFAULT_SCOPE[app.tp_id],
                     };
                 }),
             };
@@ -572,7 +573,7 @@ class AuthService {
         if (!account) {
             return { error: 'Account does not exist' };
         }
-        
+
         return account;
     }
 }

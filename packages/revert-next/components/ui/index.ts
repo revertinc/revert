@@ -35,6 +35,7 @@ export {
     PopoverContent,
     PopoverAnchor,
     FancyHeader,
+    FancyInputBox,
 } from '@revertdotdev/components/common';
 export { OnboardingNavLink } from '@revertdotdev/components/onboarding';
 export { EnvironmentMode, NavLinks } from '@revertdotdev/components/sidenav';
@@ -43,5 +44,4 @@ export {
     ApplicationCards,
     AppSettings,
     ListOfRecentApiCalls,
-    Scopes,
 } from '@revertdotdev/components/integration';

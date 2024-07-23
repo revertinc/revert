@@ -1,7 +1,7 @@
 'use client';
 
 import { Icons, KeyIcon } from '@revertdotdev/icons';
-import { Button, Clipboard, Input, Label, Scopes } from '@revertdotdev/components';
+import { Button, Clipboard, Input, Label, FancyInputBox } from '@revertdotdev/components';
 import { AppInfo } from '@revertdotdev/types/schemas/appSchema';
 import { useState } from 'react';
 import { cn } from '@revertdotdev/utils';
@@ -18,10 +18,16 @@ type AppSettingsProps = {
 };
 
 export function AppSettings({ app, keys }: AppSettingsProps) {
-    const { app_client_id, app_client_secret, id, is_revert_app, scope, tp_id, app_config } = app;
+    const { app_client_id, app_client_secret, id, is_revert_app, scope, tp_id, app_config, available_scope } = app;
     const { currentPrivateToken, currentPublicToken } = keys;
     const currentClientSecret = app_client_secret ?? '';
     const currentClientId = app_client_id ?? '';
+    const scopes = available_scope.map((s) => {
+        return {
+            value: s,
+            label: s,
+        };
+    });
 
     const [customPreferenceView, setCustomPreferenceView] = useState<boolean>(is_revert_app);
     const [clientId, setClientId] = useState<string>(currentClientId);
@@ -35,6 +41,7 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
     config = config === '' ? undefined : config;
     const [extraParam, setExtraParam] = useState<string | undefined>(config);
     const router = useRouter();
+    const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>(scope);
 
     const isValueChange = clientId !== currentClientId || clientSecret !== currentClientSecret || extraParam !== config;
 
@@ -166,7 +173,12 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
                         <Label htmlFor="scopes" className="text-slate-50/70 font-medium">
                             Scopes
                         </Label>
-                        <Scopes />
+                        <FancyInputBox
+                            options={scopes}
+                            onValueChange={setSelectedFrameworks}
+                            defaultValue={selectedFrameworks}
+                            animation={2}
+                        />
                     </div>
                 </div>
             ) : (

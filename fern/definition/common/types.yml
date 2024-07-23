@@ -15,6 +15,7 @@ types:
             id: string
             tp_id: TPID
             scope: optional<list<string>>
+            available_scope: list<string>
             app_client_id: optional<string>
             app_client_secret: optional<string>
             owner_account_public_token: string
