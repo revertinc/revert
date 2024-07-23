@@ -42,8 +42,10 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
     const [extraParam, setExtraParam] = useState<string | undefined>(config);
     const router = useRouter();
     const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>(scope);
+    const isScopeChanged = JSON.stringify(scope.sort()) !== JSON.stringify(selectedFrameworks.sort());
 
-    const isValueChange = clientId !== currentClientId || clientSecret !== currentClientSecret || extraParam !== config;
+    const isValueChange =
+        clientId !== currentClientId || clientSecret !== currentClientSecret || extraParam !== config || isScopeChanged;
 
     async function handleDeleteIntegration() {
         const privateToken = localStorage.getItem('privateToken');
