@@ -28,7 +28,7 @@ const multiSelectVariants = cva(
     {
         variants: {
             variant: {
-                default: 'border-gray-50/70 text-foreground font-normal bg-card hover:bg-card/80',
+                default: 'border-gray-25 text-gray-50 font-normal bg-card hover:bg-card/80',
                 secondary: 'border-foreground/10 bg-secondary text-secondary-foreground hover:bg-secondary/80',
                 destructive: 'border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80',
                 inverted: 'inverted',
@@ -113,7 +113,7 @@ export const FancyInputBox = React.forwardRef<HTMLButtonElement, MultiSelectProp
             onValueChange,
             variant,
             defaultValue = [],
-            placeholder = 'Select Scopes',
+            placeholder = 'Select Scopes here..',
             animation = 0,
             maxCount = 10,
             modalPopover = false,
@@ -247,13 +247,6 @@ export const FancyInputBox = React.forwardRef<HTMLButtonElement, MultiSelectProp
                                     style={{ animationDuration: `${animation}s` }}
                                 >
                                     {`+ ${selectedValues.length - maxCount} more`}
-                                    <Icons.xcircle
-                                        className="ml-2 h-4 w-4 cursor-pointer"
-                                        onClick={(event) => {
-                                            event.stopPropagation();
-                                            clearExtraOptions();
-                                        }}
-                                    />
                                 </Badge>
                             )}
                         </div>
