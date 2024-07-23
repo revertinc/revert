@@ -253,11 +253,11 @@ export const FancyInputBox = React.forwardRef<HTMLButtonElement, MultiSelectProp
                     </div>
                 </PopoverTrigger>
                 <PopoverContent
-                    className="w-96 p-0 border border-gray-50/70"
-                    align="start"
+                    className="w-96 p-0 border border-gray-50/30 shadow"
+                    align="center"
                     onEscapeKeyDown={() => setIsPopoverOpen(false)}
                 >
-                    <Command>
+                    <Command className="border-b border-gray-25">
                         <CommandInput placeholder="Search..." onKeyDown={handleInputKeyDown} />
                         <CommandList>
                             <CommandEmpty>No scopes found.</CommandEmpty>
@@ -285,9 +285,9 @@ export const FancyInputBox = React.forwardRef<HTMLButtonElement, MultiSelectProp
                                         >
                                             <div
                                                 className={cn(
-                                                    'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                                                    'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-gray-50',
                                                     isSelected
-                                                        ? 'bg-primary text-primary-foreground'
+                                                        ? 'bg-accent-500 text-gray-50'
                                                         : 'opacity-50 [&_svg]:invisible'
                                                 )}
                                             >
@@ -302,29 +302,29 @@ export const FancyInputBox = React.forwardRef<HTMLButtonElement, MultiSelectProp
                                 })}
                             </CommandGroup>
                             <CommandSeparator />
-                            <CommandGroup>
-                                <div className="flex items-center justify-between">
-                                    {selectedValues.length > 0 && (
-                                        <>
-                                            <CommandItem
-                                                onSelect={handleClear}
-                                                className="flex-1 justify-center cursor-pointer"
-                                            >
-                                                Clear
-                                            </CommandItem>
-                                            <Separator orientation="vertical" className="flex min-h-6 h-full" />
-                                        </>
-                                    )}
-                                    <CommandSeparator />
-                                    <CommandItem
-                                        onSelect={() => setIsPopoverOpen(false)}
-                                        className="flex-1 justify-center cursor-pointer"
-                                    >
-                                        Close
-                                    </CommandItem>
-                                </div>
-                            </CommandGroup>
                         </CommandList>
+                        <CommandGroup className="border-t border-gray-25">
+                            <div className="flex items-center justify-between">
+                                {selectedValues.length > 0 && (
+                                    <>
+                                        <CommandItem
+                                            onSelect={handleClear}
+                                            className="flex-1 justify-center cursor-pointer font-semibold text-white"
+                                        >
+                                            Clear
+                                        </CommandItem>
+                                        <Separator orientation="vertical" className="flex min-h-6 h-full" />
+                                    </>
+                                )}
+                                <CommandSeparator />
+                                <CommandItem
+                                    onSelect={() => setIsPopoverOpen(false)}
+                                    className="flex-1 justify-center cursor-pointer font-semibold text-white"
+                                >
+                                    Close
+                                </CommandItem>
+                            </div>
+                        </CommandGroup>
                     </Command>
                 </PopoverContent>
             </Popover>
