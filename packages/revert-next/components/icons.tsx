@@ -238,6 +238,42 @@ export const Icons = {
             <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
         </svg>
     ),
+    xcircle: (props: IconProps) => (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="lucide lucide-circle-x"
+            {...props}
+        >
+            <circle cx="12" cy="12" r="10" />
+            <path d="m15 9-6 6" />
+            <path d="m9 9 6 6" />
+        </svg>
+    ),
+    chevrondown: (props: IconProps) => (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="lucide lucide-chevron-down"
+            {...props}
+        >
+            <path d="m6 9 6 6 6-6" />
+        </svg>
+    ),
 };
 
 export {
@@ -328,8 +364,8 @@ export const Socials = {
                     y2="96.9811775%"
                     id="linearGradient-1"
                 >
-                    <stop stop-color="#FFE513" offset="0.5618%"></stop>
-                    <stop stop-color="#FDB924" offset="100%"></stop>
+                    <stop stopColor="#FFE513" offset="0.5618%"></stop>
+                    <stop stopColor="#FDB924" offset="100%"></stop>
                 </linearGradient>
                 <linearGradient
                     x1="4.51245499%"
@@ -338,8 +374,8 @@ export const Socials = {
                     y2="87.0642105%"
                     id="linearGradient-2"
                 >
-                    <stop stop-color="#008CD2" offset="0.5618%"></stop>
-                    <stop stop-color="#00649D" offset="100%"></stop>
+                    <stop stopColor="#008CD2" offset="0.5618%"></stop>
+                    <stop stopColor="#00649D" offset="100%"></stop>
                 </linearGradient>
                 <linearGradient
                     x1="50.0016382%"
@@ -348,12 +384,12 @@ export const Socials = {
                     y2="97.5288157%"
                     id="linearGradient-3"
                 >
-                    <stop stop-color="#26A146" offset="0%"></stop>
-                    <stop stop-color="#008A52" offset="100%"></stop>
+                    <stop stopColor="#26A146" offset="0%"></stop>
+                    <stop stopColor="#008A52" offset="100%"></stop>
                 </linearGradient>
                 <linearGradient x1="43.733871%" y1="8.20779605%" x2="57.543871%" y2="93.1977961%" id="linearGradient-4">
-                    <stop stop-color="#D92231" offset="0%"></stop>
-                    <stop stop-color="#BA2234" offset="100%"></stop>
+                    <stop stopColor="#D92231" offset="0%"></stop>
+                    <stop stopColor="#BA2234" offset="100%"></stop>
                 </linearGradient>
             </defs>
             <g>
@@ -787,7 +823,7 @@ export const Socials = {
                     filterUnits="userSpaceOnUse"
                     colorInterpolationFilters="sRGB"
                 >
-                    <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                    <feFlood floodOpacity="0" result="BackgroundImageFix" />
                     <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
                     <feOffset dy="10" />
                     <feGaussianBlur stdDeviation="15" />
