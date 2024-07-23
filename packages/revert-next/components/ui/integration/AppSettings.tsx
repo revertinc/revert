@@ -41,8 +41,8 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
     config = config === '' ? undefined : config;
     const [extraParam, setExtraParam] = useState<string | undefined>(config);
     const router = useRouter();
-    const [selectedFrameworks, setSelectedFrameworks] = useState<string[]>(scope);
-    const isScopeChanged = JSON.stringify(scope.sort()) !== JSON.stringify(selectedFrameworks.sort());
+    const [selectedScopes, setSelectedScopes] = useState<string[]>(scope);
+    const isScopeChanged = JSON.stringify(scope.sort()) !== JSON.stringify(selectedScopes.sort());
 
     const isValueChange =
         clientId !== currentClientId || clientSecret !== currentClientSecret || extraParam !== config || isScopeChanged;
@@ -83,7 +83,7 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
                 appId: app.id,
                 clientId,
                 clientSecret,
-                scopes: scope,
+                scopes: selectedScopes,
                 tpId: tp_id,
                 isRevertApp: true,
                 privateToken,
@@ -177,8 +177,8 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
                         </Label>
                         <FancyInputBox
                             options={scopes}
-                            onValueChange={setSelectedFrameworks}
-                            defaultValue={selectedFrameworks}
+                            onValueChange={setSelectedScopes}
+                            defaultValue={selectedScopes}
                             animation={2}
                         />
                     </div>
