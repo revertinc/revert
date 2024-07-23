@@ -20,6 +20,7 @@ const appObjectSchema = z.object({
     app_config: appConfigSchema,
     environmentId: z.string(),
     env: z.string(),
+    available_scope: z.array(z.string()),
 });
 
 export const appSchema = z.array(appObjectSchema);
