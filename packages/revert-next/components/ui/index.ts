@@ -34,7 +34,6 @@ export {
     PopoverTrigger,
     PopoverContent,
     PopoverAnchor,
-    FancyInputBox,
     FancyHeader,
 } from '@revertdotdev/components/common';
 export { OnboardingNavLink } from '@revertdotdev/components/onboarding';
@@ -44,4 +43,5 @@ export {
     ApplicationCards,
     AppSettings,
     ListOfRecentApiCalls,
+    Scopes,
 } from '@revertdotdev/components/integration';

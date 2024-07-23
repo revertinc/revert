@@ -1,7 +1,7 @@
 'use client';
 
 import { Icons, KeyIcon } from '@revertdotdev/icons';
-import { Button, Clipboard, FancyInputBox, Input, Label } from '@revertdotdev/components';
+import { Button, Clipboard, Input, Label, Scopes } from '@revertdotdev/components';
 import { AppInfo } from '@revertdotdev/types/schemas/appSchema';
 import { useState } from 'react';
 import { cn } from '@revertdotdev/utils';
@@ -162,6 +162,12 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
                         />
                     </div>
                     <ExtraInputs app={app} setExtraParam={setExtraParam} />
+                    <div className="flex flex-col gap-2 mb-4">
+                        <Label htmlFor="scopes" className="text-slate-50/70 font-medium">
+                            Scopes
+                        </Label>
+                        <Scopes />
+                    </div>
                 </div>
             ) : (
                 <div className="border border-gray-25 rounded-xl p-8 mb-8">
