@@ -7,3 +7,6 @@ packages/client
 packages/react
 packages/js
 packages/vue
+generated
+dist
+.env
