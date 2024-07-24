@@ -130,8 +130,7 @@ RUN echo "SERVER_PORT=$SERVER_PORT" > .env \
 
 RUN rm -rf node_modules && yarn cache clean && yarn install
 RUN npm install -g fern-api@0.16.22 && fern -v && fern generate --log-level debug
-RUN mkdir -p /app/packages/backend/dist/generated && cp -r /app/packages/backend/generated/typescript /app/packages/backend/dist/generated
-RUN yarn workspace @revertdotdev/backend build
+RUN yarn workspace @revertdotdev/backend build:prod
 
 # remove development dependencies
 RUN npm prune --production
@@ -139,10 +138,11 @@ RUN npm prune --production
 FROM node:18-alpine AS runtime_image
 WORKDIR /app/
 
-#copy from build image
+# copy from build image
 COPY --from=build_image /app/packages/backend/dist ./dist
 COPY --from=build_image /app/node_modules ./node_modules
-COPY --from=build_image /app/.env ./dist/.env
+COPY --from=build_image /app/.env ./.env
+COPY --from=build_image /app/packages/backend/package.json ./package.json
 
 WORKDIR /app/dist
-CMD ["node", "index.js"]
+CMD ["yarn", "start"]
