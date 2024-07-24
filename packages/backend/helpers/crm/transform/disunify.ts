@@ -192,7 +192,7 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
         }
         case TP_ID.jira: {
             if (objType === 'ticketTask') {
-                let priorityId = undefined;
+                let priorityId: string | undefined = undefined;
                 if (obj.priority === 'urgent') priorityId = '1';
                 else if (obj.priority === 'high') priorityId = '2';
                 else if (obj.priority === 'medium') priorityId = '3';
@@ -245,7 +245,7 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
         }
         case TP_ID.bitbucket: {
             if (objType === 'ticketTask') {
-                let priorityId = undefined;
+                let priorityId: string | undefined = undefined;
                 if (obj.priority === 'urgent') priorityId = 'blocker';
                 else if (obj.priority === 'high') priorityId = 'critical';
                 else if (obj.priority === 'medium') priorityId = 'major';
