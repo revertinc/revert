@@ -138,7 +138,7 @@ RUN npm prune --production
 FROM node:18-alpine AS runtime_image
 WORKDIR /app/
 
-# #copy from build image
+# copy from build image
 COPY --from=build_image /app/packages/backend/dist ./dist
 COPY --from=build_image /app/node_modules ./node_modules
 COPY --from=build_image /app/.env ./.env
