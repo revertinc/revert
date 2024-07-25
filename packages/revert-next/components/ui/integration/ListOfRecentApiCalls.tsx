@@ -4,9 +4,14 @@ import { useRecentApiCall } from '@revertdotdev/hooks';
 import { Badge, Separator } from '@revertdotdev/components';
 import { cn, uuid } from '@revertdotdev/utils';
 import { Fragment } from 'react';
+import { ApiReferenceSkeleton } from '@revertdotdev/components/skeleton';
 
 export function ListOfRecentApiCalls({ appId }: { appId: string }) {
-    const { data } = useRecentApiCall(appId);
+    const { data, isLoading, isValidating } = useRecentApiCall(appId);
+
+    if (isLoading || isValidating) {
+        return <ApiReferenceSkeleton />;
+    }
 
     if (!data) {
         return null;
