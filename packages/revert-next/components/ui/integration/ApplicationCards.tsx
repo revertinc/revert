@@ -64,9 +64,12 @@ export function ApplicationCards({
                 <ModalClose>
                     <Button
                         type="submit"
-                        className={cn({
-                            'bg-gray-25/20 text-gray-50/70 cursor-not-allowed hover:bg-gray-25/20': !selectedApp,
-                        })}
+                        className={cn(
+                            {
+                                'bg-gray-25/20 text-gray-50/70 cursor-not-allowed hover:bg-gray-25/20': !selectedApp,
+                            },
+                            'w-full'
+                        )}
                         onClick={handleCreation}
                     >
                         <span>Add Integration</span>
