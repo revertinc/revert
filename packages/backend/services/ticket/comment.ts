@@ -402,7 +402,7 @@ const commentServiceTicket = new CommentService(
                         break;
                     }
                     case TP_ID.github: {
-                        if (!fields || (fields && !fields.repo && !fields.owner)) {
+                        if (!fields || (fields && (!fields.repo || !fields.owner))) {
                             throw new NotFoundError({
                                 error: 'The query parameters "repo" and "owner" are required and should be included in the "fields" parameter.',
                             });
@@ -577,7 +577,7 @@ const commentServiceTicket = new CommentService(
                         break;
                     }
                     case TP_ID.github: {
-                        if (!fields || (fields && !fields.repo && !fields.owner)) {
+                        if (!fields || (fields && (!fields.repo || !fields.owner))) {
                             throw new NotFoundError({
                                 error: 'The query parameters "repo" and "owner" are required and should be included in the "fields" parameter.',
                             });
@@ -737,7 +737,7 @@ const commentServiceTicket = new CommentService(
                         break;
                     }
                     case TP_ID.github: {
-                        if (!fields || (fields && !fields.repo && !fields.owner)) {
+                        if (!fields || (fields && (!fields.repo || !fields.owner))) {
                             throw new NotFoundError({
                                 error: 'The query parameters "repo" and "owner" are required and should be included in the "fields" parameter.',
                             });

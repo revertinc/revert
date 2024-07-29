@@ -158,7 +158,7 @@ const taskServiceTicket = new TaskService(
                         break;
                     }
                     case TP_ID.github: {
-                        if (!fields || (fields && !fields.repo && !fields.owner)) {
+                        if (!fields || (fields && (!fields.repo || !fields.owner))) {
                             throw new NotFoundError({
                                 error: 'The query parameters "repo" and "owner" are required and should be included in the "fields" parameter.',
                             });
@@ -214,9 +214,7 @@ const taskServiceTicket = new TaskService(
                 if (
                     thirdPartyId !== TP_ID.bitbucket &&
                     thirdPartyId !== TP_ID.github &&
-                    !fields &&
-                    fields &&
-                    !fields.listId
+                    (!fields || (fields && !fields.listId))
                 ) {
                     throw new NotFoundError({
                         error: 'The query parameter "listId" is required and should be included in the "fields" parameter.',
@@ -447,7 +445,7 @@ const taskServiceTicket = new TaskService(
                         break;
                     }
                     case TP_ID.github: {
-                        if (!fields || (fields && !fields.repo && !fields.owner)) {
+                        if (!fields || (fields && (!fields.repo || !fields.owner))) {
                             throw new NotFoundError({
                                 error: 'The query parameters "repo" and "owner" are required and should be included in the "fields" parameter.',
                             });
@@ -698,7 +696,7 @@ const taskServiceTicket = new TaskService(
                         break;
                     }
                     case TP_ID.github: {
-                        if (!fields || (fields && !fields.repo && !fields.owner)) {
+                        if (!fields || (fields && (!fields.repo || !fields.owner))) {
                             throw new NotFoundError({
                                 error: 'The query parameters "repo" and "owner" are required and should be included in the "fields" parameter.',
                             });
@@ -934,7 +932,7 @@ const taskServiceTicket = new TaskService(
                         break;
                     }
                     case TP_ID.github: {
-                        if (!fields || (fields && !fields.repo && !fields.owner)) {
+                        if (!fields || (fields && (!fields.repo || !fields.owner))) {
                             throw new NotFoundError({
                                 error: 'The query parameters "repo" and "owner" are required and should be included in the "fields" parameter.',
                             });

@@ -307,7 +307,7 @@ const collectionServiceTicket = new CollectionService(
                             cursor ? `&page=${cursor}` : ''
                         }`;
                         if (parsedFields && parsedFields.collection_type === 'projects') {
-                            if (!parsedFields.owner && !parsedFields.repo) {
+                            if (!parsedFields.owner || !parsedFields.repo) {
                                 throw new Error(
                                     'To retrieve all projects in a repository in GitHub, "owner" and "repo" are required in the "fields" parameter.'
                                 );
