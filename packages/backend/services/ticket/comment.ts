@@ -235,12 +235,12 @@ const commentServiceTicket = new CommentService(
                         );
 
                         const pageInfo = comments.pageInfo;
-                        let next_cursor = undefined;
+                        let next_cursor: string | undefined = undefined;
                         if (pageInfo.hasNextPage && pageInfo.endCursor) {
                             next_cursor = pageInfo.endCursor;
                         }
 
-                        let previous_cursor = undefined;
+                        let previous_cursor: string | undefined = undefined;
                         if (pageInfo.hasPreviousPage && pageInfo.startCursor) {
                             previous_cursor = pageInfo.startCursor;
                         }
