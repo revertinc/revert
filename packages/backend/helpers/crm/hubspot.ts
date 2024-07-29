@@ -200,7 +200,7 @@ export const getAssociationObjects = async (
         invalidAssociations.map((item: string) => {
             associatedData[item] = [
                 {
-                    error: 'we currently do not support this association object,please contact us for more information.',
+                    error: 'No such association object or if its exists we currently do not support, please contact us for more information.',
                 },
             ];
         });
