@@ -159,8 +159,7 @@ const metadataService = new MetadataService({
                 {
                     integrationId: TP_ID.github,
                     name: 'GitHub',
-                    imageSrc:
-                        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1702983006/Revert/szfzkoagws7h3miptezo.png',
+                    imageSrc: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/d4jdtttg8ptk2ab9kpz7',
                     status: 'active',
                     scopes: getScope(apps, TP_ID.github),
                     clientId: getClientId(apps, TP_ID.github) || config.GITHUB_CLIENT_ID,
