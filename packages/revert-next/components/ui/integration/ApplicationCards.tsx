@@ -4,7 +4,7 @@ import { appsInfo } from '@revertdotdev/lib/constants';
 import { AppSchema } from '@revertdotdev/types/schemas/appSchema';
 import { tp_id } from '@revertdotdev/types/schemas/commonSchema';
 import { cn, uuid } from '@revertdotdev/utils';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { ModalFooter, Button, ModalClose } from '@revertdotdev/components';
 import { createApplication } from '@revertdotdev/lib/actions';
 
@@ -38,7 +38,7 @@ export function ApplicationCards({
                     const isAppExist = appsId.includes(app as tp_id);
                     const { name, logo } = appsInfo[app] ?? {};
                     return (
-                        <>
+                        <Fragment key={uuid()}>
                             <button
                                 className={cn(
                                     'border border-gray-25 rounded-lg px-2 pl-1 py-3',
@@ -48,7 +48,6 @@ export function ApplicationCards({
                                     { 'gradient-border': !isAppExist && selectedApp === app }
                                 )}
                                 disabled={isAppExist}
-                                key={uuid()}
                                 onClick={() => setSelectedApp(app as tp_id)}
                             >
                                 <div className="flex justify-start items-center pl-2">
@@ -56,7 +55,7 @@ export function ApplicationCards({
                                     <p className="font-semibold pl-4">{name}</p>
                                 </div>
                             </button>
-                        </>
+                        </Fragment>
                     );
                 })}
             </div>
