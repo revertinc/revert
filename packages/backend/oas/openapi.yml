@@ -477,6 +477,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -552,6 +558,12 @@ paths:
         - CrmCompany
       parameters:
         - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:
@@ -709,6 +721,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -802,6 +820,12 @@ paths:
             type: string
             nullable: true
         - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:
@@ -953,6 +977,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -1040,6 +1070,12 @@ paths:
             type: string
             nullable: true
         - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:
@@ -1185,6 +1221,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -1308,6 +1350,12 @@ paths:
             type: string
             nullable: true
         - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:
@@ -1453,6 +1501,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -1540,6 +1594,12 @@ paths:
             type: string
             nullable: true
         - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:
@@ -1685,6 +1745,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -1772,6 +1838,12 @@ paths:
             type: string
             nullable: true
         - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:
@@ -2034,6 +2106,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -2121,6 +2199,12 @@ paths:
             type: string
             nullable: true
         - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:
@@ -2266,6 +2350,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -2311,6 +2401,12 @@ paths:
             type: string
             nullable: true
         - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:

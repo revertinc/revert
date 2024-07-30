@@ -61,6 +61,7 @@ service:
                 name: GetCompanyRequest
                 query-parameters:
                     fields: optional<string>
+                    associations: optional<string>
             response: GetCompanyResponse
             errors:
                 - errors.UnAuthorizedError
@@ -74,6 +75,7 @@ service:
                 name: GetCompaniesRequest
                 query-parameters:
                     fields: optional<string>
+                    associations: optional<string>
                     pageSize: optional<string>
                     cursor: optional<string>
             response: GetCompaniesResponse

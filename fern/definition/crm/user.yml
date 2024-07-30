@@ -58,6 +58,7 @@ service:
                 name: GetUserRequest
                 query-parameters:
                     fields: optional<string>
+                    associations: optional<string>
             response: GetUserResponse
             errors:
                 - errors.UnAuthorizedError
@@ -73,6 +74,7 @@ service:
                     fields: optional<string>
                     pageSize: optional<string>
                     cursor: optional<string>
+                    associations: optional<string>
             response: GetUsersResponse
             errors:
                 - errors.UnAuthorizedError
