@@ -41,7 +41,7 @@ export function ApplicationCards({
                         <Fragment key={uuid()}>
                             <button
                                 className={cn(
-                                    'border border-gray-25 rounded-lg px-2 pl-1 py-3',
+                                    'border border-gray-25 rounded-lg px-2 pl-1 py-3 revert-focus-outline',
                                     {
                                         'gradient-border-destructive cursor-not-allowed': isAppExist,
                                     },

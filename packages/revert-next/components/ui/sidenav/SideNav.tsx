@@ -33,7 +33,7 @@ export async function SideNav() {
                 <Link
                     href="http://docs.revert.dev"
                     target="_blank"
-                    className="flex grow text-gray-50 items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-slate-50 hover:text-black md:flex-none md:justify-start md:p-2 md:px-3"
+                    className="flex grow text-gray-50 items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-slate-50 hover:text-black md:flex-none md:justify-start md:p-2 md:px-3 revert-focus-outline"
                 >
                     <BookOpenIcon className="w-6" />
                     <p className="hidden md:block">Developer Docs</p>
@@ -45,7 +45,7 @@ export async function SideNav() {
                         prodPrivateToken={prodPrivateToken}
                     />
                 </div>
-                <div className="flex items-center pl-2 h-12">
+                <div className="flex items-center pl-2 h-12 revert-focus-outline rounded-lg">
                     <UserButton />
                     <p className="ml-3 hidden md:block">{user?.fullName ?? 'User Name'}</p>
                 </div>

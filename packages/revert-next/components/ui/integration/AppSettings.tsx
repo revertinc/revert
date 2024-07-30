@@ -107,7 +107,7 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
             <h3 className="text-lg font-medium mb-2">Choose your preference</h3>
             <div className={cn('flex gap-4 mb-4')}>
                 <button
-                    className={cn('border border-gray-25 rounded-xl w-6/12 p-4', {
+                    className={cn('border border-gray-25 rounded-xl w-6/12 p-4 revert-focus-outline', {
                         'gradient-border': !customPreferenceView,
                     })}
                     onClick={() => (customPreferenceView ? setCustomPreferenceView(false) : null)}
@@ -125,7 +125,7 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
                     </div>
                 </button>
                 <button
-                    className={cn('border border-gray-25 rounded-xl w-6/12 p-4', {
+                    className={cn('border border-gray-25 rounded-xl w-6/12 p-4 revert-focus-outline', {
                         'gradient-border': customPreferenceView,
                     })}
                     onClick={() => (!customPreferenceView ? setCustomPreferenceView(true) : null)}
@@ -180,6 +180,7 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
                             onValueChange={setSelectedScopes}
                             defaultValue={selectedScopes}
                             animation={2}
+                            tabIndex={0}
                         />
                     </div>
                 </div>
@@ -201,7 +202,6 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
             )}
 
             <Button
-                disabled
                 className={cn('mb-12', {
                     'bg-gray-25/20 text-gray-50/70 hover:bg-gray-25/20 cursor-not-allowed':
                         (is_revert_app && !isValueChange && customPreferenceView) ||
