@@ -25,7 +25,7 @@ const ConfigLayout = ({ children }: ConfigLayoutProps) => {
             <FancyHeader title={name}>
                 <div className="pr-2"> {logo}</div>
             </FancyHeader>
-            <Tabs defaultValue="settings" className="w-auto" value={isSettings ? 'settings' : 'api-reference'}>
+            <Tabs defaultValue="settings" className="w-auto" value={isSettings ? 'settings' : 'logs'}>
                 <TabsList>
                     <TabsTrigger value="settings">
                         <div
@@ -36,15 +36,15 @@ const ConfigLayout = ({ children }: ConfigLayoutProps) => {
                             <span>Settings</span>
                         </div>
                     </TabsTrigger>
-                    <TabsTrigger value="api-reference">
+                    <TabsTrigger value="logs">
                         <div
                             className={cn('flex gap-2 justify-between items-center py-2', {
                                 'border-b-2': !isSettings,
                             })}
-                            onClick={() => router.push(`/dashboard/integrations/config/api-reference/${appId}`)}
+                            onClick={() => router.push(`/dashboard/integrations/config/logs/${appId}`)}
                         >
                             <Icons.codeblock />
-                            <span>API Reference</span>
+                            <span>Logs</span>
                         </div>
                     </TabsTrigger>
                 </TabsList>
