@@ -34,7 +34,7 @@ export function CreatedApplications({ apps }: { apps: AppSchema }) {
                             <p className="font-semibold pl-4">{name}</p>
                         </div>
                         <button
-                            className="hover:bg-gray-25/20 p-2 rounded-lg"
+                            className="hover:bg-gray-25/20 p-2 rounded-lg revert-focus-outline"
                             onClick={() => router.push(`/dashboard/integrations/config/settings/${app.id}`)}
                         >
                             <Icons.cog />

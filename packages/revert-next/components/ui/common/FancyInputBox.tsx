@@ -185,12 +185,12 @@ export const FancyInputBox = React.forwardRef<HTMLButtonElement, MultiSelectProp
                             {...props}
                             onClick={handleTogglePopover}
                             className={cn(
-                                'flex w-full p-1 rounded-md border border-gray-25 min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit hover:bg-inherit hover:border-gray-50/70 mb-2',
+                                'flex w-full p-1 rounded-md border border-gray-25 min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit hover:border-gray-50/70 mb-2  focus-visible:outline-none focus:border-gray-50/70  focus:bg-primary-950',
                                 className
                             )}
                         >
                             {selectedValues.length > 0 ? (
-                                <div className="flex justify-between items-center w-full">
+                                <button className="flex justify-between items-center w-full">
                                     <div>
                                         <span className="text-sm text-gray-50/70 mx-3">{placeholder}</span>
                                     </div>
@@ -205,12 +205,12 @@ export const FancyInputBox = React.forwardRef<HTMLButtonElement, MultiSelectProp
                                         <Separator orientation="vertical" className="flex min-h-6 h-full" />
                                         <Icons.chevrondown className="h-4 mx-2 cursor-pointer text-muted-foreground" />
                                     </div>
-                                </div>
+                                </button>
                             ) : (
-                                <div className="flex items-center justify-between w-full mx-auto">
+                                <button className="flex items-center justify-between w-full mx-auto">
                                     <span className="text-sm font-normal text-gray-50/70 mx-3">{placeholder}</span>
                                     <Icons.chevrondown className="h-4 cursor-pointer text-muted-foreground mx-2" />
-                                </div>
+                                </button>
                             )}
                         </Button>
                         <div className="flex flex-wrap items-center">

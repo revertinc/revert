@@ -18,3 +18,9 @@
         border-width: 1px;
     }
 }
+
+@layer components {
+    .revert-focus-outline {
+        @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500;
+    }
+}

@@ -21,7 +21,7 @@ export function Clipboard({ value }: ClipboardProps) {
                     readOnly
                 />
                 <button
-                    className="absolute end-2 top-1/2 -translate-y-1/2 rounded-lg p-2 inline-flex hover:bg-gray-25 items-center justify-center"
+                    className="absolute end-2 top-1/2 -translate-y-1/2 rounded-lg p-2 inline-flex hover:bg-gray-25 items-center justify-center revert-focus-outline"
                     onClick={clipboard.copy}
                 >
                     {clipboard.copied ? <Icons.success /> : <Icons.copy />}
@@ -30,4 +30,3 @@ export function Clipboard({ value }: ClipboardProps) {
         </div>
     );
 }
-

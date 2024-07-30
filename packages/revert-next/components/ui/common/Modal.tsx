@@ -43,7 +43,7 @@ const ModalContent = React.forwardRef<
             {...props}
         >
             {children}
-            <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100  disabled:pointer-events-none data-[state=open]:bg-primary-950 data-[state=open]:text-muted-foreground">
+            <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100  disabled:pointer-events-none data-[state=open]:bg-primary-950 data-[state=open]:text-muted-foreground revert-focus-outline">
                 <Icons.cross className="h-5 w-5" />
                 <span className="sr-only">Close</span>
             </DialogPrimitive.Close>
