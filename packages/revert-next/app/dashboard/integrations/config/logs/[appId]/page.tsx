@@ -23,7 +23,7 @@ export default async function Page({ params }: { params: { appId: string } }) {
 
     return (
         <>
-            <TabsContent value="api-reference">
+            <TabsContent value="logs">
                 <div className="max-w-[64rem]">
                     <div className="mb-4">
                         <h2 className="text-lg font-semibold mb-1">Recent Api Calls</h2>

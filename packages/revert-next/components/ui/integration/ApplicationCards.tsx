@@ -33,7 +33,7 @@ export function ApplicationCards({
     }
     return (
         <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[430px] overflow-scroll">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[450px] overflow-scroll p-2">
                 {Object.keys(appsInfo).map((app) => {
                     const isAppExist = appsId.includes(app as tp_id);
                     const { name, logo } = appsInfo[app] ?? {};
