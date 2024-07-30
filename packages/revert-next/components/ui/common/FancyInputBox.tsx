@@ -16,7 +16,7 @@ import {
     PopoverTrigger,
     Separator,
 } from '@revertdotdev/components';
-import { cn, cva, VariantProps } from '@revertdotdev/utils';
+import { cn, cva, uuid, VariantProps } from '@revertdotdev/utils';
 import { Icons } from '@revertdotdev/icons';
 
 /**
@@ -253,7 +253,7 @@ export const FancyInputBox = React.forwardRef<HTMLButtonElement, MultiSelectProp
                     </div>
                 </PopoverTrigger>
                 <PopoverContent
-                    className="w-96 p-0 border border-gray-50/30 shadow"
+                    className="w-max md:w-[32rem] 2xl:w-[44rem] p-0 border border-gray-50/30 shadow"
                     align="center"
                     onEscapeKeyDown={() => setIsPopoverOpen(false)}
                 >
@@ -273,31 +273,34 @@ export const FancyInputBox = React.forwardRef<HTMLButtonElement, MultiSelectProp
                                     >
                                         <Icons.check className="h-4 w-4" />
                                     </div>
-                                    <span>Select All</span>
+                                    <span className="text-md font-bold text-white">Select All</span>
                                 </CommandItem>
                                 {options.map((option) => {
                                     const isSelected = selectedValues.includes(option.value);
                                     return (
-                                        <CommandItem
-                                            key={option.value}
-                                            onSelect={() => toggleOption(option.value)}
-                                            className="cursor-pointer"
-                                        >
-                                            <div
-                                                className={cn(
-                                                    'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-gray-50',
-                                                    isSelected
-                                                        ? 'bg-accent-500 text-gray-50'
-                                                        : 'opacity-50 [&_svg]:invisible'
-                                                )}
+                                        <React.Fragment key={uuid()}>
+                                            <CommandItem
+                                                key={option.value}
+                                                onSelect={() => toggleOption(option.value)}
+                                                className="cursor-pointer"
                                             >
-                                                <Icons.check className="h-4 w-4" />
-                                            </div>
-                                            {option.icon && (
-                                                <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-                                            )}
-                                            <span>{option.label}</span>
-                                        </CommandItem>
+                                                <div
+                                                    className={cn(
+                                                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-gray-50',
+                                                        isSelected
+                                                            ? 'bg-accent-500 text-gray-50'
+                                                            : 'opacity-50 [&_svg]:invisible'
+                                                    )}
+                                                >
+                                                    <Icons.check className="h-4 w-4" />
+                                                </div>
+                                                {option.icon && (
+                                                    <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                                                )}
+                                                <span className="text-lg font-medium text-white">{option.label}</span>
+                                            </CommandItem>
+                                            <CommandSeparator className="bg-gray-25/5" />
+                                        </React.Fragment>
                                     );
                                 })}
                             </CommandGroup>

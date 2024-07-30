@@ -105,7 +105,7 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
     return (
         <div className="max-w-[64rem] xl:max-w-[64%]">
             <h3 className="text-lg font-medium mb-2">Choose your preference</h3>
-            <div className="flex gap-4 mb-4">
+            <div className={cn('flex gap-4 mb-4')}>
                 <button
                     className={cn('border border-gray-25 rounded-xl w-6/12 p-4', {
                         'gradient-border': !customPreferenceView,
