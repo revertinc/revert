@@ -133,6 +133,31 @@ const userServiceTicket = new UserService(
 
                         break;
                     }
+                    case TP_ID.github: {
+                        const result = await axios({
+                            method: 'GET',
+                            url: `https://api.github.com/users/${userId}`, //userId has to be username in case of GitHub
+                            headers: {
+                                Accept: 'application/vnd.github+json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+
+                        const unifiedUser = await unifyObject<any, UnifiedTicketUser>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedUser,
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -158,7 +183,9 @@ const userServiceTicket = new UserService(
                 const tenantId = connection.t_id;
 
                 if (
-                    ((thirdPartyId !== TP_ID.jira && !fields) || (thirdPartyId !== TP_ID.bitbucket && !fields)) &&
+                    ((thirdPartyId !== TP_ID.jira && !fields) ||
+                        (thirdPartyId !== TP_ID.bitbucket && !fields) ||
+                        (thirdPartyId !== TP_ID.github && !fields)) &&
                     fields &&
                     !fields.listId
                 ) {
@@ -362,6 +389,46 @@ const userServiceTicket = new UserService(
                             status: 'ok',
                             results: 'This endpoint is currently not supported',
                         });
+                        break;
+                    }
+                    case TP_ID.github: {
+                        let pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&since=${cursor}` : ''
+                        }`;
+                        const result = await axios({
+                            method: 'GET',
+                            url: `https://api.github.com/users?${pagingString}`,
+                            headers: {
+                                Accept: 'application/vnd.github+json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+
+                        const unifiedUsers = await Promise.all(
+                            result.data.map(async (user: any) => {
+                                return await unifyObject<any, UnifiedTicketUser>({
+                                    obj: user,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
+                        );
+
+                        const nextCursor = pageSize ? Number(cursor ? cursor : 0) + Number(pageSize) : undefined;
+                        const previousCursor =
+                            pageSize && cursor && Number(cursor) >= pageSize
+                                ? Number(cursor) - Number(pageSize)
+                                : undefined;
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor ? String(nextCursor) : undefined,
+                            previous: previousCursor !== undefined ? String(previousCursor) : undefined,
+                            results: unifiedUsers,
+                        });
+
                         break;
                     }
                     default: {

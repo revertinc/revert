@@ -157,6 +157,36 @@ const taskServiceTicket = new TaskService(
                         });
                         break;
                     }
+                    case TP_ID.github: {
+                        if (!fields || (fields && (!fields.repo || !fields.owner))) {
+                            throw new NotFoundError({
+                                error: 'The query parameters "repo" and "owner" are required and should be included in the "fields" parameter.',
+                            });
+                        }
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `https://api.github.com/repos/${fields.owner}/${fields.repo}/issues/${taskId}`,
+                            headers: {
+                                Accept: 'application/vnd.github+json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+
+                        const unifiedTask: any = await unifyObject<any, UnifiedTicketTask>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedTask,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -181,7 +211,11 @@ const taskServiceTicket = new TaskService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
 
-                if (thirdPartyId !== TP_ID.bitbucket && !fields && fields && !fields.listId) {
+                if (
+                    thirdPartyId !== TP_ID.bitbucket &&
+                    thirdPartyId !== TP_ID.github &&
+                    (!fields || (fields && !fields.listId))
+                ) {
                     throw new NotFoundError({
                         error: 'The query parameter "listId" is required and should be included in the "fields" parameter.',
                     });
@@ -410,6 +444,59 @@ const taskServiceTicket = new TaskService(
                         });
                         break;
                     }
+                    case TP_ID.github: {
+                        if (!fields || (fields && (!fields.repo || !fields.owner))) {
+                            throw new NotFoundError({
+                                error: 'The query parameters "repo" and "owner" are required and should be included in the "fields" parameter.',
+                            });
+                        }
+                        let pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page=${cursor}` : ''
+                        }`;
+                        const result = await axios({
+                            method: 'get',
+                            url: `  https://api.github.com/repos/${fields.owner}/${fields.repo}/issues?${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/vnd.github+json',
+                            },
+                        });
+
+                        const unifiedTasks: any = await Promise.all(
+                            result.data.map(
+                                async (task: any) =>
+                                    await unifyObject<any, UnifiedTicketTask>({
+                                        obj: task,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    })
+                            )
+                        );
+
+                        const linkHeader = result.headers.link;
+                        let nextCursor, previousCursor;
+                        if (linkHeader) {
+                            const links = linkHeader.split(',');
+
+                            links?.forEach((link: any) => {
+                                if (link.includes('rel="next"')) {
+                                    nextCursor = Number(link.match(/[&?]page=(\d+)/)[1]);
+                                } else if (link.includes('rel="prev"')) {
+                                    previousCursor = Number(link.match(/[&?]page=(\d+)/)[1]);
+                                }
+                            });
+                        }
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor ? String(nextCursor) : undefined,
+                            previous: previousCursor !== undefined ? String(previousCursor) : undefined,
+                            results: unifiedTasks,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -432,7 +519,7 @@ const taskServiceTicket = new TaskService(
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
                 const fields: any = JSON.parse((req.query as any).fields as string);
-                if (thirdPartyId !== TP_ID.bitbucket && taskData && !taskData.listId) {
+                if (thirdPartyId !== TP_ID.bitbucket && thirdPartyId !== TP_ID.github && taskData && !taskData.listId) {
                     throw new Error('The parameter "listId" is required in request body.');
                 }
                 const task: any = await disunifyTicketObject<UnifiedTicketTask>({
@@ -605,6 +692,26 @@ const taskServiceTicket = new TaskService(
                             data: JSON.stringify(task),
                         });
                         res.send({ status: 'ok', message: 'Bitbucket task created', result: result.data });
+
+                        break;
+                    }
+                    case TP_ID.github: {
+                        if (!fields || (fields && (!fields.repo || !fields.owner))) {
+                            throw new NotFoundError({
+                                error: 'The query parameters "repo" and "owner" are required and should be included in the "fields" parameter.',
+                            });
+                        }
+
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `https://api.github.com/repos/${fields.owner}/${fields.repo}/issues`,
+                            headers: {
+                                Accept: 'application/vnd.github+json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: JSON.stringify(task),
+                        });
+                        res.send({ status: 'ok', message: 'GitHub task created', result: result.data });
 
                         break;
                     }
@@ -819,6 +926,31 @@ const taskServiceTicket = new TaskService(
                         res.send({
                             status: 'ok',
                             message: 'Bitbucket Task updated',
+                            result: result.data,
+                        });
+
+                        break;
+                    }
+                    case TP_ID.github: {
+                        if (!fields || (fields && (!fields.repo || !fields.owner))) {
+                            throw new NotFoundError({
+                                error: 'The query parameters "repo" and "owner" are required and should be included in the "fields" parameter.',
+                            });
+                        }
+
+                        const result = await axios({
+                            method: 'patch',
+                            url: `https://api.github.com/repos/${fields.owner}/${fields.repo}/issues/${taskId}`,
+                            headers: {
+                                Accept: 'application/vnd.github+json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                            data: task,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'GitHub Task updated',
                             result: result.data,
                         });
 

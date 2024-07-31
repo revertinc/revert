@@ -67,6 +67,12 @@ export const appsInfo = {
         logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711549311/Revert/cmqpors8m8tid9zpn9ak.png',
         description: 'Configure your Bitbucket Ticketing App from here.',
     },
+
+    github: {
+        name: 'GitHub',
+        logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/v1722418192/RevertAppLogos/cmeafzqvnvvconohfnnr.png',
+        description: 'Configure your GitHub Ticketing App from here.',
+    },
     // asana: {
     //     name: 'Asana',
     //     logo: '',
