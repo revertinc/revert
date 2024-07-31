@@ -12,7 +12,7 @@ export function CreatedApplications({ apps }: { apps: AppSchema }) {
 
     if (apps.length < 1) {
         return (
-            <div className="flex flex-col justify-center items-center h-[50vh] w-auto">
+            <div className="flex flex-col justify-center items-center h-[60vh] w-auto">
                 <Icons.noapps className="h-24 w-24 mb-4" />
                 <p className="text-sm font-bold text-gray-50/70 mb-2">No Integration Configured</p>
                 <p className="text-xs font-normal text-gray-50/30">Create and start your Integration journey here</p>

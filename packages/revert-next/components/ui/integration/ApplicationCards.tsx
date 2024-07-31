@@ -60,7 +60,7 @@ export function ApplicationCards({
                 })}
             </div>
             <ModalFooter>
-                <ModalClose>
+                <ModalClose disabled={!selectedApp}>
                     <Button
                         type="submit"
                         className={cn(
