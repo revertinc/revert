@@ -263,12 +263,12 @@ const collectionServiceTicket = new CollectionService(
                             });
                             result = groups.data;
 
-                             return  res.send({
-                            status: 'ok',
-                            next: undefined,
-                            previous: undefined,
-                            results: result,
-                        });
+                            return res.send({
+                                status: 'ok',
+                                next: undefined,
+                                previous: undefined,
+                                results: result,
+                            });
                         } else if (parsedFields && parsedFields.collection_type === 'repositories') {
                             if (!parsedFields.workspace) {
                                 throw new Error(
@@ -285,19 +285,105 @@ const collectionServiceTicket = new CollectionService(
                             });
                             result = projects.data;
 
-                             const pageNumber = result.next ? (pageSize ? (pageSize + 1).toString() : '1') : undefined;
-                      return  res.send({
-                            status: 'ok',
-                            next: pageNumber,
-                            previous: undefined,
-                            results: result.values,
-                        });
+                            const pageNumber = result.next ? (pageSize ? (pageSize + 1).toString() : '1') : undefined;
+                            return res.send({
+                                status: 'ok',
+                                next: pageNumber,
+                                previous: undefined,
+                                results: result.values,
+                            });
                         } else {
                             throw new Error(
                                 "To use this endpoint, please specify the type of collection you're working with. Valid options include: 'groups', 'repositories'."
                             );
                         }
-                       
+
+                        break;
+                    }
+                    case TP_ID.github: {
+                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
+                        let result: any;
+                        let pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page=${cursor}` : ''
+                        }`;
+                        if (parsedFields && parsedFields.collection_type === 'projects') {
+                            if (!parsedFields.owner || !parsedFields.repo) {
+                                throw new Error(
+                                    'To retrieve all projects in a repository in GitHub, "owner" and "repo" are required in the "fields" parameter.'
+                                );
+                            }
+                            const projects = await axios({
+                                method: 'get',
+                                url: `https://api.github.com/repos/${parsedFields.owner}/${parsedFields.repo}/projects?${pagingString}`,
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                    Accept: 'application/vnd.github+json',
+                                },
+                            });
+                            result = projects.data;
+
+                            const linkHeader = projects.headers.link;
+                            let nextCursor, previousCursor;
+                            if (linkHeader) {
+                                const links = linkHeader.split(',');
+
+                                links?.forEach((link: any) => {
+                                    if (link.includes('rel="next"')) {
+                                        nextCursor = Number(link.match(/[&?]page=(\d+)/)[1]);
+                                    } else if (link.includes('rel="prev"')) {
+                                        previousCursor = Number(link.match(/[&?]page=(\d+)/)[1]);
+                                    }
+                                });
+                            }
+
+                            return res.send({
+                                status: 'ok',
+                                next: nextCursor ? String(nextCursor) : undefined,
+                                previous: previousCursor !== undefined ? String(previousCursor) : undefined,
+                                results: result,
+                            });
+                        } else if (parsedFields && parsedFields.collection_type === 'repositories') {
+                            if (!parsedFields.org) {
+                                throw new Error(
+                                    'To retrieve all repositories of an organisation in GitHub, "org" is required in the "fields" parameter.'
+                                );
+                            }
+                            const repositories = await axios({
+                                method: 'get',
+                                url: `https://api.github.com/orgs/${parsedFields.org}/repos?${pagingString}`,
+                                headers: {
+                                    Accept: 'application/vnd.github+json',
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            });
+                            result = repositories.data;
+
+                            const linkHeader = repositories.headers.link;
+                            let nextCursor, previousCursor;
+                            if (linkHeader) {
+                                const links = linkHeader.split(',');
+
+                                links?.forEach((link: any) => {
+                                    if (link.includes('rel="next"')) {
+                                        nextCursor = Number(link.match(/[&?]page=(\d+)/)[1]);
+                                    } else if (link.includes('rel="prev"')) {
+                                        previousCursor = Number(link.match(/[&?]page=(\d+)/)[1]);
+                                    }
+                                });
+                            }
+
+                            return res.send({
+                                status: 'ok',
+                                next: nextCursor ? String(nextCursor) : undefined,
+                                previous: previousCursor !== undefined ? String(previousCursor) : undefined,
+                                results: result,
+                            });
+                        } else {
+                            throw new Error(
+                                "To use this endpoint, please specify the type of collection you're working with. Valid options include: 'projects', 'repositories'."
+                            );
+                        }
+
                         break;
                     }
                     default: {

@@ -24,6 +24,7 @@ enum TP_ID {
   bitbucket
   greenhouse
   lever
+  github
 }
 
 enum ENV {

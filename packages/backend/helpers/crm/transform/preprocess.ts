@@ -99,7 +99,7 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                     2 : High
                 */
                 if (obj.prioritycode !== undefined && obj.prioritycode !== null) {
-                    let priority = null;
+                    let priority: string | null = null;
                     if (obj.prioritycode === 0) priority = 'low';
                     else if (obj.prioritycode === 1) priority = 'normal';
                     else if (obj.prioritycode === 2) priority = 'high';
@@ -112,7 +112,7 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                     2 : Canceled
                 */
                 if (obj.statecode !== undefined && obj.statecode !== null) {
-                    let status = null;
+                    let status: string | null = null;
                     if (obj.statecode === 0) status = 'open';
                     else if (obj.statecode == 1) status = 'completed';
                     else if (obj.statecode == 2) status = 'canceled';
@@ -630,6 +630,7 @@ export const postprocessDisUnifyTicketObject = <T extends Record<string, any>>({
         [TP_ID.trello]: {},
         [TP_ID.asana]: {},
         [TP_ID.bitbucket]: {},
+        [TP_ID.github]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

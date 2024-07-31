@@ -60,6 +60,7 @@ service:
                 name: GetLeadRequest
                 query-parameters:
                     fields: optional<string>
+                    associations: optional<string>
             response: GetLeadResponse
             errors:
                 - errors.UnAuthorizedError
@@ -75,6 +76,7 @@ service:
                     fields: optional<string>
                     pageSize: optional<string>
                     cursor: optional<string>
+                    associations: optional<string>
             response: GetLeadsResponse
             errors:
                 - errors.UnAuthorizedError

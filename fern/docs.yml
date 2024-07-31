@@ -88,6 +88,9 @@ navigation:
                   path: ./docs/contents/guides/bitbucket.mdx
                 - page: Greenhouse
                   path: ./docs/contents/guides/greenhouse.mdx
+                - page: GitHub
+                  path: ./docs/contents/guides/github.mdx
+
 colors:
     accentPrimary: '#89a3ff'
 logo:

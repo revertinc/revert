@@ -172,7 +172,8 @@ async function main() {
                     tpId === 'clickup' ||
                     tpId === 'jira' ||
                     tpId === 'trello' ||
-                    tpId === 'bitbucket'
+                    tpId === 'bitbucket' ||
+                    tpId === 'github'
                 )
             )
                 return;

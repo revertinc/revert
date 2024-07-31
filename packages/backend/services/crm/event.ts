@@ -12,6 +12,7 @@ import { disunifyObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedEvent } from '../../models/unified';
 import { PipedriveEvent, PipedrivePagination } from '../../constants/pipedrive';
 import { StandardObjects } from '../../constants/common';
+import { getAssociationObjects, isValidAssociationTypeRequestedByUser } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.event;
 
@@ -26,6 +27,8 @@ const eventService = new EventService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET EVENT',
                     connection.app?.env?.accountId,
@@ -47,16 +50,36 @@ const eventService = new EventService(
                             'hs_activity_type',
                             'hs_object_id',
                         ];
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
+                        );
+
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/meetings/${eventId}?properties=${formattedFields}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
+
                         let event: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/meetings/${eventId}?properties=${formattedFields}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
                         event = ([event.data] as any[])?.[0];
+                        const associatedData = await getAssociationObjects(
+                            event?.associations,
+                            thirdPartyToken,
+                            thirdPartyId,
+                            connection,
+                            account,
+                            invalidAssociations
+                        );
                         event = await unifyObject<any, UnifiedEvent>({
-                            obj: { ...event, ...event?.properties },
+                            obj: { ...event, ...event?.properties, associations: associatedData },
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -189,6 +212,8 @@ const eventService = new EventService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET ALL EVENT',
                     connection.app?.env?.accountId,
@@ -212,9 +237,21 @@ const eventService = new EventService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
+                        );
+
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/meetings?properties=${formattedFields}${pagingString}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
+
                         let events: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/meetings?properties=${formattedFields}&${pagingString}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
@@ -222,16 +259,24 @@ const eventService = new EventService(
                         const nextCursor = events.data?.paging?.next?.after || undefined;
                         events = events.data.results as any[];
                         events = await Promise.all(
-                            events?.map(
-                                async (l: any) =>
-                                    await unifyObject<any, UnifiedEvent>({
-                                        obj: { ...l, ...l?.properties },
-                                        tpId: thirdPartyId,
-                                        objType,
-                                        tenantSchemaMappingId: connection.schema_mapping_id,
-                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                            events?.map(async (l: any) => {
+                                const associatedData = await getAssociationObjects(
+                                    l?.associations,
+                                    thirdPartyToken,
+                                    thirdPartyId,
+                                    connection,
+                                    account,
+                                    invalidAssociations
+                                );
+
+                                return await unifyObject<any, UnifiedEvent>({
+                                    obj: { ...l, ...l?.properties, associations: associatedData },
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
                         );
                         res.send({
                             status: 'ok',

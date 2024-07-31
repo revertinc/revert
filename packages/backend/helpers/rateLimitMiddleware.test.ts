@@ -1,6 +1,12 @@
 import { Response } from 'express';
+
 import rateLimitMiddleware from './rateLimitMiddleware';
 import { skipRateLimitRoutes } from './utils';
+
+import { jest, describe, expect, it, beforeEach } from '@jest/globals';
+
+type StatusFn = (code: number) => Response;
+type SendFn = (body?: any) => Response;
 
 jest.mock('../redis/client', () => {
     return {
@@ -31,8 +37,8 @@ describe('Rate Limit Middleware', () => {
         const res = {
             locals: { account: { subscription: { rate_limit: 100 }, id: 'account123' } },
         } as unknown as Response;
-        res.status = jest.fn().mockReturnValue(res);
-        res.send = jest.fn().mockReturnValue(res);
+        res.status = jest.fn().mockReturnValue(res) as unknown as StatusFn;
+        res.send = jest.fn().mockReturnValue(res) as unknown as SendFn;
         return res;
     };
     const nextFunction = jest.fn();

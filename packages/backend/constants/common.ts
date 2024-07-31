@@ -3,8 +3,9 @@ import { Request, Response } from 'express';
 
 export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot' | 'closecrm' | 'ms_dynamics_365_sales';
 export type CHAT_TP_ID = 'slack' | 'discord';
-export type TICKET_TP_ID = 'linear' | 'clickup' | 'asana' | 'jira' | 'trello' | 'bitbucket';
+
 export type ATS_TP_ID = 'greenhouse' | 'lever';
+export type TICKET_TP_ID = 'linear' | 'clickup' | 'asana' | 'jira' | 'trello' | 'bitbucket' | 'github';
 
 export const DEFAULT_SCOPE = {
     [TP_ID.hubspot]: [
@@ -50,6 +51,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.jira]: ['read:jira-work', 'read:jira-user', 'write:jira-work', 'offline_access'],
     [TP_ID.ms_dynamics_365_sales]: ['offline_access', 'User.Read'],
     [TP_ID.bitbucket]: ['issue', 'issue:write', 'repository', 'account'],
+
     [TP_ID.greenhouse]: [],
     [TP_ID.lever]: [
         'applications:read:admin',
@@ -73,6 +75,16 @@ export const DEFAULT_SCOPE = {
         'offline_access',
         'tags:read:admin',
     ],
+
+    [TP_ID.github]: [
+        'repo',
+        'issues:write',
+        'pull_requests:write',
+        'issues:read',
+        'pull_requests:read',
+        'metadata:read',
+        'repository_projects:read',
+    ],
 };
 
 export const mapIntegrationIdToIntegrationName = {
@@ -92,6 +104,8 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.bitbucket]: 'Bitbucket',
     [TP_ID.greenhouse]: 'Greenhouse',
     [TP_ID.lever]: 'Lever',
+
+    [TP_ID.github]: 'GitHub',
 };
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';
