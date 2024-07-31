@@ -32,7 +32,7 @@ export default async function Page() {
             <Modal>
                 <Header title="Integrations" description="Configure and Manage your connected apps here">
                     <ModalTrigger asChild>
-                        <Button>
+                        <Button tabIndex={0}>
                             <div className="flex gap-2 justify-center items-center">
                                 <Icons.plus />
                                 Create Integration

@@ -60,8 +60,11 @@ export function ApplicationCards({
                 })}
             </div>
             <ModalFooter>
-                <ModalClose disabled={!selectedApp}>
+                <ModalClose disabled={!selectedApp} tabIndex={-1}>
                     <Button
+                        asChild
+                        disabled={!selectedApp}
+                        tabIndex={!selectedApp ? -1 : 0}
                         type="submit"
                         className={cn(
                             {
