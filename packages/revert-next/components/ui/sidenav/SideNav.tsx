@@ -1,24 +1,20 @@
 import Link from 'next/link';
 import { OnboardingNavLink, EnvironmentMode, NavLinks } from '@revertdotdev/components';
 import { BookOpenIcon } from '@revertdotdev/icons';
-import { fetchAccountDetails } from '@revertdotdev/lib/api';
-import { auth, currentUser } from '@clerk/nextjs/server';
 import { UserButton } from '@clerk/nextjs';
+import { AccountResponseSchema } from '@revertdotdev/types/schemas/accountSchema';
+import { User } from '@clerk/nextjs/dist/types/server';
 
-export async function SideNav() {
-    const { userId } = auth();
-    const user = await currentUser();
+type SideNavProps = {
+    value: {
+        account: AccountResponseSchema;
+        userId: string;
+        user: User | null;
+    };
+};
 
-    if (!userId || !user) {
-        return null;
-    }
-
-    const account = await fetchAccountDetails(userId);
-
-    if ('message' in account) {
-        return null;
-    }
-
+export function SideNav({ value }: SideNavProps) {
+    const { account, user, userId } = value;
     const { isDefaultEnvironment, prodPrivateToken } = account;
 
     return (

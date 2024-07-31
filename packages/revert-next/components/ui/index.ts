@@ -38,7 +38,7 @@ export {
     FancyInputBox,
 } from '@revertdotdev/components/common';
 export { OnboardingNavLink } from '@revertdotdev/components/onboarding';
-export { EnvironmentMode, NavLinks } from '@revertdotdev/components/sidenav';
+export { EnvironmentMode, NavLinks, SideNav } from '@revertdotdev/components/sidenav';
 export {
     CreatedApplications,
     ApplicationCards,
