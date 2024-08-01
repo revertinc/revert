@@ -45,6 +45,7 @@ import { collectionServiceTicket } from '../services/ticket/collection';
 import { commentServiceTicket } from '../services/ticket/comment';
 import { proxyServiceTicket } from '../services/ticket/proxy';
 import { syncService } from '../services/sync';
+import { appService } from '../services/Internal/app';
 
 const router = express.Router();
 
@@ -153,6 +154,7 @@ register(router, {
         account: accountService,
         telemetry: telemetryService,
         analytics: analyticsService,
+        app: appService
     },
     crm: {
         lead: leadService,

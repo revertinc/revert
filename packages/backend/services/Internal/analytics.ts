@@ -5,6 +5,7 @@ import { isStandardError } from '../../helpers/error';
 import { logError } from '../../helpers/logger';
 import { InternalServerError } from '../../generated/typescript/api/resources/common';
 import AuthService from '../auth';
+import { getLastSevenDays } from '../../helpers/timeZoneHelper';
 
 const analyticsService = new AnalyticsService({
     async getAnalytics(req, res) {
@@ -13,6 +14,7 @@ const analyticsService = new AnalyticsService({
             const environment = req.body.environment;
             const user = await AuthService.getAccountForUser(userId);
             let token = user.account.environments.find((e: any) => e.env === environment);
+            const environmentId = token.id;
             if (token && token.env) token = token.private_token;
 
             const countConnections = await prisma.connections.aggregate({
@@ -133,9 +135,31 @@ const analyticsService = new AnalyticsService({
 
             let recentApiCalls: any = await redis.lRange(`recent_routes_${token}`, 0, -1);
             recentApiCalls = recentApiCalls.map((apiCall: any) => JSON.parse(apiCall));
+            const totalApiCalls = Number(await redis.get(`request_count_${environmentId}`)) ?? 0;
+            const summary = await redis.hGetAll(`summary_api_calls_${environmentId}`);
+            const last7days = getLastSevenDays();
+            const summaryApiCalls = last7days.map((day) => {
+                const numberOfCalls = summary[day];
+                if (!numberOfCalls) {
+                    return { date: day, numberOfCalls: 0 };
+                }
+
+                return {
+                    date: day,
+                    numberOfCalls: Number(numberOfCalls),
+                };
+            });
+
             res.send({
                 status: 'ok',
-                result: { totalConnections, connectedApps, recentConnections, recentApiCalls },
+                result: {
+                    totalConnections,
+                    connectedApps,
+                    recentConnections,
+                    recentApiCalls,
+                    totalApiCalls,
+                    summaryApiCalls,
+                },
             });
         } catch (error: any) {
             logError(error);
