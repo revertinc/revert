@@ -70,12 +70,12 @@ export const appsInfo = {
 
     quickbooks: {
         name: 'QuickBooks',
-        logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711549293/Revert/ooo7iegqcrdkxgrclzjt.png',
+        logo: ' https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/wlnadel7twqr0rgaoq9o',
         description: 'Configure your QuickBooks Accounting App from here.',
     },
     xero: {
         name: 'Xero',
-        logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711549293/Revert/ooo7iegqcrdkxgrclzjt.png',
+        logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/jhqummxaixtrzfhyc6yr',
         description: 'Configure your Xero Accounting App from here.',
     },
     greenhouse: {
