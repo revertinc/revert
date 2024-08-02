@@ -1,11 +1,14 @@
-import { accountFieldMappingConfig } from '@prisma/client';
 import {
     CRM_TP_ID,
     ChatStandardObjects,
     StandardObjects,
     TicketStandardObjects,
     AccountingStandardObjects,
+    AtsStandardObjects,
 } from '../../../constants/common';
+
+import { TP_ID, accountFieldMappingConfig } from '@prisma/client';
+
 import { transformFieldMappingToModel } from '.';
 import { preprocessUnifyObject } from './preprocess';
 
@@ -18,7 +21,12 @@ export async function unifyObject<T extends Record<string, any>, K>({
 }: {
     obj: T;
     tpId: CRM_TP_ID;
-    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects | AccountingStandardObjects;
+    objType:
+        | StandardObjects
+        | ChatStandardObjects
+        | TicketStandardObjects
+        | AtsStandardObjects
+        | AccountingStandardObjects;
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }): Promise<K> {
@@ -50,6 +58,11 @@ export async function unifyObject<T extends Record<string, any>, K>({
             }
         }
     });
+    if (tpId === TP_ID.hubspot) {
+        if (obj.associations) {
+            unifiedObject.associations = obj.associations;
+        }
+    }
 
     // Check if associations object is empty and set it to undefined
     if (Object.keys(unifiedObject.associations || {}).length === 0) {

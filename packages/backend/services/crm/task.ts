@@ -12,6 +12,7 @@ import { disunifyObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedTask } from '../../models/unified';
 import { PipedrivePagination, PipedriveTask } from '../../constants/pipedrive';
 import { StandardObjects } from '../../constants/common';
+import { getAssociationObjects, isValidAssociationTypeRequestedByUser } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.task;
 
@@ -26,6 +27,8 @@ const taskService = new TaskService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET TASK',
                     connection.app?.env?.accountId,
@@ -45,16 +48,38 @@ const taskService = new TaskService(
                             'hs_task_status',
                             'hs_timestamp',
                         ];
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
+                        );
+
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/tasks/${taskId}?properties=${formattedFields}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
+
                         let task: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/tasks/${taskId}?properties=${formattedFields}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
                         task = ([task.data] as any[])?.[0];
+
+                        const associatedData = await getAssociationObjects(
+                            task?.associations,
+                            thirdPartyToken,
+                            thirdPartyId,
+                            connection,
+                            account,
+                            invalidAssociations
+                        );
+
                         task = await unifyObject<any, UnifiedTask>({
-                            obj: { ...task, ...task?.properties },
+                            obj: { ...task, ...task?.properties, associations: associatedData },
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -191,6 +216,8 @@ const taskService = new TaskService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET ALL TASK',
                     connection.app?.env?.accountId,
@@ -212,9 +239,20 @@ const taskService = new TaskService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item)
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
+                        );
+
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/tasks?properties=${formattedFields}${pagingString}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
                         let tasks: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/tasks?properties=${formattedFields}&${pagingString}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
@@ -222,16 +260,23 @@ const taskService = new TaskService(
                         const nextCursor = tasks.data?.paging?.next?.after || undefined;
                         tasks = tasks.data.results as any[];
                         tasks = await Promise.all(
-                            tasks?.map(
-                                async (l: any) =>
-                                    await unifyObject<any, UnifiedTask>({
-                                        obj: { ...l, ...l?.properties },
-                                        tpId: thirdPartyId,
-                                        objType,
-                                        tenantSchemaMappingId: connection.schema_mapping_id,
-                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                            tasks?.map(async (l: any) => {
+                                const associatedData = await getAssociationObjects(
+                                    l?.associations,
+                                    thirdPartyToken,
+                                    thirdPartyId,
+                                    connection,
+                                    account,
+                                    invalidAssociations
+                                );
+                                return await unifyObject<any, UnifiedTask>({
+                                    obj: { ...l, ...l?.properties, associations: associatedData },
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
                         );
                         res.send({
                             status: 'ok',

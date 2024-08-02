@@ -1174,7 +1174,161 @@ const createIntegrationBlock = function (self, integration) {
             return container;
         };
 
-        handleIntegrationRedirect = function (selectedIntegration) {
+        showAndRemoveLoader = function () {
+            return new Promise<void>((resolve) => {
+                //show loader
+                this.renderProcessingStage('Loading');
+
+                //remove loader
+                setTimeout(() => {
+                    const loaderElement = document.querySelector('.loader');
+
+                    if (loaderElement) {
+                        const parentElement = loaderElement.parentElement;
+                        if (parentElement) {
+                            parentElement.remove();
+                        }
+                    }
+
+                    // Check again if the loader element exists
+                    const loaderElementAfterTimeout = document.querySelector('.loader');
+                    if (!loaderElementAfterTimeout) {
+                        resolve();
+                    }
+                }, 250);
+            });
+        };
+
+        apiKeyInputContainerFunction = function () {
+            const parentDiv = document.createElement('div');
+            parentDiv.id = 'parentDiv';
+            parentDiv.style.display = 'flex';
+            parentDiv.style.flexDirection = 'column';
+            parentDiv.style.alignItems = 'center';
+            parentDiv.style.justifyContent = 'center';
+            parentDiv.style.position = 'relative';
+            parentDiv.style.width = '100%';
+
+            // Create heading
+            const heading = document.createElement('h3');
+            heading.textContent = 'Enter your API key';
+            heading.style.textAlign = 'center';
+            heading.style.textDecoration = 'underline';
+            heading.style.marginBottom = '25px';
+            parentDiv.appendChild(heading);
+
+            const inputParentContainer = document.createElement('div');
+            inputParentContainer.style.display = 'flex';
+            inputParentContainer.style.alignItems = 'end';
+            inputParentContainer.style.justifyContent = 'space-between';
+            inputParentContainer.style.width = '100%';
+            inputParentContainer.style.marginTop = '20px';
+            inputParentContainer.style.flexDirection = 'column';
+            inputParentContainer.style.gap = '10px';
+
+            // Create input field and label container
+            const inputContainer = document.createElement('div');
+            inputContainer.style.display = 'flex';
+            inputContainer.style.alignItems = 'center';
+            inputContainer.style.flexGrow = '1';
+            inputContainer.style.width = '100%';
+
+            const apiKeyLabel = document.createElement('label');
+            apiKeyLabel.textContent = 'API Key:';
+            apiKeyLabel.setAttribute('for', 'api-key-input');
+            apiKeyLabel.style.marginRight = '10px';
+            apiKeyLabel.style.fontWeight = 'bold';
+
+            const apiKeyInput = document.createElement('input');
+            apiKeyInput.setAttribute('type', 'text');
+            apiKeyInput.setAttribute('id', 'api-key-input');
+            apiKeyInput.style.flexGrow = '1';
+            apiKeyInput.style.padding = '4px';
+
+            inputContainer.appendChild(apiKeyLabel);
+            inputContainer.appendChild(apiKeyInput);
+
+            // Create submit button
+            const submitButton = document.createElement('button');
+            submitButton.id = 'submitButtonBasicAuth';
+            submitButton.textContent = 'Submit';
+            submitButton.style.marginLeft = '10px';
+            submitButton.style.background = 'rgb(39 45 192)';
+            submitButton.style.borderRadius = '5px';
+            submitButton.style.display = 'flex';
+            submitButton.style.alignItems = 'center';
+            submitButton.style.justifyContent = 'center';
+            submitButton.style.padding = '10px';
+            submitButton.style.color = '#fff';
+            submitButton.style.cursor = 'pointer';
+            submitButton.style.position = 'relative';
+            submitButton.disabled = true; // Initially disable the button
+            submitButton.style.opacity = '0.5';
+
+            // Append input container and button to the inputParentContainer
+            inputParentContainer.appendChild(inputContainer);
+            inputParentContainer.appendChild(submitButton);
+
+            // Append inputParentContainer to parentDiv
+            parentDiv.appendChild(inputParentContainer);
+
+            return parentDiv;
+        };
+
+        modalForApiKeyInputBasicAuth = function () {
+            return new Promise((resolve, reject) => {
+                const container = document.getElementById('revert-signin-container');
+                container.style.height = '534px';
+
+                // Remove all children of the container
+                while (container.firstChild) {
+                    container.removeChild(container.firstChild);
+                }
+
+                this.showAndRemoveLoader().then(() => {
+                    //close button
+                    const closeButton = createCloseButton();
+                    closeButton.style.position = 'absolute';
+                    closeButton.style.right = '20px';
+                    closeButton.style.top = '20px';
+                    closeButton.addEventListener('click', () => {
+                        reject('Modal closed by user');
+                        this.close();
+                    });
+
+                    const apiKeyInputContainer = this.apiKeyInputContainerFunction();
+                    container.appendChild(closeButton);
+                    container.appendChild(apiKeyInputContainer);
+
+                    const inputElementForApiInput = apiKeyInputContainer.querySelector('#api-key-input');
+                    const submitButtonForApiInputSubmission =
+                        apiKeyInputContainer.querySelector('#submitButtonBasicAuth');
+
+                    //event listener on input to change the disability of submit
+                    inputElementForApiInput.addEventListener('input', function () {
+                        if (inputElementForApiInput.value.trim() !== '') {
+                            submitButtonForApiInputSubmission.disabled = false;
+                            submitButtonForApiInputSubmission.style.opacity = '1';
+                        } else {
+                            submitButtonForApiInputSubmission.disabled = true;
+                            submitButtonForApiInputSubmission.style.opacity = '0.5';
+                        }
+                    });
+
+                    //event listener for submission go Api key
+                    submitButtonForApiInputSubmission.addEventListener('click', () => {
+                        submitButtonForApiInputSubmission.disabled = true;
+                        submitButtonForApiInputSubmission.style.opacity = '0.5';
+
+                        const apiKey = inputElementForApiInput.value;
+
+                        resolve(apiKey);
+                    });
+                });
+            });
+        };
+
+        handleIntegrationRedirect = async function (selectedIntegration) {
             if (selectedIntegration) {
                 const scopes = selectedIntegration.scopes;
                 const state = JSON.stringify({
@@ -1290,11 +1444,80 @@ const createIntegrationBlock = function (self, integration) {
                         )}&response_type=code&prompt=consent`
                     );
                 } else if (selectedIntegration.integrationId === 'bitbucket') {
-                    
                     window.open(
                         `https://bitbucket.org/site/oauth2/authorize?client_id=${
                             selectedIntegration.clientId
                         }&response_type=code&state=${encodeURIComponent(state)}`
+                    );
+                } else if (selectedIntegration.integrationId === 'greenhouse') {
+                    const apiKey = await this.modalForApiKeyInputBasicAuth();
+                    const url = `${this.CORE_API_BASE_URL}v1/ats/oauth-callback?integrationId=${
+                        selectedIntegration.integrationId
+                    }&t_id=${this.tenantId}&code=${apiKey}&x_revert_public_token=${this.API_REVERT_PUBLIC_TOKEN}${
+                        this.#USER_REDIRECT_URL ? `&redirectUrl=${this.#USER_REDIRECT_URL}` : ``
+                    }`;
+                    fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                        .then((d) => {
+                            return d.json();
+                        })
+                        .then((data) => {
+                            if (data.error) {
+                                const errorMessage =
+                                    data.error?.code === 'P2002'
+                                        ? ': Already connected another CRM. Please disconnect first.'
+                                        : '';
+
+                                console.log('error:', errorMessage);
+                            } else {
+                                console.log('OAuth flow succeeded', data);
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            return this.renderFailedStage();
+                        });
+                } else if (selectedIntegration.integrationId === 'lever') {
+                    const encodedScopes = encodeURIComponent(scopes.join(' '));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/lever`);
+
+                    fetch(
+                        `${this.CORE_API_BASE_URL}ats/lever-app_config?revertPublicToken=${this.API_REVERT_PUBLIC_TOKEN}`
+                    )
+                        .then((data) => data.json())
+                        .then((data) => {
+                            if (data.env === 'Sandbox') {
+                                window.open(
+                                    `https://sandbox-lever.auth0.com/authorize?client_id=${
+                                        selectedIntegration.clientId
+                                    }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                                        state
+                                    )}&prompt=consent&scope=${encodedScopes}&audience=https://api.sandbox.lever.co/v1/`
+                                );
+                            } else {
+                                window.open(
+                                    `https://auth.lever.co/authorize?client_id=${
+                                        selectedIntegration.clientId
+                                    }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                                        state
+                                    )}&prompt=consent&scope=${encodedScopes}&audience=https://api.lever.co/v1/`
+                                );
+                            }
+                        });
+                } else if (selectedIntegration.integrationId === 'github') {
+                    const encodedScopes = encodeURIComponent(scopes.join(','));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/github`);
+
+                    window.open(
+                        `https://github.com/login/oauth/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${encodedRedirectUri}&scope=${encodedScopes}&state=${encodeURIComponent(
+                            state
+                        )}&response_type=code`
                     );
                 } else if (selectedIntegration.integrationId === 'quickbooks') {
                     const encodedScopes = encodeURIComponent(scopes.join(' '));
@@ -1349,6 +1572,7 @@ const createIntegrationBlock = function (self, integration) {
                         evtSource.close();
                         const tenantToken = parsedData.tenantSecretToken;
                         // fetch field mapping
+
                         fetch(`${this.CORE_API_BASE_URL}field-mapping`, {
                             mode: 'cors' as RequestMode,
                             method: 'GET',

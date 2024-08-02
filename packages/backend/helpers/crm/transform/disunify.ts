@@ -2,6 +2,8 @@ import { TP_ID, accountFieldMappingConfig } from '@prisma/client';
 import {
     ACCOUNTING_TP_ID,
     AccountingStandardObjects,
+    ATS_TP_ID,
+    AtsStandardObjects,
     CHAT_TP_ID,
     CRM_TP_ID,
     ChatStandardObjects,
@@ -17,11 +19,14 @@ import {
     handleSfdcDisunify,
     handleZohoDisunify,
 } from '..';
+
 import {
     postprocessDisUnifyAccoutingObject,
+    postprocessDisUnifyAtsObject,
     postprocessDisUnifyObject,
     postprocessDisUnifyTicketObject,
 } from './preprocess';
+
 import { flattenObj } from '../../../helpers/flattenObj';
 import handleCloseCRMDisunify from '../closecrm';
 
@@ -198,7 +203,7 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
         }
         case TP_ID.jira: {
             if (objType === 'ticketTask') {
-                let priorityId = undefined;
+                let priorityId: string | undefined = undefined;
                 if (obj.priority === 'urgent') priorityId = '1';
                 else if (obj.priority === 'high') priorityId = '2';
                 else if (obj.priority === 'medium') priorityId = '3';
@@ -251,7 +256,7 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
         }
         case TP_ID.bitbucket: {
             if (objType === 'ticketTask') {
-                let priorityId = undefined;
+                let priorityId: string | undefined = undefined;
                 if (obj.priority === 'urgent') priorityId = 'blocker';
                 else if (obj.priority === 'high') priorityId = 'critical';
                 else if (obj.priority === 'medium') priorityId = 'major';
@@ -271,6 +276,195 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
                     kind: obj.issueTypeId ? obj.issueTypeId : undefined,
                 };
             }
+            return processedObj;
+        }
+        case TP_ID.github: {
+            if (objType === 'ticketTask') {
+                return {
+                    ...transformedObj,
+                    assignees:
+                        obj.assignees && Array.isArray(obj.assignees) && obj.assignees.length > 0
+                            ? obj.assignees
+                            : undefined,
+                };
+            }
+
+            return processedObj;
+        }
+    }
+}
+export async function disunifyAtsObject<T extends Record<string, any>>({
+    obj,
+    tpId,
+    objType,
+    tenantSchemaMappingId,
+    accountFieldMappingConfig,
+}: {
+    obj: T;
+    tpId: ATS_TP_ID;
+    objType: AtsStandardObjects;
+    tenantSchemaMappingId?: string;
+    accountFieldMappingConfig?: accountFieldMappingConfig;
+}) {
+    const flattenedObj = flattenObj(obj, ['additional']);
+    const transformedObj = await transformModelToFieldMapping({
+        unifiedObj: flattenedObj,
+        tpId,
+        objType,
+        tenantSchemaMappingId,
+        accountFieldMappingConfig,
+    });
+
+    if (obj.additional) {
+        Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
+    }
+    const processedObj = postprocessDisUnifyAtsObject({ obj: transformedObj, tpId, objType });
+
+    switch (tpId) {
+        case TP_ID.lever: {
+            if (objType === 'candidate') {
+                const confidential = obj.is_private ? 'confidential' : 'non-confidential';
+
+                let reversedEmails = [];
+                if (obj.email_addresses && obj.email_addresses.length > 0) {
+                    reversedEmails = obj.email_addresses.map((email: any) => {
+                        return email.value;
+                    });
+                }
+
+                let applicationsIds = [];
+                if (obj.application_ids && obj.application_ids.length > 0) {
+                    applicationsIds = obj.application_ids.map((id: string) => {
+                        return { id: id };
+                    });
+                }
+
+                let tags = [];
+                if (obj.tags && obj.tags.length > 0) {
+                    tags = obj.tags.map((tag: any) => {
+                        return tag;
+                    });
+                }
+                let phones = [];
+                if (obj.phone_numbers && obj.phone_numbers.length > 0) {
+                    phones = obj.phone_numbers.map((phone: any) => {
+                        return { value: phone.value };
+                    });
+                }
+
+                let socialLinks = [];
+
+                if (obj.social_media_addresses && obj.social_media_addresses.length > 0) {
+                    socialLinks = obj.social_media_addresses.map((address: any) => {
+                        return address.value;
+                    });
+                }
+                let websiteLinks = [];
+
+                if (obj.website_addresses && obj.website_addresses.length > 0) {
+                    websiteLinks = obj.website_addresses.map((address: any) => {
+                        return address.value;
+                    });
+                }
+
+                return {
+                    ...transformedObj,
+                    emails: reversedEmails,
+                    confidentiality: confidential,
+                    applicationsIds,
+                    links: [...socialLinks, ...websiteLinks],
+                    tags: tags,
+                    phones,
+                };
+            } else if (objType === 'job') {
+                const confidential = obj.is_private ? 'confidential' : 'non-confidential';
+
+                let originalState: string | undefined = '';
+                switch (obj.status) {
+                    case 'open':
+                        originalState = 'published';
+                        break;
+                    case 'closed':
+                        originalState = 'rejected';
+                        break;
+                    case 'draft':
+                        originalState = 'pending';
+                        break;
+                    default:
+                        originalState = undefined;
+                        break;
+                }
+                return {
+                    ...transformedObj,
+                    confidentiality: confidential,
+                    state: originalState,
+                };
+            } else if (objType === 'offer') {
+                let originalStatus: string | undefined;
+                switch (obj.status) {
+                    case 'unresolved':
+                        originalStatus = 'draft';
+                        break;
+                    case 'rejected':
+                        originalStatus = 'denied';
+                        break;
+                    case 'accepted':
+                        originalStatus = 'signed';
+                        break;
+                    default:
+                        originalStatus = undefined;
+                        break;
+                }
+
+                return {
+                    ...transformedObj,
+
+                    status: originalStatus,
+                };
+            } else if (objType === 'department') {
+                return {
+                    ...transformedObj,
+                    text: obj.name,
+                };
+            }
+
+            return processedObj;
+        }
+
+        case TP_ID.greenhouse: {
+            if (objType === 'candidate') {
+                // every field below is an array
+                return {
+                    ...transformedObj,
+                    application_ids: obj.application_ids,
+                    tags: obj.tags,
+                    attachments: obj.attachments,
+                    phone_numbers: obj.phone_numbers,
+                    addresses: obj.addresses,
+                    email_addresses: obj.email_addresses,
+                    website_addresses: obj.website_addresses,
+                    social_media_addresses: obj.social_media_addresses,
+                    applications: obj.applications,
+                };
+            } else if (objType === 'job') {
+                return {
+                    ...transformedObj,
+                    departments: obj.departments,
+                    offices: obj.offices,
+                    openings: obj.openings,
+                };
+            } else if (objType === 'offer') {
+                return {
+                    ...transformedObj,
+                };
+            } else if (objType === 'department') {
+                return {
+                    ...transformedObj,
+                    child_ids: obj.child_ids,
+                    child_department_external_ids: obj.child_department_external_ids,
+                };
+            }
+
             return processedObj;
         }
     }
@@ -316,11 +510,11 @@ export async function disunifyAccountingObject<T extends Record<string, any>>({
         }
 
         case TP_ID.xero: {
-            if(objType==='account'){
-                const active = obj.active && obj.active === true?"ACTIVE":"ARCHIVED";
-                  return {
+            if (objType === 'account') {
+                const active = obj.active && obj.active === true ? 'ACTIVE' : 'ARCHIVED';
+                return {
                     ...transformedObj,
-                      Status:active
+                    Status: active,
                 };
             }
             return processedObj;

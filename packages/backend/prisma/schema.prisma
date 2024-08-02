@@ -24,6 +24,9 @@ enum TP_ID {
   bitbucket
   quickbooks
   xero
+  greenhouse
+  lever
+  github
 }
 
 enum ENV {

@@ -5,6 +5,7 @@
     "private": true,
     "scripts": {
         "build": "mkdir -p ./dist/generated && cp -r ./generated/ ./dist/generated && tsc",
+        "build:prod": "tsc",
         "watch": "tsc -w",
         "start": "NODE_ENV=production node ./dist/index.js",
         "start:prod": "yarn db-deploy && NODE_ENV=production node ./dist/index.js",

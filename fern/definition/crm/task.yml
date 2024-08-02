@@ -60,6 +60,7 @@ service:
                 name: GetTaskRequest
                 query-parameters:
                     fields: optional<string>
+                    associations: optional<string>
             response: GetTaskResponse
             errors:
                 - errors.UnAuthorizedError
@@ -75,6 +76,7 @@ service:
                     fields: optional<string>
                     pageSize: optional<string>
                     cursor: optional<string>
+                    associations: optional<string>
             response: GetTasksResponse
             errors:
                 - errors.UnAuthorizedError

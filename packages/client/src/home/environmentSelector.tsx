@@ -35,7 +35,7 @@ export default function EnvironmentSelector({ environmentProp, setEnvironmentPro
                             vertical: 'top',
                             horizontal: 'left',
                         },
-                        anchorEl: anchorRef.current,
+                        //   anchorEl: anchorRef.current,
                         // FIXME: disablePortal: true, still doesn't fix the re-render issue
                         PaperProps: {
                             style: {

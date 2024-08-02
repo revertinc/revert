@@ -5,7 +5,6 @@ dotenv.config();
 
 const config = {
     PORT: process.env.SERVER_PORT || 4001,
-    DATABASE: process.env.MONGO_DATABASE,
     REDIS_URL: process.env.REDIS_SERVER_URL!,
     HUBSPOT_CLIENT_ID: process.env.HUBSPOT_CLIENT_ID,
     HUBSPOT_CLIENT_SECRET: process.env.HUBSPOT_CLIENT_SECRET,
@@ -53,11 +52,19 @@ const config = {
     OPEN_INT_API_KEY: process.env.OPEN_INT_API_KEY,
     OPEN_INT_BASE_API_URL: process.env.OPEN_INT_BASE_API_URL,
     TWENTY_ACCOUNT_ID: process.env.TWENTY_ACCOUNT_ID,
+
+    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID!,
+    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET!,
+
     DEFAULT_RATE_LIMIT_DEVELOPER_PLAN: process.env.DEFAULT_RATE_LIMIT_DEVELOPER_PLAN,
+
     QUICKBOOKS_CLIENT_ID: process.env.QUICKBOOKS_CLIENT_ID!,
     QUICKBOOKS_CLIENT_SECRET: process.env.QUICKBOOKS_CLIENT_SECRET!,
     XERO_CLIENT_ID: process.env.XERO_CLIENT_ID!,
     XERO_CLIENT_SECRET: process.env.XERO_CLIENT_SECRET!,
+
+    LEVER_CLIENT_ID: process.env.LEVER_CLIENT_ID!,
+    LEVER_CLIENT_SECRET: process.env.LEVER_CLIENT_SECRET!,
 };
 
 export default config;

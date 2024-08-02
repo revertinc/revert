@@ -67,6 +67,7 @@ export const appsInfo = {
         logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711549311/Revert/cmqpors8m8tid9zpn9ak.png',
         description: 'Configure your Bitbucket Ticketing App from here.',
     },
+
     quickbooks: {
         name: 'QuickBooks',
         logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711549293/Revert/ooo7iegqcrdkxgrclzjt.png',
@@ -76,6 +77,22 @@ export const appsInfo = {
         name: 'Xero',
         logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711549293/Revert/ooo7iegqcrdkxgrclzjt.png',
         description: 'Configure your Xero Accounting App from here.',
+    },
+    greenhouse: {
+        name: 'Greenhouse',
+        logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/rhqhzzrt6zmefncg3uid',
+        description: 'Configure your Greenhouse ATS App from here.',
+    },
+    lever: {
+        name: 'Lever',
+        logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/hwlwhz2lnum3hfcabqc4',
+        description: 'Configure your Lever ATS App from here.',
+    },
+
+    github: {
+        name: 'GitHub',
+        logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/v1722418192/RevertAppLogos/cmeafzqvnvvconohfnnr.png',
+        description: 'Configure your GitHub Ticketing App from here.',
     },
     // asana: {
     //     name: 'Asana',
