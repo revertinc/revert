@@ -70,12 +70,12 @@ export const appsInfo = {
 
     greenhouse: {
         name: 'Greenhouse',
-        logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711549311/Revert/cmqpors8m8tid9zpn9ak.png',
+        logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/rhqhzzrt6zmefncg3uid',
         description: 'Configure your Greenhouse ATS App from here.',
     },
     lever: {
         name: 'Lever',
-        logo: 'https://res.cloudinary.com/dfcnic8wq/image/upload/v1711549293/Revert/ooo7iegqcrdkxgrclzjt.png',
+        logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/hwlwhz2lnum3hfcabqc4',
         description: 'Configure your Lever ATS App from here.',
     },
 

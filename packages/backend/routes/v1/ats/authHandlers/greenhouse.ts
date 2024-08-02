@@ -6,7 +6,7 @@ import sendConnectionAddedEvent from '../../../../helpers/webhooks/connection';
 import BaseOAuthHandler from '../../../../helpers/auth/baseOAuthHandler';
 
 class GreenhouseAuthHandler extends BaseOAuthHandler {
-    async handleBaicAuth({
+    async handleBasicAuth({
         account,
         code, //code for basic auth types like greenhouse is the api key
         integrationId,

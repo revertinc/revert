@@ -67,7 +67,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
         if (req.query.code && req.query.t_id && revertPublicKey) {
             switch (integrationId) {
                 case TP_ID.greenhouse:
-                    return greenhouse.handleBaicAuth(handleAuthProps);
+                    return greenhouse.handleBasicAuth(handleAuthProps);
                 case TP_ID.lever:
                     return lever.handleOAuth(handleAuthProps);
 
