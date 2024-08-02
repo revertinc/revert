@@ -1,0 +1,115 @@
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+    associations: ../common/associations.yml
+
+types:
+    GetExpenseResponse:
+        properties:
+            status: types.ResponseStatus
+            result: unknown
+    GetExpensesResponse:
+        properties:
+            status: types.ResponseStatus
+            next: optional<string>
+            previous: optional<string>
+            results: unknown
+    CreateOrUpdateExpenseRequest: unknown
+    CreateOrUpdateExpenseResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
+            result: unknown
+    DeleteExpenseResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
+
+service:
+    base-path: /accounting/expenses
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getExpense:
+            docs: Get details of an Expense
+            method: GET
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: GetExpenseRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetExpenseResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getExpenses:
+            docs: Get all the expenses
+            method: GET
+            path: ''
+            request:
+                name: GetExpensesRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetExpensesResponse
+        createExpense:
+            docs: Post Expense
+            method: POST
+            path: ''
+            request:
+                name: CreateExpenseRequest
+                body: CreateOrUpdateExpenseRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateExpenseResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateExpense:
+            docs: Update Expense
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateExpenseRequest
+                body: CreateOrUpdateExpenseRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateExpenseResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        deleteExpense:
+            docs: Delete Expense
+            method: DELETE
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: DeleteExpenseRequest
+                query-parameters:
+                    fields: optional<string>
+            response: DeleteExpenseResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

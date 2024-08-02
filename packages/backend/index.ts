@@ -152,6 +152,9 @@ app.listen(config.PORT, () => {
         await AuthService.refreshOAuthTokensForThirdParty();
         await AuthService.refreshOAuthTokensForThirdPartyChatServices();
         await AuthService.refreshOAuthTokensForThirdPartyTicketServices();
+
+        await AuthService.refreshOAuthTokensForThirdPartyAccountingServices();
+
         await AuthService.refreshOAuthTokensForThirdPartyAtsServices();
     });
     if (!config.DISABLE_REVERT_TELEMETRY) {

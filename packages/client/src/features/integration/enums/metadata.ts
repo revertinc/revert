@@ -68,6 +68,16 @@ export const appsInfo = {
         description: 'Configure your Bitbucket Ticketing App from here.',
     },
 
+    quickbooks: {
+        name: 'QuickBooks',
+        logo: ' https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/wlnadel7twqr0rgaoq9o',
+        description: 'Configure your QuickBooks Accounting App from here.',
+    },
+    xero: {
+        name: 'Xero',
+        logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/jhqummxaixtrzfhyc6yr',
+        description: 'Configure your Xero Accounting App from here.',
+    },
     greenhouse: {
         name: 'Greenhouse',
         logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/rhqhzzrt6zmefncg3uid',

@@ -1,5 +1,7 @@
 import { TP_ID, accountFieldMappingConfig } from '@prisma/client';
 import {
+    ACCOUNTING_TP_ID,
+    AccountingStandardObjects,
     ATS_TP_ID,
     AtsStandardObjects,
     CHAT_TP_ID,
@@ -17,7 +19,14 @@ import {
     handleSfdcDisunify,
     handleZohoDisunify,
 } from '..';
-import { postprocessDisUnifyAtsObject, postprocessDisUnifyObject, postprocessDisUnifyTicketObject } from './preprocess';
+
+import {
+    postprocessDisUnifyAccoutingObject,
+    postprocessDisUnifyAtsObject,
+    postprocessDisUnifyObject,
+    postprocessDisUnifyTicketObject,
+} from './preprocess';
+
 import { flattenObj } from '../../../helpers/flattenObj';
 import handleCloseCRMDisunify from '../closecrm';
 
@@ -456,6 +465,58 @@ export async function disunifyAtsObject<T extends Record<string, any>>({
                 };
             }
 
+            return processedObj;
+        }
+    }
+}
+export async function disunifyAccountingObject<T extends Record<string, any>>({
+    obj,
+    tpId,
+    objType,
+    tenantSchemaMappingId,
+    accountFieldMappingConfig,
+}: {
+    obj: T;
+    tpId: ACCOUNTING_TP_ID;
+    objType: AccountingStandardObjects;
+    tenantSchemaMappingId?: string;
+    accountFieldMappingConfig?: accountFieldMappingConfig;
+}) {
+    const flattenedObj = flattenObj(obj, ['additional']);
+    const transformedObj = await transformModelToFieldMapping({
+        unifiedObj: flattenedObj,
+        tpId,
+        objType,
+        tenantSchemaMappingId,
+        accountFieldMappingConfig,
+    });
+    if (obj.additional) {
+        Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
+    }
+
+    const processedObj = postprocessDisUnifyAccoutingObject({ obj: transformedObj, tpId, objType });
+
+    switch (tpId) {
+        case TP_ID.quickbooks: {
+            if (objType === 'expense') {
+                transformedObj['Line'] = obj.line;
+
+                return {
+                    ...transformedObj,
+                };
+            }
+
+            return processedObj;
+        }
+
+        case TP_ID.xero: {
+            if (objType === 'account') {
+                const active = obj.active && obj.active === true ? 'ACTIVE' : 'ARCHIVED';
+                return {
+                    ...transformedObj,
+                    Status: active,
+                };
+            }
             return processedObj;
         }
     }

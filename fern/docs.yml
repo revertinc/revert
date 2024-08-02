@@ -86,6 +86,10 @@ navigation:
                   path: ./docs/contents/guides/trello.mdx
                 - page: BitBucket
                   path: ./docs/contents/guides/bitbucket.mdx
+                - page: QuickBooks
+                  path: ./docs/contents/guides/quickbooks.mdx
+                - page: Xero
+                  path: ./docs/contents/guides/xero.mdx
                 - page: Greenhouse
                   path: ./docs/contents/guides/greenhouse.mdx
                 - page: Lever

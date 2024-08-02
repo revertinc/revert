@@ -1519,6 +1519,28 @@ const createIntegrationBlock = function (self, integration) {
                             state
                         )}&response_type=code`
                     );
+                } else if (selectedIntegration.integrationId === 'quickbooks') {
+                    const encodedScopes = encodeURIComponent(scopes.join(' '));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/quickbooks`);
+
+                    window.open(
+                        `https://appcenter.intuit.com/connect/oauth2?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                            state
+                        )}&scope=${encodedScopes}`
+                    );
+                } else if (selectedIntegration.integrationId === 'xero') {
+                    const encodedScopes = encodeURIComponent(scopes.join(' '));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/xero`);
+
+                    window.open(
+                        `https://login.xero.com/identity/connect/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                            state
+                        )}&scope=${encodedScopes}`
+                    );
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {

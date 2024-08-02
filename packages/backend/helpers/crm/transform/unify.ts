@@ -3,6 +3,7 @@ import {
     ChatStandardObjects,
     StandardObjects,
     TicketStandardObjects,
+    AccountingStandardObjects,
     AtsStandardObjects,
 } from '../../../constants/common';
 
@@ -20,7 +21,11 @@ export async function unifyObject<T extends Record<string, any>, K>({
 }: {
     obj: T;
     tpId: CRM_TP_ID;
-    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects | AtsStandardObjects;
+    objType:StandardObjects
+        | ChatStandardObjects
+        | TicketStandardObjects
+        | AtsStandardObjects
+        | AccountingStandardObjects;
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }): Promise<K> {

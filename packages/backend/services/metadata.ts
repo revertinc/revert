@@ -156,6 +156,26 @@ const metadataService = new MetadataService({
                     scopes: getScope(apps, TP_ID.bitbucket),
                     clientId: getClientId(apps, TP_ID.bitbucket) || config.BITBUCKET_CLIENT_ID,
                 },
+
+                {
+                    integrationId: TP_ID.quickbooks,
+                    name: 'QuickBooks',
+                    imageSrc:
+                        'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/pvkrmr3ld3ii5mu7ledy',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.quickbooks),
+                    clientId: getClientId(apps, TP_ID.quickbooks) || config.QUICKBOOKS_CLIENT_ID,
+                },
+                {
+                    integrationId: TP_ID.xero,
+                    name: 'Xero',
+                    imageSrc:
+                        'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/ajwcpkre9llu037su7m5',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.xero),
+                    clientId: getClientId(apps, TP_ID.xero) || config.XERO_CLIENT_ID,
+                },
+
                 {
                     integrationId: TP_ID.greenhouse,
                     name: 'Greenhouse',
