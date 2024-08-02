@@ -21,8 +21,7 @@ export const transformFieldMappingToModel = async ({
 }: {
     obj: any;
     tpId: TP_ID;
-    objType:
-        | StandardObjects
+    objType: StandardObjects
         | ChatStandardObjects
         | TicketStandardObjects
         | AtsStandardObjects
@@ -94,8 +93,7 @@ export const transformModelToFieldMapping = async ({
 }: {
     unifiedObj: any;
     tpId: TP_ID;
-    objType:
-        | StandardObjects
+    objType:StandardObjects
         | ChatStandardObjects
         | TicketStandardObjects
         | AtsStandardObjects
