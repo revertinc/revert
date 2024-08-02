@@ -4,6 +4,7 @@ import { Box as MuiBox, Button, Chip as MuiChip, Switch } from '@mui/material';
 import { LoadingButton as MuiLoadingButton } from '@mui/lab';
 
 import { useApi } from '../data/hooks';
+import EnvironmentSelector from './environmentSelector';
 
 const Chip = styled(MuiChip)`
     cursor: pointer;
@@ -69,6 +70,7 @@ const LoadingButton = styled(MuiLoadingButton)`
 interface AppConfig {
     bot_token?: string;
     org_url?: string;
+    env?: string;
 }
 
 const EditCredentials: React.FC<{
@@ -113,6 +115,10 @@ const EditCredentials: React.FC<{
         } else if (app.tp_id === 'ms_dynamics_365_sales') {
             setAppConfig({ org_url: val });
         }
+    };
+
+    const handleEnv = (val) => {
+        setAppConfig({ env: val });
     };
 
     React.useEffect(() => {
@@ -177,6 +183,18 @@ const EditCredentials: React.FC<{
                                 value={app?.app_config?.org_url}
                                 onChange={handleAppConfigFieldChange}
                                 error={!app?.app_config?.org_url}
+                            />
+                        </Row>
+                    )}
+
+                    {(app.tp_id === 'quickbooks' || app.tp_id === 'xero' || app.tp_id === 'lever') && (
+                        // do for greenhouse as well
+                        <Row>
+                            <span className="font-bold">Environment: </span>
+                            <EnvironmentSelector
+                                environmentProp={appConfig?.env || app.app_config?.env}
+                                setEnvironmentProp={(val) => handleEnv(val)}
+                                environmentList={[{ env: 'Production' }, { env: 'Sandbox' }]}
                             />
                         </Row>
                     )}

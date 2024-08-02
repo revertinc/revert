@@ -1,5 +1,7 @@
 import { TP_ID, accountFieldMappingConfig } from '@prisma/client';
 import {
+    ATS_TP_ID,
+    AtsStandardObjects,
     CHAT_TP_ID,
     CRM_TP_ID,
     ChatStandardObjects,
@@ -15,7 +17,7 @@ import {
     handleSfdcDisunify,
     handleZohoDisunify,
 } from '..';
-import { postprocessDisUnifyObject, postprocessDisUnifyTicketObject } from './preprocess';
+import { postprocessDisUnifyAtsObject, postprocessDisUnifyObject, postprocessDisUnifyTicketObject } from './preprocess';
 import { flattenObj } from '../../../helpers/flattenObj';
 import handleCloseCRMDisunify from '../closecrm';
 
@@ -275,6 +277,182 @@ export async function disunifyTicketObject<T extends Record<string, any>>({
                         obj.assignees && Array.isArray(obj.assignees) && obj.assignees.length > 0
                             ? obj.assignees
                             : undefined,
+                };
+            }
+
+            return processedObj;
+        }
+    }
+}
+export async function disunifyAtsObject<T extends Record<string, any>>({
+    obj,
+    tpId,
+    objType,
+    tenantSchemaMappingId,
+    accountFieldMappingConfig,
+}: {
+    obj: T;
+    tpId: ATS_TP_ID;
+    objType: AtsStandardObjects;
+    tenantSchemaMappingId?: string;
+    accountFieldMappingConfig?: accountFieldMappingConfig;
+}) {
+    const flattenedObj = flattenObj(obj, ['additional']);
+    const transformedObj = await transformModelToFieldMapping({
+        unifiedObj: flattenedObj,
+        tpId,
+        objType,
+        tenantSchemaMappingId,
+        accountFieldMappingConfig,
+    });
+
+    if (obj.additional) {
+        Object.keys(obj.additional).forEach((key: any) => (transformedObj[key] = obj.additional[key]));
+    }
+    const processedObj = postprocessDisUnifyAtsObject({ obj: transformedObj, tpId, objType });
+
+    switch (tpId) {
+        case TP_ID.lever: {
+            if (objType === 'candidate') {
+                const confidential = obj.is_private ? 'confidential' : 'non-confidential';
+
+                let reversedEmails = [];
+                if (obj.email_addresses && obj.email_addresses.length > 0) {
+                    reversedEmails = obj.email_addresses.map((email: any) => {
+                        return email.value;
+                    });
+                }
+
+                let applicationsIds = [];
+                if (obj.application_ids && obj.application_ids.length > 0) {
+                    applicationsIds = obj.application_ids.map((id: string) => {
+                        return { id: id };
+                    });
+                }
+
+                let tags = [];
+                if (obj.tags && obj.tags.length > 0) {
+                    tags = obj.tags.map((tag: any) => {
+                        return tag;
+                    });
+                }
+                let phones = [];
+                if (obj.phone_numbers && obj.phone_numbers.length > 0) {
+                    phones = obj.phone_numbers.map((phone: any) => {
+                        return { value: phone.value };
+                    });
+                }
+
+                let socialLinks = [];
+
+                if (obj.social_media_addresses && obj.social_media_addresses.length > 0) {
+                    socialLinks = obj.social_media_addresses.map((address: any) => {
+                        return address.value;
+                    });
+                }
+                let websiteLinks = [];
+
+                if (obj.website_addresses && obj.website_addresses.length > 0) {
+                    websiteLinks = obj.website_addresses.map((address: any) => {
+                        return address.value;
+                    });
+                }
+
+                return {
+                    ...transformedObj,
+                    emails: reversedEmails,
+                    confidentiality: confidential,
+                    applicationsIds,
+                    links: [...socialLinks, ...websiteLinks],
+                    tags: tags,
+                    phones,
+                };
+            } else if (objType === 'job') {
+                const confidential = obj.is_private ? 'confidential' : 'non-confidential';
+
+                let originalState: string | undefined = '';
+                switch (obj.status) {
+                    case 'open':
+                        originalState = 'published';
+                        break;
+                    case 'closed':
+                        originalState = 'rejected';
+                        break;
+                    case 'draft':
+                        originalState = 'pending';
+                        break;
+                    default:
+                        originalState = undefined;
+                        break;
+                }
+                return {
+                    ...transformedObj,
+                    confidentiality: confidential,
+                    state: originalState,
+                };
+            } else if (objType === 'offer') {
+                let originalStatus: string | undefined;
+                switch (obj.status) {
+                    case 'unresolved':
+                        originalStatus = 'draft';
+                        break;
+                    case 'rejected':
+                        originalStatus = 'denied';
+                        break;
+                    case 'accepted':
+                        originalStatus = 'signed';
+                        break;
+                    default:
+                        originalStatus = undefined;
+                        break;
+                }
+
+                return {
+                    ...transformedObj,
+
+                    status: originalStatus,
+                };
+            } else if (objType === 'department') {
+                return {
+                    ...transformedObj,
+                    text: obj.name,
+                };
+            }
+
+            return processedObj;
+        }
+
+        case TP_ID.greenhouse: {
+            if (objType === 'candidate') {
+                // every field below is an array
+                return {
+                    ...transformedObj,
+                    application_ids: obj.application_ids,
+                    tags: obj.tags,
+                    attachments: obj.attachments,
+                    phone_numbers: obj.phone_numbers,
+                    addresses: obj.addresses,
+                    email_addresses: obj.email_addresses,
+                    website_addresses: obj.website_addresses,
+                    social_media_addresses: obj.social_media_addresses,
+                    applications: obj.applications,
+                };
+            } else if (objType === 'job') {
+                return {
+                    ...transformedObj,
+                    departments: obj.departments,
+                    offices: obj.offices,
+                    openings: obj.openings,
+                };
+            } else if (objType === 'offer') {
+                return {
+                    ...transformedObj,
+                };
+            } else if (objType === 'department') {
+                return {
+                    ...transformedObj,
+                    child_ids: obj.child_ids,
+                    child_department_external_ids: obj.child_department_external_ids,
                 };
             }
 

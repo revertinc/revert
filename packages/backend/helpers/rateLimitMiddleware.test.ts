@@ -1,6 +1,8 @@
 import { Response } from 'express';
-import rateLimitMiddleware from '../helpers/rateLimitMiddleware';
-import { skipRateLimitRoutes } from '../helpers/utils';
+
+import rateLimitMiddleware from './rateLimitMiddleware';
+import { skipRateLimitRoutes } from './utils';
+
 import { jest, describe, expect, it, beforeEach } from '@jest/globals';
 
 type StatusFn = (code: number) => Response;

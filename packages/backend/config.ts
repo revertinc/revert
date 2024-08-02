@@ -57,6 +57,8 @@ const config = {
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET!,
 
     DEFAULT_RATE_LIMIT_DEVELOPER_PLAN: process.env.DEFAULT_RATE_LIMIT_DEVELOPER_PLAN,
+    LEVER_CLIENT_ID: process.env.LEVER_CLIENT_ID!,
+    LEVER_CLIENT_SECRET: process.env.LEVER_CLIENT_SECRET!,
 };
 
 export default config;

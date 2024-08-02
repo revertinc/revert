@@ -22,6 +22,8 @@ enum TP_ID {
   trello
   jira
   bitbucket
+  greenhouse
+  lever
   github
 }
 

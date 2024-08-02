@@ -157,6 +157,25 @@ const metadataService = new MetadataService({
                     clientId: getClientId(apps, TP_ID.bitbucket) || config.BITBUCKET_CLIENT_ID,
                 },
                 {
+                    integrationId: TP_ID.greenhouse,
+                    name: 'Greenhouse',
+                    imageSrc:
+                        'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/y8evsfdtfu8s1pdeicf8',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.greenhouse),
+                    clientId: undefined,
+                },
+                {
+                    integrationId: TP_ID.lever,
+                    name: 'Lever',
+                    imageSrc:
+                        ' https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/rvodrek2tgqit7b9g9ef',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.lever),
+                    clientId: getClientId(apps, TP_ID.lever) || config.LEVER_CLIENT_ID,
+                },
+
+                {
                     integrationId: TP_ID.github,
                     name: 'GitHub',
                     imageSrc: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/d4jdtttg8ptk2ab9kpz7',

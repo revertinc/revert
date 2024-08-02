@@ -45,6 +45,12 @@ import { collectionServiceTicket } from '../services/ticket/collection';
 import { commentServiceTicket } from '../services/ticket/comment';
 import { proxyServiceTicket } from '../services/ticket/proxy';
 import { syncService } from '../services/sync';
+import atsRouter from './v1/ats';
+import { departmentServiceAts } from '../services/ats/department';
+import { candidateServiceAts } from '../services/ats/candidate';
+import { offerServiceAts } from '../services/ats/offer';
+import { jobServiceAts } from '../services/ats/job';
+import { proxyServiceAts } from '../services/ats/proxy';
 
 const router = express.Router();
 
@@ -147,6 +153,8 @@ router.use('/chat', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], cha
 
 router.use('/ticket', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], ticketRouter);
 
+router.use('/ats', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], atsRouter);
+
 register(router, {
     metadata: metadataService,
     internal: {
@@ -179,6 +187,13 @@ register(router, {
         comment: commentServiceTicket,
         collection: collectionServiceTicket,
         proxy: proxyServiceTicket,
+    },
+    ats: {
+        department: departmentServiceAts,
+        candidate: candidateServiceAts,
+        offer: offerServiceAts,
+        job: jobServiceAts,
+        proxy: proxyServiceAts,
     },
     sync: syncService,
 });

@@ -522,6 +522,44 @@ export const OAuthCallback = (props) => {
                         console.error(err);
                         setStatus('Errored out');
                     });
+            } else if (integrationId === 'lever') {
+                console.log('Post ats app installation', integrationId, params);
+                const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
+                fetch(
+                    `${REVERT_BASE_API_URL}/v1/ats/oauth-callback?integrationId=${integrationId}&code=${
+                        params.code
+                    }&t_id=${tenantId}&x_revert_public_token=${revertPublicToken}${
+                        redirectUrl ? `&redirect_url=${redirectUrl}` : ``
+                    }`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                )
+                    .then((d) => {
+                        return d.json();
+                    })
+                    .then((data) => {
+                        console.log('OAuth flow succeeded', data);
+                        if (data.error) {
+                            const errorMessage =
+                                data.error?.code === 'P2002'
+                                    ? ': Already connected another app. Please disconnect first.'
+                                    : '';
+                            setStatus('Errored out' + errorMessage);
+                        } else {
+                            setStatus('Succeeded. Please feel free to close this window.');
+                        }
+                        setIsLoading(false);
+                    })
+                    .catch((err) => {
+                        Sentry.captureException(err);
+                        setIsLoading(false);
+                        console.error(err);
+                        setStatus('Errored out');
+                    });
             }
         }
     }, [integrationId]);
