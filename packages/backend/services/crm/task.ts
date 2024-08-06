@@ -35,7 +35,7 @@ const taskService = new TaskService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    taskId
+                    taskId,
                 );
 
                 switch (thirdPartyId) {
@@ -49,11 +49,11 @@ const taskService = new TaskService(
                             'hs_timestamp',
                         ];
                         const validAssociations = [...associations].filter((item) =>
-                            isValidAssociationTypeRequestedByUser(item)
+                            isValidAssociationTypeRequestedByUser(item),
                         );
                         const invalidAssociations = [...associations].filter(
                             (item) =>
-                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
                         );
 
                         const url =
@@ -75,7 +75,7 @@ const taskService = new TaskService(
                             thirdPartyId,
                             connection,
                             account,
-                            invalidAssociations
+                            invalidAssociations,
                         );
 
                         task = await unifyObject<any, UnifiedTask>({
@@ -132,7 +132,7 @@ const taskService = new TaskService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const task = result.data;
                         res.send({
@@ -223,7 +223,7 @@ const taskService = new TaskService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -240,11 +240,11 @@ const taskService = new TaskService(
                             cursor ? `&after=${cursor}` : ''
                         }`;
                         const validAssociations = [...associations].filter((item) =>
-                            isValidAssociationTypeRequestedByUser(item)
+                            isValidAssociationTypeRequestedByUser(item),
                         );
                         const invalidAssociations = [...associations].filter(
                             (item) =>
-                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
                         );
 
                         const url =
@@ -267,7 +267,7 @@ const taskService = new TaskService(
                                     thirdPartyId,
                                     connection,
                                     account,
-                                    invalidAssociations
+                                    invalidAssociations,
                                 );
                                 return await unifyObject<any, UnifiedTask>({
                                     obj: { ...l, ...l?.properties, associations: associatedData },
@@ -276,7 +276,7 @@ const taskService = new TaskService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
                         res.send({
                             status: 'ok',
@@ -309,8 +309,8 @@ const taskService = new TaskService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: tasks });
                         break;
@@ -352,8 +352,8 @@ const taskService = new TaskService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: tasks });
                         break;
@@ -368,7 +368,7 @@ const taskService = new TaskService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
@@ -382,8 +382,8 @@ const taskService = new TaskService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedTasks });
                         break;
@@ -412,8 +412,8 @@ const taskService = new TaskService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         let cursorVal = parseInt(String(cursor));
@@ -453,8 +453,8 @@ const taskService = new TaskService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -553,7 +553,7 @@ const taskService = new TaskService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         res.send({
                             status: 'ok',
@@ -686,7 +686,7 @@ const taskService = new TaskService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         res.send({
                             status: 'ok',
@@ -799,8 +799,8 @@ const taskService = new TaskService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({
                             status: 'ok',
@@ -833,8 +833,8 @@ const taskService = new TaskService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: tasks });
                         break;
@@ -858,8 +858,8 @@ const taskService = new TaskService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', results: tasks });
                         break;
@@ -895,8 +895,8 @@ const taskService = new TaskService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -921,7 +921,7 @@ const taskService = new TaskService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { taskService };

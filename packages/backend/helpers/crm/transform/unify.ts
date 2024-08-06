@@ -21,7 +21,8 @@ export async function unifyObject<T extends Record<string, any>, K>({
 }: {
     obj: T;
     tpId: CRM_TP_ID;
-    objType:StandardObjects
+    objType:
+        | StandardObjects
         | ChatStandardObjects
         | TicketStandardObjects
         | AtsStandardObjects

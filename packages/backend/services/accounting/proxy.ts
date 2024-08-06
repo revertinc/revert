@@ -26,7 +26,7 @@ const proxyServiceAccounting = new ProxyService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -80,7 +80,7 @@ const proxyServiceAccounting = new ProxyService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { proxyServiceAccounting };

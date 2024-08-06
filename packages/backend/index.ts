@@ -80,7 +80,7 @@ app.use(
         skip: (req, _) => {
             return req.originalUrl.startsWith('/health-check');
         },
-    })
+    }),
 );
 
 app.use(versionMiddleware());
@@ -121,14 +121,14 @@ app.use(
     manageRouterVersioning({
         v1: indexRouter,
         v2: testv2Router,
-    })
+    }),
 );
 app.use(
     '/v1',
     manageRouterVersioning({
         v1: indexRouter,
         v2: testv2Router,
-    })
+    }),
 );
 app.use(endpointLogger());
 // The error handler must be before any other error middleware and after all controllers

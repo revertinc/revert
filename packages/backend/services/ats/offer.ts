@@ -28,7 +28,7 @@ const offerServiceAts = new OfferService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    offerId
+                    offerId,
                 );
 
                 switch (thirdPartyId) {
@@ -95,7 +95,7 @@ const offerServiceAts = new OfferService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -131,7 +131,7 @@ const offerServiceAts = new OfferService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
                         const linkHeader = result.headers.link;
                         let nextCursor, previousCursor;
@@ -196,7 +196,7 @@ const offerServiceAts = new OfferService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
                         let nextCursor;
 
@@ -364,7 +364,7 @@ const offerServiceAts = new OfferService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    offerId
+                    offerId,
                 );
 
                 switch (thirdPartyId) {
@@ -398,7 +398,7 @@ const offerServiceAts = new OfferService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { offerServiceAts };

@@ -29,7 +29,7 @@ const vendorServiceAccounting = new VendorService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    vendorId
+                    vendorId,
                 );
 
                 switch (thirdPartyId) {
@@ -125,7 +125,7 @@ const vendorServiceAccounting = new VendorService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
                 switch (thirdPartyId) {
                     case TP_ID.quickbooks: {
@@ -166,8 +166,8 @@ const vendorServiceAccounting = new VendorService(
                                               objType,
                                               tenantSchemaMappingId: connection.schema_mapping_id,
                                               accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                          })
-                                  )
+                                          }),
+                                  ),
                               )
                             : {};
                         const nextCursor =
@@ -203,8 +203,8 @@ const vendorServiceAccounting = new VendorService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         const hasMoreResults = result.data.Contacts.length === 100;
                         const nextCursor = hasMoreResults ? (cursor ? cursor + 1 : 2) : undefined;
@@ -412,7 +412,7 @@ const vendorServiceAccounting = new VendorService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    vendorId
+                    vendorId,
                 );
 
                 switch (thirdPartyId) {
@@ -445,7 +445,7 @@ const vendorServiceAccounting = new VendorService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { vendorServiceAccounting };

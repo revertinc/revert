@@ -125,7 +125,7 @@ const connectionService = new ConnectionService({
 
             if (createdConnections) {
                 // TODO: Should webhooks get fired for bulk import of connections?
-                // const svixAppId = environment?.accountId!;
+                // const svixAppId = environment?.id!;
                 // createdConnections.forEach((c) => sendConnectionDeletedEvent(svixAppId, c));
                 res.send({ status: 'ok' });
             } else {
@@ -140,6 +140,7 @@ const connectionService = new ConnectionService({
         }
     },
     async deleteConnection(req, res) {
+        // changes(breaking) -> Delete Connection on SvixAppId -> accoundId_environment that is environmentId
         const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
         if (!token) {
             throw new UnAuthorizedError({ error: 'Api unauthorized' });
@@ -171,7 +172,7 @@ const connectionService = new ConnectionService({
                 private_token: String(token),
             },
         });
-        const svixAppId = environment?.accountId!;
+        const svixAppId = environment?.id!;
         const deleted: any = await prisma.connections.delete({
             // TODO: Add environments to connections.
             where: {
@@ -179,13 +180,14 @@ const connectionService = new ConnectionService({
             },
         });
         if (deleted) {
-            sendConnectionDeletedEvent(svixAppId, connection);
+            await sendConnectionDeletedEvent(svixAppId, connection);
             res.send({ status: 'ok', deleted });
         } else {
             throw new NotFoundError({ error: 'Connections not found!' });
         }
     },
     async createWebhook(req, res) {
+        // changes(breaking) -> Create Webhooks on SvixAppId -> accoundId_environment that is environmentId
         try {
             const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
             const webhookUrl = req.body.webhookUrl;
@@ -199,7 +201,7 @@ const connectionService = new ConnectionService({
                 throw new UnAuthorizedError({ error: 'Api unauthorized' });
             }
 
-            const svixAppId = environment?.accountId!;
+            const svixAppId = environment.id;
             const secret = `whsec_${Buffer.from(uuidv4()).toString('base64')}`;
             const webhook = await config.svix!.endpoint.create(svixAppId, {
                 url: webhookUrl,
@@ -229,6 +231,7 @@ const connectionService = new ConnectionService({
         }
     },
     async getWebhook(req, res) {
+        // changes(breaking) -> Get Webhooks on SvixAppId -> accoundId_environment that is environmentId
         try {
             const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
             const environment = await prisma.environments.findFirst({
@@ -241,7 +244,7 @@ const connectionService = new ConnectionService({
                 throw new UnAuthorizedError({ error: 'Api unauthorized' });
             }
 
-            const svixAppId = environment?.accountId!;
+            const svixAppId = environment.id;
             const webhook = await config.svix!.endpoint.get(svixAppId, String(tenantId));
             res.send({ status: 'ok', webhook: webhook });
         } catch (error: any) {
@@ -256,6 +259,7 @@ const connectionService = new ConnectionService({
     },
 
     async deleteWebhook(req, res) {
+        // changes(breaking) -> delete Webhooks on SvixAppId -> accoundId_environment that is environmentId
         try {
             const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
             const webhookId = String(tenantId);
@@ -269,7 +273,7 @@ const connectionService = new ConnectionService({
                 throw new UnAuthorizedError({ error: 'Api unauthorized' });
             }
 
-            const svixAppId = environment?.accountId!;
+            const svixAppId = environment.id;
             await config.svix!.endpoint.delete(svixAppId, webhookId);
             res.send({ status: 'ok' });
         } catch (error: any) {

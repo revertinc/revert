@@ -29,7 +29,7 @@ const expenseServiceAccounting = new ExpenseService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    expenseId
+                    expenseId,
                 );
 
                 switch (thirdPartyId) {
@@ -123,7 +123,7 @@ const expenseServiceAccounting = new ExpenseService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
                 switch (thirdPartyId) {
                     case TP_ID.quickbooks: {
@@ -164,8 +164,8 @@ const expenseServiceAccounting = new ExpenseService(
                                               objType,
                                               tenantSchemaMappingId: connection.schema_mapping_id,
                                               accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                          })
-                                  )
+                                          }),
+                                  ),
                               )
                             : {};
                         const nextCursor =
@@ -199,8 +199,8 @@ const expenseServiceAccounting = new ExpenseService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         const hasMoreResults = result.data.Invoices.length === 100;
                         const nextCursor = hasMoreResults ? (cursor ? cursor + 1 : 2) : undefined;
@@ -423,7 +423,7 @@ const expenseServiceAccounting = new ExpenseService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    expenseId
+                    expenseId,
                 );
 
                 switch (thirdPartyId) {
@@ -479,7 +479,7 @@ const expenseServiceAccounting = new ExpenseService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { expenseServiceAccounting };

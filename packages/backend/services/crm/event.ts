@@ -35,7 +35,7 @@ const eventService = new EventService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    eventId
+                    eventId,
                 );
 
                 switch (thirdPartyId) {
@@ -51,11 +51,11 @@ const eventService = new EventService(
                             'hs_object_id',
                         ];
                         const validAssociations = [...associations].filter((item) =>
-                            isValidAssociationTypeRequestedByUser(item)
+                            isValidAssociationTypeRequestedByUser(item),
                         );
                         const invalidAssociations = [...associations].filter(
                             (item) =>
-                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
                         );
 
                         const url =
@@ -76,7 +76,7 @@ const eventService = new EventService(
                             thirdPartyId,
                             connection,
                             account,
-                            invalidAssociations
+                            invalidAssociations,
                         );
                         event = await unifyObject<any, UnifiedEvent>({
                             obj: { ...event, ...event?.properties, associations: associatedData },
@@ -132,7 +132,7 @@ const eventService = new EventService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const event = result.data;
                         res.send({
@@ -219,7 +219,7 @@ const eventService = new EventService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -238,11 +238,11 @@ const eventService = new EventService(
                             cursor ? `&after=${cursor}` : ''
                         }`;
                         const validAssociations = [...associations].filter((item) =>
-                            isValidAssociationTypeRequestedByUser(item)
+                            isValidAssociationTypeRequestedByUser(item),
                         );
                         const invalidAssociations = [...associations].filter(
                             (item) =>
-                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
                         );
 
                         const url =
@@ -266,7 +266,7 @@ const eventService = new EventService(
                                     thirdPartyId,
                                     connection,
                                     account,
-                                    invalidAssociations
+                                    invalidAssociations,
                                 );
 
                                 return await unifyObject<any, UnifiedEvent>({
@@ -276,7 +276,7 @@ const eventService = new EventService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
                         res.send({
                             status: 'ok',
@@ -309,8 +309,8 @@ const eventService = new EventService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: events });
                         break;
@@ -352,8 +352,8 @@ const eventService = new EventService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: events });
                         break;
@@ -368,7 +368,7 @@ const eventService = new EventService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
@@ -382,8 +382,8 @@ const eventService = new EventService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedEvents });
                         break;
@@ -412,8 +412,8 @@ const eventService = new EventService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         let cursorVal = parseInt(String(cursor));
@@ -453,8 +453,8 @@ const eventService = new EventService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -553,7 +553,7 @@ const eventService = new EventService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         res.send({
                             status: 'ok',
@@ -669,7 +669,7 @@ const eventService = new EventService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         res.send({
                             status: 'ok',
@@ -770,8 +770,8 @@ const eventService = new EventService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: undefined, results: events });
                         break;
@@ -799,8 +799,8 @@ const eventService = new EventService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: events });
                         break;
@@ -824,8 +824,8 @@ const eventService = new EventService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', results: events });
                         break;
@@ -860,8 +860,8 @@ const eventService = new EventService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -898,7 +898,7 @@ const eventService = new EventService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    eventId
+                    eventId,
                 );
 
                 switch (thirdPartyId) {
@@ -943,7 +943,7 @@ const eventService = new EventService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         res.send({ status: 'ok', message: 'deleted' });
                         break;
@@ -989,7 +989,7 @@ const eventService = new EventService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { eventService };

@@ -3,7 +3,12 @@ import { Toaster } from 'react-hot-toast';
 import React from 'react';
 import { SignedIn, SignedOut, SignUp, ClerkProvider, SignIn } from '@clerk/clerk-react';
 import { OAuthCallback } from '../common/oauth';
-import Home from '../home/index';
+import AppLayout from '../layout/AppLayout';
+import Onboarding from '../features/home/Onboarding';
+import Integrations from '../features/integration/Integrations';
+import Analytics from '../features/analytics/Analytics';
+import ApiKeys from '../features/environment/ApiKeys';
+import Webhook from '../features/webhooks/Webhook';
 
 export function RouterComponent() {
     const navigate = useNavigate();
@@ -13,7 +18,6 @@ export function RouterComponent() {
             <Toaster position="bottom-right" reverseOrder={false} />
             <Routes>
                 <Route
-                    path="/home"
                     element={
                         <>
                             <SignedOut>
@@ -33,11 +37,18 @@ export function RouterComponent() {
                                 </div>
                             </SignedOut>
                             <SignedIn>
-                                <Home />
+                                <AppLayout />
                             </SignedIn>
                         </>
                     }
-                />
+                >
+                    <Route index element={<Navigate replace to="home" />} />
+                    <Route path="home" element={<Onboarding />} />
+                    <Route path="apps" element={<Integrations />} />
+                    <Route path="analytics" element={<Analytics />} />
+                    <Route path="environment" element={<ApiKeys />} />
+                    <Route path="webhooks" element={<Webhook />} />
+                </Route>
                 <Route
                     path="/sign-up"
                     element={
@@ -80,7 +91,7 @@ export function RouterComponent() {
                     }
                 />
                 <Route path="*" element={<Navigate to="/home" />} />
-            </Routes>{' '}
+            </Routes>
         </ClerkProvider>
     );
 }

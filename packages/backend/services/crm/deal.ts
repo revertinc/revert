@@ -35,7 +35,7 @@ const dealService = new DealService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    dealId
+                    dealId,
                 );
 
                 switch (thirdPartyId) {
@@ -52,11 +52,11 @@ const dealService = new DealService(
                             'hs_createdate',
                         ];
                         const validAssociations = [...associations].filter((item) =>
-                            isValidAssociationTypeRequestedByUser(item)
+                            isValidAssociationTypeRequestedByUser(item),
                         );
                         const invalidAssociations = [...associations].filter(
                             (item) =>
-                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
                         );
 
                         const url =
@@ -78,7 +78,7 @@ const dealService = new DealService(
                             thirdPartyId,
                             connection,
                             account,
-                            invalidAssociations
+                            invalidAssociations,
                         );
                         deal = await unifyObject<any, UnifiedDeal>({
                             obj: { ...deal, ...deal?.properties, associations: associatedData },
@@ -134,7 +134,7 @@ const dealService = new DealService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const deal = result.data;
                         res.send({
@@ -222,7 +222,7 @@ const dealService = new DealService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -242,11 +242,11 @@ const dealService = new DealService(
                             cursor ? `&after=${cursor}` : ''
                         }`;
                         const validAssociations = [...associations].filter((item) =>
-                            isValidAssociationTypeRequestedByUser(item)
+                            isValidAssociationTypeRequestedByUser(item),
                         );
                         const invalidAssociations = [...associations].filter(
                             (item) =>
-                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
                         );
 
                         const url =
@@ -270,7 +270,7 @@ const dealService = new DealService(
                                     thirdPartyId,
                                     connection,
                                     account,
-                                    invalidAssociations
+                                    invalidAssociations,
                                 );
                                 return await unifyObject<any, UnifiedDeal>({
                                     obj: { ...l, ...l?.properties, associations: associatedData },
@@ -279,7 +279,7 @@ const dealService = new DealService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
                         res.send({
                             status: 'ok',
@@ -312,8 +312,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: deals });
                         break;
@@ -357,8 +357,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: deals });
                         break;
@@ -373,7 +373,7 @@ const dealService = new DealService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
@@ -387,8 +387,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedDeals });
                         break;
@@ -416,8 +416,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         let cursorVal = parseInt(String(cursor));
@@ -457,8 +457,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({
                             status: 'ok',
@@ -556,7 +556,7 @@ const dealService = new DealService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         res.send({
                             status: 'ok',
@@ -579,7 +579,7 @@ const dealService = new DealService(
                             });
 
                             const validStatus = status.data.data.filter(
-                                (l: any) => l.label.toLowerCase() === req.body.stage.toLowerCase()
+                                (l: any) => l.label.toLowerCase() === req.body.stage.toLowerCase(),
                             );
 
                             if (validStatus.length === 0) {
@@ -709,7 +709,7 @@ const dealService = new DealService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         res.send({
                             status: 'ok',
@@ -732,7 +732,7 @@ const dealService = new DealService(
                             });
 
                             const validStatus = status.data.data.filter(
-                                (l: any) => l.label.toLowerCase() === req.body.stage.toLowerCase()
+                                (l: any) => l.label.toLowerCase() === req.body.stage.toLowerCase(),
                             );
 
                             if (validStatus.length === 0) {
@@ -813,7 +813,7 @@ const dealService = new DealService(
                     tenantId,
                     thirdPartyId,
                     searchCriteria,
-                    fields
+                    fields,
                 );
 
                 switch (thirdPartyId) {
@@ -858,8 +858,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: undefined, results: deals });
                         break;
@@ -888,8 +888,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: deals });
                         break;
@@ -913,8 +913,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', results: deals });
                         break;
@@ -934,7 +934,7 @@ const dealService = new DealService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
@@ -948,8 +948,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedDeals });
                         break;
@@ -981,8 +981,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -1007,7 +1007,7 @@ const dealService = new DealService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { dealService };

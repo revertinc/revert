@@ -28,7 +28,7 @@ const departmentServiceAts = new DepartmentService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    departmentId
+                    departmentId,
                 );
 
                 switch (thirdPartyId) {
@@ -95,7 +95,7 @@ const departmentServiceAts = new DepartmentService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -132,7 +132,7 @@ const departmentServiceAts = new DepartmentService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
                         const linkHeader = result.headers.link;
                         let nextCursor, previousCursor;
@@ -194,7 +194,7 @@ const departmentServiceAts = new DepartmentService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
                         let nextCursor;
 
@@ -381,7 +381,7 @@ const departmentServiceAts = new DepartmentService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    departmentId
+                    departmentId,
                 );
 
                 switch (thirdPartyId) {
@@ -415,7 +415,7 @@ const departmentServiceAts = new DepartmentService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { departmentServiceAts };

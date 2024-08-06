@@ -80,7 +80,7 @@ class SfdcAuthHandler extends BaseOAuthHandler {
                     tp_account_url: info.data.urls['custom_domain'],
                 },
             });
-            sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.sfdc, result.data.access_token, info.data.email);
+            await sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.sfdc, result.data.access_token, info.data.email);
 
             return processOAuthResult({
                 status: true,

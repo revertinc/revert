@@ -28,7 +28,7 @@ const jobServiceAts = new JobService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    jobId
+                    jobId,
                 );
 
                 switch (thirdPartyId) {
@@ -120,7 +120,7 @@ const jobServiceAts = new JobService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -157,7 +157,7 @@ const jobServiceAts = new JobService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
 
                         const linkHeader = result.headers.link;
@@ -220,7 +220,7 @@ const jobServiceAts = new JobService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
 
                         let nextCursor;
@@ -457,7 +457,7 @@ const jobServiceAts = new JobService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    jobId
+                    jobId,
                 );
 
                 switch (thirdPartyId) {
@@ -491,7 +491,7 @@ const jobServiceAts = new JobService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { jobServiceAts };

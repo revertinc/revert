@@ -35,7 +35,7 @@ class XeroAuthHandler extends BaseOAuthHandler {
             client_secret: clientSecret || config.XERO_CLIENT_SECRET,
         };
         const encodedClientIdSecret = Buffer.from(headerData.client_id + ':' + headerData.client_secret).toString(
-            'base64'
+            'base64',
         );
 
         const result: any = await axios({
@@ -97,7 +97,7 @@ class XeroAuthHandler extends BaseOAuthHandler {
                 tenantId,
                 TP_ID.xero,
                 result.data.access_token,
-                info.data[0]?.tenantId
+                info.data[0]?.tenantId,
             );
 
             return processOAuthResult({

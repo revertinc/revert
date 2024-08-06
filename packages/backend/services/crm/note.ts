@@ -35,18 +35,18 @@ const noteService = new NoteService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    noteId
+                    noteId,
                 );
 
                 switch (thirdPartyId) {
                     case TP_ID.hubspot: {
                         const formattedFields = [...String(fields || '').split(','), 'hs_note_body'];
                         const validAssociations = [...associations].filter((item) =>
-                            isValidAssociationTypeRequestedByUser(item)
+                            isValidAssociationTypeRequestedByUser(item),
                         );
                         const invalidAssociations = [...associations].filter(
                             (item) =>
-                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
                         );
 
                         const url =
@@ -66,7 +66,7 @@ const noteService = new NoteService(
                             thirdPartyId,
                             connection,
                             account,
-                            invalidAssociations
+                            invalidAssociations,
                         );
                         note = await unifyObject<any, UnifiedNote>({
                             obj: { ...note, ...note?.properties, associations: associatedData },
@@ -122,7 +122,7 @@ const noteService = new NoteService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const note = result.data;
                         res.send({
@@ -210,7 +210,7 @@ const noteService = new NoteService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -220,11 +220,11 @@ const noteService = new NoteService(
                             cursor ? `&after=${cursor}` : ''
                         }`;
                         const validAssociations = [...associations].filter((item) =>
-                            isValidAssociationTypeRequestedByUser(item)
+                            isValidAssociationTypeRequestedByUser(item),
                         );
                         const invalidAssociations = [...associations].filter(
                             (item) =>
-                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
                         );
 
                         const url =
@@ -248,7 +248,7 @@ const noteService = new NoteService(
                                     thirdPartyId,
                                     connection,
                                     account,
-                                    invalidAssociations
+                                    invalidAssociations,
                                 );
 
                                 return await unifyObject<any, UnifiedNote>({
@@ -258,7 +258,7 @@ const noteService = new NoteService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
                         res.send({
                             status: 'ok',
@@ -291,8 +291,8 @@ const noteService = new NoteService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: notes });
                         break;
@@ -334,8 +334,8 @@ const noteService = new NoteService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: notes });
                         break;
@@ -350,7 +350,7 @@ const noteService = new NoteService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
@@ -364,8 +364,8 @@ const noteService = new NoteService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedNotes });
                         break;
@@ -395,8 +395,8 @@ const noteService = new NoteService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         let cursorVal = parseInt(String(cursor));
                         if (isNaN(cursorVal)) cursorVal = 0;
@@ -434,8 +434,8 @@ const noteService = new NoteService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -655,7 +655,7 @@ const noteService = new NoteService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         res.send({
                             status: 'ok',
@@ -759,8 +759,8 @@ const noteService = new NoteService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: undefined, results: notes });
                         break;
@@ -788,8 +788,8 @@ const noteService = new NoteService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: notes });
                         break;
@@ -813,8 +813,8 @@ const noteService = new NoteService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', results: notes });
                         break;
@@ -879,8 +879,8 @@ const noteService = new NoteService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -905,7 +905,7 @@ const noteService = new NoteService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { noteService };

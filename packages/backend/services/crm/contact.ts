@@ -35,7 +35,7 @@ const contactService = new ContactService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    contactId
+                    contactId,
                 );
 
                 switch (thirdPartyId) {
@@ -50,11 +50,11 @@ const contactService = new ContactService(
                             'phone',
                         ];
                         const validAssociations = [...associations].filter((item) =>
-                            isValidAssociationTypeRequestedByUser(item)
+                            isValidAssociationTypeRequestedByUser(item),
                         );
                         const invalidAssociations = [...associations].filter(
                             (item) =>
-                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
                         );
 
                         const url =
@@ -74,7 +74,7 @@ const contactService = new ContactService(
                             thirdPartyId,
                             connection,
                             account,
-                            invalidAssociations
+                            invalidAssociations,
                         );
                         contact = await unifyObject<any, UnifiedContact>({
                             obj: { ...contact.data, ...contact.data?.properties, associations: associatedData },
@@ -133,7 +133,7 @@ const contactService = new ContactService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const contact = result.data;
                         const personFields = (
@@ -232,7 +232,7 @@ const contactService = new ContactService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -250,11 +250,11 @@ const contactService = new ContactService(
                             cursor ? `&after=${cursor}` : ''
                         }`;
                         const validAssociations = [...associations].filter((item) =>
-                            isValidAssociationTypeRequestedByUser(item)
+                            isValidAssociationTypeRequestedByUser(item),
                         );
                         const invalidAssociations = [...associations].filter(
                             (item) =>
-                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item)
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
                         );
 
                         const url =
@@ -279,7 +279,7 @@ const contactService = new ContactService(
                                     thirdPartyId,
                                     connection,
                                     account,
-                                    invalidAssociations
+                                    invalidAssociations,
                                 );
                                 return await unifyObject<any, UnifiedContact>({
                                     obj: { ...l, ...l?.properties, associations: associatedData },
@@ -288,7 +288,7 @@ const contactService = new ContactService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
                         res.send({
                             status: 'ok',
@@ -321,8 +321,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
                         break;
@@ -364,8 +364,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
                         break;
@@ -380,7 +380,7 @@ const contactService = new ContactService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
@@ -393,7 +393,7 @@ const contactService = new ContactService(
                             })
                         ).data.data;
                         const mappedContacts = contacts.map((c: any) =>
-                            mapPipedriveObjectCustomFields({ object: c, objectFields: personFields })
+                            mapPipedriveObjectCustomFields({ object: c, objectFields: personFields }),
                         );
                         const unifiedContacts = await Promise.all(
                             mappedContacts?.map(
@@ -404,8 +404,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedContacts });
                         break;
@@ -434,8 +434,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         let cursorVal = parseInt(String(cursor));
@@ -475,8 +475,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -563,7 +563,7 @@ const contactService = new ContactService(
                                     headers: {
                                         authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                                     },
-                                }
+                                },
                             );
                         }
                         res.send({ status: 'ok', message: 'Zoho contact created', result: contact });
@@ -592,7 +592,7 @@ const contactService = new ContactService(
                                         'content-type': 'application/json',
                                         authorization: `Bearer ${thirdPartyToken}`,
                                     },
-                                }
+                                },
                             );
                         }
                         res.send({
@@ -612,7 +612,7 @@ const contactService = new ContactService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         res.send({
                             status: 'ok',
@@ -749,7 +749,7 @@ const contactService = new ContactService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         res.send({
                             status: 'ok',
@@ -865,8 +865,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({
                             status: 'ok',
@@ -906,8 +906,8 @@ const contactService = new ContactService(
                                             objType,
                                             tenantSchemaMappingId: connection.schema_mapping_id,
                                             accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                        })
-                                )
+                                        }),
+                                ),
                             );
                         } else {
                             contacts = [];
@@ -935,8 +935,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({ status: 'ok', results: contacts });
@@ -957,7 +957,7 @@ const contactService = new ContactService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
@@ -971,7 +971,7 @@ const contactService = new ContactService(
                             })
                         ).data.data;
                         const mappedContacts = contacts.map((c: any) =>
-                            mapPipedriveObjectCustomFields({ object: c, objectFields: personFields })
+                            mapPipedriveObjectCustomFields({ object: c, objectFields: personFields }),
                         );
                         const unifiedContacts = await Promise.all(
                             mappedContacts?.map(
@@ -982,8 +982,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedContacts });
                         break;
@@ -1018,8 +1018,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
@@ -1052,8 +1052,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -1078,7 +1078,7 @@ const contactService = new ContactService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { contactService };

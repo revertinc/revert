@@ -30,7 +30,7 @@ const taskServiceTicket = new TaskService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    taskId
+                    taskId,
                 );
 
                 switch (thirdPartyId) {
@@ -226,7 +226,7 @@ const taskServiceTicket = new TaskService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -265,7 +265,7 @@ const taskServiceTicket = new TaskService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
                         const pageInfo = result.pageInfo;
                         let next_cursor = undefined;
@@ -308,8 +308,8 @@ const taskServiceTicket = new TaskService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         const pageNumber = !result.data?.last_page
@@ -350,7 +350,7 @@ const taskServiceTicket = new TaskService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
                         const limit = Number(result.data.maxResults);
                         const startAt = Number(result.data.startAt);
@@ -393,8 +393,8 @@ const taskServiceTicket = new TaskService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -430,8 +430,8 @@ const taskServiceTicket = new TaskService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         const pageNumber = result.data?.next ? (pageSize ? (pageSize + 1).toString() : '1') : undefined;
@@ -471,8 +471,8 @@ const taskServiceTicket = new TaskService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         const linkHeader = result.headers.link;
@@ -552,12 +552,12 @@ const taskServiceTicket = new TaskService(
                                         }
                                     }
                                 }`,
-                                { teamId: task.teamId }
+                                { teamId: task.teamId },
                             );
                             states = states.data.team.states.nodes;
 
                             const state = states.find(
-                                (state: any) => String(state.name).toLowerCase() === task.state.toLowerCase()
+                                (state: any) => String(state.name).toLowerCase() === task.state.toLowerCase(),
                             );
 
                             task.stateId = state.id;
@@ -621,15 +621,15 @@ const taskServiceTicket = new TaskService(
                             let transition: any = null;
                             if (statusval === 'open') {
                                 transition = allTransitions.data.transitions.find(
-                                    (item: any) => item.name.toLowerCase() === 'to do'
+                                    (item: any) => item.name.toLowerCase() === 'to do',
                                 );
                             } else if (statusval === 'in_progress') {
                                 transition = allTransitions.data.transitions.find(
-                                    (item: any) => item.name.toLowerCase() === 'in progress'
+                                    (item: any) => item.name.toLowerCase() === 'in progress',
                                 );
                             } else if (statusval === 'closed') {
                                 transition = allTransitions.data.transitions.find(
-                                    (item: any) => item.name.toLowerCase() === 'done'
+                                    (item: any) => item.name.toLowerCase() === 'done',
                                 );
                             }
                             await axios({
@@ -765,7 +765,7 @@ const taskServiceTicket = new TaskService(
                                       }
                                     }
                                   }`,
-                                { issueId: taskId }
+                                { issueId: taskId },
                             );
                             teamId = teamId.data.issue.team.id;
                             // fetch states for a teamId
@@ -781,13 +781,13 @@ const taskServiceTicket = new TaskService(
                                 }
                               }
                               `,
-                                { teamId: teamId }
+                                { teamId: teamId },
                             );
 
                             states = states.data.team.states.nodes;
 
                             const state = states.find(
-                                (state: any) => String(state.name).toLowerCase() === task.state.toLowerCase()
+                                (state: any) => String(state.name).toLowerCase() === task.state.toLowerCase(),
                             );
 
                             task.stateId = state.id;
@@ -855,15 +855,15 @@ const taskServiceTicket = new TaskService(
                             let transition: any = null;
                             if (statusval === 'open') {
                                 transition = allTransitions.data.transitions.find(
-                                    (item: any) => item.name.toLowerCase() === 'to do'
+                                    (item: any) => item.name.toLowerCase() === 'to do',
                                 );
                             } else if (statusval === 'in_progress') {
                                 transition = allTransitions.data.transitions.find(
-                                    (item: any) => item.name.toLowerCase() === 'in progress'
+                                    (item: any) => item.name.toLowerCase() === 'in progress',
                                 );
                             } else if (statusval === 'closed') {
                                 transition = allTransitions.data.transitions.find(
-                                    (item: any) => item.name.toLowerCase() === 'done'
+                                    (item: any) => item.name.toLowerCase() === 'done',
                                 );
                             }
                             await axios({
@@ -970,7 +970,7 @@ const taskServiceTicket = new TaskService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { taskServiceTicket };

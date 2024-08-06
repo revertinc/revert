@@ -21,7 +21,8 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
 }: {
     obj: T;
     tpId: CRM_TP_ID | TICKET_TP_ID;
-    objType:StandardObjects
+    objType:
+        | StandardObjects
         | ChatStandardObjects
         | TicketStandardObjects
         | AtsStandardObjects

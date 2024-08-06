@@ -4498,6 +4498,125 @@ paths:
                 - userId
                 - tpId
                 - environment
+  /internal/account/svix/{id}:
+    get:
+      description: Get Svix Account
+      operationId: internal_account_getSvixAccount
+      tags:
+        - InternalAccount
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: environment
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalSvixAccountResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /internal/account/svix:
+    post:
+      description: Create Svix Account
+      operationId: internal_account_createSvixAccount
+      tags:
+        - InternalAccount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalSvixAccountResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                environment:
+                  type: string
+                accountId:
+                  type: string
+              required:
+                - environment
+                - accountId
+  /internal/account/svix/panel/link:
+    post:
+      description: Create Svix Account Consumer Panel MagicLink
+      operationId: internal_account_createSvixAccountMagicLink
+      tags:
+        - InternalAccount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalSvixMagicLinkResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                appId:
+                  type: string
+              required:
+                - appId
   /internal/analytics:
     post:
       description: Get Analytics of your revert account
@@ -6027,6 +6146,23 @@ components:
         org_url:
           type: string
           nullable: true
+    commonSvixAccount:
+      title: commonSvixAccount
+      type: object
+      properties:
+        uid:
+          type: string
+          nullable: true
+        name:
+          type: string
+        rateLimit:
+          type: integer
+          nullable: true
+        id:
+          type: string
+      required:
+        - name
+        - id
     commonCommonUnifiedFields:
       title: commonCommonUnifiedFields
       type: object
@@ -7444,6 +7580,31 @@ components:
           $ref: '#/components/schemas/commonAccount'
       required:
         - account
+    internalSvixAccountResponse:
+      title: internalSvixAccountResponse
+      type: object
+      properties:
+        account:
+          $ref: '#/components/schemas/commonSvixAccount'
+          nullable: true
+        exist:
+          type: boolean
+        environment:
+          type: string
+          nullable: true
+      required:
+        - exist
+    internalSvixMagicLinkResponse:
+      title: internalSvixMagicLinkResponse
+      type: object
+      properties:
+        key:
+          type: string
+        environment:
+          type: string
+      required:
+        - key
+        - environment
     internalGetAnalyticsResponse:
       title: internalGetAnalyticsResponse
       type: object

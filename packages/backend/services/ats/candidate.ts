@@ -28,7 +28,7 @@ const candidateServiceAts = new CandidateService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    candidateId
+                    candidateId,
                 );
 
                 switch (thirdPartyId) {
@@ -120,7 +120,7 @@ const candidateServiceAts = new CandidateService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -155,7 +155,7 @@ const candidateServiceAts = new CandidateService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
 
                         const linkHeader = result.headers.link;
@@ -217,7 +217,7 @@ const candidateServiceAts = new CandidateService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
 
                         let nextCursor;
@@ -431,7 +431,7 @@ const candidateServiceAts = new CandidateService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    candidateId
+                    candidateId,
                 );
 
                 switch (thirdPartyId) {
@@ -486,7 +486,7 @@ const candidateServiceAts = new CandidateService(
         },
     },
 
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { candidateServiceAts };

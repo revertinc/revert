@@ -30,7 +30,7 @@ const userServiceTicket = new UserService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    userId
+                    userId,
                 );
 
                 switch (thirdPartyId) {
@@ -199,7 +199,7 @@ const userServiceTicket = new UserService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
                 switch (thirdPartyId) {
                     case TP_ID.linear: {
@@ -232,12 +232,12 @@ const userServiceTicket = new UserService(
                           }`,
                             {
                                 teamId: fields.listId,
-                            }
+                            },
                         );
 
                         membersId = membersId.data.team.members.nodes;
                         const users = result.nodes.filter((user: any) =>
-                            membersId.some((item: any) => item.id === user.id)
+                            membersId.some((item: any) => item.id === user.id),
                         );
 
                         const unifiedUsers = await Promise.all(
@@ -249,8 +249,8 @@ const userServiceTicket = new UserService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         const pageInfo = result.pageInfo;
@@ -292,8 +292,8 @@ const userServiceTicket = new UserService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         const pageNumber = !result.data?.last_page
                             ? cursor
@@ -330,7 +330,7 @@ const userServiceTicket = new UserService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
 
                         const nextCursor = pageSize ? Number(cursor ? cursor : 0) + Number(pageSize) : undefined;
@@ -372,8 +372,8 @@ const userServiceTicket = new UserService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -413,7 +413,7 @@ const userServiceTicket = new UserService(
                                     tenantSchemaMappingId: connection.schema_mapping_id,
                                     accountFieldMappingConfig: account.accountFieldMappingConfig,
                                 });
-                            })
+                            }),
                         );
 
                         const nextCursor = pageSize ? Number(cursor ? cursor : 0) + Number(pageSize) : undefined;
@@ -445,7 +445,7 @@ const userServiceTicket = new UserService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { userServiceTicket };

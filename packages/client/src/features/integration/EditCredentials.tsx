@@ -2,9 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { Box as MuiBox, Button, Chip as MuiChip, Switch } from '@mui/material';
 import { LoadingButton as MuiLoadingButton } from '@mui/lab';
-
-import { useApi } from '../data/hooks';
-import EnvironmentSelector from './environmentSelector';
+import Dropdown from '../../ui/Dropdown';
+import { useApi } from '../../data/hooks';
 
 const Chip = styled(MuiChip)`
     cursor: pointer;
@@ -73,6 +72,7 @@ interface AppConfig {
     env?: string;
 }
 
+// Todo: Refactor this and make the styling more usable, also solve the errors in console which were to note were already there
 const EditCredentials: React.FC<{
     app: any;
     handleClose: ({ refetchOnClose }: { refetchOnClose?: boolean | undefined }) => Promise<void>;
@@ -191,11 +191,10 @@ const EditCredentials: React.FC<{
                         // do for greenhouse as well
                         <Row>
                             <span className="font-bold">Environment: </span>
-                            <EnvironmentSelector
-                                environmentProp={appConfig?.env || app.app_config?.env}
-                                setEnvironmentProp={(val) => handleEnv(val)}
-                                environmentList={[{ env: 'Production' }, { env: 'Sandbox' }]}
-                            />
+                            <Dropdown
+                                value={appConfig?.env || app.app_config?.env}
+                                set={(val) => handleEnv(val)}
+                            ></Dropdown>
                         </Row>
                     )}
                     {!(app.tp_id === 'closecrm' || app.tp_id === 'pipedrive' || app.tp_id === 'clickup') && (
@@ -238,8 +237,8 @@ const EditCredentials: React.FC<{
                         isRevertApp
                             ? false
                             : app.tp_id === 'discord'
-                            ? !clientId || !clientSecret || !appConfig.bot_token
-                            : !clientId || !clientSecret
+                              ? !clientId || !clientSecret || !appConfig.bot_token
+                              : !clientId || !clientSecret
                     }
                 >
                     Submit

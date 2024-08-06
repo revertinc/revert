@@ -51,7 +51,7 @@ async function main() {
                 },
             });
             console.log({ localAccount, localRevertApp });
-        })
+        }),
     );
 
     let allSchemas: any = Object.keys(allFields).map((obj) => {
@@ -188,7 +188,7 @@ async function main() {
             const objSchema = ticketSchemas.find((s: any) => s.object === obj);
             const fieldMappings = objSchema?.fields.map((field: any) => {
                 const sourceFields: any = (ticketingFields[obj] as { target_field_name: string }[]).find(
-                    (a) => a.target_field_name === field
+                    (a) => a.target_field_name === field,
                 );
                 return {
                     id: randomUUID(),
@@ -211,7 +211,7 @@ async function main() {
             const objSchema = atsSchemas.find((s: any) => s.object === obj);
             const fieldMappings = objSchema?.fields.map((field: any) => {
                 const sourceFields: any = (atsFields[obj] as { target_field_name: string }[]).find(
-                    (a) => a.target_field_name === field
+                    (a) => a.target_field_name === field,
                 );
                 return {
                     id: randomUUID(),
@@ -233,7 +233,7 @@ async function main() {
             const objSchema = accountingSchemas.find((s: any) => s.object === obj);
             const fieldMappings = objSchema?.fields.map((field: any) => {
                 const sourceFields: any = (accountingFields[obj] as { target_field_name: string }[]).find(
-                    (a) => a.target_field_name === field
+                    (a) => a.target_field_name === field,
                 );
                 return {
                     id: randomUUID(),

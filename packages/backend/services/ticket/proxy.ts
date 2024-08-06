@@ -27,7 +27,7 @@ const proxyServiceTicket = new ProxyService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -143,7 +143,7 @@ const proxyServiceTicket = new ProxyService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { proxyServiceTicket };

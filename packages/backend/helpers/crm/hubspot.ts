@@ -97,7 +97,7 @@ export const getAssociationObjects = async (
     thirdPartyId: any,
     connection: any,
     account: any,
-    invalidAssociations: any
+    invalidAssociations: any,
 ) => {
     const associatedData: any = {};
 
@@ -189,8 +189,8 @@ export const getAssociationObjects = async (
                                         objType: associatedObjectType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         ));
                 }
             }

@@ -29,7 +29,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((d) => d.json())
                     .then((data) => {
@@ -68,7 +68,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((d) => d.json())
                     .then((data) => {
@@ -107,7 +107,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((d) => d.json())
                     .then((data) => {
@@ -145,7 +145,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((d) => {
                         return d.json();
@@ -186,7 +186,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((d) => {
                         return d.json();
@@ -225,7 +225,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((d) => {
                         return d.json();
@@ -264,7 +264,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((d) => {
                         return d.json();
@@ -303,7 +303,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((d) => {
                         return d.json();
@@ -342,7 +342,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((d) => {
                         return d.json();
@@ -382,7 +382,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((data) => data.json())
                     .then((data) => {
@@ -420,7 +420,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((d) => {
                         return d.json();
@@ -460,7 +460,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((d) => {
                         return d.json();
@@ -498,7 +498,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((d) => {
                         return d.json();
@@ -536,7 +536,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((d) => {
                         return d.json();
@@ -574,7 +574,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((d) => {
                         return d.json();
@@ -612,7 +612,7 @@ export const OAuthCallback = (props) => {
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 )
                     .then((d) => {
                         return d.json();

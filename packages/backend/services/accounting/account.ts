@@ -29,7 +29,7 @@ const accountServiceAccounting = new AccountService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    accountId
+                    accountId,
                 );
 
                 switch (thirdPartyId) {
@@ -125,7 +125,7 @@ const accountServiceAccounting = new AccountService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
                 switch (thirdPartyId) {
                     case TP_ID.quickbooks: {
@@ -166,8 +166,8 @@ const accountServiceAccounting = new AccountService(
                                               objType,
                                               tenantSchemaMappingId: connection.schema_mapping_id,
                                               accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                          })
-                                  )
+                                          }),
+                                  ),
                               )
                             : {};
                         const nextCursor =
@@ -203,8 +203,8 @@ const accountServiceAccounting = new AccountService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         const hasMoreResults = result.data.Accounts.length === 100;
                         const nextCursor = hasMoreResults ? (cursor ? cursor + 1 : 2) : undefined;
@@ -415,7 +415,7 @@ const accountServiceAccounting = new AccountService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    accountId
+                    accountId,
                 );
 
                 switch (thirdPartyId) {
@@ -453,7 +453,7 @@ const accountServiceAccounting = new AccountService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { accountServiceAccounting };

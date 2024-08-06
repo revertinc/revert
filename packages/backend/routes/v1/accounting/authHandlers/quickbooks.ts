@@ -34,7 +34,7 @@ class QuickBooksAuthHandler extends BaseOAuthHandler {
             client_secret: clientSecret || config.QUICKBOOKS_CLIENT_SECRET,
         };
         const encodedClientIdSecret = Buffer.from(headerData.client_id + ':' + headerData.client_secret).toString(
-            'base64'
+            'base64',
         );
         const result: any = await axios({
             method: 'post',
@@ -83,7 +83,7 @@ class QuickBooksAuthHandler extends BaseOAuthHandler {
                 tenantId,
                 TP_ID.quickbooks,
                 result.data.access_token,
-                'quickbooks customer'
+                'quickbooks customer',
             );
 
             return processOAuthResult({

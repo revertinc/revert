@@ -30,7 +30,7 @@ const commentServiceTicket = new CommentService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    commentId
+                    commentId,
                 );
 
                 switch (thirdPartyId) {
@@ -66,7 +66,7 @@ const commentServiceTicket = new CommentService(
                         let parsedFields: any = fields ? JSON.parse(fields) : undefined;
                         if (!parsedFields.taskId) {
                             throw new Error(
-                                'taskId is required for fetching Jira comments. You can also pass taskKey to taskId.'
+                                'taskId is required for fetching Jira comments. You can also pass taskKey to taskId.',
                             );
                         }
                         const result = await axios({
@@ -104,7 +104,7 @@ const commentServiceTicket = new CommentService(
 
                         if (!parsedFields.taskId || !parsedFields.repo || !parsedFields.workspace) {
                             throw new Error(
-                                'taskId and "repo" and "workspace" are required for fetching Bitbucket comments and should be included in the "fields" parameter."repo" and "workspace" can either be slug or UUID.'
+                                'taskId and "repo" and "workspace" are required for fetching Bitbucket comments and should be included in the "fields" parameter."repo" and "workspace" can either be slug or UUID.',
                             );
                         }
                         const result = await axios({
@@ -135,7 +135,7 @@ const commentServiceTicket = new CommentService(
 
                         if (!parsedFields.repo || !parsedFields.owner) {
                             throw new Error(
-                                'taskId and "repo" and "owner" are required for fetching GitHub comments and should be included in the "fields" parameter.'
+                                'taskId and "repo" and "owner" are required for fetching GitHub comments and should be included in the "fields" parameter.',
                             );
                         }
                         const result = await axios({
@@ -197,7 +197,7 @@ const commentServiceTicket = new CommentService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -230,8 +230,8 @@ const commentServiceTicket = new CommentService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         const pageInfo = comments.pageInfo;
@@ -271,8 +271,8 @@ const commentServiceTicket = new CommentService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -306,8 +306,8 @@ const commentServiceTicket = new CommentService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         const limit = Number(result.data.maxResults);
@@ -350,8 +350,8 @@ const commentServiceTicket = new CommentService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -387,8 +387,8 @@ const commentServiceTicket = new CommentService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         const pageNumber = result.data?.next ? (pageSize ? (pageSize + 1).toString() : '1') : undefined;
@@ -428,8 +428,8 @@ const commentServiceTicket = new CommentService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         const linkHeader = result.headers.link;
@@ -770,7 +770,7 @@ const commentServiceTicket = new CommentService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { commentServiceTicket };
