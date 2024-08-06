@@ -4193,12 +4193,6 @@ paths:
       tags:
         - FieldMapping
       parameters:
-        - name: x-revert-api-token
-          in: header
-          description: Your official API key for accessing revert apis.
-          required: true
-          schema:
-            type: string
         - name: x-revert-t-id
           in: header
           description: The unique customer id used when the customer linked their account.
@@ -4237,12 +4231,6 @@ paths:
       tags:
         - FieldMapping
       parameters:
-        - name: x-revert-api-token
-          in: header
-          description: Your official API key for accessing revert apis.
-          required: true
-          schema:
-            type: string
         - name: x-revert-t-id
           in: header
           description: The unique customer id used when the customer linked their account.
@@ -4280,13 +4268,7 @@ paths:
       operationId: fieldMapping_createAccountFieldMappingConfig
       tags:
         - FieldMapping
-      parameters:
-        - name: x-revert-api-token
-          in: header
-          description: Your official API key for accessing revert apis.
-          required: true
-          schema:
-            type: string
+      parameters: []
       responses:
         '200':
           description: ''
@@ -4323,13 +4305,7 @@ paths:
       operationId: fieldMapping_deleteAccountFieldMappingConfig
       tags:
         - FieldMapping
-      parameters:
-        - name: x-revert-api-token
-          in: header
-          description: Your official API key for accessing revert apis.
-          required: true
-          schema:
-            type: string
+      parameters: []
       responses:
         '200':
           description: ''
@@ -4619,12 +4595,6 @@ paths:
       tags:
         - Sync
       parameters:
-        - name: x-revert-api-token
-          in: header
-          description: Your official API key for accessing revert apis.
-          required: true
-          schema:
-            type: string
         - name: x-revert-t-id
           in: header
           description: The unique customer id used when the customer linked their account.
