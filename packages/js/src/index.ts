@@ -63,7 +63,7 @@ const createCloseButton = function () {
     svgCloseElementPath.setAttributeNS(
         null,
         'd',
-        'M8.24264 8.24271C7.85212 8.63324 7.85212 9.2664 8.24264 9.65692L11.0711 12.4854L8.24264 15.3138C7.85212 15.7043 7.85212 16.3375 8.24264 16.728C8.63316 17.1185 9.26633 17.1185 9.65685 16.728L12.4853 13.8996L15.3137 16.728C15.7042 17.1185 16.3374 17.1185 16.7279 16.728C17.1184 16.3375 17.1184 15.7043 16.7279 15.3138L13.8995 12.4854L16.7279 9.65692C17.1184 9.2664 17.1184 8.63323 16.7279 8.24271C16.3374 7.85219 15.7042 7.85219 15.3137 8.24271L12.4853 11.0711L9.65685 8.24271C9.26633 7.85219 8.63316 7.85219 8.24264 8.24271Z'
+        'M8.24264 8.24271C7.85212 8.63324 7.85212 9.2664 8.24264 9.65692L11.0711 12.4854L8.24264 15.3138C7.85212 15.7043 7.85212 16.3375 8.24264 16.728C8.63316 17.1185 9.26633 17.1185 9.65685 16.728L12.4853 13.8996L15.3137 16.728C15.7042 17.1185 16.3374 17.1185 16.7279 16.728C17.1184 16.3375 17.1184 15.7043 16.7279 15.3138L13.8995 12.4854L16.7279 9.65692C17.1184 9.2664 17.1184 8.63323 16.7279 8.24271C16.3374 7.85219 15.7042 7.85219 15.3137 8.24271L12.4853 11.0711L9.65685 8.24271C9.26633 7.85219 8.63316 7.85219 8.24264 8.24271Z',
     );
     svgCloseElement.appendChild(svgCloseElementPath);
 
@@ -73,7 +73,7 @@ const createCloseButton = function () {
         transformStyle({
             cursor: 'pointer',
         }),
-        [svgCloseElement]
+        [svgCloseElement],
     );
     return closeButton;
 };
@@ -82,7 +82,7 @@ const openInNewTab = function () {
     var currentUrl = window.location.href;
     var win = window.open(
         'https://revert.dev?utm_campaign=powered&utm_medium=signin&utm_source=' + currentUrl,
-        '_blank'
+        '_blank',
     );
     window.focus();
 };
@@ -91,7 +91,7 @@ const createPoweredByBanner = function (self) {
     var poweredByLogo = document.createElement('img');
     poweredByLogo.setAttribute(
         'src',
-        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1673932396/Revert/Revert_logo_x5ysgh.png'
+        'https://res.cloudinary.com/dfcnic8wq/image/upload/v1673932396/Revert/Revert_logo_x5ysgh.png',
     );
     poweredByLogo.style.width = '30px';
 
@@ -107,7 +107,7 @@ const createPoweredByBanner = function (self) {
             color: '#343232',
         }),
         [],
-        'Powered By'
+        'Powered By',
     );
     var poweredBySpan3 = createViewElement('span', 'fd-powered-by-logo-img', {}, [poweredByLogo], null);
 
@@ -125,7 +125,7 @@ const createPoweredByBanner = function (self) {
             color: '#fff',
         }),
         [poweredBySpan1, poweredBySpan3],
-        ''
+        '',
     );
 
     poweredBy.addEventListener('click', openInNewTab.bind(self));
@@ -382,7 +382,7 @@ const createIntegrationBlock = function (self, integration) {
                         display: 'flex',
                         alignItems: 'center',
                     }),
-                    []
+                    [],
                 );
                 let headerText = createViewElement(
                     'span',
@@ -394,7 +394,7 @@ const createIntegrationBlock = function (self, integration) {
                         color: '#777',
                     }),
                     [],
-                    'Select tool to integrate'
+                    'Select tool to integrate',
                 );
                 headerDiv.appendChild(headerText);
                 headerDiv.appendChild(closeButton);
@@ -407,7 +407,7 @@ const createIntegrationBlock = function (self, integration) {
                         height: '350px',
                         position: 'relative',
                     }),
-                    []
+                    [],
                 );
                 signInElement.appendChild(integrationsContainerWrapper);
                 const integrationsContainer = createViewElement(
@@ -433,7 +433,7 @@ const createIntegrationBlock = function (self, integration) {
                         left: '0',
                         right: '0',
                     }),
-                    []
+                    [],
                 );
                 integrationsContainerWrapper.appendChild(integrationsContainer);
 
@@ -444,14 +444,14 @@ const createIntegrationBlock = function (self, integration) {
                         const target = ev.target as HTMLDivElement;
                         const targetIntegrationId = target.getAttribute('integrationId');
                         const selectedIntegration = this.#integrations.find(
-                            (i) => i.integrationId === targetIntegrationId
+                            (i) => i.integrationId === targetIntegrationId,
                         );
                         if (selectedIntegration.status !== 'active') {
                             return;
                         }
                         selectedIntegrationId = targetIntegrationId;
                         (target.parentElement as HTMLDivElement).childNodes.forEach(
-                            (a) => ((a as HTMLDivElement).style.border = '1px solid #E8E8EE33')
+                            (a) => ((a as HTMLDivElement).style.border = '1px solid #E8E8EE33'),
                         );
                         (ev.target as HTMLDivElement).style.border = '2px solid #2047D080';
                         const btn = document.getElementById('connect-integration') as HTMLButtonElement;
@@ -491,11 +491,11 @@ const createIntegrationBlock = function (self, integration) {
                         justifyContent: 'center',
                     }),
                     [],
-                    'Connect →'
+                    'Connect →',
                 );
                 button.addEventListener('click', (ev) => {
                     const selectedIntegration = this.#integrations.find(
-                        (int) => int.integrationId === selectedIntegrationId
+                        (int) => int.integrationId === selectedIntegrationId,
                     );
                     this.handleIntegrationRedirect(selectedIntegration);
                 });
@@ -515,7 +515,7 @@ const createIntegrationBlock = function (self, integration) {
                         left: 0,
                         top: 0,
                     }),
-                    [signInElement]
+                    [signInElement],
                 );
                 signInElementWrapper.style.animation = 'fadein .8s forwards';
                 signInElementWrapper.style.transition = 'color 500ms ease-in-out';
@@ -529,7 +529,7 @@ const createIntegrationBlock = function (self, integration) {
                 this.state = 'open';
             } else {
                 const selectedIntegration = this.#integrations.find(
-                    (integration) => integration.integrationId === integrationId
+                    (integration) => integration.integrationId === integrationId,
                 );
                 this.handleIntegrationRedirect(selectedIntegration);
             }
@@ -554,7 +554,7 @@ const createIntegrationBlock = function (self, integration) {
                     color: '#777',
                 }),
                 [],
-                message
+                message,
             );
             el.appendChild(processingText);
             const container = document.getElementById('revert-signin-container');
@@ -587,7 +587,7 @@ const createIntegrationBlock = function (self, integration) {
                     color: '#777',
                 }),
                 [],
-                'Something went wrong...'
+                'Something went wrong...',
             );
             el.appendChild(failedText);
             const container = document.getElementById('revert-signin-container');
@@ -617,7 +617,7 @@ const createIntegrationBlock = function (self, integration) {
                 this.redirectToUrl(parsedData);
                 return this.renderDoneStage(parsedData.integrationName);
             }
-            
+
             const container = document.getElementById('revert-signin-container');
             const poweredByBanner = createPoweredByBanner(this);
             poweredByBanner.style.position = 'absolute';
@@ -651,7 +651,7 @@ const createIntegrationBlock = function (self, integration) {
                     color: '#656468',
                 }),
                 [],
-                'Field mappings'
+                'Field mappings',
             );
             const subHeader = createViewElement(
                 'div',
@@ -665,7 +665,7 @@ const createIntegrationBlock = function (self, integration) {
                     marginBottom: '5px',
                 }),
                 [],
-                `Map fields specific to your ${parsedData.integrationName} Account`
+                `Map fields specific to your ${parsedData.integrationName} Account`,
             );
             container.appendChild(header);
             container.appendChild(subHeader);
@@ -678,7 +678,7 @@ const createIntegrationBlock = function (self, integration) {
                 const p = this.getFieldMappingInputPair(
                     field.fieldName,
                     fieldMappingData.fieldList[field.objectName],
-                    field.objectName
+                    field.objectName,
                 );
                 inputContainer.appendChild(p);
             });
@@ -699,7 +699,7 @@ const createIntegrationBlock = function (self, integration) {
                         justifyContent: 'center',
                     }),
                     [],
-                    `+`
+                    `+`,
                 );
                 addBtn.classList.add('add-btn');
                 addStyle(`
@@ -748,7 +748,7 @@ const createIntegrationBlock = function (self, integration) {
                     marginBottom: '20px',
                 }),
                 [],
-                'Save Mappings'
+                'Save Mappings',
             );
             saveButton.addEventListener('click', () => {
                 const getElTextContent = (el: any) => {
@@ -794,7 +794,7 @@ const createIntegrationBlock = function (self, integration) {
                 console.log('customMappings', customMappings);
 
                 const isEmptyField = [...standardMappings, ...customMappings].some(
-                    (mapping) => !mapping.object || !mapping.sourceFieldName || !mapping.targetFieldName
+                    (mapping) => !mapping.object || !mapping.sourceFieldName || !mapping.targetFieldName,
                 );
                 if (isEmptyField) {
                     return;
@@ -837,7 +837,7 @@ const createIntegrationBlock = function (self, integration) {
                     textAlign: 'center',
                 }),
                 [],
-                `Connected to ${integrationName}`
+                `Connected to ${integrationName}`,
             );
             const msgContainer = document.createElement('div');
             msgContainer.style.display = 'flex';
@@ -885,7 +885,7 @@ const createIntegrationBlock = function (self, integration) {
                     bottom: '75px',
                 }),
                 [],
-                'Close'
+                'Close',
             );
             doneButton.addEventListener('click', () => this.close());
             container.appendChild(doneButton);
@@ -913,7 +913,7 @@ const createIntegrationBlock = function (self, integration) {
                     color: '#4C505B',
                 }),
                 [],
-                'Object'
+                'Object',
             );
             const hiddenObject = createViewElement(
                 'div',
@@ -923,7 +923,7 @@ const createIntegrationBlock = function (self, integration) {
                     height: '1px',
                 }),
                 [],
-                objectName
+                objectName,
             );
             hiddenObject.classList.add('stdHiddenObj');
             const objInput = createViewElement(
@@ -934,7 +934,7 @@ const createIntegrationBlock = function (self, integration) {
                     fontSize: '12px',
                 }),
                 [],
-                objectName
+                objectName,
             );
             objInput.classList.add('input-style');
             const mappableHeading = createViewElement(
@@ -946,7 +946,7 @@ const createIntegrationBlock = function (self, integration) {
                     color: '#4C505B',
                 }),
                 [],
-                'Mappable field name'
+                'Mappable field name',
             );
             const mappableInput = createViewElement(
                 'input',
@@ -957,7 +957,7 @@ const createIntegrationBlock = function (self, integration) {
                     background: 'transparent',
                 }),
                 [],
-                ''
+                '',
             );
             mappableInput.classList.add('mappableInput');
             mappableInput.classList.add('input-style');
@@ -973,7 +973,7 @@ const createIntegrationBlock = function (self, integration) {
                     color: '#4C505B',
                 }),
                 [],
-                'Account specific field name'
+                'Account specific field name',
             );
             const accountSpecificInput = createViewElement(
                 'select',
@@ -984,7 +984,7 @@ const createIntegrationBlock = function (self, integration) {
                     background: 'transparent',
                 }),
                 options,
-                ''
+                '',
             );
             accountSpecificInput.classList.add('accountSpecificInput');
             accountSpecificInput.classList.add('input-style');
@@ -1007,7 +1007,7 @@ const createIntegrationBlock = function (self, integration) {
                     accountSpecificHeading,
                     accountSpecificInput,
                 ],
-                ''
+                '',
             );
             return container;
         };
@@ -1023,7 +1023,7 @@ const createIntegrationBlock = function (self, integration) {
                     padding: '10px 0',
                 }),
                 [],
-                ''
+                '',
             );
             const divider = createViewElement(
                 'div',
@@ -1035,7 +1035,7 @@ const createIntegrationBlock = function (self, integration) {
                     background: '#272DC0',
                 }),
                 [],
-                ''
+                '',
             );
             divider.classList.add('section-divider');
             dividerContainer.appendChild(divider);
@@ -1056,7 +1056,7 @@ const createIntegrationBlock = function (self, integration) {
                     textAlign: 'center',
                 }),
                 [],
-                'x'
+                'x',
             );
             removeBtn.addEventListener('click', () => {
                 document.getElementById(`custom-pair-container-${n}`)?.remove();
@@ -1083,7 +1083,7 @@ const createIntegrationBlock = function (self, integration) {
                     color: '#4C505B',
                 }),
                 [],
-                'Object'
+                'Object',
             );
             const objInput = createViewElement(
                 'select',
@@ -1093,7 +1093,7 @@ const createIntegrationBlock = function (self, integration) {
                     fontSize: '12px',
                 }),
                 objOptions,
-                ''
+                '',
             );
             objInput.classList.add('input-style');
             objInput.addEventListener('change', (ev) => {
@@ -1112,7 +1112,7 @@ const createIntegrationBlock = function (self, integration) {
                     color: '#4C505B',
                 }),
                 [],
-                'Mappable field name'
+                'Mappable field name',
             );
             const mappableInput = createViewElement(
                 'input',
@@ -1122,7 +1122,7 @@ const createIntegrationBlock = function (self, integration) {
                     fontSize: '12px',
                 }),
                 [],
-                ''
+                '',
             );
             mappableInput.classList.add('input-style');
 
@@ -1135,7 +1135,7 @@ const createIntegrationBlock = function (self, integration) {
                     color: '#4C505B',
                 }),
                 [],
-                'Account specific field name'
+                'Account specific field name',
             );
             const accountSpecificInput = createViewElement(
                 'select',
@@ -1145,7 +1145,7 @@ const createIntegrationBlock = function (self, integration) {
                     fontSize: '12px',
                 }),
                 getOptions('company'),
-                ''
+                '',
             );
             accountSpecificInput.classList.add('input-style');
 
@@ -1169,12 +1169,166 @@ const createIntegrationBlock = function (self, integration) {
                     accountSpecificHeading,
                     accountSpecificInput,
                 ],
-                ''
+                '',
             );
             return container;
         };
 
-        handleIntegrationRedirect = function (selectedIntegration) {
+        showAndRemoveLoader = function () {
+            return new Promise<void>((resolve) => {
+                //show loader
+                this.renderProcessingStage('Loading');
+
+                //remove loader
+                setTimeout(() => {
+                    const loaderElement = document.querySelector('.loader');
+
+                    if (loaderElement) {
+                        const parentElement = loaderElement.parentElement;
+                        if (parentElement) {
+                            parentElement.remove();
+                        }
+                    }
+
+                    // Check again if the loader element exists
+                    const loaderElementAfterTimeout = document.querySelector('.loader');
+                    if (!loaderElementAfterTimeout) {
+                        resolve();
+                    }
+                }, 250);
+            });
+        };
+
+        apiKeyInputContainerFunction = function () {
+            const parentDiv = document.createElement('div');
+            parentDiv.id = 'parentDiv';
+            parentDiv.style.display = 'flex';
+            parentDiv.style.flexDirection = 'column';
+            parentDiv.style.alignItems = 'center';
+            parentDiv.style.justifyContent = 'center';
+            parentDiv.style.position = 'relative';
+            parentDiv.style.width = '100%';
+
+            // Create heading
+            const heading = document.createElement('h3');
+            heading.textContent = 'Enter your API key';
+            heading.style.textAlign = 'center';
+            heading.style.textDecoration = 'underline';
+            heading.style.marginBottom = '25px';
+            parentDiv.appendChild(heading);
+
+            const inputParentContainer = document.createElement('div');
+            inputParentContainer.style.display = 'flex';
+            inputParentContainer.style.alignItems = 'end';
+            inputParentContainer.style.justifyContent = 'space-between';
+            inputParentContainer.style.width = '100%';
+            inputParentContainer.style.marginTop = '20px';
+            inputParentContainer.style.flexDirection = 'column';
+            inputParentContainer.style.gap = '10px';
+
+            // Create input field and label container
+            const inputContainer = document.createElement('div');
+            inputContainer.style.display = 'flex';
+            inputContainer.style.alignItems = 'center';
+            inputContainer.style.flexGrow = '1';
+            inputContainer.style.width = '100%';
+
+            const apiKeyLabel = document.createElement('label');
+            apiKeyLabel.textContent = 'API Key:';
+            apiKeyLabel.setAttribute('for', 'api-key-input');
+            apiKeyLabel.style.marginRight = '10px';
+            apiKeyLabel.style.fontWeight = 'bold';
+
+            const apiKeyInput = document.createElement('input');
+            apiKeyInput.setAttribute('type', 'text');
+            apiKeyInput.setAttribute('id', 'api-key-input');
+            apiKeyInput.style.flexGrow = '1';
+            apiKeyInput.style.padding = '4px';
+
+            inputContainer.appendChild(apiKeyLabel);
+            inputContainer.appendChild(apiKeyInput);
+
+            // Create submit button
+            const submitButton = document.createElement('button');
+            submitButton.id = 'submitButtonBasicAuth';
+            submitButton.textContent = 'Submit';
+            submitButton.style.marginLeft = '10px';
+            submitButton.style.background = 'rgb(39 45 192)';
+            submitButton.style.borderRadius = '5px';
+            submitButton.style.display = 'flex';
+            submitButton.style.alignItems = 'center';
+            submitButton.style.justifyContent = 'center';
+            submitButton.style.padding = '10px';
+            submitButton.style.color = '#fff';
+            submitButton.style.cursor = 'pointer';
+            submitButton.style.position = 'relative';
+            submitButton.disabled = true; // Initially disable the button
+            submitButton.style.opacity = '0.5';
+
+            // Append input container and button to the inputParentContainer
+            inputParentContainer.appendChild(inputContainer);
+            inputParentContainer.appendChild(submitButton);
+
+            // Append inputParentContainer to parentDiv
+            parentDiv.appendChild(inputParentContainer);
+
+            return parentDiv;
+        };
+
+        modalForApiKeyInputBasicAuth = function () {
+            return new Promise((resolve, reject) => {
+                const container = document.getElementById('revert-signin-container');
+                container.style.height = '534px';
+
+                // Remove all children of the container
+                while (container.firstChild) {
+                    container.removeChild(container.firstChild);
+                }
+
+                this.showAndRemoveLoader().then(() => {
+                    //close button
+                    const closeButton = createCloseButton();
+                    closeButton.style.position = 'absolute';
+                    closeButton.style.right = '20px';
+                    closeButton.style.top = '20px';
+                    closeButton.addEventListener('click', () => {
+                        reject('Modal closed by user');
+                        this.close();
+                    });
+
+                    const apiKeyInputContainer = this.apiKeyInputContainerFunction();
+                    container.appendChild(closeButton);
+                    container.appendChild(apiKeyInputContainer);
+
+                    const inputElementForApiInput = apiKeyInputContainer.querySelector('#api-key-input');
+                    const submitButtonForApiInputSubmission =
+                        apiKeyInputContainer.querySelector('#submitButtonBasicAuth');
+
+                    //event listener on input to change the disability of submit
+                    inputElementForApiInput.addEventListener('input', function () {
+                        if (inputElementForApiInput.value.trim() !== '') {
+                            submitButtonForApiInputSubmission.disabled = false;
+                            submitButtonForApiInputSubmission.style.opacity = '1';
+                        } else {
+                            submitButtonForApiInputSubmission.disabled = true;
+                            submitButtonForApiInputSubmission.style.opacity = '0.5';
+                        }
+                    });
+
+                    //event listener for submission go Api key
+                    submitButtonForApiInputSubmission.addEventListener('click', () => {
+                        submitButtonForApiInputSubmission.disabled = true;
+                        submitButtonForApiInputSubmission.style.opacity = '0.5';
+
+                        const apiKey = inputElementForApiInput.value;
+
+                        resolve(apiKey);
+                    });
+                });
+            });
+        };
+
+        handleIntegrationRedirect = async function (selectedIntegration) {
             if (selectedIntegration) {
                 const scopes = selectedIntegration.scopes;
                 const state = JSON.stringify({
@@ -1186,7 +1340,7 @@ const createIntegrationBlock = function (self, integration) {
                     window.open(
                         `https://app.hubspot.com/oauth/authorize?client_id=${
                             selectedIntegration.clientId
-                        }&redirect_uri=${this.#REDIRECT_URL_BASE}/hubspot&scope=${scopes.join('%20')}&state=${state}`
+                        }&redirect_uri=${this.#REDIRECT_URL_BASE}/hubspot&scope=${scopes.join('%20')}&state=${state}`,
                     );
                 } else if (selectedIntegration.integrationId === 'zohocrm') {
                     window.open(
@@ -1194,7 +1348,7 @@ const createIntegrationBlock = function (self, integration) {
                             selectedIntegration.clientId
                         }&response_type=code&access_type=offline&redirect_uri=${
                             this.#REDIRECT_URL_BASE
-                        }/zohocrm&state=${encodeURIComponent(state)}`
+                        }/zohocrm&state=${encodeURIComponent(state)}`,
                     );
                 } else if (selectedIntegration.integrationId === 'sfdc') {
                     const queryParams = {
@@ -1208,19 +1362,19 @@ const createIntegrationBlock = function (self, integration) {
                     window.open(
                         `https://login.salesforce.com/services/oauth2/authorize?${queryString}${
                             scopes.length ? `&scope=${scopes.join('%20')}` : ''
-                        }`
+                        }`,
                     );
                 } else if (selectedIntegration.integrationId === 'pipedrive') {
                     window.open(
                         `https://oauth.pipedrive.com/oauth/authorize?client_id=${
                             selectedIntegration.clientId
-                        }&redirect_uri=${this.#REDIRECT_URL_BASE}/pipedrive&state=${state}`
+                        }&redirect_uri=${this.#REDIRECT_URL_BASE}/pipedrive&state=${state}`,
                     );
                 } else if (selectedIntegration.integrationId === 'closecrm') {
                     window.open(
                         `https://app.close.com/oauth2/authorize/?client_id=${
                             selectedIntegration.clientId
-                        }&response_type=code&state=${encodeURIComponent(state)}`
+                        }&response_type=code&state=${encodeURIComponent(state)}`,
                     );
                 } else if (selectedIntegration.integrationId === 'ms_dynamics_365_sales') {
                     window.open(
@@ -1228,13 +1382,13 @@ const createIntegrationBlock = function (self, integration) {
                             selectedIntegration.clientId
                         }&response_type=code&redirect_uri=${
                             this.#REDIRECT_URL_BASE
-                        }/ms_dynamics_365_sales&response_mode=query&scope=${scopes.join('%20')}&state=${state}`
+                        }/ms_dynamics_365_sales&response_mode=query&scope=${scopes.join('%20')}&state=${state}`,
                     );
                 } else if (selectedIntegration.integrationId === 'slack') {
                     window.open(
                         `https://slack.com/oauth/v2/authorize?client_id=${selectedIntegration.clientId}&redirect_uri=${
                             this.#REDIRECT_URL_BASE
-                        }/slack&scope=${scopes.join(',')}&user_scope=identity.basic,identity.email&state=${state}`
+                        }/slack&scope=${scopes.join(',')}&user_scope=identity.basic,identity.email&state=${state}`,
                     );
                 } else if (selectedIntegration.integrationId === 'discord') {
                     const encodedRedirectURI = encodeURIComponent(this.#REDIRECT_URL_BASE);
@@ -1242,8 +1396,8 @@ const createIntegrationBlock = function (self, integration) {
                         `https://discord.com/api/oauth2/authorize?client_id=${
                             selectedIntegration.clientId
                         }&redirect_uri=${encodedRedirectURI}/discord&response_type=code&scope=${scopes.join(
-                            '%20'
-                        )}&state=${state}`
+                            '%20',
+                        )}&state=${state}`,
                     );
                 } else if (selectedIntegration.integrationId === 'linear') {
                     const encodedRedirectURI = encodeURIComponent(this.#REDIRECT_URL_BASE);
@@ -1251,14 +1405,14 @@ const createIntegrationBlock = function (self, integration) {
                         `https://linear.app/oauth/authorize?client_id=${
                             selectedIntegration.clientId
                         }&redirect_uri=${encodedRedirectURI}/linear&response_type=code&scope=${scopes.join(
-                            ','
-                        )}&state=${state}`
+                            ',',
+                        )}&state=${state}`,
                     );
                 } else if (selectedIntegration.integrationId === 'clickup') {
                     window.open(
                         `https://app.clickup.com/api?client_id=${selectedIntegration.clientId}&redirect_uri=${
                             this.#REDIRECT_URL_BASE
-                        }/clickup&state=${state}`
+                        }/clickup&state=${state}`,
                     );
                 } else if (selectedIntegration.integrationId === 'trello') {
                     fetch(
@@ -1266,15 +1420,15 @@ const createIntegrationBlock = function (self, integration) {
                             this.tenantId
                         }&revertPublicToken=${this.API_REVERT_PUBLIC_TOKEN}${
                             this.#USER_REDIRECT_URL ? `&redirectUrl=${this.#USER_REDIRECT_URL}` : ``
-                        }`
+                        }`,
                     )
                         .then((data) => data.json())
                         .then((data) => {
                             if (data.oauth_token) {
                                 window.open(
                                     `${data.authorizeURL}?oauth_token=${data.oauth_token}&scope=${scopes.join(
-                                        ','
-                                    )}&expiration=${data.expiration}`
+                                        ',',
+                                    )}&expiration=${data.expiration}`,
                                 );
                             }
                         });
@@ -1286,14 +1440,106 @@ const createIntegrationBlock = function (self, integration) {
                         `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=${
                             selectedIntegration.clientId
                         }&scope=${encodedScopes}&redirect_uri=${encodedRedirectUri}&state=${encodeURIComponent(
-                            state
-                        )}&response_type=code&prompt=consent`
+                            state,
+                        )}&response_type=code&prompt=consent`,
                     );
                 } else if (selectedIntegration.integrationId === 'bitbucket') {
                     window.open(
                         `https://bitbucket.org/site/oauth2/authorize?client_id=${
                             selectedIntegration.clientId
-                        }&response_type=code&state=${encodeURIComponent(state)}`
+                        }&response_type=code&state=${encodeURIComponent(state)}`,
+                    );
+                } else if (selectedIntegration.integrationId === 'greenhouse') {
+                    const apiKey = await this.modalForApiKeyInputBasicAuth();
+                    const url = `${this.CORE_API_BASE_URL}v1/ats/oauth-callback?integrationId=${
+                        selectedIntegration.integrationId
+                    }&t_id=${this.tenantId}&code=${apiKey}&x_revert_public_token=${this.API_REVERT_PUBLIC_TOKEN}${
+                        this.#USER_REDIRECT_URL ? `&redirectUrl=${this.#USER_REDIRECT_URL}` : ``
+                    }`;
+                    fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                        .then((d) => {
+                            return d.json();
+                        })
+                        .then((data) => {
+                            if (data.error) {
+                                const errorMessage =
+                                    data.error?.code === 'P2002'
+                                        ? ': Already connected another CRM. Please disconnect first.'
+                                        : '';
+
+                                console.log('error:', errorMessage);
+                            } else {
+                                console.log('OAuth flow succeeded', data);
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            return this.renderFailedStage();
+                        });
+                } else if (selectedIntegration.integrationId === 'lever') {
+                    const encodedScopes = encodeURIComponent(scopes.join(' '));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/lever`);
+
+                    fetch(
+                        `${this.CORE_API_BASE_URL}ats/lever-app_config?revertPublicToken=${this.API_REVERT_PUBLIC_TOKEN}`,
+                    )
+                        .then((data) => data.json())
+                        .then((data) => {
+                            if (data.env === 'Sandbox') {
+                                window.open(
+                                    `https://sandbox-lever.auth0.com/authorize?client_id=${
+                                        selectedIntegration.clientId
+                                    }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                                        state,
+                                    )}&prompt=consent&scope=${encodedScopes}&audience=https://api.sandbox.lever.co/v1/`,
+                                );
+                            } else {
+                                window.open(
+                                    `https://auth.lever.co/authorize?client_id=${
+                                        selectedIntegration.clientId
+                                    }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                                        state,
+                                    )}&prompt=consent&scope=${encodedScopes}&audience=https://api.lever.co/v1/`,
+                                );
+                            }
+                        });
+                } else if (selectedIntegration.integrationId === 'github') {
+                    const encodedScopes = encodeURIComponent(scopes.join(','));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/github`);
+
+                    window.open(
+                        `https://github.com/login/oauth/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${encodedRedirectUri}&scope=${encodedScopes}&state=${encodeURIComponent(
+                            state,
+                        )}&response_type=code`,
+                    );
+                } else if (selectedIntegration.integrationId === 'quickbooks') {
+                    const encodedScopes = encodeURIComponent(scopes.join(' '));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/quickbooks`);
+
+                    window.open(
+                        `https://appcenter.intuit.com/connect/oauth2?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                            state,
+                        )}&scope=${encodedScopes}`,
+                    );
+                } else if (selectedIntegration.integrationId === 'xero') {
+                    const encodedScopes = encodeURIComponent(scopes.join(' '));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/xero`);
+
+                    window.open(
+                        `https://login.xero.com/identity/connect/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                            state,
+                        )}&scope=${encodedScopes}`,
                     );
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
@@ -1303,7 +1549,7 @@ const createIntegrationBlock = function (self, integration) {
                     this.close();
                 }
                 const evtSource = new EventSource(
-                    `${this.CORE_API_BASE_URL}connection/integration-status/${this.API_REVERT_PUBLIC_TOKEN}?tenantId=${this.tenantId}`
+                    `${this.CORE_API_BASE_URL}connection/integration-status/${this.API_REVERT_PUBLIC_TOKEN}?tenantId=${this.tenantId}`,
                 );
                 evtSource.onmessage = (event) => {
                     const data = JSON.parse(event.data);
@@ -1326,6 +1572,7 @@ const createIntegrationBlock = function (self, integration) {
                         evtSource.close();
                         const tenantToken = parsedData.tenantSecretToken;
                         // fetch field mapping
+
                         fetch(`${this.CORE_API_BASE_URL}field-mapping`, {
                             mode: 'cors' as RequestMode,
                             method: 'GET',

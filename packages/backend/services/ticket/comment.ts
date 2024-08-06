@@ -30,7 +30,7 @@ const commentServiceTicket = new CommentService(
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    commentId
+                    commentId,
                 );
 
                 switch (thirdPartyId) {
@@ -66,7 +66,7 @@ const commentServiceTicket = new CommentService(
                         let parsedFields: any = fields ? JSON.parse(fields) : undefined;
                         if (!parsedFields.taskId) {
                             throw new Error(
-                                'taskId is required for fetching Jira comments. You can also pass taskKey to taskId.'
+                                'taskId is required for fetching Jira comments. You can also pass taskKey to taskId.',
                             );
                         }
                         const result = await axios({
@@ -104,7 +104,7 @@ const commentServiceTicket = new CommentService(
 
                         if (!parsedFields.taskId || !parsedFields.repo || !parsedFields.workspace) {
                             throw new Error(
-                                'taskId and "repo" and "workspace" are required for fetching Bitbucket comments and should be included in the "fields" parameter."repo" and "workspace" can either be slug or UUID.'
+                                'taskId and "repo" and "workspace" are required for fetching Bitbucket comments and should be included in the "fields" parameter."repo" and "workspace" can either be slug or UUID.',
                             );
                         }
                         const result = await axios({
@@ -112,6 +112,37 @@ const commentServiceTicket = new CommentService(
                             url: `https://api.bitbucket.org/2.0/repositories/${parsedFields.workspace}/${parsedFields.repo}/issues/${parsedFields.taskId}/comments/${commentId}`,
                             headers: {
                                 Accept: 'application/json',
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                            },
+                        });
+
+                        const unifiedComment = await unifyObject<any, UnifiedTicketComment>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedComment,
+                        });
+                        break;
+                    }
+                    case TP_ID.github: {
+                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
+
+                        if (!parsedFields.repo || !parsedFields.owner) {
+                            throw new Error(
+                                'taskId and "repo" and "owner" are required for fetching GitHub comments and should be included in the "fields" parameter.',
+                            );
+                        }
+                        const result = await axios({
+                            method: 'get',
+                            url: ` https://api.github.com/repos/${parsedFields.owner}/${parsedFields.repo}/issues/comments/${commentId}`,
+                            headers: {
+                                Accept: 'application/vnd.github+json',
                                 Authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
@@ -166,7 +197,7 @@ const commentServiceTicket = new CommentService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -199,17 +230,17 @@ const commentServiceTicket = new CommentService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         const pageInfo = comments.pageInfo;
-                        let next_cursor = undefined;
+                        let next_cursor: string | undefined = undefined;
                         if (pageInfo.hasNextPage && pageInfo.endCursor) {
                             next_cursor = pageInfo.endCursor;
                         }
 
-                        let previous_cursor = undefined;
+                        let previous_cursor: string | undefined = undefined;
                         if (pageInfo.hasPreviousPage && pageInfo.startCursor) {
                             previous_cursor = pageInfo.startCursor;
                         }
@@ -240,8 +271,8 @@ const commentServiceTicket = new CommentService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -275,8 +306,8 @@ const commentServiceTicket = new CommentService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         const limit = Number(result.data.maxResults);
@@ -319,8 +350,8 @@ const commentServiceTicket = new CommentService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -356,8 +387,8 @@ const commentServiceTicket = new CommentService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         const pageNumber = result.data?.next ? (pageSize ? (pageSize + 1).toString() : '1') : undefined;
@@ -366,6 +397,59 @@ const commentServiceTicket = new CommentService(
                             status: 'ok',
                             next: pageNumber,
                             previous: undefined,
+                            results: unifiedComments,
+                        });
+                        break;
+                    }
+                    case TP_ID.github: {
+                        if (!fields || (fields && (!fields.repo || !fields.owner))) {
+                            throw new NotFoundError({
+                                error: 'The query parameters "repo" and "owner" are required and should be included in the "fields" parameter.',
+                            });
+                        }
+                        let pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page=${cursor}` : ''
+                        }`;
+                        const result = await axios({
+                            method: 'get',
+                            url: `https://api.github.com/repos/${fields.owner}/${fields.repo}/issues/${fields.taskId}/comments?${pagingString}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/vnd.github+json',
+                            },
+                        });
+
+                        const unifiedComments: any = await Promise.all(
+                            result.data.map(
+                                async (task: any) =>
+                                    await unifyObject<any, UnifiedTicketComment>({
+                                        obj: task,
+                                        tpId: thirdPartyId,
+                                        objType,
+                                        tenantSchemaMappingId: connection.schema_mapping_id,
+                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                    }),
+                            ),
+                        );
+
+                        const linkHeader = result.headers.link;
+                        let nextCursor, previousCursor;
+                        if (linkHeader) {
+                            const links = linkHeader.split(',');
+
+                            links?.forEach((link: any) => {
+                                if (link.includes('rel="next"')) {
+                                    nextCursor = Number(link.match(/[&?]page=(\d+)/)[1]);
+                                } else if (link.includes('rel="prev"')) {
+                                    previousCursor = Number(link.match(/[&?]page=(\d+)/)[1]);
+                                }
+                            });
+                        }
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor ? String(nextCursor) : undefined,
+                            previous: previousCursor !== undefined ? String(previousCursor) : undefined,
                             results: unifiedComments,
                         });
                         break;
@@ -489,6 +573,25 @@ const commentServiceTicket = new CommentService(
                             data: JSON.stringify(comment),
                         });
                         res.send({ status: 'ok', message: 'Bitbucket comment posted', result: result.data });
+
+                        break;
+                    }
+                    case TP_ID.github: {
+                        if (!fields || (fields && (!fields.repo || !fields.owner))) {
+                            throw new NotFoundError({
+                                error: 'The query parameters "repo" and "owner" are required and should be included in the "fields" parameter.',
+                            });
+                        }
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `https://api.github.com/repos/${fields.owner}/${fields.repo}/issues/${commentData.taskId}/comments `,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/vnd.github+json',
+                            },
+                            data: JSON.stringify(comment),
+                        });
+                        res.send({ status: 'ok', message: 'GitHub comment posted', result: result.data });
 
                         break;
                     }
@@ -633,6 +736,26 @@ const commentServiceTicket = new CommentService(
 
                         break;
                     }
+                    case TP_ID.github: {
+                        if (!fields || (fields && (!fields.repo || !fields.owner))) {
+                            throw new NotFoundError({
+                                error: 'The query parameters "repo" and "owner" are required and should be included in the "fields" parameter.',
+                            });
+                        }
+
+                        const result: any = await axios({
+                            method: 'patch',
+                            url: `  https://api.github.com/repos/${fields.owner}/${fields.repo}/issues/comments/${commentId}  `,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/vnd.github+json',
+                            },
+                            data: comment,
+                        });
+                        res.send({ status: 'ok', message: 'GitHub comment updated', result: result.data });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -647,7 +770,7 @@ const commentServiceTicket = new CommentService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { commentServiceTicket };

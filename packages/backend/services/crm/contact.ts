@@ -12,6 +12,7 @@ import { mapPipedriveObjectCustomFields } from '../../helpers/crm';
 import { unifyObject, disunifyObject } from '../../helpers/crm/transform';
 import { UnifiedContact } from '../../models/unified/contact';
 import { StandardObjects } from '../../constants/common';
+import { getAssociationObjects, isValidAssociationTypeRequestedByUser } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.contact;
 
@@ -26,13 +27,15 @@ const contactService = new ContactService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET CONTACT',
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    contactId
+                    contactId,
                 );
 
                 switch (thirdPartyId) {
@@ -46,15 +49,35 @@ const contactService = new ContactService(
                             'hs_object_id',
                             'phone',
                         ];
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item),
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
+                        );
+
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}?properties=${formattedFields}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
+
                         let contact: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/contacts/${contactId}?properties=${formattedFields}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
+                        const associatedData = await getAssociationObjects(
+                            contact.data?.associations,
+                            thirdPartyToken,
+                            thirdPartyId,
+                            connection,
+                            account,
+                            invalidAssociations,
+                        );
                         contact = await unifyObject<any, UnifiedContact>({
-                            obj: { ...contact.data, ...contact.data?.properties },
+                            obj: { ...contact.data, ...contact.data?.properties, associations: associatedData },
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -110,7 +133,7 @@ const contactService = new ContactService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const contact = result.data;
                         const personFields = (
@@ -202,12 +225,14 @@ const contactService = new ContactService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET ALL CONTACTS',
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -224,9 +249,21 @@ const contactService = new ContactService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item),
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
+                        );
+
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/contacts?properties=${formattedFields}${pagingString}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
+
                         let contacts: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/contacts?properties=${formattedFields}&${pagingString}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
@@ -235,16 +272,23 @@ const contactService = new ContactService(
 
                         contacts = contacts.data.results as any[];
                         contacts = await Promise.all(
-                            contacts?.map(
-                                async (l: any) =>
-                                    await unifyObject<any, UnifiedContact>({
-                                        obj: { ...l, ...l?.properties },
-                                        tpId: thirdPartyId,
-                                        objType,
-                                        tenantSchemaMappingId: connection.schema_mapping_id,
-                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                            contacts?.map(async (l: any) => {
+                                const associatedData = await getAssociationObjects(
+                                    l?.associations,
+                                    thirdPartyToken,
+                                    thirdPartyId,
+                                    connection,
+                                    account,
+                                    invalidAssociations,
+                                );
+                                return await unifyObject<any, UnifiedContact>({
+                                    obj: { ...l, ...l?.properties, associations: associatedData },
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
                         );
                         res.send({
                             status: 'ok',
@@ -277,8 +321,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
                         break;
@@ -320,8 +364,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
                         break;
@@ -336,7 +380,7 @@ const contactService = new ContactService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
@@ -349,7 +393,7 @@ const contactService = new ContactService(
                             })
                         ).data.data;
                         const mappedContacts = contacts.map((c: any) =>
-                            mapPipedriveObjectCustomFields({ object: c, objectFields: personFields })
+                            mapPipedriveObjectCustomFields({ object: c, objectFields: personFields }),
                         );
                         const unifiedContacts = await Promise.all(
                             mappedContacts?.map(
@@ -360,8 +404,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedContacts });
                         break;
@@ -390,8 +434,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         let cursorVal = parseInt(String(cursor));
@@ -431,8 +475,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -519,7 +563,7 @@ const contactService = new ContactService(
                                     headers: {
                                         authorization: `Zoho-oauthtoken ${thirdPartyToken}`,
                                     },
-                                }
+                                },
                             );
                         }
                         res.send({ status: 'ok', message: 'Zoho contact created', result: contact });
@@ -548,7 +592,7 @@ const contactService = new ContactService(
                                         'content-type': 'application/json',
                                         authorization: `Bearer ${thirdPartyToken}`,
                                     },
-                                }
+                                },
                             );
                         }
                         res.send({
@@ -568,7 +612,7 @@ const contactService = new ContactService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         res.send({
                             status: 'ok',
@@ -705,7 +749,7 @@ const contactService = new ContactService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         res.send({
                             status: 'ok',
@@ -821,8 +865,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({
                             status: 'ok',
@@ -862,8 +906,8 @@ const contactService = new ContactService(
                                             objType,
                                             tenantSchemaMappingId: connection.schema_mapping_id,
                                             accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                        })
-                                )
+                                        }),
+                                ),
                             );
                         } else {
                             contacts = [];
@@ -891,8 +935,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({ status: 'ok', results: contacts });
@@ -913,7 +957,7 @@ const contactService = new ContactService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
@@ -927,7 +971,7 @@ const contactService = new ContactService(
                             })
                         ).data.data;
                         const mappedContacts = contacts.map((c: any) =>
-                            mapPipedriveObjectCustomFields({ object: c, objectFields: personFields })
+                            mapPipedriveObjectCustomFields({ object: c, objectFields: personFields }),
                         );
                         const unifiedContacts = await Promise.all(
                             mappedContacts?.map(
@@ -938,8 +982,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedContacts });
                         break;
@@ -974,8 +1018,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: contacts });
@@ -1008,8 +1052,8 @@ const contactService = new ContactService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -1034,7 +1078,7 @@ const contactService = new ContactService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { contactService };

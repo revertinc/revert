@@ -50,7 +50,9 @@ navigation:
                 - page: Messaging tools
                   path: ./docs/contents/messaging-supported.mdx
                 - page: Ticketing Systems
-                  path: ./docs/contents/messaging-supported.mdx
+                  path: ./docs/contents/ticketing-supported.mdx
+                - page: ATSs
+                  path: ./docs/contents/ats-supported.mdx
     - tab: api
       layout:
           - api: API Reference
@@ -84,6 +86,17 @@ navigation:
                   path: ./docs/contents/guides/trello.mdx
                 - page: BitBucket
                   path: ./docs/contents/guides/bitbucket.mdx
+                - page: QuickBooks
+                  path: ./docs/contents/guides/quickbooks.mdx
+                - page: Xero
+                  path: ./docs/contents/guides/xero.mdx
+                - page: Greenhouse
+                  path: ./docs/contents/guides/greenhouse.mdx
+                - page: Lever
+                  path: ./docs/contents/guides/lever.mdx
+                - page: GitHub
+                  path: ./docs/contents/guides/github.mdx
+
 colors:
     accentPrimary: '#89a3ff'
 logo:

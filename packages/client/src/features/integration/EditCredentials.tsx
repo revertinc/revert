@@ -69,6 +69,7 @@ const LoadingButton = styled(MuiLoadingButton)`
 interface AppConfig {
     bot_token?: string;
     org_url?: string;
+    env?: string;
 }
 
 // Todo: Refactor this and make the styling more usable, also solve the errors in console which were to note were already there
@@ -114,6 +115,10 @@ const EditCredentials: React.FC<{
         } else if (app.tp_id === 'ms_dynamics_365_sales') {
             setAppConfig({ org_url: val });
         }
+    };
+
+    const handleEnv = (val) => {
+        setAppConfig({ env: val });
     };
 
     React.useEffect(() => {
@@ -181,6 +186,18 @@ const EditCredentials: React.FC<{
                             />
                         </Row>
                     )}
+
+                    {/* {(app.tp_id === 'quickbooks' || app.tp_id === 'xero' || app.tp_id === 'lever') && (
+                        // do for greenhouse as well
+                        <Row>
+                            <span className="font-bold">Environment: </span>
+                            <EnvironmentSelector
+                                environmentProp={appConfig?.env || app.app_config?.env}
+                                setEnvironmentProp={(val) => handleEnv(val)}
+                                environmentList={[{ env: 'Production' }, { env: 'Sandbox' }]}
+                            />
+                        </Row>
+                    )} */}
                     {!(app.tp_id === 'closecrm' || app.tp_id === 'pipedrive' || app.tp_id === 'clickup') && (
                         <Row>
                             <span className="font-bold">Scopes: </span>
@@ -221,8 +238,8 @@ const EditCredentials: React.FC<{
                         isRevertApp
                             ? false
                             : app.tp_id === 'discord'
-                            ? !clientId || !clientSecret || !appConfig.bot_token
-                            : !clientId || !clientSecret
+                              ? !clientId || !clientSecret || !appConfig.bot_token
+                              : !clientId || !clientSecret
                     }
                 >
                     Submit
