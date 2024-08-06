@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Box as MuiBox, Button, Chip as MuiChip, Switch } from '@mui/material';
 import { LoadingButton as MuiLoadingButton } from '@mui/lab';
-
+import Dropdown from '../../ui/Dropdown';
 import { useApi } from '../../data/hooks';
 
 const Chip = styled(MuiChip)`
@@ -187,17 +187,16 @@ const EditCredentials: React.FC<{
                         </Row>
                     )}
 
-                    {/* {(app.tp_id === 'quickbooks' || app.tp_id === 'xero' || app.tp_id === 'lever') && (
+                    {(app.tp_id === 'quickbooks' || app.tp_id === 'xero' || app.tp_id === 'lever') && (
                         // do for greenhouse as well
                         <Row>
                             <span className="font-bold">Environment: </span>
-                            <EnvironmentSelector
-                                environmentProp={appConfig?.env || app.app_config?.env}
-                                setEnvironmentProp={(val) => handleEnv(val)}
-                                environmentList={[{ env: 'Production' }, { env: 'Sandbox' }]}
-                            />
+                            <Dropdown
+                                value={appConfig?.env || app.app_config?.env}
+                                set={(val) => handleEnv(val)}
+                            ></Dropdown>
                         </Row>
-                    )} */}
+                    )}
                     {!(app.tp_id === 'closecrm' || app.tp_id === 'pipedrive' || app.tp_id === 'clickup') && (
                         <Row>
                             <span className="font-bold">Scopes: </span>
