@@ -4498,6 +4498,48 @@ paths:
                 - userId
                 - tpId
                 - environment
+    delete:
+      description: delete Revert App for Account
+      operationId: internal_account_deleteRevertAppforAccount
+      tags:
+        - InternalAccount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalDeleteRevertAppResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                appId:
+                  type: string
+              required:
+                - appId
   /internal/account/svix/{id}:
     get:
       description: Get Svix Account
@@ -4595,48 +4637,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/internalSvixMagicLinkResponse'
         '401':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-        '500':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                appId:
-                  type: string
-              required:
-                - appId
-    delete:
-      description: delete Revert App for Account
-      operationId: internal_account_deleteRevertAppforAccount
-      tags:
-        - InternalAccount
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/internalDeleteRevertAppResponse'
-        '401':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/commonBaseError'
-        '404':
           description: ''
           content:
             application/json:

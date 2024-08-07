@@ -68,17 +68,13 @@ service:
             method: POST
             path: /apps
             request:
-            request:
                 name: CreateRevertAppForAccount
-                body:
-                    properties:
                 body:
                     properties:
                         userId: string
                         tpId: types.TPID
                         environment: string
             response: GetAccountDetailsResponse
-            errors:
             errors:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError

@@ -79,11 +79,6 @@ const accountService = new AccountService({
                 tpId,
                 environment,
             });
-            const isCreated = await AppService.createRevertAppForAccount({
-                accountId: result.account.id as string,
-                tpId,
-                environment,
-            });
 
             if (isCreated?.error) {
                 throw new InternalServerError({ error: 'Internal Server Error' });
