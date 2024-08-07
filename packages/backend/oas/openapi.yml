@@ -6097,6 +6097,17 @@ components:
         - method
         - path
         - status
+    commonSummaryApiCalls:
+      title: commonSummaryApiCalls
+      type: object
+      properties:
+        date:
+          type: string
+        numberOfCalls:
+          type: integer
+      required:
+        - date
+        - numberOfCalls
     commonAnalytics:
       title: commonAnalytics
       type: object
@@ -6117,6 +6128,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/commonRecentApiCalls'
+          nullable: true
+        totalApiCalls:
+          type: integer
+          nullable: true
+        summaryApiCalls:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonSummaryApiCalls'
           nullable: true
       required:
         - totalConnections

@@ -98,7 +98,7 @@ class LinearAuthHandler extends BaseOAuthHandler {
                 tenantId,
                 TP_ID.linear,
                 result.data.access_token,
-                info.data.viewer?.id
+                info.data.viewer?.id,
             );
 
             return processOAuthResult({

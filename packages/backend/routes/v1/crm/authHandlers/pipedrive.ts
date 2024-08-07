@@ -40,7 +40,7 @@ class PipeDriveAuthHandler extends BaseOAuthHandler {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
                     Authorization: `Basic ${Buffer.from(
-                        `${clientId || config.PIPEDRIVE_CLIENT_ID}:${clientSecret || config.PIPEDRIVE_CLIENT_SECRET}`
+                        `${clientId || config.PIPEDRIVE_CLIENT_ID}:${clientSecret || config.PIPEDRIVE_CLIENT_SECRET}`,
                     ).toString('base64')}`,
                 },
             });
@@ -86,7 +86,7 @@ class PipeDriveAuthHandler extends BaseOAuthHandler {
                 tenantId,
                 TP_ID.pipedrive,
                 result.data.access_token,
-                info.data.data.email
+                info.data.data.email,
             );
 
             return processOAuthResult({
