@@ -27,7 +27,7 @@ export function NavLinks() {
                         key={uuid()}
                         href={link.href}
                         className={cn(
-                            'flex h-10 grow text-gray-50 items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-slate-50 hover:text-black md:flex-none md:justify-start md:p-2 md:px-3',
+                            'flex h-10 grow text-gray-50 items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-slate-50 hover:text-black md:flex-none md:justify-start md:p-2 md:px-3 revert-focus-outline',
                             { 'text-slate-50 bg-accent-400': pathname === link.href }
                         )}
                     >

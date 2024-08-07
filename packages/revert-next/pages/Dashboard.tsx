@@ -35,7 +35,7 @@ function Dashboard({ userId }: { userId: string }) {
                         <div className="col-span-2">
                             <div className="flex justify-between">
                                 <h3 className="uppercase text-gray-50/80 font-bold mb-3">endpoint</h3>
-                                <h3 className="uppercase text-gray-50/80 font-bold mb-3">enabled</h3>
+                                <h3 className="uppercase text-gray-50/80 font-bold mb-3">status</h3>
                             </div>
                             <div className="flex flex-col gap-3">
                                 {recentCalls?.length ? (
@@ -43,7 +43,7 @@ function Dashboard({ userId }: { userId: string }) {
                                         return (
                                             <div key={uuid()} className="flex justify-between items-center">
                                                 <div className="flex items-center">
-                                                    <Badge variant={c.method}> GET </Badge>
+                                                    <Badge variant={c.method}> {c.method} </Badge>
                                                     <p className="ml-2 text-gray-50/70">{c.path}</p>
                                                 </div>
                                                 <div

@@ -1,23 +1,21 @@
 import Link from 'next/link';
 import { OnboardingNavLink, EnvironmentMode, NavLinks } from '@revertdotdev/components';
 import { BookOpenIcon } from '@revertdotdev/icons';
-import { fetchAccountDetails } from '@revertdotdev/lib/api';
-import { auth, currentUser } from '@clerk/nextjs/server';
 import { UserButton } from '@clerk/nextjs';
+import { AccountResponseSchema } from '@revertdotdev/types/schemas/accountSchema';
+import { User } from '@clerk/nextjs/dist/types/server';
 
-export async function SideNav() {
-    const { userId } = auth();
-    const user = await currentUser();
+type SideNavProps = {
+    value: {
+        account: AccountResponseSchema;
+        userId: string;
+        user: User | null;
+    };
+};
 
-    if (!userId || !user) {
-        return null;
-    }
-
-    const { message, isDefaultEnvironment } = await fetchAccountDetails(userId);
-
-    if (message) {
-        return null;
-    }
+export function SideNav({ value }: SideNavProps) {
+    const { account, user, userId } = value;
+    const { isDefaultEnvironment, prodPrivateToken } = account;
 
     return (
         <div className="flex h-full flex-col px-3 py-4">
@@ -31,15 +29,19 @@ export async function SideNav() {
                 <Link
                     href="http://docs.revert.dev"
                     target="_blank"
-                    className="flex grow text-gray-50 items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-slate-50 hover:text-black md:flex-none md:justify-start md:p-2 md:px-3"
+                    className="flex grow text-gray-50 items-center justify-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-slate-50 hover:text-black md:flex-none md:justify-start md:p-2 md:px-3 revert-focus-outline"
                 >
                     <BookOpenIcon className="w-6" />
                     <p className="hidden md:block">Developer Docs</p>
                 </Link>
                 <div className="flex grow text-gray-50 items-center justify-center gap-2 rounded-md p-3 text-sm font-medium md:flex-none md:justify-start md:p-2 md:px-3">
-                    <EnvironmentMode isDefaultEnvironment={isDefaultEnvironment ?? true} userId={userId} />
+                    <EnvironmentMode
+                        isDefaultEnvironment={isDefaultEnvironment}
+                        userId={userId}
+                        prodPrivateToken={prodPrivateToken}
+                    />
                 </div>
-                <div className="flex items-center pl-2 h-12">
+                <div className="flex items-center pl-2 h-12 revert-focus-outline rounded-lg">
                     <UserButton />
                     <p className="ml-3 hidden md:block">{user?.fullName ?? 'User Name'}</p>
                 </div>

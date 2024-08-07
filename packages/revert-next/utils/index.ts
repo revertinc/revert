@@ -12,3 +12,5 @@ export function formatNumber(number: number) {
 export { ZodError, z } from 'zod';
 
 export { v4 as uuid } from 'uuid';
+
+export { cva, type VariantProps } from 'class-variance-authority';

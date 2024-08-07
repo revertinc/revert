@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    .gradient-border {
+        background: linear-gradient(to right, #0a0e17, rgba(38, 138, 253, 0)) padding-box,
+            linear-gradient(to right, rgba(38, 138, 253), rgba(38, 138, 253, 0.2)) border-box;
+        border-style: solid;
+        border-color: transparent;
+        border-width: 1px;
+    }
+    .gradient-border-destructive {
+        background: linear-gradient(to right, #374151, rgba(10, 14, 23, 0)) padding-box,
+            linear-gradient(to right, #1f2937, rgba(31, 41, 55, 0.2)) border-box;
+        border-style: solid;
+        border-color: transparent;
+        border-width: 1px;
+    }
+}
+
+@layer components {
+    .revert-focus-outline {
+        @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500;
+    }
+}
