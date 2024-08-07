@@ -1,7 +1,10 @@
 import { cookies } from 'next/headers';
-import { REVERT_BASE_API_URL, DEFAULT_ENV } from './constants';
+import { DEFAULT_ENV } from './constants';
 import { accountResponseSchema, accountSchema } from '@revertdotdev/types/schemas/accountSchema';
 import { ZodError } from 'zod';
+import { environmentConfig } from './config';
+
+const { REVERT_BASE_API_URL } = environmentConfig;
 
 // Todo: Add Generalised Error Handler
 export async function fetchAccountDetails(userId: string) {

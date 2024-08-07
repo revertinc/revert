@@ -1,7 +1,9 @@
-import { REVERT_BASE_API_URL } from '@revertdotdev/lib/constants';
 import useSWR from 'swr';
 import { ZodError } from '@revertdotdev/utils';
 import { RecentApiCallSchema, recentApiCallSchema } from '@revertdotdev/types/schemas/recentApiCall';
+import { environmentConfig } from '@revertdotdev/lib/config';
+
+const { REVERT_BASE_API_URL } = environmentConfig;
 
 export function useRecentApiCall(appId: string) {
     const privateToken = localStorage.getItem('privateToken') as string;
@@ -23,7 +25,7 @@ export function useRecentApiCall(appId: string) {
 
             return data;
         },
-        { revalidateIfStale: true, revalidateOnFocus: true }
+        { revalidateIfStale: true, revalidateOnFocus: true },
     );
 
     return {

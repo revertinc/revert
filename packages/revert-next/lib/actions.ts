@@ -1,10 +1,13 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { DEFAULT_ENV, REVERT_BASE_API_URL } from './constants';
+import { DEFAULT_ENV } from './constants';
 import { revalidatePath } from 'next/cache';
 import { tp_id } from '@revertdotdev/types/schemas/commonSchema';
 import { AppConfig } from '@revertdotdev/types/schemas/appSchema';
+import { environmentConfig } from './config';
+
+const { REVERT_BASE_API_URL } = environmentConfig;
 
 export async function changeEnvironmentMode() {
     const cookie = cookies();

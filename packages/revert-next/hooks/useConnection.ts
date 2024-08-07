@@ -1,6 +1,8 @@
-import { REVERT_BASE_API_URL } from '@revertdotdev/lib/constants';
+import { environmentConfig } from '@revertdotdev/lib/config';
 import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation';
 import useSWR from 'swr';
+
+const { REVERT_BASE_API_URL } = environmentConfig;
 
 const fetcher = (url: string) =>
     fetch(url, {

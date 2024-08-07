@@ -1,8 +1,11 @@
-import { DEFAULT_ENV, REVERT_BASE_API_URL } from '@revertdotdev/lib/constants';
+import { DEFAULT_ENV } from '@revertdotdev/lib/constants';
+import { environmentConfig } from '@revertdotdev/lib/config';
 import { AnalyticsSchema, analyticsSchema } from '@revertdotdev/types/schemas/analyticsSchema';
 import { getCookie } from 'cookies-next';
 import useSWR from 'swr';
 import { ZodError } from '@revertdotdev/utils';
+
+const { REVERT_BASE_API_URL } = environmentConfig;
 
 export function useAnalytics(userId: string) {
     const environment = getCookie('revert_environment_selected') ?? DEFAULT_ENV;
@@ -28,7 +31,7 @@ export function useAnalytics(userId: string) {
 
             return data;
         },
-        { revalidateIfStale: true, revalidateOnFocus: true }
+        { revalidateIfStale: true, revalidateOnFocus: true },
     );
 
     return {
