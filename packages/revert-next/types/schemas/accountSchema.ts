@@ -18,7 +18,7 @@ export const accountSchema = z.object({
                 public_token: z.string(),
                 accountId: z.string(),
                 apps: appSchema,
-            })
+            }),
         ),
     }),
 });
@@ -29,6 +29,7 @@ export const accountResponseSchema = z.object({
     currentPrivateToken: z.string(),
     currentPublicToken: z.string(),
     prodPrivateToken: z.string(),
+    workspaceName: z.string(),
 });
 
 export type AccountResponseSchema = z.infer<typeof accountResponseSchema>;

@@ -24,7 +24,7 @@ export async function fetchAccountDetails(userId: string) {
             throw new ZodError(error.errors);
         }
 
-        const { environments } = data.account;
+        const { environments, workspaceName } = data.account;
 
         const {
             private_token: currentPrivateToken,
@@ -42,6 +42,7 @@ export async function fetchAccountDetails(userId: string) {
             currentPrivateToken,
             currentPublicToken,
             prodPrivateToken,
+            workspaceName,
         });
 
         if (!parsedResponse.success) {
