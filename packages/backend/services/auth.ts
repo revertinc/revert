@@ -140,7 +140,7 @@ class AuthService {
                                             connection.app?.is_revert_app
                                                 ? config.PIPEDRIVE_CLIENT_SECRET
                                                 : connection.app?.app_client_secret || config.PIPEDRIVE_CLIENT_SECRET
-                                        }`
+                                        }`,
                                     ).toString('base64')}`,
                                 },
                             });
@@ -339,7 +339,7 @@ class AuthService {
                             };
 
                             const encodedClientIdSecret = Buffer.from(
-                                headerData.client_id + ':' + headerData.client_secret
+                                headerData.client_id + ':' + headerData.client_secret,
                             ).toString('base64');
 
                             const result = await axios({
@@ -378,112 +378,263 @@ class AuthService {
         }
         return { status: 'ok', message: 'Ticket services tokens refreshed' };
     }
+    async refreshOAuthTokensForThirdPartyAtsServices() {
+        try {
+            const connections = await prisma.connections.findMany({
+                include: { app: true },
+            });
 
+            for (let i = 0; i < connections.length; i++) {
+                const connection = connections[i];
+                if (connection.tp_refresh_token) {
+                    try {
+                        if (connection.tp_id === TP_ID.lever) {
+                            const env = (connection?.app?.app_config as AppConfig)?.env;
+
+                            let url =
+                                env === 'Sandbox'
+                                    ? 'https://sandbox-lever.auth0.com/oauth/token'
+                                    : 'https://auth.lever.co/oauth/token';
+
+                            // Refresh lever token
+                            const formData = {
+                                grant_type: 'refresh_token',
+                                client_id: connection.app?.is_revert_app
+                                    ? config.LEVER_CLIENT_ID
+                                    : connection.app_client_id || config.LEVER_CLIENT_ID,
+                                client_secret: connection.app?.is_revert_app
+                                    ? config.LEVER_CLIENT_SECRET
+                                    : connection.app_client_secret || config.LEVER_CLIENT_SECRET,
+                                refresh_token: connection.tp_refresh_token,
+                            };
+                            const result: any = await axios({
+                                method: 'post',
+                                url: url,
+                                data: qs.stringify(formData),
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                            });
+                            await prisma.connections.update({
+                                where: {
+                                    id: connection.id,
+                                },
+                                data: {
+                                    tp_access_token: result.data.access_token,
+                                    tp_refresh_token: result.data.refresh_token,
+                                },
+                            });
+                        }
+                    } catch (error: any) {
+                        logError(error.response?.data);
+                        console.error('Could not refresh token', connection.t_id, error.response?.data);
+                    }
+                }
+            }
+        } catch (error: any) {
+            logError(error);
+            console.error('Could not update db', error.response?.data);
+        }
+        return { status: 'ok', message: 'ATS services tokens refreshed' };
+    }
+    async refreshOAuthTokensForThirdPartyAccountingServices() {
+        try {
+            const connections = await prisma.connections.findMany({
+                include: { app: true },
+            });
+
+            for (let i = 0; i < connections.length; i++) {
+                const connection = connections[i];
+                if (connection.tp_refresh_token) {
+                    try {
+                        if (connection.tp_id === TP_ID.xero) {
+                            const url = `https://identity.xero.com/connect/token`;
+                            const formData = {
+                                grant_type: 'refresh_token',
+                                refresh_token: connection.tp_refresh_token,
+                            };
+                            const headerData = {
+                                client_id: connection.app_client_id || config.XERO_CLIENT_ID,
+                                client_secret: connection.app_client_secret || config.XERO_CLIENT_SECRET,
+                            };
+
+                            const encodedClientIdSecret = Buffer.from(
+                                headerData.client_id + ':' + headerData.client_secret,
+                            ).toString('base64');
+
+                            const result = await axios({
+                                method: 'post',
+                                url: url,
+                                data: qs.stringify(formData),
+                                headers: {
+                                    Authorization: 'Basic ' + encodedClientIdSecret,
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                            });
+
+                            if (result.data && result.data.access_token) {
+                                await prisma.connections.update({
+                                    where: {
+                                        id: connection.id,
+                                    },
+                                    data: {
+                                        tp_access_token: result.data.access_token,
+                                        tp_refresh_token: result.data.refresh_token,
+                                    },
+                                });
+                            } else {
+                                logInfo('Xero connection could not be refreshed', result);
+                            }
+                        } else if (connection.tp_id === TP_ID.quickbooks) {
+                            const url = `https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer`;
+                            const formData = {
+                                grant_type: 'refresh_token',
+                                refresh_token: connection.tp_refresh_token,
+                            };
+                            const headerData = {
+                                client_id: connection.app_client_id || config.QUICKBOOKS_CLIENT_ID,
+                                client_secret: connection.app_client_secret || config.QUICKBOOKS_CLIENT_SECRET,
+                            };
+
+                            const encodedClientIdSecret = Buffer.from(
+                                headerData.client_id + ':' + headerData.client_secret,
+                            ).toString('base64');
+
+                            const result = await axios({
+                                method: 'post',
+                                url: url,
+                                data: qs.stringify(formData),
+                                headers: {
+                                    Authorization: 'Basic ' + encodedClientIdSecret,
+                                    Accept: 'application/json',
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                            });
+
+                            if (result.data && result.data.access_token) {
+                                await prisma.connections.update({
+                                    where: {
+                                        id: connection.id,
+                                    },
+                                    data: {
+                                        tp_access_token: result.data.access_token,
+                                        tp_refresh_token: result.data.refresh_token,
+                                    },
+                                });
+                            } else {
+                                logInfo('quickbooks connection could not be refreshed', result);
+                            }
+                        }
+                    } catch (error: any) {
+                        logError(error.response?.data);
+                        console.error('Could not refresh token', connection.t_id, error.response?.data);
+                    }
+                }
+            }
+        } catch (error: any) {
+            logError(error);
+            console.error('Could not update db', error.response?.data);
+        }
+        return { status: 'ok', message: 'Ticket services tokens refreshed' };
+    }
     async createAccountOnClerkUserCreation(webhookData: any, webhookEventType: string) {
         let response;
         logInfo('webhookData', webhookData, webhookEventType);
-        if (webhookData && ['user.created'].includes(webhookEventType)) {
-            try {
-                const userEmail = webhookData.email_addresses[0].email_address;
-                let skipWaitlist = true;
-                let userDomain = userEmail.split('@').pop();
-                let workspaceName = userDomain.charAt(0).toUpperCase() + userDomain.slice(1) + "'s Workspace";
-                if (!isWorkEmail(userEmail)) {
-                    // make the personal email the unique domain.
-                    workspaceName = 'Personal Workspace';
-                    userDomain = userEmail;
-                }
-                if (config.WHITE_LISTED_DOMAINS?.includes(userDomain)) {
-                    skipWaitlist = true;
-                }
-                // Create account only if an account does not exist for this user's domain.
-                const accountId = 'acc_' + uuidv4();
-                const privateTokenDev = 'sk_test_' + uuidv4();
-                const publicTokenDev = 'pk_test_' + uuidv4();
-                const privateTokenProd = 'sk_live_' + uuidv4();
-                const publicTokenProd = 'pk_live_' + uuidv4();
-                const account = await prisma.accounts.upsert({
-                    where: {
-                        domain: userDomain,
-                    },
-                    update: {},
-                    create: {
-                        id: accountId,
-                        private_token: privateTokenProd,
-                        public_token: publicTokenProd,
-                        tenant_count: 0,
-                        domain: userDomain,
-                        skipWaitlist: skipWaitlist,
-                        workspaceName: workspaceName,
-                        environments: {
-                            createMany: {
-                                data: [
-                                    {
-                                        id: `${accountId}_${ENV.development}`,
-                                        env: ENV.development,
-                                        private_token: privateTokenDev,
-                                        public_token: publicTokenDev,
-                                    },
-                                    {
-                                        id: `${accountId}_${ENV.production}`,
-                                        env: ENV.production,
-                                        private_token: privateTokenProd,
-                                        public_token: publicTokenProd,
-                                    },
-                                ],
-                            },
+        try {
+            const userEmail = webhookData.email_addresses[0].email_address;
+            let skipWaitlist = true;
+            let userDomain = userEmail.split('@').pop();
+            let workspaceName = userDomain.charAt(0).toUpperCase() + userDomain.slice(1) + "'s Workspace";
+            if (!isWorkEmail(userEmail)) {
+                // make the personal email the unique domain.
+                workspaceName = 'Personal Workspace';
+                userDomain = userEmail;
+            }
+            if (config.WHITE_LISTED_DOMAINS?.includes(userDomain)) {
+                skipWaitlist = true;
+            }
+            // Create account only if an account does not exist for this user's domain.
+            const accountId = 'acc_' + uuidv4();
+            const privateTokenDev = 'sk_test_' + uuidv4();
+            const publicTokenDev = 'pk_test_' + uuidv4();
+            const privateTokenProd = 'sk_live_' + uuidv4();
+            const publicTokenProd = 'pk_live_' + uuidv4();
+            const account = await prisma.accounts.upsert({
+                where: {
+                    domain: userDomain,
+                },
+                update: {},
+                create: {
+                    id: accountId,
+                    private_token: privateTokenProd,
+                    public_token: publicTokenProd,
+                    tenant_count: 0,
+                    domain: userDomain,
+                    skipWaitlist: skipWaitlist,
+                    workspaceName: workspaceName,
+                    environments: {
+                        createMany: {
+                            data: [
+                                {
+                                    id: `${accountId}_${ENV.development}`,
+                                    env: ENV.development,
+                                    private_token: privateTokenDev,
+                                    public_token: publicTokenDev,
+                                },
+                                {
+                                    id: `${accountId}_${ENV.production}`,
+                                    env: ENV.production,
+                                    private_token: privateTokenProd,
+                                    public_token: publicTokenProd,
+                                },
+                            ],
                         },
                     },
-                    include: { environments: true },
-                });
-                // Create Svix application for this account if it doesn't exist.
-                await config.svix?.application.getOrCreate({
-                    name: accountId,
-                    uid: accountId,
-                });
-                // Create user.
-                await prisma.users.create({
-                    data: {
-                        id: webhookData.id,
+                },
+                include: { environments: true },
+            });
+            // Create user.
+            await prisma.users.create({
+                data: {
+                    id: webhookData.id,
+                    email: userEmail,
+                    domain: userDomain,
+                    accountId: account.id,
+                },
+            });
+            // Send onboarding campaign email
+            try {
+                await axios({
+                    method: 'post',
+                    url: 'https://app.loops.so/api/v1/transactional',
+                    data: JSON.stringify({
+                        transactionalId: config.LOOPS_ONBOARDING_TXN_ID,
                         email: userEmail,
-                        domain: userDomain,
-                        accountId: account.id,
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${config.LOOPS_API_KEY}`,
                     },
                 });
-                // Send onboarding campaign email
-                try {
+                logInfo('Sent onboarding email');
+                // Alert on slack if configured.
+                if (config.SLACK_URL) {
                     await axios({
                         method: 'post',
-                        url: 'https://app.loops.so/api/v1/transactional',
+                        url: config.SLACK_URL,
                         data: JSON.stringify({
-                            transactionalId: config.LOOPS_ONBOARDING_TXN_ID,
-                            email: userEmail,
+                            text: `Woot! :zap: ${userEmail} created an account on Revert!\n\n`,
                         }),
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${config.LOOPS_API_KEY}`,
-                        },
                     });
-                    logInfo('Sent onboarding email');
-                    // Alert on slack if configured.
-                    if (config.SLACK_URL) {
-                        await axios({
-                            method: 'post',
-                            url: config.SLACK_URL,
-                            data: JSON.stringify({
-                                text: `Woot! :zap: ${userEmail} created an account on Revert!\n\n`,
-                            }),
-                        });
-                    }
-                } catch (error: any) {
-                    logError(error);
                 }
-                response = { status: 'ok' };
-            } catch (e: any) {
-                logError(e);
-                console.error(e);
-                response = { error: e };
+            } catch (error: any) {
+                logError(error);
             }
+            response = { status: 'ok' };
+        } catch (e: any) {
+            logError(e);
+            console.error(e);
+            response = { error: e };
         }
         return response;
     }
@@ -565,6 +716,7 @@ class AuthService {
                 ...(scopes.filter(Boolean).length && { scope: scopes }),
                 ...(appConfig?.bot_token && { app_config: { bot_token: appConfig.bot_token } }),
                 ...(appConfig?.org_url && { app_config: { org_url: appConfig.org_url } }),
+                ...(appConfig?.env && { app_config: { env: appConfig.env } }),
             },
         });
         if (!account) {

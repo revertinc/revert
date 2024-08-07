@@ -12,6 +12,7 @@ import { unifyObject, disunifyObject } from '../../helpers/crm/transform';
 import { UnifiedDeal } from '../../models/unified';
 import { PipedriveDeal, PipedrivePagination } from '../../constants/pipedrive';
 import { StandardObjects } from '../../constants/common';
+import { getAssociationObjects, isValidAssociationTypeRequestedByUser } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.deal;
 
@@ -26,13 +27,15 @@ const dealService = new DealService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET DEAL',
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    dealId
+                    dealId,
                 );
 
                 switch (thirdPartyId) {
@@ -48,16 +51,37 @@ const dealService = new DealService(
                             'hs_is_closed_won',
                             'hs_createdate',
                         ];
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item),
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
+                        );
+
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?properties=${formattedFields}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
+
                         let deal: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/deals/${dealId}?properties=${formattedFields}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
+
                         deal = ([deal.data] as any[])?.[0];
+                        const associatedData = await getAssociationObjects(
+                            deal?.associations,
+                            thirdPartyToken,
+                            thirdPartyId,
+                            connection,
+                            account,
+                            invalidAssociations,
+                        );
                         deal = await unifyObject<any, UnifiedDeal>({
-                            obj: { ...deal, ...deal?.properties },
+                            obj: { ...deal, ...deal?.properties, associations: associatedData },
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -110,7 +134,7 @@ const dealService = new DealService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const deal = result.data;
                         res.send({
@@ -191,12 +215,14 @@ const dealService = new DealService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET ALL DEAL',
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -215,9 +241,21 @@ const dealService = new DealService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item),
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
+                        );
+
+                        const url =
+                            `https://api.hubapi.com/crm/v3/objects/deals?properties=${formattedFields}${pagingString}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
+
                         let deals: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/crm/v3/objects/deals?properties=${formattedFields}&${pagingString}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
@@ -225,16 +263,23 @@ const dealService = new DealService(
                         const nextCursor = deals.data?.paging?.next?.after || undefined;
                         deals = deals.data.results as any[];
                         deals = await Promise.all(
-                            deals?.map(
-                                async (l: any) =>
-                                    await unifyObject<any, UnifiedDeal>({
-                                        obj: { ...l, ...l?.properties },
-                                        tpId: thirdPartyId,
-                                        objType,
-                                        tenantSchemaMappingId: connection.schema_mapping_id,
-                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                            deals?.map(async (l: any) => {
+                                const associatedData = await getAssociationObjects(
+                                    l?.associations,
+                                    thirdPartyToken,
+                                    thirdPartyId,
+                                    connection,
+                                    account,
+                                    invalidAssociations,
+                                );
+                                return await unifyObject<any, UnifiedDeal>({
+                                    obj: { ...l, ...l?.properties, associations: associatedData },
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
                         );
                         res.send({
                             status: 'ok',
@@ -267,8 +312,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: deals });
                         break;
@@ -312,8 +357,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: deals });
                         break;
@@ -328,7 +373,7 @@ const dealService = new DealService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
@@ -342,8 +387,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedDeals });
                         break;
@@ -371,8 +416,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         let cursorVal = parseInt(String(cursor));
@@ -412,8 +457,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({
                             status: 'ok',
@@ -511,7 +556,7 @@ const dealService = new DealService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         res.send({
                             status: 'ok',
@@ -534,7 +579,7 @@ const dealService = new DealService(
                             });
 
                             const validStatus = status.data.data.filter(
-                                (l: any) => l.label.toLowerCase() === req.body.stage.toLowerCase()
+                                (l: any) => l.label.toLowerCase() === req.body.stage.toLowerCase(),
                             );
 
                             if (validStatus.length === 0) {
@@ -664,7 +709,7 @@ const dealService = new DealService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         res.send({
                             status: 'ok',
@@ -687,7 +732,7 @@ const dealService = new DealService(
                             });
 
                             const validStatus = status.data.data.filter(
-                                (l: any) => l.label.toLowerCase() === req.body.stage.toLowerCase()
+                                (l: any) => l.label.toLowerCase() === req.body.stage.toLowerCase(),
                             );
 
                             if (validStatus.length === 0) {
@@ -768,7 +813,7 @@ const dealService = new DealService(
                     tenantId,
                     thirdPartyId,
                     searchCriteria,
-                    fields
+                    fields,
                 );
 
                 switch (thirdPartyId) {
@@ -813,8 +858,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: undefined, results: deals });
                         break;
@@ -843,8 +888,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: deals });
                         break;
@@ -868,8 +913,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', results: deals });
                         break;
@@ -889,7 +934,7 @@ const dealService = new DealService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const nextCursor = String(result.data?.additional_data?.pagination.next_start) || undefined;
                         const prevCursor = undefined;
@@ -903,8 +948,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedDeals });
                         break;
@@ -936,8 +981,8 @@ const dealService = new DealService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -962,7 +1007,7 @@ const dealService = new DealService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { dealService };

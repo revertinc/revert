@@ -25,7 +25,7 @@ const collectionServiceTicket = new CollectionService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -58,7 +58,7 @@ const collectionServiceTicket = new CollectionService(
                             result = result.nodes;
                         } else {
                             throw new Error(
-                                "To use this endpoint, please specify the type of collection you're working with. Valid options include: 'list', 'folder', 'space', or 'team'."
+                                "To use this endpoint, please specify the type of collection you're working with. Valid options include: 'list', 'folder', 'space', or 'team'.",
                             );
                         }
 
@@ -88,7 +88,7 @@ const collectionServiceTicket = new CollectionService(
                         if (parsedFields && parsedFields.collection_type === 'list') {
                             if (!parsedFields.folderId) {
                                 throw new Error(
-                                    "To retrieve all lists in Clickup, folderId is required. Please set collection_type to 'folder' to verify."
+                                    "To retrieve all lists in Clickup, folderId is required. Please set collection_type to 'folder' to verify.",
                                 );
                             }
                             result = await axios({
@@ -108,7 +108,7 @@ const collectionServiceTicket = new CollectionService(
                         } else if (parsedFields && parsedFields.collection_type === 'folder') {
                             if (!parsedFields.spaceId) {
                                 throw new Error(
-                                    "To retrieve all folders in Clickup, spaceId is required. Please set collection_type to 'space' to verify."
+                                    "To retrieve all folders in Clickup, spaceId is required. Please set collection_type to 'space' to verify.",
                                 );
                             }
                             result = await axios({
@@ -128,7 +128,7 @@ const collectionServiceTicket = new CollectionService(
                         } else if (parsedFields && parsedFields.collection_type === 'space') {
                             if (!parsedFields.teamId) {
                                 throw new Error(
-                                    "To retrieve all folders in Clickup, teamId is required. Please set collection_type to 'team' to verify."
+                                    "To retrieve all folders in Clickup, teamId is required. Please set collection_type to 'team' to verify.",
                                 );
                             }
                             result = await axios({
@@ -162,7 +162,7 @@ const collectionServiceTicket = new CollectionService(
                             result = result.data.teams;
                         } else {
                             throw new Error(
-                                "To use this endpoint, please specify the type of collection you're working with. Valid options include: 'list', 'folder', 'space', or 'team'."
+                                "To use this endpoint, please specify the type of collection you're working with. Valid options include: 'list', 'folder', 'space', or 'team'.",
                             );
                         }
 
@@ -249,7 +249,7 @@ const collectionServiceTicket = new CollectionService(
                         if (parsedFields && parsedFields.collection_type === 'groups') {
                             if (!parsedFields.workspace) {
                                 throw new Error(
-                                    "To retrieve all groups in a workspace in Bitbucket, workspace is required. Please set collection_type to 'groups' to verify."
+                                    "To retrieve all groups in a workspace in Bitbucket, workspace is required. Please set collection_type to 'groups' to verify.",
                                 );
                             }
                             const groups = await axios({
@@ -263,16 +263,16 @@ const collectionServiceTicket = new CollectionService(
                             });
                             result = groups.data;
 
-                             return  res.send({
-                            status: 'ok',
-                            next: undefined,
-                            previous: undefined,
-                            results: result,
-                        });
+                            return res.send({
+                                status: 'ok',
+                                next: undefined,
+                                previous: undefined,
+                                results: result,
+                            });
                         } else if (parsedFields && parsedFields.collection_type === 'repositories') {
                             if (!parsedFields.workspace) {
                                 throw new Error(
-                                    "To retrieve all repositories in a workspace in Bitbucket, workspace is required. Please set collection_type to 'repositories' to verify."
+                                    "To retrieve all repositories in a workspace in Bitbucket, workspace is required. Please set collection_type to 'repositories' to verify.",
                                 );
                             }
                             const projects = await axios({
@@ -285,19 +285,105 @@ const collectionServiceTicket = new CollectionService(
                             });
                             result = projects.data;
 
-                             const pageNumber = result.next ? (pageSize ? (pageSize + 1).toString() : '1') : undefined;
-                      return  res.send({
-                            status: 'ok',
-                            next: pageNumber,
-                            previous: undefined,
-                            results: result.values,
-                        });
+                            const pageNumber = result.next ? (pageSize ? (pageSize + 1).toString() : '1') : undefined;
+                            return res.send({
+                                status: 'ok',
+                                next: pageNumber,
+                                previous: undefined,
+                                results: result.values,
+                            });
                         } else {
                             throw new Error(
-                                "To use this endpoint, please specify the type of collection you're working with. Valid options include: 'groups', 'repositories'."
+                                "To use this endpoint, please specify the type of collection you're working with. Valid options include: 'groups', 'repositories'.",
                             );
                         }
-                       
+
+                        break;
+                    }
+                    case TP_ID.github: {
+                        let parsedFields: any = fields ? JSON.parse(fields) : undefined;
+                        let result: any;
+                        let pagingString = `${pageSize ? `&per_page=${pageSize}` : ''}${
+                            cursor ? `&page=${cursor}` : ''
+                        }`;
+                        if (parsedFields && parsedFields.collection_type === 'projects') {
+                            if (!parsedFields.owner || !parsedFields.repo) {
+                                throw new Error(
+                                    'To retrieve all projects in a repository in GitHub, "owner" and "repo" are required in the "fields" parameter.',
+                                );
+                            }
+                            const projects = await axios({
+                                method: 'get',
+                                url: `https://api.github.com/repos/${parsedFields.owner}/${parsedFields.repo}/projects?${pagingString}`,
+                                headers: {
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                    Accept: 'application/vnd.github+json',
+                                },
+                            });
+                            result = projects.data;
+
+                            const linkHeader = projects.headers.link;
+                            let nextCursor, previousCursor;
+                            if (linkHeader) {
+                                const links = linkHeader.split(',');
+
+                                links?.forEach((link: any) => {
+                                    if (link.includes('rel="next"')) {
+                                        nextCursor = Number(link.match(/[&?]page=(\d+)/)[1]);
+                                    } else if (link.includes('rel="prev"')) {
+                                        previousCursor = Number(link.match(/[&?]page=(\d+)/)[1]);
+                                    }
+                                });
+                            }
+
+                            return res.send({
+                                status: 'ok',
+                                next: nextCursor ? String(nextCursor) : undefined,
+                                previous: previousCursor !== undefined ? String(previousCursor) : undefined,
+                                results: result,
+                            });
+                        } else if (parsedFields && parsedFields.collection_type === 'repositories') {
+                            if (!parsedFields.org) {
+                                throw new Error(
+                                    'To retrieve all repositories of an organisation in GitHub, "org" is required in the "fields" parameter.',
+                                );
+                            }
+                            const repositories = await axios({
+                                method: 'get',
+                                url: `https://api.github.com/orgs/${parsedFields.org}/repos?${pagingString}`,
+                                headers: {
+                                    Accept: 'application/vnd.github+json',
+                                    Authorization: `Bearer ${thirdPartyToken}`,
+                                },
+                            });
+                            result = repositories.data;
+
+                            const linkHeader = repositories.headers.link;
+                            let nextCursor, previousCursor;
+                            if (linkHeader) {
+                                const links = linkHeader.split(',');
+
+                                links?.forEach((link: any) => {
+                                    if (link.includes('rel="next"')) {
+                                        nextCursor = Number(link.match(/[&?]page=(\d+)/)[1]);
+                                    } else if (link.includes('rel="prev"')) {
+                                        previousCursor = Number(link.match(/[&?]page=(\d+)/)[1]);
+                                    }
+                                });
+                            }
+
+                            return res.send({
+                                status: 'ok',
+                                next: nextCursor ? String(nextCursor) : undefined,
+                                previous: previousCursor !== undefined ? String(previousCursor) : undefined,
+                                results: result,
+                            });
+                        } else {
+                            throw new Error(
+                                "To use this endpoint, please specify the type of collection you're working with. Valid options include: 'projects', 'repositories'.",
+                            );
+                        }
+
                         break;
                     }
                     default: {
@@ -314,7 +400,7 @@ const collectionServiceTicket = new CollectionService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { collectionServiceTicket };

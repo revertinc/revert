@@ -22,7 +22,7 @@ class SfdcAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
-        redirectUrl
+        redirectUrl,
     }: IntegrationAuthProps) {
         try {
             // Handle the received code
@@ -80,7 +80,7 @@ class SfdcAuthHandler extends BaseOAuthHandler {
                     tp_account_url: info.data.urls['custom_domain'],
                 },
             });
-            sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.sfdc, result.data.access_token, info.data.email);
+            await sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.sfdc, result.data.access_token, info.data.email);
 
             return processOAuthResult({
                 status: true,
@@ -90,7 +90,7 @@ class SfdcAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data.email,
-                redirectUrl
+                redirectUrl,
             });
         } catch (error: any) {
             console.log('OAuthERROR', error);
@@ -102,7 +102,7 @@ class SfdcAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
-                redirectUrl
+                redirectUrl,
             });
         }
     }

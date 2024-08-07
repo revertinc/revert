@@ -4,6 +4,8 @@ import {
     ChatStandardObjects,
     StandardObjects,
     TicketStandardObjects,
+    AccountingStandardObjects,
+    AtsStandardObjects,
     rootSchemaMappingId,
 } from '../../../constants/common';
 import { logDebug } from '../../logger';
@@ -19,7 +21,13 @@ export const transformFieldMappingToModel = async ({
 }: {
     obj: any;
     tpId: TP_ID;
-    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects;
+    objType:
+        | StandardObjects
+        | ChatStandardObjects
+        | TicketStandardObjects
+        | AtsStandardObjects
+        | AccountingStandardObjects;
+
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }) => {
@@ -57,8 +65,9 @@ export const transformFieldMappingToModel = async ({
                                   .filter((a: any) => a.objectName === objType)
                                   .map((a: any) => a.fieldName)
                                   .includes(field)
-                            : accountFieldMappingConfig?.allow_connection_override_custom_fields))
+                            : accountFieldMappingConfig?.allow_connection_override_custom_fields)),
             ) || rootSchema?.fieldMappings?.find((r) => r?.target_field_name === field);
+
         const transformedKey = fieldMapping?.source_field_name;
         if (transformedKey) {
             if (fieldMapping.is_standard_field) {
@@ -85,7 +94,12 @@ export const transformModelToFieldMapping = async ({
 }: {
     unifiedObj: any;
     tpId: TP_ID;
-    objType: StandardObjects | ChatStandardObjects | TicketStandardObjects;
+    objType:
+        | StandardObjects
+        | ChatStandardObjects
+        | TicketStandardObjects
+        | AtsStandardObjects
+        | AccountingStandardObjects;
     tenantSchemaMappingId?: string;
     accountFieldMappingConfig?: accountFieldMappingConfig;
 }) => {
@@ -111,7 +125,7 @@ export const transformModelToFieldMapping = async ({
                               .filter((a: any) => a.objectName === objType)
                               .map((a: any) => a.fieldName)
                               .includes(key)
-                        : accountFieldMappingConfig?.allow_connection_override_custom_fields))
+                        : accountFieldMappingConfig?.allow_connection_override_custom_fields)),
         );
         const rootFieldMapping = rootSchema?.fieldMappings?.filter((r) => r?.target_field_name === key);
         const crmKey = tenantFieldMapping?.source_field_name;

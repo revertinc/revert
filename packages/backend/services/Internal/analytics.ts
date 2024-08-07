@@ -48,7 +48,7 @@ const analyticsService = new AnalyticsService({
                 distinct: ['tp_id'],
             });
 
-            let connectedApps = [];
+            let connectedApps: any = [];
             connectedApps = connections.map((connection: any) => {
                 let appName: any;
                 let imageSrc: any;

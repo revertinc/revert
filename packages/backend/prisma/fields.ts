@@ -1,5 +1,11 @@
 import { TP_ID } from '@prisma/client';
-import { ChatStandardObjects, StandardObjects, TicketStandardObjects } from '../constants/common';
+import {
+    AtsStandardObjects,
+    ChatStandardObjects,
+    StandardObjects,
+    TicketStandardObjects,
+    AccountingStandardObjects,
+} from '../constants/common';
 
 // root schema mapping
 export const allFields = {
@@ -931,6 +937,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'id',
                 [TP_ID.trello]: 'id',
                 [TP_ID.bitbucket]: 'id',
+                [TP_ID.github]: 'id',
             },
             target_field_name: 'id',
         },
@@ -941,6 +948,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'id',
                 [TP_ID.trello]: 'id',
                 [TP_ID.bitbucket]: 'id',
+                [TP_ID.github]: 'id',
             },
             target_field_name: 'remoteId',
         },
@@ -951,6 +959,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'summary',
                 [TP_ID.trello]: 'name',
                 [TP_ID.bitbucket]: 'title',
+                [TP_ID.github]: 'title',
             },
             target_field_name: 'name',
         },
@@ -961,6 +970,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'assignee',
                 [TP_ID.trello]: 'idMembers',
                 [TP_ID.bitbucket]: 'assignee',
+                [TP_ID.github]: 'assignees',
             },
             target_field_name: 'assignees',
         },
@@ -971,6 +981,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'description',
                 [TP_ID.trello]: 'desc',
                 [TP_ID.bitbucket]: 'content.raw',
+                [TP_ID.github]: 'body',
             },
             target_field_name: 'description',
         },
@@ -981,6 +992,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'status.name',
                 [TP_ID.trello]: undefined,
                 [TP_ID.bitbucket]: 'state',
+                [TP_ID.github]: 'state',
             },
             target_field_name: 'status',
         },
@@ -991,6 +1003,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'priority.name',
                 [TP_ID.trello]: undefined,
                 [TP_ID.bitbucket]: 'priority',
+                [TP_ID.github]: undefined,
             },
             target_field_name: 'priority',
         },
@@ -1001,6 +1014,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'creator.accountId',
                 [TP_ID.trello]: undefined,
                 [TP_ID.bitbucket]: 'reporter.account_id',
+                [TP_ID.github]: 'user.id',
             },
             target_field_name: 'creatorId',
         },
@@ -1011,6 +1025,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'created',
                 [TP_ID.trello]: undefined,
                 [TP_ID.bitbucket]: 'created_on',
+                [TP_ID.github]: 'created_at',
             },
             target_field_name: 'createdTimeStamp',
         },
@@ -1021,6 +1036,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'updated',
                 [TP_ID.trello]: 'dateLastActivity',
                 [TP_ID.bitbucket]: 'updated_on',
+                [TP_ID.github]: 'updated_at',
             },
             target_field_name: 'updatedTimeStamp',
         },
@@ -1031,6 +1047,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'duedate',
                 [TP_ID.trello]: 'due',
                 [TP_ID.bitbucket]: undefined,
+                [TP_ID.github]: undefined,
             },
             target_field_name: 'dueDate',
         },
@@ -1041,6 +1058,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: undefined,
                 [TP_ID.trello]: undefined,
                 [TP_ID.bitbucket]: undefined,
+                [TP_ID.github]: 'closed_at',
             },
             target_field_name: 'completedDate',
         },
@@ -1051,6 +1069,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'parent.id',
                 [TP_ID.trello]: undefined,
                 [TP_ID.bitbucket]: undefined,
+                [TP_ID.github]: undefined,
             },
             target_field_name: 'parentId',
         },
@@ -1076,6 +1095,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'accountId',
                 [TP_ID.trello]: 'id',
                 [TP_ID.bitbucket]: 'account_id',
+                [TP_ID.github]: 'id',
             },
             target_field_name: 'id',
         },
@@ -1086,6 +1106,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'accountId',
                 [TP_ID.trello]: 'id',
                 [TP_ID.bitbucket]: 'account_id',
+                [TP_ID.github]: 'id',
             },
             target_field_name: 'remoteId',
         },
@@ -1096,6 +1117,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'emailAddress',
                 [TP_ID.trello]: 'email',
                 [TP_ID.bitbucket]: undefined,
+                [TP_ID.github]: 'email',
             },
             target_field_name: 'email',
         },
@@ -1106,6 +1128,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'displayName',
                 [TP_ID.trello]: 'fullName',
                 [TP_ID.bitbucket]: 'display_name',
+                [TP_ID.github]: 'name',
             },
             target_field_name: 'name',
         },
@@ -1116,6 +1139,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'active',
                 [TP_ID.trello]: undefined,
                 [TP_ID.bitbucket]: 'account_status',
+                [TP_ID.github]: undefined,
             },
             target_field_name: 'isActive',
         },
@@ -1126,6 +1150,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'avatarUrls."48x48"',
                 [TP_ID.trello]: 'avatarUrl',
                 [TP_ID.bitbucket]: 'links.avatar',
+                [TP_ID.github]: 'avatar_url',
             },
             target_field_name: 'avatar',
         },
@@ -1136,6 +1161,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: undefined,
                 [TP_ID.trello]: undefined,
                 [TP_ID.bitbucket]: 'created_on',
+                [TP_ID.github]: 'created_at',
             },
             target_field_name: 'createdTimeStamp',
         },
@@ -1146,6 +1172,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: undefined,
                 [TP_ID.trello]: undefined,
                 [TP_ID.bitbucket]: undefined,
+                [TP_ID.github]: 'updated_at',
             },
             target_field_name: 'updatedTimeStamp',
         },
@@ -1156,6 +1183,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: undefined,
                 [TP_ID.trello]: undefined,
                 [TP_ID.bitbucket]: 'is_staff',
+                [TP_ID.github]: 'site_admin',
             },
             target_field_name: 'isAdmin',
         },
@@ -1168,6 +1196,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'id',
                 [TP_ID.trello]: 'id',
                 [TP_ID.bitbucket]: 'id',
+                [TP_ID.github]: 'id',
             },
             target_field_name: 'id',
         },
@@ -1178,6 +1207,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'id',
                 [TP_ID.trello]: 'id',
                 [TP_ID.bitbucket]: 'id',
+                [TP_ID.github]: 'id',
             },
             target_field_name: 'remoteId',
         },
@@ -1188,6 +1218,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'body',
                 [TP_ID.trello]: 'data.text',
                 [TP_ID.bitbucket]: 'content.raw',
+                [TP_ID.github]: 'body',
             },
             target_field_name: 'body',
         },
@@ -1198,6 +1229,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'author.accountId',
                 [TP_ID.trello]: 'idMemberCreator',
                 [TP_ID.bitbucket]: 'user.account_id',
+                [TP_ID.github]: 'user.id',
             },
             target_field_name: 'createdBy',
         },
@@ -1208,6 +1240,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'created',
                 [TP_ID.trello]: 'date',
                 [TP_ID.bitbucket]: 'created_on',
+                [TP_ID.github]: 'created_at',
             },
             target_field_name: 'createdTimestamp',
         },
@@ -1218,6 +1251,7 @@ export const ticketingFields = {
                 [TP_ID.jira]: 'updated',
                 [TP_ID.trello]: 'data.dateLastEdited',
                 [TP_ID.bitbucket]: 'updated_on',
+                [TP_ID.github]: 'updated_at',
             },
             target_field_name: 'updatedTimeStamp',
         },
@@ -1228,8 +1262,906 @@ export const ticketingFields = {
                 [TP_ID.jira]: undefined,
                 [TP_ID.trello]: undefined,
                 [TP_ID.bitbucket]: undefined,
+                [TP_ID.github]: undefined,
             },
             target_field_name: 'parentId',
+        },
+    ],
+};
+
+export const atsFields = {
+    [AtsStandardObjects.candidate]: [
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'id',
+                [TP_ID.lever]: 'id',
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'first_name',
+                [TP_ID.lever]: 'name',
+            },
+            target_field_name: 'first_name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'last_name',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'last_name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'company',
+                [TP_ID.lever]: 'headline',
+            },
+            target_field_name: 'company',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'title',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'title',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'created_at',
+                [TP_ID.lever]: 'createdAt',
+            },
+            target_field_name: 'created_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'updated_at',
+                [TP_ID.lever]: 'updatedAt',
+            },
+            target_field_name: 'updated_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'last_activity',
+                [TP_ID.lever]: 'lastInteractionAt',
+            },
+            target_field_name: 'last_activity',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'is_private',
+                [TP_ID.lever]: 'confidentiality',
+            },
+            target_field_name: 'is_private',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'photo_url',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'photo_url',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'application_ids',
+                [TP_ID.lever]: 'applicationIds',
+            },
+            target_field_name: 'application_ids',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'can_email',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'can_email',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'tags',
+                [TP_ID.lever]: 'tags',
+            },
+            target_field_name: 'tags',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'attachments',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'attachments',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'phone_numbers',
+                [TP_ID.lever]: 'phones',
+            },
+            target_field_name: 'phone_numbers',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'addresses',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'addresses',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'email_addresses',
+                [TP_ID.lever]: 'emails',
+            },
+            target_field_name: 'email_addresses',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'website_addresses',
+                [TP_ID.lever]: 'links',
+            },
+            target_field_name: 'website_addresses',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'social_media_addresses',
+                [TP_ID.lever]: 'links',
+            },
+            target_field_name: 'social_media_addresses',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'recruiter.id',
+                [TP_ID.lever]: 'owner.id',
+            },
+            target_field_name: 'recruiter.id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'recruiter.first_name',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'recruiter.first_name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'recruiter.last_name',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'recruiter.last_name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'recruiter.name',
+                [TP_ID.lever]: 'owner.name',
+            },
+            target_field_name: 'recruiter.name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'recruiter.employee_id',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'recruiter.employee_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'recruiter.responsible',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'recruiter.responsible',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'coordinator.id',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'coordinator.id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'coordinator.first_name',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'coordinator.first_name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'coordinator.last_name',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'coordinator.last_name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'coordinator.name',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'coordinator.name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'coordinator.employee_id',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'coordinator.employee_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'coordinator.responsible',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'coordinator.responsible',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'applications',
+                [TP_ID.lever]: 'applications',
+            },
+            target_field_name: 'applications',
+        },
+    ],
+
+    [AtsStandardObjects.job]: [
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'id',
+                [TP_ID.lever]: 'id',
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'name',
+                [TP_ID.lever]: 'text',
+            },
+            target_field_name: 'name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'requisition_id',
+                [TP_ID.lever]: 'reqCode',
+            },
+            target_field_name: 'requisition_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'notes',
+                [TP_ID.lever]: 'content.description',
+            },
+            target_field_name: 'notes',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'confidential',
+                [TP_ID.lever]: 'confidentiality',
+            },
+            target_field_name: 'confidential',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'status',
+                [TP_ID.lever]: 'state',
+            },
+            target_field_name: 'status',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'created_at',
+                [TP_ID.lever]: 'createdAt',
+            },
+            target_field_name: 'created_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opened_at',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'opened_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'closed_at',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'closed_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'updated_at',
+                [TP_ID.lever]: 'updatedAt',
+            },
+            target_field_name: 'updated_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'is_template',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'is_template',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'copied_from_id',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'copied_from_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'departments',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'departments',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'offices',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'offices',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'openings',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'openings',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'hiring_team.hiring_managers',
+                [TP_ID.lever]: 'hiringManager',
+            },
+            target_field_name: 'hiring_team.hiring_managers',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'hiring_team.recruiters',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'hiring_team.recruiters',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'hiring_team.coordinators',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'hiring_team.coordinators',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'hiring_team.sourcers',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'hiring_team.sourcers',
+        },
+    ],
+
+    [AtsStandardObjects.offer]: [
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'id',
+                [TP_ID.lever]: 'id',
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'version',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'version',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'application_id',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'application_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'job_id',
+                [TP_ID.lever]: 'posting_id',
+            },
+            target_field_name: 'job_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'candidate_id',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'candidate_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.id',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'opening.id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.opening_id',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'opening.opening_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.status',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'opening.status',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.opened_at',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'opening.opened_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.closed_at',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'opening.closed_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.application_id',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'opening.application_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.close_reason.id',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'opening.close_reason.id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'opening.close_reason.name',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'opening.close_reason.name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'created_at',
+                [TP_ID.lever]: 'createdAt',
+            },
+            target_field_name: 'created_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'updated_at',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'updated_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'sent_at',
+                [TP_ID.lever]: 'sentAt',
+            },
+            target_field_name: 'sent_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'resolved_at',
+                [TP_ID.lever]: 'approvedAt',
+            },
+            target_field_name: 'resolved_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'starts_at',
+                [TP_ID.lever]: 'startsAt',
+            },
+            target_field_name: 'starts_at',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'status',
+                [TP_ID.lever]: 'status',
+            },
+            target_field_name: 'status',
+        },
+    ],
+
+    [AtsStandardObjects.department]: [
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'id',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'name',
+                [TP_ID.lever]: 'name',
+            },
+            target_field_name: 'name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'parent_id',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'parent_id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'parent_department_external_ids',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'parent_department_external_ids',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'child_ids',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'child_ids',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'child_department_external_ids',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'child_department_external_ids',
+        },
+        {
+            source_field_name: {
+                [TP_ID.greenhouse]: 'external_id',
+                [TP_ID.lever]: undefined,
+            },
+            target_field_name: 'external_id',
+        },
+    ],
+};
+export const accountingFields = {
+    [AccountingStandardObjects.account]: [
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'Id',
+                [TP_ID.xero]: 'AccountID',
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'domain',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'domain',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'status',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'status',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'MetaData.CreateTime',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'metadata.createTime',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'MetaData.LastUpdatedTime',
+                [TP_ID.xero]: 'UpdatedDateUTC',
+            },
+            target_field_name: 'metadata.lastUpdatedTime',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'AccountSubType',
+                [TP_ID.xero]: 'SystemAccount',
+            },
+            target_field_name: 'accountSubType',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'AccountType',
+                [TP_ID.xero]: 'SystemAccount',
+            },
+            target_field_name: 'accountType',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'Active',
+                [TP_ID.xero]: 'Status',
+            },
+            target_field_name: 'active',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'Classification',
+                [TP_ID.xero]: 'Class',
+            },
+            target_field_name: 'classification',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'CurrencyRef.name',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'currencyRef.name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'CurrencyRef.value',
+                [TP_ID.xero]: 'CurrencyCode',
+            },
+            target_field_name: 'currencyRef.value',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'CurrentBalance',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'currentBalance',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'CurrentBalanceWithSubAccounts',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'currentBalanceWithSubAccounts',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'FullyQualifiedName',
+                [TP_ID.xero]: 'Name',
+            },
+            target_field_name: 'fullyQualifiedName',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'Name',
+                [TP_ID.xero]: 'Name',
+            },
+            target_field_name: 'name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'SubAccount',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'subAccount',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'SyncToken',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'syncToken',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'sparse',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'sparse',
+        },
+    ],
+    [AccountingStandardObjects.vendor]: [
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'Id',
+                [TP_ID.xero]: 'ContactID',
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'domain',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'domain',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'status',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'status',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'MetaData.CreateTime',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'metadata.createTime',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'MetaData.LastUpdatedTime',
+                [TP_ID.xero]: 'UpdatedDateUTC',
+            },
+            target_field_name: 'metadata.lastUpdatedTime',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'DisplayName',
+                [TP_ID.xero]: 'Name',
+            },
+            target_field_name: 'displayName',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'PrintOnCheckName',
+                [TP_ID.xero]: 'Name',
+            },
+            target_field_name: 'printOnCheckName',
+        },
+    ],
+    [AccountingStandardObjects.expense]: [
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'Id',
+                [TP_ID.xero]: 'InvoiceID',
+            },
+            target_field_name: 'id',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'domain',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'domain',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'status',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'status',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'MetaData.CreateTime',
+                [TP_ID.xero]: 'DateString',
+            },
+            target_field_name: 'metadata.createTime',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'MetaData.LastUpdatedTime',
+                [TP_ID.xero]: 'UpdatedDateUTC',
+            },
+            target_field_name: 'metadata.lastUpdatedTime',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'AccountRef.value',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'accountRef.value',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'AccountRef.name',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'accountRef.name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'PaymentMethodRef.value',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'paymentMethodRef.value',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'PaymentType',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'paymentType',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'EntityRef.value',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'entityRef.value',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'EntityRef.name',
+                [TP_ID.xero]: 'Contact.Name',
+            },
+            target_field_name: 'entityRef.name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'EntityRef.type',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'entityRef.type',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'Credit',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'credit',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'TotalAmt',
+                [TP_ID.xero]: 'Total',
+            },
+            target_field_name: 'totalAmt',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'PurchaseEx.any',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'purchaseEx.any',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'sparse',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'sparse',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'SyncToken',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'syncToken',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'TxnDate',
+                [TP_ID.xero]: 'DateString',
+            },
+            target_field_name: 'txnDate',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'CurrencyRef.name',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'currencyRef.name',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'CurrencyRef.value',
+                [TP_ID.xero]: 'CurrencyCode',
+            },
+            target_field_name: 'currencyRef.value',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'PrivateNote',
+                [TP_ID.xero]: undefined,
+            },
+            target_field_name: 'privateNote',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'Line',
+                [TP_ID.xero]: 'LineItems',
+            },
+            target_field_name: 'line',
+        },
+        {
+            source_field_name: {
+                [TP_ID.quickbooks]: 'DocNumber',
+                [TP_ID.xero]: 'InvoiceNumber',
+            },
+            target_field_name: 'docNumber',
         },
     ],
 };

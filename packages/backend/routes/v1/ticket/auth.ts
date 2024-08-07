@@ -11,6 +11,7 @@ import clickup from './authHandlers/clickup';
 import trello from './authHandlers/trello';
 import bitbucket from './authHandlers/bitbucket';
 import jira from './authHandlers/jira';
+import github from './authHandlers/github';
 
 const authRouter = express.Router();
 
@@ -40,7 +41,7 @@ authRouter.get('/oauth-callback', async (req, res) => {
 
         const clientId = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_id;
         const clientSecret = account?.apps[0]?.is_revert_app ? undefined : account?.apps[0]?.app_client_secret;
-        const svixAppId = account!.accounts!.id;
+        const svixAppId = account!.id; // breaking change
         const environmentId = account?.id;
 
         const authProps = {
@@ -71,6 +72,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     return jira.handleOAuth(authProps);
                 case TP_ID.bitbucket:
                     return bitbucket.handleOAuth(authProps);
+                case TP_ID.github:
+                    return github.handleOAuth(authProps);
 
                 default:
                     return processOAuthResult({

@@ -93,7 +93,13 @@ class LinearAuthHandler extends BaseOAuthHandler {
             });
 
             // svix stuff here
-            sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.linear, result.data.access_token, info.data.viewer?.id);
+            await sendConnectionAddedEvent(
+                svixAppId,
+                tenantId,
+                TP_ID.linear,
+                result.data.access_token,
+                info.data.viewer?.id,
+            );
 
             return processOAuthResult({
                 status: true,

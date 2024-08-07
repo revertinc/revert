@@ -1,13 +1,19 @@
 import config from '../../config';
 
-export default function sendConnectionAddedEvent(
+// Warn: svixAppId is now including env that is environmentId -> ie: accoundId_environment (accountId_production)
+export default async function sendConnectionAddedEvent(
     svixAppId: string,
     tenantId: string,
     tp_id: string,
     tp_access_token: string,
-    tp_customer_id: string
+    tp_customer_id: string,
 ) {
     try {
+        const isSvixAppExist = await getSvixAccount(svixAppId);
+        if (!isSvixAppExist) {
+            return;
+        }
+
         config.svix?.message.create(svixAppId, {
             eventType: 'connection.added',
             payload: {
@@ -26,8 +32,12 @@ export default function sendConnectionAddedEvent(
     }
 }
 
-export function sendConnectionDeletedEvent(svixAppId: string, connection: any) {
+export async function sendConnectionDeletedEvent(svixAppId: string, connection: any) {
     try {
+        const isSvixAppExist = await getSvixAccount(svixAppId);
+        if (!isSvixAppExist) {
+            return;
+        }
         config.svix?.message.create(svixAppId, {
             eventType: 'connection.deleted',
             payload: {
@@ -38,5 +48,15 @@ export function sendConnectionDeletedEvent(svixAppId: string, connection: any) {
         });
     } catch (error) {
         console.error('Error sending webhook event:', error);
+    }
+}
+
+export async function getSvixAccount(svixAppId: string) {
+    try {
+        const svixAccount = await config.svix?.application.get(svixAppId);
+        return svixAccount;
+    } catch (error) {
+        // probably svixAccount doesn't exist
+        return undefined;
     }
 }

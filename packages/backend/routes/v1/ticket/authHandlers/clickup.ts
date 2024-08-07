@@ -78,7 +78,14 @@ class ClickUpAuthHandler extends BaseOAuthHandler {
                 },
             });
 
-            sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.clickup, result.data.access_token, info.data?.user?.id);
+            await sendConnectionAddedEvent(
+                svixAppId,
+                tenantId,
+                TP_ID.clickup,
+                result.data.access_token,
+                info.data?.user?.id,
+            );
+
             return processOAuthResult({
                 status: true,
                 revertPublicKey,

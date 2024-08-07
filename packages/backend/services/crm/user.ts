@@ -12,6 +12,7 @@ import { disunifyObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedUser } from '../../models/unified/user';
 import { PipedriveUser } from '../../constants/pipedrive';
 import { StandardObjects } from '../../constants/common';
+import { getAssociationObjects, isValidAssociationTypeRequestedByUser } from '../../helpers/crm/hubspot';
 
 const objType = StandardObjects.user;
 
@@ -26,13 +27,15 @@ const userService = new UserService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET USER',
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
                     thirdPartyToken,
-                    userId
+                    userId,
                 );
 
                 switch (thirdPartyId) {
@@ -45,16 +48,38 @@ const userService = new UserService(
                             'hs_object_id',
                             'phone',
                         ];
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item),
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
+                        );
+
+                        const url =
+                            `https://api.hubapi.com/settings/v3/users/${userId}?properties=${formattedFields}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
+
                         let user: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/settings/v3/users/${userId}?properties=${formattedFields}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
                         });
                         user = ([user.data] as any[])?.[0];
+
+                        const associatedData = await getAssociationObjects(
+                            user?.associations,
+                            thirdPartyToken,
+                            thirdPartyId,
+                            connection,
+                            account,
+                            invalidAssociations,
+                        );
+
                         user = await unifyObject<any, UnifiedUser>({
-                            obj: { ...user, ...user?.properties },
+                            obj: { ...user, ...user?.properties, associations: associatedData },
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -107,7 +132,7 @@ const userService = new UserService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const user = result.data;
                         res.send({
@@ -188,12 +213,14 @@ const userService = new UserService(
                 const thirdPartyId = connection.tp_id;
                 const thirdPartyToken = connection.tp_access_token;
                 const tenantId = connection.t_id;
+                const associations = req.query.associations ? req.query.associations.split(',') : [];
+
                 logInfo(
                     'Revert::GET ALL USER',
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken
+                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
@@ -209,9 +236,20 @@ const userService = new UserService(
                         const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
                             cursor ? `&after=${cursor}` : ''
                         }`;
+                        const validAssociations = [...associations].filter((item) =>
+                            isValidAssociationTypeRequestedByUser(item),
+                        );
+                        const invalidAssociations = [...associations].filter(
+                            (item) =>
+                                item !== 'undefined' && item !== 'null' && !isValidAssociationTypeRequestedByUser(item),
+                        );
+
+                        const url =
+                            `https://api.hubapi.com/settings/v3/users?properties=${formattedFields}${pagingString}` +
+                            (validAssociations.length > 0 ? `&associations=${validAssociations}` : '');
                         let users: any = await axios({
                             method: 'get',
-                            url: `https://api.hubapi.com/settings/v3/users?properties=${formattedFields}&${pagingString}`,
+                            url: url,
                             headers: {
                                 authorization: `Bearer ${thirdPartyToken}`,
                             },
@@ -219,16 +257,24 @@ const userService = new UserService(
                         const nextCursor = users.data?.paging?.next?.after || undefined;
                         users = users.data.results as any[];
                         users = await Promise.all(
-                            users?.map(
-                                async (l: any) =>
-                                    await unifyObject<any, UnifiedUser>({
-                                        obj: { ...l, ...l?.properties },
-                                        tpId: thirdPartyId,
-                                        objType,
-                                        tenantSchemaMappingId: connection.schema_mapping_id,
-                                        accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                            users?.map(async (l: any) => {
+                                const associatedData = await getAssociationObjects(
+                                    l?.associations,
+                                    thirdPartyToken,
+                                    thirdPartyId,
+                                    connection,
+                                    account,
+                                    invalidAssociations,
+                                );
+
+                                return await unifyObject<any, UnifiedUser>({
+                                    obj: { ...l, ...l?.properties, associations: associatedData },
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
                         );
                         res.send({
                             status: 'ok',
@@ -261,8 +307,8 @@ const userService = new UserService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: users });
                         break;
@@ -304,8 +350,8 @@ const userService = new UserService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: users });
                         break;
@@ -320,7 +366,7 @@ const userService = new UserService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         const nextCursor = undefined;
                         const prevCursor = undefined;
@@ -334,8 +380,8 @@ const userService = new UserService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
                         res.send({ status: 'ok', next: nextCursor, previous: prevCursor, results: unifiedUsers });
                         break;
@@ -364,8 +410,8 @@ const userService = new UserService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         let cursorVal = parseInt(String(cursor));
@@ -405,8 +451,8 @@ const userService = new UserService(
                                         objType,
                                         tenantSchemaMappingId: connection.schema_mapping_id,
                                         accountFieldMappingConfig: account.accountFieldMappingConfig,
-                                    })
-                            )
+                                    }),
+                            ),
                         );
 
                         res.send({
@@ -505,7 +551,7 @@ const userService = new UserService(
                                 headers: {
                                     Authorization: `Bearer ${thirdPartyToken}`,
                                 },
-                            }
+                            },
                         );
                         res.send({
                             status: 'ok',
@@ -556,7 +602,7 @@ const userService = new UserService(
             }
         },
     },
-    [revertAuthMiddleware(), revertTenantMiddleware()]
+    [revertAuthMiddleware(), revertTenantMiddleware()],
 );
 
 export { userService };

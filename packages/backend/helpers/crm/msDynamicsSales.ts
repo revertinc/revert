@@ -21,7 +21,7 @@ export function handleMSDynamicsSales<T extends Record<string, any>>({
             2 : High
     */
         if (obj.priority !== undefined && obj.priority !== null) {
-            let priority = null;
+            let priority: number | null = null;
             if (obj.priority === 'low') priority = 0;
             else if (obj.priority === 'normal') priority = 1;
             else if (obj.priority === 'high') priority = 2;
@@ -35,7 +35,7 @@ export function handleMSDynamicsSales<T extends Record<string, any>>({
             2 : Canceled
      */
         if (obj.status !== undefined && obj.status !== null) {
-            let status = null;
+            let status: number | null = null;
             if (obj.status === 'open') status = 0;
             else if (obj.status == 'completed') status = 1;
             else if (obj.status == 'canceled') status = 2;

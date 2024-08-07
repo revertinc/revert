@@ -1,0 +1,121 @@
+imports:
+    errors: ../common/errors.yml
+    types: ../common/types.yml
+    unified: ../common/unified.yml
+
+types:
+    GetOfferResponse:
+        properties:
+            status: types.ResponseStatus
+            result: unknown
+    GetOffersResponse:
+        properties:
+            status: types.ResponseStatus
+            next: optional<string>
+            previous: optional<string>
+            results: unknown
+    CreateOrUpdateOfferRequest: unknown
+    CreateOrUpdateOfferResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
+            result: unknown
+
+    DeleteOfferResponse:
+        properties:
+            status: types.ResponseStatus
+            message: string
+
+service:
+    base-path: /ats/offers
+    auth: false
+    headers:
+        x-revert-api-token:
+            type: string
+            docs: Your official API key for accessing revert apis.
+        x-revert-t-id:
+            type: string
+            docs: The unique customer id used when the customer linked their account.
+        x-api-version:
+            type: optional<string>
+            docs: Optional Revert API version you're using. If missing we default to the latest version of the API.
+    audiences:
+        - external
+    endpoints:
+        getOffer:
+            docs: Get details of a offer.
+            method: GET
+            path: /{id}
+            path-parameters:
+                id:
+                    type: string
+                    docs: The unique `id` of the offer.
+            request:
+                name: GetOfferRequest
+                query-parameters:
+                    fields: optional<string>
+            response: GetOfferResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        getOffers:
+            docs: Get all the offers.
+            method: GET
+            path: ''
+            request:
+                name: GetOffersRequest
+                query-parameters:
+                    fields: optional<string>
+                    pageSize: optional<string>
+                    cursor: optional<string>
+            response: GetOffersResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        createOffer:
+            docs: Create a new Offer
+            method: POST
+            path: ''
+            request:
+                name: CreateOfferRequest
+                body: CreateOrUpdateOfferRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateOfferResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        updateOffer:
+            docs: Update a Offer
+            method: PATCH
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: UpdateOfferRequest
+                body: CreateOrUpdateOfferRequest
+                query-parameters:
+                    fields: optional<string>
+            response: CreateOrUpdateOfferResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError
+        deleteOffer:
+            docs: Delete details of an Offer
+            method: DELETE
+            path: /{id}
+            path-parameters:
+                id: string
+            request:
+                name: DeleteOfferRequest
+                query-parameters:
+                    fields: optional<string>
+            response: DeleteOfferResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError
+                - errors.NotFoundError

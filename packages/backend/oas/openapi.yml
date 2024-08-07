@@ -3,6 +3,1620 @@ info:
   title: revert-api
   version: ''
 paths:
+  /accounting/accounts/{id}:
+    get:
+      description: Get details of an account
+      operationId: accounting_account_getAccount
+      tags:
+        - AccountingAccount
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingGetAccountResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update Account
+      operationId: accounting_account_updateAccount
+      tags:
+        - AccountingAccount
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingCreateOrUpdateAccountResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountingCreateOrUpdateAccountRequest'
+    delete:
+      description: Delete account
+      operationId: accounting_account_deleteAccount
+      tags:
+        - AccountingAccount
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingDeleteAccountResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /accounting/accounts:
+    get:
+      description: Get all the accounts
+      operationId: accounting_account_getAccounts
+      tags:
+        - AccountingAccount
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingGetAccountsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Post Account
+      operationId: accounting_account_createAccount
+      tags:
+        - AccountingAccount
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingCreateOrUpdateAccountResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountingCreateOrUpdateAccountRequest'
+  /accounting/expenses/{id}:
+    get:
+      description: Get details of an Expense
+      operationId: accounting_expense_getExpense
+      tags:
+        - AccountingExpense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingGetExpenseResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update Expense
+      operationId: accounting_expense_updateExpense
+      tags:
+        - AccountingExpense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingCreateOrUpdateExpenseResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountingCreateOrUpdateExpenseRequest'
+    delete:
+      description: Delete Expense
+      operationId: accounting_expense_deleteExpense
+      tags:
+        - AccountingExpense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingDeleteExpenseResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /accounting/expenses:
+    get:
+      description: Get all the expenses
+      operationId: accounting_expense_getExpenses
+      tags:
+        - AccountingExpense
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingGetExpensesResponse'
+    post:
+      description: Post Expense
+      operationId: accounting_expense_createExpense
+      tags:
+        - AccountingExpense
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingCreateOrUpdateExpenseResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountingCreateOrUpdateExpenseRequest'
+  /accounting/proxy:
+    post:
+      description: Call the native Accounting app's api for a specific connection
+      operationId: accounting_proxy_tunnel
+      tags:
+        - AccountingProxy
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingProxyResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountingPostProxyRequestBody'
+  /accounting/vendors/{id}:
+    get:
+      description: Get details of a Vendor
+      operationId: accounting_vendor_getVendor
+      tags:
+        - AccountingVendor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingGetVendorResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update Vendor
+      operationId: accounting_vendor_updateVendor
+      tags:
+        - AccountingVendor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingCreateOrUpdateVendorResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountingCreateOrUpdateVendorRequest'
+    delete:
+      description: Delete Vendor
+      operationId: accounting_vendor_deleteVendor
+      tags:
+        - AccountingVendor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingDeleteVendorResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /accounting/vendors:
+    get:
+      description: Get all the Vendors
+      operationId: accounting_vendor_getVendors
+      tags:
+        - AccountingVendor
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingGetVendorsResponse'
+    post:
+      description: Post Vendor
+      operationId: accounting_vendor_createVendor
+      tags:
+        - AccountingVendor
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountingCreateOrUpdateVendorResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountingCreateOrUpdateVendorRequest'
+  /ats/candidates/{id}:
+    get:
+      description: Get details of a candidate.
+      operationId: ats_candidate_getCandidate
+      tags:
+        - AtsCandidate
+      parameters:
+        - name: id
+          in: path
+          description: The unique `id` of the candidate.
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsGetCandidateResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update a Candidate
+      operationId: ats_candidate_updateCandidate
+      tags:
+        - AtsCandidate
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsCreateOrUpdateCandidateResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/atsCreateOrUpdateCandidateRequest'
+    delete:
+      description: Delete details of an Candidate
+      operationId: ats_candidate_deleteCandidate
+      tags:
+        - AtsCandidate
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsDeleteCandidateResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /ats/candidates:
+    get:
+      description: Get all the Candidates.
+      operationId: ats_candidate_getCandidates
+      tags:
+        - AtsCandidate
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsGetCandidatesResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Create a new Candidate
+      operationId: ats_candidate_createCandidate
+      tags:
+        - AtsCandidate
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsCreateOrUpdateCandidateResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/atsCreateOrUpdateCandidateRequest'
+  /ats/departments/{id}:
+    get:
+      description: Get details of a department.
+      operationId: ats_department_getDepartment
+      tags:
+        - AtsDepartment
+      parameters:
+        - name: id
+          in: path
+          description: The unique `id` of the department.
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsGetDepartmentResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update a Department
+      operationId: ats_department_updateDepartment
+      tags:
+        - AtsDepartment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsCreateOrUpdateDepartmentResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/atsCreateOrUpdateDepartmentRequest'
+    delete:
+      description: Delete details of an Department
+      operationId: ats_department_deleteDepartment
+      tags:
+        - AtsDepartment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsDeleteDepartmentResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /ats/departments:
+    get:
+      description: Get all the departments.
+      operationId: ats_department_getDepartments
+      tags:
+        - AtsDepartment
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsGetDepartmentsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Create a new Department
+      operationId: ats_department_createDepartment
+      tags:
+        - AtsDepartment
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsCreateOrUpdateDepartmentResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/atsCreateOrUpdateDepartmentRequest'
+  /ats/jobs/{id}:
+    get:
+      description: Get details of a job.
+      operationId: ats_job_getJob
+      tags:
+        - AtsJob
+      parameters:
+        - name: id
+          in: path
+          description: The unique `id` of the job.
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsGetJobResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update a Job
+      operationId: ats_job_updateJob
+      tags:
+        - AtsJob
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsCreateOrUpdateJobResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/atsCreateOrUpdateJobRequest'
+    delete:
+      description: Delete details of an Job
+      operationId: ats_job_deleteJob
+      tags:
+        - AtsJob
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsDeleteJobResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /ats/jobs:
+    get:
+      description: Get all the jobs.
+      operationId: ats_job_getJobs
+      tags:
+        - AtsJob
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsGetJobsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Create a new Job
+      operationId: ats_job_createJob
+      tags:
+        - AtsJob
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsCreateOrUpdateJobResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/atsCreateOrUpdateJobRequest'
+  /ats/offers/{id}:
+    get:
+      description: Get details of a offer.
+      operationId: ats_offer_getOffer
+      tags:
+        - AtsOffer
+      parameters:
+        - name: id
+          in: path
+          description: The unique `id` of the offer.
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsGetOfferResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    patch:
+      description: Update a Offer
+      operationId: ats_offer_updateOffer
+      tags:
+        - AtsOffer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsCreateOrUpdateOfferResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/atsCreateOrUpdateOfferRequest'
+    delete:
+      description: Delete details of an Offer
+      operationId: ats_offer_deleteOffer
+      tags:
+        - AtsOffer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsDeleteOfferResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /ats/offers:
+    get:
+      description: Get all the offers.
+      operationId: ats_offer_getOffers
+      tags:
+        - AtsOffer
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsGetOffersResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+    post:
+      description: Create a new Offer
+      operationId: ats_offer_createOffer
+      tags:
+        - AtsOffer
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsCreateOrUpdateOfferResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/atsCreateOrUpdateOfferRequest'
+  /ats/proxy:
+    post:
+      description: Call the native ATS api for a specific connection
+      operationId: ats_proxy_tunnel
+      tags:
+        - AtsProxy
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/atsProxyResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/atsPostProxyRequestBody'
   /chat/channels:
     get:
       description: Get all the channels
@@ -477,6 +2091,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -552,6 +2172,12 @@ paths:
         - CrmCompany
       parameters:
         - name: fields
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:
@@ -709,6 +2335,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -802,6 +2434,12 @@ paths:
             type: string
             nullable: true
         - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:
@@ -953,6 +2591,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -1040,6 +2684,12 @@ paths:
             type: string
             nullable: true
         - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:
@@ -1185,6 +2835,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -1308,6 +2964,12 @@ paths:
             type: string
             nullable: true
         - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:
@@ -1453,6 +3115,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -1540,6 +3208,12 @@ paths:
             type: string
             nullable: true
         - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:
@@ -1685,6 +3359,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -1772,6 +3452,12 @@ paths:
             type: string
             nullable: true
         - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:
@@ -2034,6 +3720,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -2121,6 +3813,12 @@ paths:
             type: string
             nullable: true
         - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:
@@ -2266,6 +3964,12 @@ paths:
           schema:
             type: string
             nullable: true
+        - name: associations
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
       responses:
         '200':
           description: ''
@@ -2311,6 +4015,12 @@ paths:
             type: string
             nullable: true
         - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+        - name: associations
           in: query
           required: false
           schema:
@@ -2788,6 +4498,125 @@ paths:
                 - userId
                 - tpId
                 - environment
+  /internal/account/svix/{id}:
+    get:
+      description: Get Svix Account
+      operationId: internal_account_getSvixAccount
+      tags:
+        - InternalAccount
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: environment
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalSvixAccountResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+  /internal/account/svix:
+    post:
+      description: Create Svix Account
+      operationId: internal_account_createSvixAccount
+      tags:
+        - InternalAccount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalSvixAccountResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                environment:
+                  type: string
+                accountId:
+                  type: string
+              required:
+                - environment
+                - accountId
+  /internal/account/svix/panel/link:
+    post:
+      description: Create Svix Account Consumer Panel MagicLink
+      operationId: internal_account_createSvixAccountMagicLink
+      tags:
+        - InternalAccount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalSvixMagicLinkResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                appId:
+                  type: string
+              required:
+                - appId
   /internal/analytics:
     post:
       description: Get Analytics of your revert account
@@ -3509,6 +5338,414 @@ paths:
                 $ref: '#/components/schemas/commonBaseError'
 components:
   schemas:
+    accountingGetAccountResponse:
+      title: accountingGetAccountResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result: {}
+      required:
+        - status
+        - result
+    accountingGetAccountsResponse:
+      title: accountingGetAccountsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results: {}
+      required:
+        - status
+        - results
+    accountingCreateOrUpdateAccountRequest:
+      title: accountingCreateOrUpdateAccountRequest
+    accountingCreateOrUpdateAccountResponse:
+      title: accountingCreateOrUpdateAccountResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    accountingDeleteAccountResponse:
+      title: accountingDeleteAccountResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+      required:
+        - status
+        - message
+    accountingGetExpenseResponse:
+      title: accountingGetExpenseResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result: {}
+      required:
+        - status
+        - result
+    accountingGetExpensesResponse:
+      title: accountingGetExpensesResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results: {}
+      required:
+        - status
+        - results
+    accountingCreateOrUpdateExpenseRequest:
+      title: accountingCreateOrUpdateExpenseRequest
+    accountingCreateOrUpdateExpenseResponse:
+      title: accountingCreateOrUpdateExpenseResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    accountingDeleteExpenseResponse:
+      title: accountingDeleteExpenseResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+      required:
+        - status
+        - message
+    accountingProxyResponse:
+      title: accountingProxyResponse
+      type: object
+      properties:
+        result: {}
+      required:
+        - result
+    accountingPostProxyRequestBody:
+      title: accountingPostProxyRequestBody
+      type: object
+      properties:
+        path:
+          type: string
+        body:
+          nullable: true
+        method:
+          type: string
+        queryParams:
+          nullable: true
+      required:
+        - path
+        - method
+    accountingGetVendorResponse:
+      title: accountingGetVendorResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result: {}
+      required:
+        - status
+        - result
+    accountingGetVendorsResponse:
+      title: accountingGetVendorsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results: {}
+      required:
+        - status
+        - results
+    accountingCreateOrUpdateVendorRequest:
+      title: accountingCreateOrUpdateVendorRequest
+    accountingCreateOrUpdateVendorResponse:
+      title: accountingCreateOrUpdateVendorResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    accountingDeleteVendorResponse:
+      title: accountingDeleteVendorResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+      required:
+        - status
+        - message
+    atsGetCandidateResponse:
+      title: atsGetCandidateResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result: {}
+      required:
+        - status
+        - result
+    atsGetCandidatesResponse:
+      title: atsGetCandidatesResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results: {}
+      required:
+        - status
+        - results
+    atsCreateOrUpdateCandidateRequest:
+      title: atsCreateOrUpdateCandidateRequest
+    atsCreateOrUpdateCandidateResponse:
+      title: atsCreateOrUpdateCandidateResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    atsDeleteCandidateResponse:
+      title: atsDeleteCandidateResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+      required:
+        - status
+        - message
+    atsGetDepartmentResponse:
+      title: atsGetDepartmentResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result: {}
+      required:
+        - status
+        - result
+    atsGetDepartmentsResponse:
+      title: atsGetDepartmentsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results: {}
+      required:
+        - status
+        - results
+    atsCreateOrUpdateDepartmentRequest:
+      title: atsCreateOrUpdateDepartmentRequest
+    atsCreateOrUpdateDepartmentResponse:
+      title: atsCreateOrUpdateDepartmentResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    atsDeleteDepartmentResponse:
+      title: atsDeleteDepartmentResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+      required:
+        - status
+        - message
+    atsGetJobResponse:
+      title: atsGetJobResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result: {}
+      required:
+        - status
+        - result
+    atsGetJobsResponse:
+      title: atsGetJobsResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results: {}
+      required:
+        - status
+        - results
+    atsCreateOrUpdateJobRequest:
+      title: atsCreateOrUpdateJobRequest
+    atsCreateOrUpdateJobResponse:
+      title: atsCreateOrUpdateJobResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    atsDeleteJobResponse:
+      title: atsDeleteJobResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+      required:
+        - status
+        - message
+    atsGetOfferResponse:
+      title: atsGetOfferResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        result: {}
+      required:
+        - status
+        - result
+    atsGetOffersResponse:
+      title: atsGetOffersResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results: {}
+      required:
+        - status
+        - results
+    atsCreateOrUpdateOfferRequest:
+      title: atsCreateOrUpdateOfferRequest
+    atsCreateOrUpdateOfferResponse:
+      title: atsCreateOrUpdateOfferResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+        result: {}
+      required:
+        - status
+        - message
+        - result
+    atsDeleteOfferResponse:
+      title: atsDeleteOfferResponse
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/commonResponseStatus'
+        message:
+          type: string
+      required:
+        - status
+        - message
+    atsProxyResponse:
+      title: atsProxyResponse
+      type: object
+      properties:
+        result: {}
+      required:
+        - result
+    atsPostProxyRequestBody:
+      title: atsPostProxyRequestBody
+      type: object
+      properties:
+        path:
+          type: string
+        body:
+          nullable: true
+        method:
+          type: string
+        queryParams:
+          nullable: true
+      required:
+        - path
+        - method
     chatGetChannelsResponse:
       title: chatGetChannelsResponse
       type: object
@@ -3928,6 +6165,23 @@ components:
         org_url:
           type: string
           nullable: true
+    commonSvixAccount:
+      title: commonSvixAccount
+      type: object
+      properties:
+        uid:
+          type: string
+          nullable: true
+        name:
+          type: string
+        rateLimit:
+          type: integer
+          nullable: true
+        id:
+          type: string
+      required:
+        - name
+        - id
     commonCommonUnifiedFields:
       title: commonCommonUnifiedFields
       type: object
@@ -5345,6 +7599,31 @@ components:
           $ref: '#/components/schemas/commonAccount'
       required:
         - account
+    internalSvixAccountResponse:
+      title: internalSvixAccountResponse
+      type: object
+      properties:
+        account:
+          $ref: '#/components/schemas/commonSvixAccount'
+          nullable: true
+        exist:
+          type: boolean
+        environment:
+          type: string
+          nullable: true
+      required:
+        - exist
+    internalSvixMagicLinkResponse:
+      title: internalSvixMagicLinkResponse
+      type: object
+      properties:
+        key:
+          type: string
+        environment:
+          type: string
+      required:
+        - key
+        - environment
     internalGetAnalyticsResponse:
       title: internalGetAnalyticsResponse
       type: object

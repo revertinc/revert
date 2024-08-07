@@ -15,6 +15,7 @@ import { register } from '../generated/typescript';
 import { metadataService } from '../services/metadata';
 import { accountService } from '../services/Internal/account';
 
+import SvixService from '../services/svix';
 import AuthService from '../services/auth';
 import { logError } from '../helpers/logger';
 import verifyRevertWebhook from '../helpers/verifyRevertWebhook';
@@ -45,6 +46,19 @@ import { collectionServiceTicket } from '../services/ticket/collection';
 import { commentServiceTicket } from '../services/ticket/comment';
 import { proxyServiceTicket } from '../services/ticket/proxy';
 import { syncService } from '../services/sync';
+
+import accountingRouter from './v1/accounting';
+import { vendorServiceAccounting } from '../services/accounting/vendor';
+import { expenseServiceAccounting } from '../services/accounting/expense';
+import { accountServiceAccounting } from '../services/accounting/account';
+import { proxyServiceAccounting } from '../services/accounting/proxy';
+
+import atsRouter from './v1/ats';
+import { departmentServiceAts } from '../services/ats/department';
+import { candidateServiceAts } from '../services/ats/candidate';
+import { offerServiceAts } from '../services/ats/offer';
+import { jobServiceAts } from '../services/ats/job';
+import { proxyServiceAts } from '../services/ats/proxy';
 
 const router = express.Router();
 
@@ -120,7 +134,27 @@ router.post('/clerk/webhook', async (req, res) => {
     if (req.body) {
         let webhookData = req.body.data;
         let webhookEventType = req.body.type;
-        res.status(200).send(await AuthService.createAccountOnClerkUserCreation(webhookData, webhookEventType));
+
+        if (webhookData) {
+            switch (webhookEventType) {
+                case 'user.created': {
+                    res.status(200).send(
+                        await AuthService.createAccountOnClerkUserCreation(webhookData, webhookEventType),
+                    );
+                    break;
+                }
+                // currently looks like db records isn't cleared
+                case 'user.deleted': {
+                    const userId = webhookData.id;
+                    await SvixService.deleteAssociatedSvixAccountForUser(userId);
+                    res.status(200).send({ status: 200 });
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
     }
 });
 
@@ -146,6 +180,10 @@ router.use('/crm', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], crmR
 router.use('/chat', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], chatRouter);
 
 router.use('/ticket', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], ticketRouter);
+
+router.use('/accounting', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], accountingRouter);
+
+router.use('/ats', cors(), [revertAuthMiddleware(), rateLimitMiddleware()], atsRouter);
 
 register(router, {
     metadata: metadataService,
@@ -179,6 +217,21 @@ register(router, {
         comment: commentServiceTicket,
         collection: collectionServiceTicket,
         proxy: proxyServiceTicket,
+    },
+
+    accounting: {
+        account: accountServiceAccounting,
+        expense: expenseServiceAccounting,
+        vendor: vendorServiceAccounting,
+        proxy: proxyServiceAccounting,
+    },
+
+    ats: {
+        department: departmentServiceAts,
+        candidate: candidateServiceAts,
+        offer: offerServiceAts,
+        job: jobServiceAts,
+        proxy: proxyServiceAts,
     },
     sync: syncService,
 });

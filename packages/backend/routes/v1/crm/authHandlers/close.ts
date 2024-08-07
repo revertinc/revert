@@ -21,7 +21,7 @@ class CloseAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
-        redirectUrl
+        redirectUrl,
     }: IntegrationAuthProps) {
         try {
             const formData = {
@@ -78,7 +78,13 @@ class CloseAuthHandler extends BaseOAuthHandler {
                 },
             });
 
-            sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.closecrm, result.data.access_token, info.data.email);
+            await sendConnectionAddedEvent(
+                svixAppId,
+                tenantId,
+                TP_ID.closecrm,
+                result.data.access_token,
+                info.data.email,
+            );
 
             return processOAuthResult({
                 status: true,
@@ -88,7 +94,7 @@ class CloseAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data.email,
-                redirectUrl
+                redirectUrl,
             });
         } catch (error: any) {
             return processOAuthResult({
@@ -99,7 +105,7 @@ class CloseAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
-                redirectUrl
+                redirectUrl,
             });
         }
     }

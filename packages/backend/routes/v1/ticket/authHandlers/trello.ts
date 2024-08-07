@@ -21,7 +21,7 @@ class TrelloAuthHandler extends BaseOAuthHandler {
         tenantSecretToken,
         response,
         request,
-        redirectUrl
+        redirectUrl,
     }: IntegrationAuthProps) {
         const trelloClientId = clientId ? clientId : config.TRELLO_CLIENT_ID;
         const trelloClientSecret = clientId ? clientId : config.TRELLO_CLIENT_SECRET;
@@ -34,7 +34,7 @@ class TrelloAuthHandler extends BaseOAuthHandler {
             String(trelloClientSecret),
             '1.0A',
             null,
-            'HMAC-SHA1'
+            'HMAC-SHA1',
         );
         const token = String(request.query.oauth_token);
         const verifier = String(request.query.oauth_verifier);
@@ -52,7 +52,7 @@ class TrelloAuthHandler extends BaseOAuthHandler {
                             } else {
                                 resolve({ accessToken, accessTokenSecret });
                             }
-                        }
+                        },
                     );
                 });
             await redis.setEx(`trello_dev_access_token_secret_${accessToken}`, 3600 * 24 * 10, accessTokenSecret);
@@ -74,7 +74,7 @@ class TrelloAuthHandler extends BaseOAuthHandler {
                             resolve(data);
                         }
                         logInfo('OAuth token info', data);
-                    }
+                    },
                 );
             });
             info = JSON.parse(info);
@@ -106,7 +106,7 @@ class TrelloAuthHandler extends BaseOAuthHandler {
                 },
             });
 
-            sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.trello, access_creds.access_token, info.id);
+            await sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.trello, access_creds.access_token, info.id);
 
             return processOAuthResult({
                 status: true,
@@ -116,7 +116,7 @@ class TrelloAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.id,
-                redirectUrl
+                redirectUrl,
             });
         } catch (error: any) {
             return processOAuthResult({
@@ -127,7 +127,7 @@ class TrelloAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
-                redirectUrl
+                redirectUrl,
             });
         }
     }

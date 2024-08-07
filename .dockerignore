@@ -7,3 +7,6 @@ README.md
 packages/react
 packages/js
 packages/vue
+packages/backend/dist
+packages/backend/generated
+.env

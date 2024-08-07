@@ -58,8 +58,8 @@ function AddIntegration({
                                                 app === selected
                                                     ? '0 0 0 3px #fff'
                                                     : isAppExist
-                                                    ? '0 0 0 1px #ffa8a8'
-                                                    : '0 0 0 1px #ced4da',
+                                                      ? '0 0 0 1px #ffa8a8'
+                                                      : '0 0 0 1px #ced4da',
                                         }}
                                         onClick={() => setSelected(app)}
                                     >
@@ -80,10 +80,11 @@ function AddIntegration({
                 </div>
                 <div className="flex justify-end mr-8 mb-8 mt-auto">
                     <LoadingButton
-                        variant="contained"
                         style={{
                             background: '#293347',
                             padding: '0.6rem 1.2rem',
+                            color: '#fff',
+                            textTransform: 'capitalize',
                         }}
                         disabled={selected === ''}
                         onClick={() => {

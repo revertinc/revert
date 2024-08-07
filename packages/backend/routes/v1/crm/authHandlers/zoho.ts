@@ -22,7 +22,7 @@ class ZohoAuthHandler extends BaseOAuthHandler {
         tenantSecretToken,
         response,
         request,
-        redirectUrl
+        redirectUrl,
     }: IntegrationAuthProps) {
         try {
             const url = `${request?.query.accountURL}/oauth/v2/token`;
@@ -95,7 +95,13 @@ class ZohoAuthHandler extends BaseOAuthHandler {
                         tp_account_url: request.query.accountURL as string,
                     },
                 });
-                sendConnectionAddedEvent(svixAppId, tenantId, TP_ID.zohocrm, result.data.access_token, info.data.Email);
+                await sendConnectionAddedEvent(
+                    svixAppId,
+                    tenantId,
+                    TP_ID.zohocrm,
+                    result.data.access_token,
+                    info.data.Email,
+                );
 
                 return processOAuthResult({
                     status: true,
@@ -105,7 +111,7 @@ class ZohoAuthHandler extends BaseOAuthHandler {
                     tenantId: tenantId,
                     integrationName: mapIntegrationIdToIntegrationName[integrationId],
                     tpCustomerId: info.data.Email,
-                    redirectUrl
+                    redirectUrl,
                 });
             }
         } catch (error: any) {
@@ -118,7 +124,7 @@ class ZohoAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
-                redirectUrl
+                redirectUrl,
             });
         }
     }
