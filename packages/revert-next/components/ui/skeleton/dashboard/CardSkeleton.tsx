@@ -1,4 +1,4 @@
-import { cn } from "@revertdotdev/utils";
+import { cn } from '@revertdotdev/utils';
 
 //Todo:  later configure shimmer
 const shimmer =

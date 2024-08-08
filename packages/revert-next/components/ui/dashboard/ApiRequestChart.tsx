@@ -1,12 +1,18 @@
 'use client';
 
+import { AnalyticsSchema } from '@revertdotdev/types/schemas/analyticsSchema';
 import { AreaChart } from '@tremor/react';
 
 const valueFormatter = function (number: number) {
     return new Intl.NumberFormat('us').format(number).toString();
 };
 
-export function ApiRequestChart({ value }) {
+type ApiRequestChartProps = {
+    value: {
+        summaryApiCalls: AnalyticsSchema['result']['summaryApiCalls'];
+    };
+};
+export function ApiRequestChart({ value }: ApiRequestChartProps) {
     const summaryApiCalls = value?.summaryApiCalls;
 
     return (

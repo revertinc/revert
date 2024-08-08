@@ -1,5 +1,4 @@
 'use server';
-
 import { cookies } from 'next/headers';
 import { DEFAULT_ENV } from './constants';
 import { revalidatePath } from 'next/cache';

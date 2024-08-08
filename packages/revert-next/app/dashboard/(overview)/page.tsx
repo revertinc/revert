@@ -1,6 +1,6 @@
 import { currentUser } from '@clerk/nextjs/server';
 import { Header } from '@revertdotdev/components';
-import Dashboard from '@revertdotdev/pages/Dashboard';
+import Dashboard from './Dashboard';
 
 export default async function Page() {
     const user = await currentUser();

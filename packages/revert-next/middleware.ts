@@ -7,8 +7,3 @@ export default clerkMiddleware((auth, request) => {
         auth().protect();
     }
 });
-
-// Todo: configure the private routes
-export const config = {
-    matcher: ['/((?!.*\\..*|_next).*)', '/dashboard', '/oauth-callback/clickup'],
-};
