@@ -33,7 +33,7 @@ export function ApplicationCards({
     }
     return (
         <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[450px] overflow-scroll p-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[450px] overflow-scroll p-2 hide-scrollbar">
                 {Object.keys(appsInfo).map((app) => {
                     const isAppExist = appsId.includes(app as tp_id);
                     const { name, logo } = appsInfo[app] ?? {};
@@ -45,7 +45,7 @@ export function ApplicationCards({
                                     {
                                         'gradient-border-destructive cursor-not-allowed': isAppExist,
                                     },
-                                    { 'gradient-border': !isAppExist && selectedApp === app }
+                                    { 'gradient-border': !isAppExist && selectedApp === app },
                                 )}
                                 disabled={isAppExist}
                                 onClick={() => setSelectedApp(app as tp_id)}
@@ -70,7 +70,7 @@ export function ApplicationCards({
                             {
                                 'bg-gray-25/20 text-gray-50/70 cursor-not-allowed hover:bg-gray-25/20': !selectedApp,
                             },
-                            'w-full'
+                            'w-full',
                         )}
                         onClick={handleCreation}
                     >

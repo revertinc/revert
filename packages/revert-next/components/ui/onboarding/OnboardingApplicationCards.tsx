@@ -53,7 +53,7 @@ export function OnboardingApplicationCards({
                     </p>
                 </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[540px] overflow-scroll p-2 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[540px] overflow-scroll p-2 mb-4 hide-scrollbar">
                 {Object.keys(appsInfo).map((app) => {
                     const { name, logo } = appsInfo[app] ?? {};
                     return (

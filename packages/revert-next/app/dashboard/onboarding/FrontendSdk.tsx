@@ -9,7 +9,7 @@ export function FrontendSdk() {
     const [customPreferenceView, setCustomPreferenceView] = useState<boolean>(false);
 
     return (
-        <div className="md:overflow-y-auto h-[76vh] w-[50vw]">
+        <div className="md:overflow-y-auto h-[76vh] w-[50vw] hide-scrollbar">
             <div className="mb-8 flex justify-between items-center ">
                 <div>
                     <h1 className={`${inter.className} mb-2 text-xl font-bold`}>Integrate frontend SDK</h1>

@@ -4,18 +4,31 @@
 
 @layer utilities {
     .gradient-border {
-        background: linear-gradient(to right, #0a0e17, rgba(38, 138, 253, 0)) padding-box,
+        background:
+            linear-gradient(to right, #0a0e17, rgba(38, 138, 253, 0)) padding-box,
             linear-gradient(to right, rgba(38, 138, 253), rgba(38, 138, 253, 0.2)) border-box;
         border-style: solid;
         border-color: transparent;
         border-width: 1px;
     }
     .gradient-border-destructive {
-        background: linear-gradient(to right, #374151, rgba(10, 14, 23, 0)) padding-box,
+        background:
+            linear-gradient(to right, #374151, rgba(10, 14, 23, 0)) padding-box,
             linear-gradient(to right, #1f2937, rgba(31, 41, 55, 0.2)) border-box;
         border-style: solid;
         border-color: transparent;
         border-width: 1px;
+    }
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .hide-scrollbar {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
     }
 }
 
