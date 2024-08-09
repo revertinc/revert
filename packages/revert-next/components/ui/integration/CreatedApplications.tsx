@@ -21,7 +21,7 @@ export function CreatedApplications({ apps }: { apps: AppSchema }) {
     }
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 overflow-y-auto h-[78vh] 2xl:h-[80vh]">
             {apps.map((app) => {
                 const { name, logo } = appsInfo[app.tp_id];
                 return (

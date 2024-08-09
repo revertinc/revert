@@ -22,7 +22,7 @@ export default function RootLayout({
                 <body
                     className={cn(
                         inter.className,
-                        'bg-primary-950 min-h-screen antialiased text-slate-50 flex flex-col'
+                        'bg-primary-950 min-h-screen antialiased text-slate-50 flex flex-col',
                     )}
                 >
                     <SignedOut>

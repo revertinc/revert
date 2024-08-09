@@ -18,7 +18,7 @@ function Main({ step, account, userId, setStep }: MainProps) {
 
     const app = apps.find((app) => app.tp_id == selectedApp);
     return (
-        <main className="overflow-y-scroll pt-12">
+        <main className="pt-12">
             {step == 0 && (
                 <OnboardingApplicationCards
                     apps={apps}
