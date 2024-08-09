@@ -24,7 +24,7 @@ export function CopyToClipboard({ value, height = 'auto' }: CopyToClipboardProps
                     <code>{value}</code>
                 </pre>
                 <button
-                    className="absolute end-2 top-2 rounded-lg p-2 inline-flex hover:bg-gray-25 items-center justify-center revert-focus-outline"
+                    className="absolute end-2 top-1 rounded-lg p-2 inline-flex hover:bg-gray-25 items-center justify-center revert-focus-outline"
                     onClick={() => clipboard.copy(value)}
                 >
                     {clipboard.copied ? <Icons.success /> : <Icons.copy />}
