@@ -18,7 +18,7 @@ function Main({ step, account, userId, setStep }: MainProps) {
 
     const app = apps.find((app) => app.tp_id == selectedApp);
     return (
-        <main className="pt-12">
+        <main className="pt-6">
             {step == 0 && (
                 <OnboardingApplicationCards
                     apps={apps}
@@ -32,7 +32,7 @@ function Main({ step, account, userId, setStep }: MainProps) {
             {step == 1 && app != undefined && (
                 <div>
                     <AppSettings app={app} keys={{ currentPrivateToken, currentPublicToken }} isOnboarding={true} />
-                    <div className="flex justify-end p-4 2xl:w-[89%]">
+                    <div className="flex justify-end">
                         <Button
                             type="submit"
                             className={cn({
