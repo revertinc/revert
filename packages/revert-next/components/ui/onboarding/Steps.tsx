@@ -11,7 +11,6 @@ const links = [
         step: 1,
     },
     { name: 'Integrate Frontend SDK', step: 2 },
-    { name: 'Integrate Backend SDK', step: 3 },
 ];
 
 export function Steps({ currentStep, setStep }: { currentStep: number; setStep: Dispatch<SetStateAction<number>> }) {

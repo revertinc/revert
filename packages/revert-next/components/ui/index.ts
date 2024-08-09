@@ -36,6 +36,7 @@ export {
     PopoverAnchor,
     FancyHeader,
     FancyInputBox,
+    CopyToClipboard,
 } from '@revertdotdev/components/common';
 export {
     OnboardingNavLink,

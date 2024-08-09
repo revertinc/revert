@@ -3,6 +3,7 @@ import { inter } from '@revertdotdev/fonts';
 import { cn } from '@revertdotdev/utils';
 import { useState } from 'react';
 import Image from 'next/image';
+import FrontendSDKContent from './FrontendSDKContent';
 
 export function FrontendSdk() {
     const [customPreferenceView, setCustomPreferenceView] = useState<boolean>(false);
@@ -42,6 +43,10 @@ export function FrontendSdk() {
                         </div>
                     </div>
                 </button>
+            </div>
+            <div>
+                {customPreferenceView && <FrontendSDKContent value={'vue'} />}
+                {!customPreferenceView && <FrontendSDKContent value={'react'} />}
             </div>
         </div>
     );

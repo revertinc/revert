@@ -32,3 +32,4 @@ export {
 export { Popover, PopoverTrigger, PopoverContent, PopoverAnchor } from './Popover';
 export { FancyInputBox } from './FancyInputBox';
 export { FancyHeader } from './FancyHeader';
+export { CopyToClipboard } from './CopyToClipboard';
