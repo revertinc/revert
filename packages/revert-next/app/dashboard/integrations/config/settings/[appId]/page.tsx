@@ -27,7 +27,7 @@ export default async function Page({ params }: { params: { appId: string } }) {
     return (
         <>
             <TabsContent value="settings">
-                <AppSettings app={app} keys={{ currentPrivateToken, currentPublicToken }} />
+                <AppSettings app={app} keys={{ currentPrivateToken, currentPublicToken }} isOnboarding={false} />
             </TabsContent>
         </>
     );
