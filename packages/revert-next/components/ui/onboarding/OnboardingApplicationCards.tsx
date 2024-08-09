@@ -42,7 +42,7 @@ export function OnboardingApplicationCards({
     }
 
     return (
-        <div className="mt-12">
+        <div>
             <div className="mb-8 flex justify-between items-center">
                 <div>
                     <h1 className={`${inter.className} mb-2 text-xl font-bold`}>

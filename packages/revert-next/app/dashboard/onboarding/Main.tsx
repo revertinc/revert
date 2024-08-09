@@ -3,6 +3,7 @@ import { AccountResponseSchema } from '@revertdotdev/types/schemas/accountSchema
 import { tp_id } from '@revertdotdev/types/schemas/commonSchema';
 import { cn } from '@revertdotdev/utils';
 import { Dispatch, SetStateAction, useState } from 'react';
+import { FrontendSdk } from './FrontendSdk';
 
 type MainProps = {
     step: number;
@@ -17,7 +18,7 @@ function Main({ step, account, userId, setStep }: MainProps) {
 
     const app = apps.find((app) => app.tp_id == selectedApp);
     return (
-        <main className="overflow-scroll">
+        <main className="overflow-y-scroll pt-12">
             {step == 0 && (
                 <OnboardingApplicationCards
                     apps={apps}
@@ -46,8 +47,7 @@ function Main({ step, account, userId, setStep }: MainProps) {
                     </div>
                 </div>
             )}
-            {step == 2 && <div>Step 3</div>}
-            {step == 3 && <div>Step 4</div>}
+            {step == 2 && <FrontendSdk />}
         </main>
     );
 }

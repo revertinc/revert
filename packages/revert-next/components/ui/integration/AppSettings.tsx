@@ -107,7 +107,7 @@ export function AppSettings({ app, keys, isOnboarding = false }: AppSettingsProp
     return (
         <div className={cn('max-w-[64rem] xl:max-w-[64%]', { 'xl:max-w-max': isOnboarding })}>
             {isOnboarding && (
-                <div className="mb-8 flex justify-between items-center mt-12">
+                <div className="mb-8 flex justify-between items-center">
                     <div>
                         <h1 className={`${inter.className} mb-2 text-xl font-bold`}>Setup App Credentials</h1>
                         <p className="text-gray-50">Your Api Requests are authenticated using Api keys in the header</p>
