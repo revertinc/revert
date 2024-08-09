@@ -8,6 +8,7 @@ import { cn } from '@revertdotdev/utils';
 import { deleteIntegration, updateCredentials } from '@revertdotdev/lib/actions';
 import { useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction } from 'react';
+import { inter } from '@revertdotdev/fonts';
 
 type AppSettingsProps = {
     app: AppInfo;
@@ -15,9 +16,10 @@ type AppSettingsProps = {
         currentPublicToken: string;
         currentPrivateToken: string;
     };
+    isOnboarding: boolean;
 };
 
-export function AppSettings({ app, keys }: AppSettingsProps) {
+export function AppSettings({ app, keys, isOnboarding = false }: AppSettingsProps) {
     const { app_client_id, app_client_secret, id, is_revert_app, scope, tp_id, app_config, available_scope } = app;
     const { currentPrivateToken, currentPublicToken } = keys;
     const currentClientSecret = app_client_secret ?? '';
@@ -36,8 +38,8 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
         app.tp_id === 'discord'
             ? app_config?.bot_token
             : app.tp_id === 'ms_dynamics_365_sales'
-            ? app_config?.org_url
-            : undefined;
+              ? app_config?.org_url
+              : undefined;
     config = config === '' ? undefined : config;
     const [extraParam, setExtraParam] = useState<string | undefined>(config);
     const router = useRouter();
@@ -75,8 +77,8 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
             app.tp_id === 'discord'
                 ? { bot_token: extraParam ?? '' }
                 : app.tp_id === 'ms_dynamics_365_sales'
-                ? { org_url: extraParam ?? '' }
-                : null;
+                  ? { org_url: extraParam ?? '' }
+                  : null;
 
         if (customPreferenceView) {
             await updateCredentials({
@@ -103,7 +105,15 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
     }
 
     return (
-        <div className="max-w-[64rem] xl:max-w-[64%]">
+        <div className={cn('max-w-[64rem] xl:max-w-[64%]', { 'xl:max-w-max': isOnboarding })}>
+            {isOnboarding && (
+                <div className="mb-8 flex justify-between items-center mt-12">
+                    <div>
+                        <h1 className={`${inter.className} mb-2 text-xl font-bold`}>Setup App Credentials</h1>
+                        <p className="text-gray-50">Your Api Requests are authenticated using Api keys in the header</p>
+                    </div>
+                </div>
+            )}
             <h3 className="text-lg font-medium mb-2">Choose your preference</h3>
             <div className={cn('flex gap-4 mb-4')}>
                 <button
@@ -212,20 +222,22 @@ export function AppSettings({ app, keys }: AppSettingsProps) {
                 <span>Save Changes</span>
             </Button>
 
-            <div className="p-5 border border-red-500 rounded-xl flex justify-between items-center bg-red-950/80">
-                <div className="flex flex-col gap-1">
-                    <h4 className="text-left text-gray-50/70 text-base font-bold">Delete Integration</h4>
-                    <p className="text-left text-slate-50/80">
-                        Your API Requests are authenticated using Api keys in the header.
-                    </p>
-                </div>
-                <Button variant="destructive" onClick={handleDeleteIntegration}>
-                    <div className="flex gap-2 justify-center items-center">
-                        <Icons.trash />
-                        <span>Delete Integration</span>
+            {!isOnboarding && (
+                <div className="p-5 border border-red-500 rounded-xl flex justify-between items-center bg-red-950/80">
+                    <div className="flex flex-col gap-1">
+                        <h4 className="text-left text-gray-50/70 text-base font-bold">Delete Integration</h4>
+                        <p className="text-left text-slate-50/80">
+                            Your API Requests are authenticated using Api keys in the header.
+                        </p>
                     </div>
-                </Button>
-            </div>
+                    <Button variant="destructive" onClick={handleDeleteIntegration}>
+                        <div className="flex gap-2 justify-center items-center">
+                            <Icons.trash />
+                            <span>Delete Integration</span>
+                        </div>
+                    </Button>
+                </div>
+            )}
         </div>
     );
 }

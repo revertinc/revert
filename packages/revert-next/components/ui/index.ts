@@ -37,7 +37,12 @@ export {
     FancyHeader,
     FancyInputBox,
 } from '@revertdotdev/components/common';
-export { OnboardingNavLink } from '@revertdotdev/components/onboarding';
+export {
+    OnboardingNavLink,
+    Steps,
+    ReachOutLinks,
+    OnboardingApplicationCards,
+} from '@revertdotdev/components/onboarding';
 export { EnvironmentMode, NavLinks, SideNav } from '@revertdotdev/components/sidenav';
 export {
     CreatedApplications,
