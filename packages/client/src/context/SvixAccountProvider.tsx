@@ -49,7 +49,7 @@ export function SvixAccountProvider({ children }: Props) {
                 getSvixAccount();
             }
         },
-        [creating, data, environment, getSvixAccount, isLoading, loading, svixAccount]
+        [creating, data, environment, getSvixAccount, isLoading, loading, svixAccount],
     );
 
     return (

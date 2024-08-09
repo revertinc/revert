@@ -26,7 +26,7 @@ const Home = () => {
                 created_at: user?.createdAt, // Signup date as a Unix timestamp
             };
         },
-        [user]
+        [user],
     );
 
     useEffect(() => {

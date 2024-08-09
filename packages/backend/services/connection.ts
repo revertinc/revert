@@ -120,7 +120,7 @@ const connectionService = new ConnectionService({
                             environmentId: environment?.id,
                         },
                     });
-                })
+                }),
             );
 
             if (createdConnections) {

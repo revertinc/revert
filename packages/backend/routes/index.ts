@@ -46,6 +46,7 @@ import { collectionServiceTicket } from '../services/ticket/collection';
 import { commentServiceTicket } from '../services/ticket/comment';
 import { proxyServiceTicket } from '../services/ticket/proxy';
 import { syncService } from '../services/sync';
+import { appService } from '../services/Internal/app';
 
 import accountingRouter from './v1/accounting';
 import { vendorServiceAccounting } from '../services/accounting/vendor';
@@ -191,6 +192,7 @@ register(router, {
         account: accountService,
         telemetry: telemetryService,
         analytics: analyticsService,
+        app: appService
     },
     crm: {
         lead: leadService,

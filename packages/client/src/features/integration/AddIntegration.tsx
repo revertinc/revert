@@ -58,8 +58,8 @@ function AddIntegration({
                                                 app === selected
                                                     ? '0 0 0 3px #fff'
                                                     : isAppExist
-                                                    ? '0 0 0 1px #ffa8a8'
-                                                    : '0 0 0 1px #ced4da',
+                                                      ? '0 0 0 1px #ffa8a8'
+                                                      : '0 0 0 1px #ced4da',
                                         }}
                                         onClick={() => setSelected(app)}
                                     >

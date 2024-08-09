@@ -21,7 +21,7 @@ class MsDynamicAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
-        redirectUrl
+        redirectUrl,
     }: IntegrationAuthProps) {
         try {
             let orgURL = account?.apps[0]?.is_revert_app
@@ -97,7 +97,7 @@ class MsDynamicAuthHandler extends BaseOAuthHandler {
                 tenantId,
                 TP_ID.ms_dynamics_365_sales,
                 result.data.access_token,
-                info.data.UserId
+                info.data.UserId,
             );
 
             return processOAuthResult({
@@ -108,7 +108,7 @@ class MsDynamicAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data.UserId,
-                redirectUrl
+                redirectUrl,
             });
         } catch (error: any) {
             console.log('OAuthERROR', error);
@@ -120,7 +120,7 @@ class MsDynamicAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
-                redirectUrl
+                redirectUrl,
             });
         }
     }

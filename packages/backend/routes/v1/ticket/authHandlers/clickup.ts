@@ -83,7 +83,7 @@ class ClickUpAuthHandler extends BaseOAuthHandler {
                 tenantId,
                 TP_ID.clickup,
                 result.data.access_token,
-                info.data?.user?.id
+                info.data?.user?.id,
             );
 
             return processOAuthResult({

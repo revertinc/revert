@@ -6,7 +6,7 @@ export default async function sendConnectionAddedEvent(
     tenantId: string,
     tp_id: string,
     tp_access_token: string,
-    tp_customer_id: string
+    tp_customer_id: string,
 ) {
     try {
         const isSvixAppExist = await getSvixAccount(svixAppId);

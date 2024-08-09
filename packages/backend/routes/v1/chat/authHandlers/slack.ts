@@ -22,7 +22,7 @@ class SlackAuthHandler extends BaseOAuthHandler {
         tenantId,
         tenantSecretToken,
         response,
-        redirectUrl
+        redirectUrl,
     }: IntegrationAuthProps) {
         const url = 'https://slack.com/api/oauth.v2.access';
         const formData = {
@@ -90,7 +90,7 @@ class SlackAuthHandler extends BaseOAuthHandler {
                 tenantId,
                 TP_ID.slack,
                 String(result.data?.access_token),
-                String(info.data.user?.id)
+                String(info.data.user?.id),
             );
 
             return processOAuthResult({
@@ -101,7 +101,7 @@ class SlackAuthHandler extends BaseOAuthHandler {
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
                 tpCustomerId: info.data.user,
-                redirectUrl
+                redirectUrl,
             });
         } catch (error: any) {
             return processOAuthResult({
@@ -112,7 +112,7 @@ class SlackAuthHandler extends BaseOAuthHandler {
                 response,
                 tenantId: tenantId,
                 integrationName: mapIntegrationIdToIntegrationName[integrationId],
-                redirectUrl
+                redirectUrl,
             });
         }
     }

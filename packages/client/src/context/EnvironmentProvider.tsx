@@ -16,7 +16,7 @@ export function EnvironmentProvider({ children }: Props) {
         function () {
             localStorage.setItem('revert_environment_selected', environment);
         },
-        [environment]
+        [environment],
     );
     return (
         <EnvironmentContext.Provider value={{ environment, setEnvironment }}>{children}</EnvironmentContext.Provider>

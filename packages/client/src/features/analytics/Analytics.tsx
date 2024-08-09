@@ -9,8 +9,6 @@ import AnalyticContainer from './AnalyticContainer';
 import Spinner from '../../ui/Spinner';
 import { v4 as uuidv4 } from 'uuid';
 
-
-
 const styles = {
     box: {
         display: 'flex',

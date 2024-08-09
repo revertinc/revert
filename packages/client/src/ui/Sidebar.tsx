@@ -67,7 +67,7 @@ function Sidebar() {
                         window.open(
                             'https://docs.revert.dev?utm_campaign=docs-ui&utm_medium=dashboard&utm_source=' +
                                 currentUrl,
-                            '_blank'
+                            '_blank',
                         );
                     }}
                 >
@@ -81,7 +81,7 @@ function Sidebar() {
                         window.open(
                             'https://discord.gg/q5K5cRhymW?utm_campaign=discord-ui&utm_medium=dashboard&utm_source=' +
                                 currentUrl,
-                            '_blank'
+                            '_blank',
                         );
                     }}
                 >
