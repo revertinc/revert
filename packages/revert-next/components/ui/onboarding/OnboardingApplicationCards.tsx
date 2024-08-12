@@ -43,17 +43,17 @@ export function OnboardingApplicationCards({
 
     return (
         <div>
-            <div className="mb-8 flex justify-between items-center">
+            <div className="2xl:mb-8 sm:mb-4 flex justify-between items-center">
                 <div>
                     <h1 className={`${inter.className} mb-2 text-xl font-bold`}>
                         Let&apos;s ship an integration in under 60 minutes
                     </h1>
-                    <p>
+                    <p className="sm:text-sm 2xl:text-base">
                         Add a pre-built UI to your frontend with options to select an integration with zero custom code
                     </p>
                 </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[540px] overflow-scroll p-2 mb-4 hide-scrollbar">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[360px] 2xl:max-h-[540px] overflow-scroll p-2 mb-4 hide-scrollbar">
                 {Object.keys(appsInfo).map((app) => {
                     const { name, logo } = appsInfo[app] ?? {};
                     return (

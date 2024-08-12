@@ -105,21 +105,31 @@ export function AppSettings({ app, keys, isOnboarding = false }: AppSettingsProp
     }
 
     return (
-        <div className={cn('max-w-[64rem] xl:max-w-[64%]', { 'xl:max-w-max': isOnboarding })}>
+        <div
+            className={cn('max-w-[64rem] xl:max-w-[64%]', {
+                'xl:max-w-max 2xl:h-auto overflow-y-scroll': isOnboarding,
+            })}
+        >
             {isOnboarding && (
-                <div className="mb-8 flex justify-between items-center">
+                <div className="2xl:mb-8 sm:mb-4 flex justify-between items-center">
                     <div>
                         <h1 className={`${inter.className} mb-2 text-xl font-bold`}>Setup App Credentials</h1>
-                        <p className="text-gray-50">Your Api Requests are authenticated using Api keys in the header</p>
+                        <p className="text-gray-50 sm:text-sm 2xl:text-base">
+                            Your Api Requests are authenticated using Api keys in the header
+                        </p>
                     </div>
                 </div>
             )}
             <h3 className="text-lg font-medium mb-2">Choose your preference</h3>
             <div className={cn('flex gap-4 mb-4')}>
                 <button
-                    className={cn('border border-gray-25 rounded-xl w-6/12 p-4 revert-focus-outline', {
-                        'gradient-border': !customPreferenceView,
-                    })}
+                    className={cn(
+                        'border border-gray-25 rounded-xl w-6/12 2xl:p-4 revert-focus-outline',
+                        {
+                            'gradient-border': !customPreferenceView,
+                        },
+                        'lg:px-4 lg:py-2',
+                    )}
                     onClick={() => (customPreferenceView ? setCustomPreferenceView(false) : null)}
                 >
                     <div className="flex items-start justify-start gap-3">
@@ -128,16 +138,20 @@ export function AppSettings({ app, keys, isOnboarding = false }: AppSettingsProp
                             <h4 className="text-left text-gray-50/70 text-base font-semibold">
                                 Use Revert app credentials
                             </h4>
-                            <p className="text-left text-slate-50/70">
+                            <p className={cn('text-left text-slate-50/80', 'lg:text-sm 2xl:text-base')}>
                                 Your API Requests are authenticated using Api keys in the header.
                             </p>
                         </div>
                     </div>
                 </button>
                 <button
-                    className={cn('border border-gray-25 rounded-xl w-6/12 p-4 revert-focus-outline', {
-                        'gradient-border': customPreferenceView,
-                    })}
+                    className={cn(
+                        'border border-gray-25 rounded-xl w-6/12 2xl:p-4 revert-focus-outline',
+                        {
+                            'gradient-border': customPreferenceView,
+                        },
+                        'lg:px-4 lg:py-2',
+                    )}
                     onClick={() => (!customPreferenceView ? setCustomPreferenceView(true) : null)}
                 >
                     <div className="flex items-start justify-start gap-3">
@@ -146,7 +160,7 @@ export function AppSettings({ app, keys, isOnboarding = false }: AppSettingsProp
                             <h4 className="text-left text-gray-50/70 text-base font-bold">
                                 Use your own app credentials
                             </h4>
-                            <p className="text-left text-slate-50/80">
+                            <p className={cn('text-left text-slate-50/80', 'lg:text-sm 2xl:text-base')}>
                                 Your API Requests are authenticated using Api keys in the header.
                             </p>
                         </div>
@@ -154,7 +168,7 @@ export function AppSettings({ app, keys, isOnboarding = false }: AppSettingsProp
                 </button>
             </div>
             {customPreferenceView ? (
-                <div className="border border-gray-25 rounded-xl p-8 mb-8">
+                <div className={cn('border border-gray-25 rounded-xl p-8 mb-8', { 'p-5 mb-4': isOnboarding })}>
                     <div className="flex flex-col gap-2 mb-4">
                         <Label htmlFor="client_id" className="text-slate-50/70 font-medium">
                             Client ID
@@ -195,7 +209,7 @@ export function AppSettings({ app, keys, isOnboarding = false }: AppSettingsProp
                     </div>
                 </div>
             ) : (
-                <div className="border border-gray-25 rounded-xl p-8 mb-8">
+                <div className={cn('border border-gray-25 rounded-xl p-8 mb-8', { 'p-5 mb-4': isOnboarding })}>
                     <div className="flex flex-col gap-2 mb-4">
                         <Label className="text-slate-50/70 font-medium">AppId</Label>
                         <Clipboard value={id} />
@@ -212,11 +226,14 @@ export function AppSettings({ app, keys, isOnboarding = false }: AppSettingsProp
             )}
 
             <Button
-                className={cn('mb-12', {
-                    'bg-gray-25/20 text-gray-50/70 hover:bg-gray-25/20 cursor-not-allowed':
-                        (is_revert_app && !isValueChange && customPreferenceView) ||
-                        (!customPreferenceView && !is_revert_app),
-                })}
+                className={cn(
+                    { 'mb-12': !isOnboarding },
+                    {
+                        'bg-gray-25/20 text-gray-50/70 hover:bg-gray-25/20 cursor-not-allowed':
+                            (is_revert_app && !isValueChange && customPreferenceView) ||
+                            (!customPreferenceView && !is_revert_app),
+                    },
+                )}
                 onClick={handleSaveChanges}
             >
                 <span>Save Changes</span>

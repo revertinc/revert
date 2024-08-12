@@ -18,7 +18,7 @@ function Main({ step, account, userId, setStep }: MainProps) {
 
     const app = apps.find((app) => app.tp_id == selectedApp);
     return (
-        <main className="pt-6">
+        <main className="2xl:pt-6 sm:pt-3">
             {step == 0 && (
                 <OnboardingApplicationCards
                     apps={apps}
