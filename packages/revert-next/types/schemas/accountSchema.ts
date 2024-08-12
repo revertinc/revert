@@ -20,6 +20,10 @@ export const accountSchema = z.object({
                 apps: appSchema,
             }),
         ),
+        isOnboardingCompleted: z.object({
+            development: z.boolean(),
+            production: z.boolean(),
+        }),
     }),
 });
 
@@ -30,6 +34,7 @@ export const accountResponseSchema = z.object({
     currentPublicToken: z.string(),
     prodPrivateToken: z.string(),
     workspaceName: z.string(),
+    isOnboardingCompleted: z.boolean().default(false),
 });
 
 export type AccountResponseSchema = z.infer<typeof accountResponseSchema>;

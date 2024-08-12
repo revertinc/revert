@@ -6010,6 +6010,9 @@ components:
           items:
             $ref: '#/components/schemas/commonApp'
           nullable: true
+        isOnboardingCompleted:
+          $ref: '#/components/schemas/commonEnvironment'
+          nullable: true
       required:
         - id
         - tenant_count
@@ -6017,6 +6020,17 @@ components:
         - public_token
         - domain
         - skipWaitlist
+    commonEnvironment:
+      title: commonEnvironment
+      type: object
+      properties:
+        development:
+          type: boolean
+        production:
+          type: boolean
+      required:
+        - development
+        - production
     commonApp:
       title: commonApp
       type: object

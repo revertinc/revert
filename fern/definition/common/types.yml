@@ -9,6 +9,12 @@ types:
             skipWaitlist: boolean
             users: optional<list<RevertUser>>
             apps: optional<list<App>>
+            isOnboardingCompleted: optional<Environment>
+
+    Environment:
+        properties:
+            development: boolean
+            production: boolean
 
     App:
         properties:
@@ -84,7 +90,7 @@ types:
             method: string
             path: string
             status: integer
-    
+            
     SummaryApiCalls:
         properties:
             date: string

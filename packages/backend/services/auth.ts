@@ -7,6 +7,7 @@ import isWorkEmail from '../helpers/isWorkEmail';
 import { ENV, TP_ID } from '@prisma/client';
 import { logInfo, logError } from '../helpers/logger';
 import { AppConfig, DEFAULT_SCOPE } from '../constants/common';
+import redis from '../redis/client';
 
 class AuthService {
     async refreshOAuthTokensForThirdParty() {
@@ -679,9 +680,20 @@ class AuthService {
             };
         });
 
+        const development = JSON.parse(
+            (await redis.getSet(`onboarding_completed_${account.account.id}_development`, 'false')) ?? 'false',
+        );
+        const production = JSON.parse(
+            (await redis.getSet(`onboarding_completed_${account.account.id}_production`, 'false')) ?? 'false',
+        );
+
         return {
             ...account,
-            account: { ...account.account, environments: appsWithScope },
+            account: {
+                ...account.account,
+                environments: appsWithScope,
+                isOnboardingCompleted: { development, production },
+            },
         };
     }
     async setAppCredentialsForUser({

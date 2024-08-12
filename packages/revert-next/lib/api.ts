@@ -27,7 +27,7 @@ export async function fetchAccountDetails(userId: string) {
             throw new ZodError(error.errors);
         }
 
-        const { environments, workspaceName } = data.account;
+        const { environments, workspaceName, isOnboardingCompleted } = data.account;
 
         const {
             private_token: currentPrivateToken,
@@ -46,6 +46,7 @@ export async function fetchAccountDetails(userId: string) {
             currentPublicToken,
             prodPrivateToken,
             workspaceName,
+            isOnboardingCompleted: isOnboardingCompleted[isDefaultEnvironment ? DEFAULT_ENV : 'production'],
         });
 
         if (!parsedResponse.success) {
