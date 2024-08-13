@@ -74,7 +74,7 @@ function Webhook() {
                 }
             }
         },
-        [account, data, environment, fetch, isLoading, key, loading, setSvixAccount, svixAccount]
+        [account, data, environment, fetch, isLoading, key, loading, setSvixAccount, svixAccount],
     );
 
     return (

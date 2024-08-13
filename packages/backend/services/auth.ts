@@ -7,6 +7,7 @@ import isWorkEmail from '../helpers/isWorkEmail';
 import { ENV, TP_ID } from '@prisma/client';
 import { logInfo, logError } from '../helpers/logger';
 import { AppConfig, DEFAULT_SCOPE } from '../constants/common';
+import redis from '../redis/client';
 
 class AuthService {
     async refreshOAuthTokensForThirdParty() {
@@ -671,16 +672,35 @@ class AuthService {
                 apps: env.apps.map((app) => {
                     return {
                         ...app,
-                        scope: app.scope.length ? app.scope : DEFAULT_SCOPE[app.tp_id],
+                        scope: app.scope,
                         env: env.env,
+                        available_scope: DEFAULT_SCOPE[app.tp_id],
                     };
                 }),
             };
         });
 
+        const getDevelopment = await redis.get(`onboarding_completed_${account.account.id}_development`);
+
+        if (!getDevelopment) {
+            await redis.set(`onboarding_completed_${account.account.id}_development`, 'false');
+        }
+        const getProduction = await redis.get(`onboarding_completed_${account.account.id}_production`);
+
+        if (!getProduction) {
+            await redis.set(`onboarding_completed_${account.account.id}_production`, 'false');
+        }
+
+        const development = JSON.parse(getDevelopment ?? 'false');
+        const production = JSON.parse(getProduction ?? 'false');
+
         return {
             ...account,
-            account: { ...account.account, environments: appsWithScope },
+            account: {
+                ...account.account,
+                environments: appsWithScope,
+                isOnboardingCompleted: { development, production },
+            },
         };
     }
     async setAppCredentialsForUser({
@@ -712,11 +732,13 @@ class AuthService {
             data: {
                 ...(clientId && { app_client_id: clientId }),
                 ...(clientSecret && { app_client_secret: clientSecret }),
-                is_revert_app: isRevertApp,
-                ...(scopes.filter(Boolean).length && { scope: scopes }),
                 ...(appConfig?.bot_token && { app_config: { bot_token: appConfig.bot_token } }),
                 ...(appConfig?.org_url && { app_config: { org_url: appConfig.org_url } }),
                 ...(appConfig?.env && { app_config: { env: appConfig.env } }),
+                ...(appConfig && appConfig.bot_token === '' && { app_config: { bot_token: '' } }),
+                ...(appConfig && appConfig.org_url === '' && { app_config: { org_url: '' } }),
+                is_revert_app: isRevertApp,
+                scope: scopes,
             },
         });
         if (!account) {

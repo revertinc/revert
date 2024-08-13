@@ -18,11 +18,11 @@ const darkTheme = createTheme({
 
 function App() {
     return (
-            <ThemeProvider theme={darkTheme}>
-                <BrowserRouter>
-                    <RouterComponent></RouterComponent>
-                </BrowserRouter>
-            </ThemeProvider>
+        <ThemeProvider theme={darkTheme}>
+            <BrowserRouter>
+                <RouterComponent></RouterComponent>
+            </BrowserRouter>
+        </ThemeProvider>
     );
 }
 

@@ -4498,6 +4498,48 @@ paths:
                 - userId
                 - tpId
                 - environment
+    delete:
+      description: delete Revert App for Account
+      operationId: internal_account_deleteRevertAppforAccount
+      tags:
+        - InternalAccount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalDeleteRevertAppResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                appId:
+                  type: string
+              required:
+                - appId
   /internal/account/svix/{id}:
     get:
       description: Get Svix Account
@@ -4617,6 +4659,46 @@ paths:
                   type: string
               required:
                 - appId
+  /internal/account/onboarding:
+    post:
+      description: Set Onboarding Completed
+      operationId: internal_account_setOnboardingCompleted
+      tags:
+        - InternalAccount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalsetOnboardingResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                environment:
+                  type: string
+              required:
+                - userId
+                - environment
   /internal/analytics:
     post:
       description: Get Analytics of your revert account
@@ -4657,6 +4739,43 @@ paths:
               required:
                 - userId
                 - environment
+  /internal/request/app/{appId}:
+    get:
+      description: Recent api calls for App
+      operationId: internal_app_getRecentApiCallsForApp
+      tags:
+        - InternalApp
+      parameters:
+        - name: appId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalRecentAppApiCallsResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
   /internal/telemetry:
     post:
       description: Create telemetry entry for a deployment
@@ -5931,6 +6050,9 @@ components:
           items:
             $ref: '#/components/schemas/commonApp'
           nullable: true
+        isOnboardingCompleted:
+          $ref: '#/components/schemas/commonEnvironment'
+          nullable: true
       required:
         - id
         - tenant_count
@@ -5938,6 +6060,17 @@ components:
         - public_token
         - domain
         - skipWaitlist
+    commonEnvironment:
+      title: commonEnvironment
+      type: object
+      properties:
+        development:
+          type: boolean
+        production:
+          type: boolean
+      required:
+        - development
+        - production
     commonApp:
       title: commonApp
       type: object
@@ -5951,6 +6084,10 @@ components:
           items:
             type: string
           nullable: true
+        available_scope:
+          type: array
+          items:
+            type: string
         app_client_id:
           type: string
           nullable: true
@@ -5975,6 +6112,7 @@ components:
       required:
         - id
         - tp_id
+        - available_scope
         - owner_account_public_token
         - is_revert_app
     commonRevertUser:
@@ -6097,6 +6235,17 @@ components:
         - method
         - path
         - status
+    commonSummaryApiCalls:
+      title: commonSummaryApiCalls
+      type: object
+      properties:
+        date:
+          type: string
+        numberOfCalls:
+          type: integer
+      required:
+        - date
+        - numberOfCalls
     commonAnalytics:
       title: commonAnalytics
       type: object
@@ -6117,6 +6266,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/commonRecentApiCalls'
+          nullable: true
+        totalApiCalls:
+          type: integer
+          nullable: true
+        summaryApiCalls:
+          type: array
+          items:
+            $ref: '#/components/schemas/commonSummaryApiCalls'
           nullable: true
       required:
         - totalConnections
@@ -7605,6 +7762,25 @@ components:
       required:
         - key
         - environment
+    internalDeleteRevertAppResponse:
+      title: internalDeleteRevertAppResponse
+      type: object
+      properties:
+        appId:
+          type: string
+        delete:
+          type: boolean
+      required:
+        - appId
+        - delete
+    internalsetOnboardingResponse:
+      title: internalsetOnboardingResponse
+      type: object
+      properties:
+        result:
+          type: boolean
+      required:
+        - result
     internalGetAnalyticsResponse:
       title: internalGetAnalyticsResponse
       type: object
@@ -7616,6 +7792,29 @@ components:
       required:
         - status
         - result
+    internalRecentApiCalls:
+      title: internalRecentApiCalls
+      type: object
+      properties:
+        method:
+          type: string
+        path:
+          type: string
+        status:
+          type: integer
+      required:
+        - method
+        - path
+        - status
+    internalRecentAppApiCallsResponse:
+      title: internalRecentAppApiCallsResponse
+      type: object
+      properties:
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/internalRecentApiCalls'
+          nullable: true
     internalCreateTelemetryEntryResponse:
       title: internalCreateTelemetryEntryResponse
       type: object

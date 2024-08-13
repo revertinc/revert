@@ -33,7 +33,7 @@ class BitbucketAuthHandler extends BaseOAuthHandler {
             client_secret: clientSecret || config.BITBUCKET_CLIENT_SECRET,
         };
         const encodedClientIdSecret = Buffer.from(headerData.client_id + ':' + headerData.client_secret).toString(
-            'base64'
+            'base64',
         );
         const result: any = await axios({
             method: 'post',
@@ -93,7 +93,7 @@ class BitbucketAuthHandler extends BaseOAuthHandler {
                 tenantId,
                 TP_ID.bitbucket,
                 result.data.access_token,
-                info.data?.account_id
+                info.data?.account_id,
             );
 
             return processOAuthResult({
