@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    basePath: '/packages/revert-next',
     webpack: (config) => {
         return config;
     },
