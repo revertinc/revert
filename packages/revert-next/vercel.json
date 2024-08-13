@@ -1,1 +1,9 @@
-{ "rewrites": [{ "source": "/(.*)", "destination": "/" }] }
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "packages/revert-next/next.config.js",
+            "use": "@vercel/next"
+        }
+    ]
+}
