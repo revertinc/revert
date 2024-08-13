@@ -1,6 +1,11 @@
 import { auth } from '@clerk/nextjs/server';
 import { Clipboard, Header } from '@revertdotdev/components';
 import { fetchAccountDetails } from '@revertdotdev/lib/api';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Revert | API Keys',
+};
 
 export default async function Page() {
     const { userId } = auth();
