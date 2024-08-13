@@ -1,8 +1,13 @@
 import { auth } from '@clerk/nextjs/server';
 import { AppSettings, TabsContent } from '@revertdotdev/components';
 import { fetchAccountDetails } from '@revertdotdev/lib/api';
+import { Metadata } from 'next';
 
 export const revalidate = 0;
+
+export const metadata: Metadata = {
+    title: 'Revert | Integrations',
+};
 
 export default async function Page({ params }: { params: { appId: string } }) {
     const { appId } = params;

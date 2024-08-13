@@ -12,6 +12,11 @@ import {
 import { CreatedApplications, ApplicationCards } from '@revertdotdev/components';
 import { Icons } from '@revertdotdev/icons';
 import { fetchAccountDetails } from '@revertdotdev/lib/api';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Revert | Integrations',
+};
 
 export default async function Page() {
     const { userId } = auth();

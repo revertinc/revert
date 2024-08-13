@@ -2,7 +2,6 @@ import { Icons } from '@revertdotdev/icons';
 import { inter } from '@revertdotdev/fonts';
 import { cn } from '@revertdotdev/utils';
 import { useState } from 'react';
-import Image from 'next/image';
 import FrontendSDKContent from './FrontendSDKContent';
 
 export function FrontendSdk({ userId, environment }: { userId: string; environment: string }) {
@@ -37,7 +36,7 @@ export function FrontendSdk({ userId, environment }: { userId: string; environme
                     onClick={() => (!customPreferenceView ? setCustomPreferenceView(true) : null)}
                 >
                     <div className="flex items-start justify-start gap-3">
-                        <Image src="/vuejs-icon.svg" alt="Vuejs" height={24} width={24} />
+                        <img src="/vuejs-icon.svg" alt="Vuejs" height={24} width={24} />
                         <div className="flex flex-col gap-1">
                             <h4 className="text-left text-gray-50/70 text-base font-bold">Vue.js</h4>
                         </div>

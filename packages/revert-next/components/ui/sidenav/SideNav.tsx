@@ -1,10 +1,9 @@
 import Link from 'next/link';
 import { OnboardingNavLink, EnvironmentMode, NavLinks } from '@revertdotdev/components';
-import { BookOpenIcon } from '@revertdotdev/icons';
+import { BookOpenIcon, Icons } from '@revertdotdev/icons';
 import { UserButton } from '@clerk/nextjs';
 import { AccountResponseSchema } from '@revertdotdev/types/schemas/accountSchema';
 import { User } from '@clerk/nextjs/dist/types/server';
-import Image from 'next/image';
 
 type SideNavProps = {
     value: {
@@ -21,8 +20,8 @@ export function SideNav({ value }: SideNavProps) {
     return (
         <div className="flex h-full flex-col px-3 py-4">
             <div className="mb-4 flex items-center justify-start">
-                <Image src="/logo-revert.png" alt="Revert Logo" height="48" width="48" />
-                <p className="text-gray-50 font-medium text-sm ml-1">{account.workspaceName}</p>
+                <Icons.revert />
+                <p className="text-gray-50 font-medium text-sm ml-2">{account.workspaceName}</p>
             </div>
             <div className="mb-2 h-14">
                 <OnboardingNavLink />
