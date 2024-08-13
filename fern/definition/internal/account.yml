@@ -21,6 +21,9 @@ types:
         properties:
             appId: string
             delete: boolean
+    setOnboardingResponse:
+        properties:
+            result: boolean
 
 service:
     base-path: /internal/account
@@ -135,3 +138,17 @@ service:
                 - errors.UnAuthorizedError
                 - errors.InternalServerError
                 - errors.NotFoundError
+        setOnboardingCompleted:
+            docs: Set Onboarding Completed
+            method: POST
+            path: '/onboarding'
+            request:
+                name: SetOnboardingCompletedRequest
+                body:
+                    properties:
+                        userId: string
+                        environment: string
+            response: setOnboardingResponse
+            errors:
+                - errors.UnAuthorizedError
+                - errors.InternalServerError

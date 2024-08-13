@@ -680,12 +680,19 @@ class AuthService {
             };
         });
 
-        const development = JSON.parse(
-            (await redis.getSet(`onboarding_completed_${account.account.id}_development`, 'false')) ?? 'false',
-        );
-        const production = JSON.parse(
-            (await redis.getSet(`onboarding_completed_${account.account.id}_production`, 'false')) ?? 'false',
-        );
+        const getDevelopment = await redis.get(`onboarding_completed_${account.account.id}_development`);
+
+        if (!getDevelopment) {
+            await redis.set(`onboarding_completed_${account.account.id}_development`, 'false');
+        }
+        const getProduction = await redis.get(`onboarding_completed_${account.account.id}_production`);
+
+        if (!getProduction) {
+            await redis.set(`onboarding_completed_${account.account.id}_production`, 'false');
+        }
+
+        const development = JSON.parse(getDevelopment ?? 'false');
+        const production = JSON.parse(getProduction ?? 'false');
 
         return {
             ...account,

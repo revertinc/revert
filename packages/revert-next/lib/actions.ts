@@ -20,9 +20,26 @@ export async function changeEnvironmentMode() {
 
     // todo: revalidate every path later
     revalidatePath('/dashboard');
+    revalidatePath('/dashboard/onboarding');
 }
 
-// Todo: handle failure
+export async function setOnboardingCompleted({ userId, environment }: { userId: string; environment: string }) {
+    const response = await fetch(`${REVERT_BASE_API_URL}/internal/account/onboarding`, {
+        method: 'POST',
+        body: JSON.stringify({
+            userId,
+            environment,
+        }),
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    const data = await response.json();
+    revalidatePath('/dashboard/onboarding');
+    return data;
+}
+
 export async function createApplication({
     userId,
     tpId,

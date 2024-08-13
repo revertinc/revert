@@ -4659,6 +4659,46 @@ paths:
                   type: string
               required:
                 - appId
+  /internal/account/onboarding:
+    post:
+      description: Set Onboarding Completed
+      operationId: internal_account_setOnboardingCompleted
+      tags:
+        - InternalAccount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internalsetOnboardingResponse'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonBaseError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                environment:
+                  type: string
+              required:
+                - userId
+                - environment
   /internal/analytics:
     post:
       description: Get Analytics of your revert account
@@ -7733,6 +7773,14 @@ components:
       required:
         - appId
         - delete
+    internalsetOnboardingResponse:
+      title: internalsetOnboardingResponse
+      type: object
+      properties:
+        result:
+          type: boolean
+      required:
+        - result
     internalGetAnalyticsResponse:
       title: internalGetAnalyticsResponse
       type: object

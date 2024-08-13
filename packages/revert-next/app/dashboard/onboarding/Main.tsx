@@ -47,7 +47,9 @@ function Main({ step, account, userId, setStep }: MainProps) {
                     </div>
                 </div>
             )}
-            {step == 2 && <FrontendSdk />}
+            {step == 2 && (
+                <FrontendSdk userId={userId} environment={isDefaultEnvironment ? 'development' : 'production'} />
+            )}
         </main>
     );
 }

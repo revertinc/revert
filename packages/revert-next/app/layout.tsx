@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <ClerkProvider afterSignOutUrl="/">
+            <ClerkProvider>
                 <body
                     className={cn(
                         inter.className,

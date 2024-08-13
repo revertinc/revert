@@ -13,20 +13,30 @@ const links = [
     { name: 'Integrate Frontend SDK', step: 2 },
 ];
 
-export function Steps({ currentStep, setStep }: { currentStep: number; setStep: Dispatch<SetStateAction<number>> }) {
+export function Steps({
+    currentStep,
+    setStep,
+    isOnboardingCompleted,
+}: {
+    currentStep: number;
+    setStep: Dispatch<SetStateAction<number>>;
+    isOnboardingCompleted: boolean;
+}) {
     return (
         <div className="w-auto">
             {links.map((link) => {
                 const isCompleted = currentStep > link.step;
                 return (
-                    <div
+                    <button
+                        disabled={!isCompleted || (isOnboardingCompleted && link.step === 1)}
                         key={uuid()}
                         className={cn(
-                            'flex h-10 text-gray-50/70 items-center gap-2 rounded-md p-3 text-sm font-medium hover:bg-gray-25/5 hover:text-gray-50',
+                            'flex h-10 text-gray-50/70 items-center gap-2 rounded-md p-3 text-sm font-medium',
+                            { 'hover:bg-gray-25/5 hover:text-gray-50 w-60': isCompleted },
                         )}
                         onClick={() => setStep(link.step)}
                     >
-                        {isCompleted ? (
+                        {isCompleted || isOnboardingCompleted ? (
                             <div className="w-3 h-3 rounded-full bg-green-600 flex justify-center">
                                 <Icons.check className="h-[12px] w-[9px] stroke-black stroke-3" />
                             </div>
@@ -34,7 +44,7 @@ export function Steps({ currentStep, setStep }: { currentStep: number; setStep: 
                             <div className="w-3 h-3 rounded-full border"></div>
                         )}
                         <p>{link.name}</p>
-                    </div>
+                    </button>
                 );
             })}
         </div>

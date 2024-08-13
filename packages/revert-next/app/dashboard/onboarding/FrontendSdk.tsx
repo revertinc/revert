@@ -5,12 +5,12 @@ import { useState } from 'react';
 import Image from 'next/image';
 import FrontendSDKContent from './FrontendSDKContent';
 
-export function FrontendSdk() {
+export function FrontendSdk({ userId, environment }: { userId: string; environment: string }) {
     const [customPreferenceView, setCustomPreferenceView] = useState<boolean>(false);
 
     return (
-        <div className="md:overflow-y-auto h-[76vh] w-[50vw] hide-scrollbar">
-            <div className="mb-8 flex justify-between items-center ">
+        <div className="md:overflow-y-auto h-[74vh] w-[50vw] hide-scrollbar">
+            <div className="2xl:mb-8 sm:mb-4 flex justify-between items-center ">
                 <div>
                     <h1 className={`${inter.className} mb-2 text-xl font-bold`}>Integrate frontend SDK</h1>
                     <p className="text-gray-50">Your Api Requests are authenticated using Api keys in the header</p>
@@ -45,8 +45,10 @@ export function FrontendSdk() {
                 </button>
             </div>
             <div>
-                {customPreferenceView && <FrontendSDKContent value={'vue'} />}
-                {!customPreferenceView && <FrontendSDKContent value={'react'} />}
+                {customPreferenceView && <FrontendSDKContent value={'vue'} userId={userId} environment={environment} />}
+                {!customPreferenceView && (
+                    <FrontendSDKContent value={'react'} userId={userId} environment={environment} />
+                )}
             </div>
         </div>
     );
