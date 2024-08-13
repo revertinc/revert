@@ -47,7 +47,7 @@ export function SideNav({ value }: SideNavProps) {
                 </div>
                 <div className="flex items-center pl-2 h-12 revert-focus-outline rounded-lg">
                     <UserButton />
-                    <p className="ml-3 hidden md:block">{user?.fullName ?? 'User Name'}</p>
+                    <p className="ml-3 hidden md:block">{user?.fullName ?? user?.firstName ?? user?.username}</p>
                 </div>
             </div>
         </div>

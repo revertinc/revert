@@ -36,7 +36,7 @@ export function FrontendSdk({ userId, environment }: { userId: string; environme
                     onClick={() => (!customPreferenceView ? setCustomPreferenceView(true) : null)}
                 >
                     <div className="flex items-start justify-start gap-3">
-                        <img src="/vuejs-icon.svg" alt="Vuejs" height={24} width={24} />
+                        <Icons.vue />
                         <div className="flex flex-col gap-1">
                             <h4 className="text-left text-gray-50/70 text-base font-bold">Vue.js</h4>
                         </div>
