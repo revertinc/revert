@@ -1,3 +1,15 @@
+# Revert has joined Ampersand 🤝
+
+We've joined the incredible team at [Ampersand](https://withampersand.com) to take the future of product integrations forward in the Agentic Era. 
+
+<img width="100%" src="./public/amp_revert.png"/>
+
+<br/>
+
+<b>Start building now 👉 <b/> : https://docs.withampersand.com/ 
+
+#
+
 <p align="center">
 <p align="center">
 <img width="100%" src="./public/github_readme.jpg"/>
