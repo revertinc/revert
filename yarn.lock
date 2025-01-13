@@ -4307,6 +4307,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@prisma/debug@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@prisma/debug@npm:6.2.1"
+  checksum: d77a4a8db6b319d7b1a97995cb1346232315e78f05d8c92d371df8cfa24ce7ace9298224b5bd70b57b1b552133dccdec01f60f5cf4aad05a2b26b88af3e04323
+  languageName: node
+  linkType: hard
+
 "@prisma/engines-version@npm:4.16.1-1.4bc8b6e1b66cb932731fb1bdbbc550d1e010de81":
   version: 4.16.1-1.4bc8b6e1b66cb932731fb1bdbbc550d1e010de81
   resolution: "@prisma/engines-version@npm:4.16.1-1.4bc8b6e1b66cb932731fb1bdbbc550d1e010de81"
@@ -4314,10 +4321,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/engines@npm:4.16.2":
-  version: 4.16.2
-  resolution: "@prisma/engines@npm:4.16.2"
-  checksum: f423e6092c3e558cd089a68ae87459fba7fd390c433df087342b3269c3b04163965b50845150dfe47d01f811781bfff89d5ae81c95ca603c59359ab69ebd810f
+"@prisma/engines-version@npm:6.2.0-14.4123509d24aa4dede1e864b46351bf2790323b69":
+  version: 6.2.0-14.4123509d24aa4dede1e864b46351bf2790323b69
+  resolution: "@prisma/engines-version@npm:6.2.0-14.4123509d24aa4dede1e864b46351bf2790323b69"
+  checksum: 813905c757a11c2e4112e63f1b5cd3750e4cf74302bf1d6a3f981ed866eead9e1d0086a61a7fde25e684ef516ad17c052089ee62b538a5bd6142cb7955ec7005
+  languageName: node
+  linkType: hard
+
+"@prisma/engines@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@prisma/engines@npm:6.2.1"
+  dependencies:
+    "@prisma/debug": 6.2.1
+    "@prisma/engines-version": 6.2.0-14.4123509d24aa4dede1e864b46351bf2790323b69
+    "@prisma/fetch-engine": 6.2.1
+    "@prisma/get-platform": 6.2.1
+  checksum: 33d6d7d9565055f89de1629f03bf8e2b1c3b69cc1a162d852b0809568971fa9264a2b6356026e1d7c64a7a16043056766a76eec75cb79dd3745e63320f8a9125
+  languageName: node
+  linkType: hard
+
+"@prisma/fetch-engine@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@prisma/fetch-engine@npm:6.2.1"
+  dependencies:
+    "@prisma/debug": 6.2.1
+    "@prisma/engines-version": 6.2.0-14.4123509d24aa4dede1e864b46351bf2790323b69
+    "@prisma/get-platform": 6.2.1
+  checksum: 5960e95518eb003171f9870d3bcb87a8402979983c478558b3343a6ad5519f506417418fe91aa017e7a253769fc284df9c9d7c91815500eb92cd9ac8bfbd0d70
+  languageName: node
+  linkType: hard
+
+"@prisma/get-platform@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@prisma/get-platform@npm:6.2.1"
+  dependencies:
+    "@prisma/debug": 6.2.1
+  checksum: cb9b5f144d4266bde5990c2c4540a527761033083d64ae9d05980ab88ee8a777f54cc1ea54b707734fc9bf3892dfd194aae896238444a519a3bc0a2a97e32469
   languageName: node
   linkType: hard
 
@@ -5263,7 +5302,7 @@ __metadata:
     morgan: ^1.10.0
     node-cron: ^3.0.2
     oauth: ^0.10.0
-    prisma: ^4.16.0
+    prisma: ^6.2.1
     rate-limiter-flexible: ^5.0.3
     redis: ^4.6.8
     svix: ^1.14.0
@@ -17133,6 +17172,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fsevents@npm:2.3.3, fsevents@npm:^2.1.2, fsevents@npm:^2.3.2, fsevents@npm:~2.3.2, fsevents@npm:~2.3.3":
+  version: 2.3.3
+  resolution: "fsevents@npm:2.3.3"
+  dependencies:
+    node-gyp: latest
+  checksum: 11e6ea6fea15e42461fc55b4b0e4a0a3c654faa567f1877dbd353f39156f69def97a69936d1746619d656c4b93de2238bf731f6085a03a50cabf287c9d024317
+  conditions: os=darwin
+  languageName: node
+  linkType: hard
+
 "fsevents@npm:^1.2.7":
   version: 1.2.13
   resolution: "fsevents@npm:1.2.13"
@@ -17144,12 +17193,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fsevents@npm:^2.1.2, fsevents@npm:^2.3.2, fsevents@npm:~2.3.2, fsevents@npm:~2.3.3":
+"fsevents@patch:fsevents@2.3.3#~builtin<compat/fsevents>, fsevents@patch:fsevents@^2.1.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@^2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.3#~builtin<compat/fsevents>":
   version: 2.3.3
-  resolution: "fsevents@npm:2.3.3"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.3#~builtin<compat/fsevents>::version=2.3.3&hash=18f3a7"
   dependencies:
     node-gyp: latest
-  checksum: 11e6ea6fea15e42461fc55b4b0e4a0a3c654faa567f1877dbd353f39156f69def97a69936d1746619d656c4b93de2238bf731f6085a03a50cabf287c9d024317
   conditions: os=darwin
   languageName: node
   linkType: hard
@@ -17160,15 +17208,6 @@ __metadata:
   dependencies:
     bindings: ^1.5.0
     nan: ^2.12.1
-  conditions: os=darwin
-  languageName: node
-  linkType: hard
-
-"fsevents@patch:fsevents@^2.1.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@^2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.3#~builtin<compat/fsevents>":
-  version: 2.3.3
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.3#~builtin<compat/fsevents>::version=2.3.3&hash=18f3a7"
-  dependencies:
-    node-gyp: latest
   conditions: os=darwin
   languageName: node
   linkType: hard
@@ -24641,15 +24680,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prisma@npm:^4.16.0":
-  version: 4.16.2
-  resolution: "prisma@npm:4.16.2"
+"prisma@npm:^6.2.1":
+  version: 6.2.1
+  resolution: "prisma@npm:6.2.1"
   dependencies:
-    "@prisma/engines": 4.16.2
+    "@prisma/engines": 6.2.1
+    fsevents: 2.3.3
+  dependenciesMeta:
+    fsevents:
+      optional: true
   bin:
     prisma: build/index.js
-    prisma2: build/index.js
-  checksum: 1d0ed616abd7f8de22441e333b976705f1cb05abcb206965df3fc6a7ea03911ef467dd484a4bc51fdc6cff72dd9857b9852be5f232967a444af0a98c49bfdb76
+  checksum: 04232e345506c0b0fe8c5c16b15c9f0a51179501ee7c00b6bf52ad193cf38222ff0eb1f04a02b1a24feb1445bc5796f612838e93be39fdec416576883f8c2ca7
   languageName: node
   linkType: hard
 
