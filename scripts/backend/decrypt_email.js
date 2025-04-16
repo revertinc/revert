@@ -4,7 +4,7 @@ const CIPHER_ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16;
 const TAG_LENGTH = 16;
 const SALT_LENGTH = 64;
-const ITERATIONS = 10000;
+const ITERATIONS = 100000; // Increase for better security but lower performance
 
 const tagPosition = SALT_LENGTH + IV_LENGTH;
 const encryptedPosition = tagPosition + TAG_LENGTH;
