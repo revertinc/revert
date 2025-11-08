@@ -1,0 +1,21 @@
+{
+  "name": "revert-dev-tester",
+  "version": "1.0.0",
+  "description": "Integration test suite for Revert API",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --detectOpenHandles",
+    "test:watch": "jest --watch",
+    "test:verbose": "jest --verbose"
+  },
+  "keywords": ["revert", "api", "testing", "integration"],
+  "author": "",
+  "license": "AGPL-3.0-only",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
