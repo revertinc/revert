@@ -1,0 +1,1143 @@
+{
+  "info": {
+    "name": "Revert API",
+    "description": "Postman collection for Revert API with fieldMappings, connections, and unified endpoints across CRM, ATS, Ticket, Accounting, and Chat modules.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Field Mappings",
+      "description": "Field mapping endpoints for custom field configuration",
+      "item": [
+        {
+          "name": "Get Field Mapping Config",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-revert-public-token",
+                "value": "{{publicToken}}",
+                "type": "text",
+                "description": "Your public key, to be used on the frontend usually."
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text",
+                "description": "The unique customer id used when the customer linked their account."
+              },
+              {
+                "key": "x-revert-t-token",
+                "value": "{{tempToken}}",
+                "type": "text",
+                "description": "The temp used to identify tenant."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/field-mapping",
+              "host": ["{{baseUrl}}"],
+              "path": ["field-mapping"]
+            },
+            "description": "Get field mappings configs for a connection"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response has required fields', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('canAddCustomMapping');",
+                  "    pm.expect(jsonData).to.have.property('mappableFields');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Field Mappings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text",
+                "description": "Your official API key for accessing revert apis."
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text",
+                "description": "The unique customer id used when the customer linked their account."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/field-mapping/mappings",
+              "host": ["{{baseUrl}}"],
+              "path": ["field-mapping", "mappings"]
+            },
+            "description": "Get field mappings for a connection"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response has tpId and mappings', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('tpId');",
+                  "    pm.expect(jsonData).to.have.property('mappings');",
+                  "    pm.expect(jsonData.mappings).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Field Mapping",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-revert-public-token",
+                "value": "{{publicToken}}",
+                "type": "text",
+                "description": "Your public key, to be used on the frontend usually."
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text",
+                "description": "The unique customer id used when the customer linked their account."
+              },
+              {
+                "key": "x-revert-t-token",
+                "value": "{{tempToken}}",
+                "type": "text",
+                "description": "The temp used to identify tenant."
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"standardMappings\": [\n    {\n      \"sourceFieldName\": \"firstName\",\n      \"targetFieldName\": \"first_name\",\n      \"object\": \"contact\"\n    }\n  ],\n  \"customMappings\": [\n    {\n      \"sourceFieldName\": \"customField\",\n      \"targetFieldName\": \"custom_field\",\n      \"object\": \"contact\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/field-mapping",
+              "host": ["{{baseUrl}}"],
+              "path": ["field-mapping"]
+            },
+            "description": "Create field mappings for a connection after user input"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201 or 200', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response status is ok', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.equal('ok');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Field Mapping",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text",
+                "description": "Your official API key for accessing revert apis."
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text",
+                "description": "The unique customer id used when the customer linked their account."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/field-mapping",
+              "host": ["{{baseUrl}}"],
+              "path": ["field-mapping"]
+            },
+            "description": "Delete field mappings for a connection"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response status is ok', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.equal('ok');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Connections",
+      "description": "Connection management endpoints",
+      "item": [
+        {
+          "name": "Get Connection",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text",
+                "description": "Your official API key for accessing revert apis."
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text",
+                "description": "The unique customer id used when the customer linked their account."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/connection",
+              "host": ["{{baseUrl}}"],
+              "path": ["connection"]
+            },
+            "description": "Get details of a connection for a specific tenant."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response has tp_id', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('tp_id');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Connections",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text",
+                "description": "Your official API key for accessing revert apis."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/connection/all",
+              "host": ["{{baseUrl}}"],
+              "path": ["connection", "all"]
+            },
+            "description": "Get details of all the connections for a specific account at Revert."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response is an array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Connection",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text",
+                "description": "Your official API key for accessing revert apis."
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text",
+                "description": "The unique customer id used when the customer linked their account."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/connection",
+              "host": ["{{baseUrl}}"],
+              "path": ["connection"]
+            },
+            "description": "Delete a connection for a specific tenant."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response status is ok', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.equal('ok');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text",
+                "description": "Your official API key for accessing revert apis."
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text",
+                "description": "The unique customer id used when the customer linked their account."
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"webhookUrl\": \"https://example.com/webhook\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/connection/webhook",
+              "host": ["{{baseUrl}}"],
+              "path": ["connection", "webhook"]
+            },
+            "description": "Create a webhook endpoint that listens to connection events of a specific tenant."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201 or 200', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has webhookUrl', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('webhookUrl');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Webhook",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text",
+                "description": "Your official API key for accessing revert apis."
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text",
+                "description": "The unique customer id used when the customer linked their account."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/connection/webhook",
+              "host": ["{{baseUrl}}"],
+              "path": ["connection", "webhook"]
+            },
+            "description": "Get details of a connection webhook for a specific tenant."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Webhook",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text",
+                "description": "Your official API key for accessing revert apis."
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text",
+                "description": "The unique customer id used when the customer linked their account."
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/connection/webhook",
+              "host": ["{{baseUrl}}"],
+              "path": ["connection", "webhook"]
+            },
+            "description": "Delete the connection webhook for a specific tenant."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CRM - Contacts",
+      "description": "CRM contact management endpoints",
+      "item": [
+        {
+          "name": "Get Contact",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/crm/contacts/{{contactId}}?fields=firstName,lastName,email",
+              "host": ["{{baseUrl}}"],
+              "path": ["crm", "contacts", "{{contactId}}"],
+              "query": [
+                {
+                  "key": "fields",
+                  "value": "firstName,lastName,email"
+                },
+                {
+                  "key": "associations",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get details of a contact"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response has status and result', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.equal('ok');",
+                  "    pm.expect(jsonData).to.have.property('result');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Contacts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/crm/contacts?pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["crm", "contacts"],
+              "query": [
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "cursor",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get all the contacts"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response has results array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.equal('ok');",
+                  "    pm.expect(jsonData.results).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Contact",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"+1234567890\",\n  \"additional\": {}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/crm/contacts",
+              "host": ["{{baseUrl}}"],
+              "path": ["crm", "contacts"]
+            },
+            "description": "Create a new contact"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201 or 200', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response status is ok', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.equal('ok');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CRM - Companies",
+      "description": "CRM company management endpoints",
+      "item": [
+        {
+          "name": "Get Company",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/crm/companies/{{companyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["crm", "companies", "{{companyId}}"]
+            },
+            "description": "Get details of a company"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Companies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/crm/companies?pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["crm", "companies"],
+              "query": [
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get all companies"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Company",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Acme Corp\",\n  \"website\": \"https://acmecorp.com\",\n  \"industry\": \"Technology\",\n  \"additional\": {}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/crm/companies",
+              "host": ["{{baseUrl}}"],
+              "path": ["crm", "companies"]
+            },
+            "description": "Create a new company"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201 or 200', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CRM - Deals",
+      "description": "CRM deal management endpoints",
+      "item": [
+        {
+          "name": "Get Deal",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/crm/deals/{{dealId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["crm", "deals", "{{dealId}}"]
+            },
+            "description": "Get details of a deal"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Deals",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/crm/deals?pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["crm", "deals"],
+              "query": [
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get all deals"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Deal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Enterprise Deal\",\n  \"amount\": 50000,\n  \"stage\": \"Negotiation\",\n  \"additional\": {}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/crm/deals",
+              "host": ["{{baseUrl}}"],
+              "path": ["crm", "deals"]
+            },
+            "description": "Create a new deal"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201 or 200', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ATS - Candidates",
+      "description": "ATS candidate management endpoints",
+      "item": [
+        {
+          "name": "Get Candidate",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ats/candidates/{{candidateId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["ats", "candidates", "{{candidateId}}"]
+            },
+            "description": "Get details of a candidate"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Candidates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ats/candidates?pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["ats", "candidates"],
+              "query": [
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get all candidates"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tickets",
+      "description": "Ticket management endpoints",
+      "item": [
+        {
+          "name": "Get Ticket",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{ticketId}}"]
+            },
+            "description": "Get details of a ticket"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Tickets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-revert-api-token",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "x-revert-t-id",
+                "value": "{{tenantId}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets?pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"],
+              "query": [
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get all tickets"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4001",
+      "type": "string"
+    },
+    {
+      "key": "apiToken",
+      "value": "your-api-token-here",
+      "type": "string"
+    },
+    {
+      "key": "publicToken",
+      "value": "your-public-token-here",
+      "type": "string"
+    },
+    {
+      "key": "tenantId",
+      "value": "your-tenant-id-here",
+      "type": "string"
+    },
+    {
+      "key": "tempToken",
+      "value": "your-temp-token-here",
+      "type": "string"
+    },
+    {
+      "key": "contactId",
+      "value": "contact-id-here",
+      "type": "string"
+    },
+    {
+      "key": "companyId",
+      "value": "company-id-here",
+      "type": "string"
+    },
+    {
+      "key": "dealId",
+      "value": "deal-id-here",
+      "type": "string"
+    },
+    {
+      "key": "candidateId",
+      "value": "candidate-id-here",
+      "type": "string"
+    },
+    {
+      "key": "ticketId",
+      "value": "ticket-id-here",
+      "type": "string"
+    }
+  ]
+}
