@@ -46,6 +46,22 @@ We've joined the incredible team at [Ampersand](https://withampersand.com) to ta
 <a href="https://www.producthunt.com/posts/revert-3?utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-revert&#0045;3" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=425023&theme=light&period=weekly&topic_id=267" alt="Revert - Open&#0045;source&#0032;unified&#0032;API&#0032;to&#0032;build&#0032;product&#0032;integrations | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 <a href="https://www.producthunt.com/posts/revert-3?utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-revert&#0045;3" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=425023&theme=light&period=daily" alt="Revert - Open&#0045;source&#0032;unified&#0032;API&#0032;to&#0032;build&#0032;product&#0032;integrations | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
+
+## 📖 Table of Contents
+
+- [About Revert](#-about-revert)
+- - [Why Revert?](#why-revert)
+  - - [What makes us faster and reliable](#-what-makes-us-faster-and-reliable)
+    - - [Quickstart](#quickstart)
+      -   - [Revert Cloud](#revert-cloud)
+          -   - [Self-hosted with docker-compose](#spinning-up-revert-with-docker-compose)
+              - - [Architecture](#architecture)
+                - - [Packages](#packages)
+                  - - [Examples](#examples)
+                    - - [Support](#-support)
+                      - - [Security](#-security)
+                        - - [Roadmap](#%EF%B8%8F-roadmap)
+                          - - [Contributors](#-contributors)
 ### ⭐ About Revert
 
 Revert makes it incredibly easy to build integrations with any third party API such as
