@@ -5,6 +5,7 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
+import config from '../../config';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedJob } from '../../models/unified/job';
@@ -78,6 +79,34 @@ const jobServiceAts = new JobService(
 
                         const unifiedJob: any = await unifyObject<any, UnifiedJob>({
                             obj: result.data.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedJob,
+                        });
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            'Content-Type': 'application/json',
+                        };
+                        const baseUrl =
+                            (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/api/staffing/v6/jobPostings/${jobId}`,
+                            headers: headers,
+                        });
+
+                        const unifiedJob: any = await unifyObject<any, UnifiedJob>({
+                            obj: result.data,
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -240,6 +269,63 @@ const jobServiceAts = new JobService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            'Content-Type': 'application/json',
+                        };
+                        const baseUrl =
+                            (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+
+                        let otherParams = '';
+                        if (fields) {
+                            otherParams = Object.keys(fields)
+                                .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(fields[key])}`)
+                                .join('&');
+                        }
+
+                        let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&offset=${cursor}` : ''
+                        }${otherParams ? `&${otherParams}` : ''}`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/api/staffing/v6/jobPostings?${pagingString}`,
+                            headers: headers,
+                        });
+
+                        const jobsData = result.data?.data || result.data;
+                        const unifiedJobs = await Promise.all(
+                            (Array.isArray(jobsData) ? jobsData : []).map(async (job: any) => {
+                                return await unifyObject<any, UnifiedJob>({
+                                    obj: job,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        let nextCursor = result.data?.total
+                            ? cursor
+                                ? Number(cursor) + (pageSize || 20)
+                                : pageSize || 20
+                            : undefined;
+
+                        if (nextCursor && nextCursor >= (result.data?.total || 0)) {
+                            nextCursor = undefined;
+                        }
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor ? String(nextCursor) : undefined,
+                            previous: undefined,
+                            results: unifiedJobs,
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -328,6 +414,29 @@ const jobServiceAts = new JobService(
                             status: 'ok',
                             message: 'Lever job created',
                             result: result.data.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        };
+                        const baseUrl =
+                            (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+
+                        const result = await axios({
+                            method: 'post',
+                            url: `${baseUrl}/api/staffing/v6/jobPostings`,
+                            headers: headers,
+                            data: JSON.stringify(job),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Workday job created',
+                            result: result.data,
                         });
                         break;
                     }
@@ -428,6 +537,29 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        };
+                        const baseUrl =
+                            (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+
+                        const result = await axios({
+                            method: 'patch',
+                            url: `${baseUrl}/api/staffing/v6/jobPostings/${jobId}`,
+                            headers: headers,
+                            data: JSON.stringify(job),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Workday job updated',
+                            result: result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -470,6 +602,14 @@ const jobServiceAts = new JobService(
                         break;
                     }
                     case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workday: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
