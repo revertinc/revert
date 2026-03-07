@@ -5,6 +5,7 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
+import config from '../../config';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedOffer } from '../../models/unified/offer';
@@ -62,6 +63,34 @@ const offerServiceAts = new OfferService(
                         res.send({
                             status: 'ok',
                             result: 'This endpoint is currently not supported.',
+                        });
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            'Content-Type': 'application/json',
+                        };
+                        const baseUrl =
+                            (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/api/staffing/v6/jobOffers/${offerId}`,
+                            headers: headers,
+                        });
+
+                        const unifiedOffer: any = await unifyObject<any, UnifiedOffer>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedOffer,
                         });
                         break;
                     }
@@ -213,6 +242,62 @@ const offerServiceAts = new OfferService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            'Content-Type': 'application/json',
+                        };
+                        const baseUrl =
+                            (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+
+                        let otherParams = '';
+                        if (fields) {
+                            otherParams = Object.keys(fields)
+                                .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(fields[key])}`)
+                                .join('&');
+                        }
+
+                        let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&offset=${cursor}` : ''
+                        }${otherParams ? `&${otherParams}` : ''}`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/api/staffing/v6/jobOffers?${pagingString}`,
+                            headers: headers,
+                        });
+
+                        const offersData = result.data?.data || result.data;
+                        const unifiedOffers = await Promise.all(
+                            (Array.isArray(offersData) ? offersData : []).map(async (offer: any) => {
+                                return await unifyObject<any, UnifiedOffer>({
+                                    obj: offer,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        let nextCursor = result.data?.total
+                            ? cursor
+                                ? Number(cursor) + (pageSize || 20)
+                                : pageSize || 20
+                            : undefined;
+
+                        if (nextCursor && nextCursor >= (result.data?.total || 0)) {
+                            nextCursor = undefined;
+                        }
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor ? String(nextCursor) : undefined,
+                            previous: undefined,
+                            results: unifiedOffers,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -256,6 +341,14 @@ const offerServiceAts = new OfferService(
                         break;
                     }
                     case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workday: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
@@ -335,6 +428,14 @@ const offerServiceAts = new OfferService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -377,6 +478,14 @@ const offerServiceAts = new OfferService(
                         break;
                     }
                     case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workday: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
