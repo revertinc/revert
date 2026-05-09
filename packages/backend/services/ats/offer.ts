@@ -7,6 +7,7 @@ import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
+import { getWorkableBaseUrl, getWorkableHeaders } from '../../helpers/ats/workable';
 import { UnifiedOffer } from '../../models/unified/offer';
 import { OfferService } from '../../generated/typescript/api/resources/ats/resources/offer/service/OfferService';
 
@@ -62,6 +63,26 @@ const offerServiceAts = new OfferService(
                         res.send({
                             status: 'ok',
                             result: 'This endpoint is currently not supported.',
+                        });
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${getWorkableBaseUrl(connection)}/candidates/${offerId}/offer`,
+                            headers: getWorkableHeaders(thirdPartyToken),
+                        });
+                        const unifiedOffer: any = await unifyObject<any, UnifiedOffer>({
+                            obj: result.data.offer || result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedOffer,
                         });
                         break;
                     }
@@ -213,6 +234,34 @@ const offerServiceAts = new OfferService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        if (!fields || (fields && !fields.candidateId)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "candidateId" is required and should be included in the "fields" parameter.',
+                            });
+                        }
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${getWorkableBaseUrl(connection)}/candidates/${fields.candidateId}/offer`,
+                            headers: getWorkableHeaders(thirdPartyToken),
+                        });
+                        const unifiedOffer = await unifyObject<any, UnifiedOffer>({
+                            obj: result.data.offer || result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            next: undefined,
+                            previous: undefined,
+                            results: [unifiedOffer],
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -256,6 +305,14 @@ const offerServiceAts = new OfferService(
                         break;
                     }
                     case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workable: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
@@ -335,6 +392,14 @@ const offerServiceAts = new OfferService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -377,6 +442,14 @@ const offerServiceAts = new OfferService(
                         break;
                     }
                     case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workable: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',

@@ -732,11 +732,17 @@ class AuthService {
             data: {
                 ...(clientId && { app_client_id: clientId }),
                 ...(clientSecret && { app_client_secret: clientSecret }),
-                ...(appConfig?.bot_token && { app_config: { bot_token: appConfig.bot_token } }),
-                ...(appConfig?.org_url && { app_config: { org_url: appConfig.org_url } }),
-                ...(appConfig?.env && { app_config: { env: appConfig.env } }),
-                ...(appConfig && appConfig.bot_token === '' && { app_config: { bot_token: '' } }),
-                ...(appConfig && appConfig.org_url === '' && { app_config: { org_url: '' } }),
+                ...(appConfig && {
+                    app_config: {
+                        ...(appConfig.bot_token !== undefined && { bot_token: appConfig.bot_token }),
+                        ...(appConfig.org_url !== undefined && { org_url: appConfig.org_url }),
+                        ...(appConfig.subdomain !== undefined && { subdomain: appConfig.subdomain }),
+                        ...(appConfig.account_subdomain !== undefined && {
+                            account_subdomain: appConfig.account_subdomain,
+                        }),
+                        ...(appConfig.env !== undefined && { env: appConfig.env }),
+                    },
+                }),
                 is_revert_app: isRevertApp,
                 scope: scopes,
             },

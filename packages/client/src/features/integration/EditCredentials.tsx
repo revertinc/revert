@@ -69,6 +69,7 @@ const LoadingButton = styled(MuiLoadingButton)`
 interface AppConfig {
     bot_token?: string;
     org_url?: string;
+    subdomain?: string;
     env?: string;
 }
 
@@ -114,6 +115,8 @@ const EditCredentials: React.FC<{
             setAppConfig({ bot_token: val });
         } else if (app.tp_id === 'ms_dynamics_365_sales') {
             setAppConfig({ org_url: val });
+        } else if (app.tp_id === 'workable') {
+            setAppConfig({ subdomain: val });
         }
     };
 
@@ -183,6 +186,17 @@ const EditCredentials: React.FC<{
                                 value={app?.app_config?.org_url}
                                 onChange={handleAppConfigFieldChange}
                                 error={!app?.app_config?.org_url}
+                            />
+                        </Row>
+                    )}
+                    {app.tp_id === 'workable' && (
+                        <Row>
+                            <span className="font-bold">Subdomain: </span>
+                            <Input
+                                className="app_subdomain"
+                                value={appConfig?.subdomain || app?.app_config?.subdomain}
+                                onChange={handleAppConfigFieldChange}
+                                error={!appConfig?.subdomain && !app?.app_config?.subdomain}
                             />
                         </Row>
                     )}
