@@ -1199,7 +1199,7 @@ const createIntegrationBlock = function (self, integration) {
             });
         };
 
-        apiKeyInputContainerFunction = function () {
+        apiKeyInputContainerFunction = function (includeSubdomain = false) {
             const parentDiv = document.createElement('div');
             parentDiv.id = 'parentDiv';
             parentDiv.style.display = 'flex';
@@ -1248,6 +1248,31 @@ const createIntegrationBlock = function (self, integration) {
             inputContainer.appendChild(apiKeyLabel);
             inputContainer.appendChild(apiKeyInput);
 
+            const subdomainContainer = document.createElement('div');
+            let subdomainInput;
+            if (includeSubdomain) {
+                subdomainContainer.style.display = 'flex';
+                subdomainContainer.style.alignItems = 'center';
+                subdomainContainer.style.flexGrow = '1';
+                subdomainContainer.style.width = '100%';
+
+                const subdomainLabel = document.createElement('label');
+                subdomainLabel.textContent = 'Subdomain:';
+                subdomainLabel.setAttribute('for', 'subdomain-input');
+                subdomainLabel.style.marginRight = '10px';
+                subdomainLabel.style.fontWeight = 'bold';
+
+                subdomainInput = document.createElement('input');
+                subdomainInput.setAttribute('type', 'text');
+                subdomainInput.setAttribute('id', 'subdomain-input');
+                subdomainInput.placeholder = 'your-company';
+                subdomainInput.style.flexGrow = '1';
+                subdomainInput.style.padding = '4px';
+
+                subdomainContainer.appendChild(subdomainLabel);
+                subdomainContainer.appendChild(subdomainInput);
+            }
+
             // Create submit button
             const submitButton = document.createElement('button');
             submitButton.id = 'submitButtonBasicAuth';
@@ -1267,6 +1292,9 @@ const createIntegrationBlock = function (self, integration) {
 
             // Append input container and button to the inputParentContainer
             inputParentContainer.appendChild(inputContainer);
+            if (includeSubdomain) {
+                inputParentContainer.appendChild(subdomainContainer);
+            }
             inputParentContainer.appendChild(submitButton);
 
             // Append inputParentContainer to parentDiv
@@ -1275,7 +1303,7 @@ const createIntegrationBlock = function (self, integration) {
             return parentDiv;
         };
 
-        modalForApiKeyInputBasicAuth = function () {
+        modalForApiKeyInputBasicAuth = function (includeSubdomain = false) {
             return new Promise((resolve, reject) => {
                 const container = document.getElementById('revert-signin-container');
                 container.style.height = '534px';
@@ -1296,24 +1324,33 @@ const createIntegrationBlock = function (self, integration) {
                         this.close();
                     });
 
-                    const apiKeyInputContainer = this.apiKeyInputContainerFunction();
+                    const apiKeyInputContainer = this.apiKeyInputContainerFunction(includeSubdomain);
                     container.appendChild(closeButton);
                     container.appendChild(apiKeyInputContainer);
 
                     const inputElementForApiInput = apiKeyInputContainer.querySelector('#api-key-input');
+                    const inputElementForSubdomain = apiKeyInputContainer.querySelector('#subdomain-input');
                     const submitButtonForApiInputSubmission =
                         apiKeyInputContainer.querySelector('#submitButtonBasicAuth');
 
-                    //event listener on input to change the disability of submit
-                    inputElementForApiInput.addEventListener('input', function () {
-                        if (inputElementForApiInput.value.trim() !== '') {
+                    const updateSubmitButtonState = function () {
+                        const hasApiKey = inputElementForApiInput.value.trim() !== '';
+                        const hasSubdomain = !includeSubdomain || inputElementForSubdomain.value.trim() !== '';
+
+                        if (hasApiKey && hasSubdomain) {
                             submitButtonForApiInputSubmission.disabled = false;
                             submitButtonForApiInputSubmission.style.opacity = '1';
                         } else {
                             submitButtonForApiInputSubmission.disabled = true;
                             submitButtonForApiInputSubmission.style.opacity = '0.5';
                         }
-                    });
+                    };
+
+                    //event listener on input to change the disability of submit
+                    inputElementForApiInput.addEventListener('input', updateSubmitButtonState);
+                    if (inputElementForSubdomain) {
+                        inputElementForSubdomain.addEventListener('input', updateSubmitButtonState);
+                    }
 
                     //event listener for submission go Api key
                     submitButtonForApiInputSubmission.addEventListener('click', () => {
@@ -1321,8 +1358,9 @@ const createIntegrationBlock = function (self, integration) {
                         submitButtonForApiInputSubmission.style.opacity = '0.5';
 
                         const apiKey = inputElementForApiInput.value;
+                        const subdomain = inputElementForSubdomain?.value;
 
-                        resolve(apiKey);
+                        resolve(includeSubdomain ? { apiKey, subdomain } : apiKey);
                     });
                 });
             });
@@ -1470,6 +1508,40 @@ const createIntegrationBlock = function (self, integration) {
                                 const errorMessage =
                                     data.error?.code === 'P2002'
                                         ? ': Already connected another CRM. Please disconnect first.'
+                                        : '';
+
+                                console.log('error:', errorMessage);
+                            } else {
+                                console.log('OAuth flow succeeded', data);
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            return this.renderFailedStage();
+                        });
+                } else if (selectedIntegration.integrationId === 'workable') {
+                    const { apiKey, subdomain } = await this.modalForApiKeyInputBasicAuth(true);
+                    const url = `${this.CORE_API_BASE_URL}v1/ats/oauth-callback?integrationId=${
+                        selectedIntegration.integrationId
+                    }&t_id=${this.tenantId}&code=${encodeURIComponent(apiKey)}&subdomain=${encodeURIComponent(
+                        subdomain,
+                    )}&x_revert_public_token=${this.API_REVERT_PUBLIC_TOKEN}${
+                        this.#USER_REDIRECT_URL ? `&redirectUrl=${this.#USER_REDIRECT_URL}` : ``
+                    }`;
+                    fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                        .then((d) => {
+                            return d.json();
+                        })
+                        .then((data) => {
+                            if (data.error) {
+                                const errorMessage =
+                                    data.error?.code === 'P2002'
+                                        ? ': Already connected another ATS. Please disconnect first.'
                                         : '';
 
                                 console.log('error:', errorMessage);

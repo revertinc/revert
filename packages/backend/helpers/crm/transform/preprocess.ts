@@ -692,6 +692,7 @@ export const postprocessDisUnifyAtsObject = <T extends Record<string, any>>({
 }) => {
     const preprocessMap: Record<ATS_TP_ID, Record<any, Function>> = {
         [TP_ID.greenhouse]: {},
+        [TP_ID.workable]: {},
         [TP_ID.lever]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];

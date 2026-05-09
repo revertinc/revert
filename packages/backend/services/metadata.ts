@@ -186,6 +186,14 @@ const metadataService = new MetadataService({
                     clientId: undefined,
                 },
                 {
+                    integrationId: TP_ID.workable,
+                    name: 'Workable',
+                    imageSrc: 'https://www.workable.com/favicon.ico',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.workable),
+                    clientId: undefined,
+                },
+                {
                     integrationId: TP_ID.lever,
                     name: 'Lever',
                     imageSrc:

@@ -6,6 +6,7 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
+import { getWorkableBaseUrl, getWorkableCollection, getWorkableHeaders } from '../../helpers/ats/workable';
 import { UnifiedDepartment } from '../../models/unified/department';
 import { DepartmentService } from '../../generated/typescript/api/resources/ats/resources/department/service/DepartmentService';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
@@ -62,6 +63,34 @@ const departmentServiceAts = new DepartmentService(
                         res.send({
                             status: 'ok',
                             result: 'This endpoint is currently not supported.',
+                        });
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${getWorkableBaseUrl(connection)}/departments`,
+                            headers: getWorkableHeaders(thirdPartyToken),
+                        });
+                        const department = getWorkableCollection(result.data, 'departments').find(
+                            (department: any) => String(department.id) === String(departmentId),
+                        );
+
+                        if (!department) {
+                            throw new NotFoundError({ error: 'Department not found' });
+                        }
+
+                        const unifiedDepartment: any = await unifyObject<any, UnifiedDepartment>({
+                            obj: department,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedDepartment,
                         });
                         break;
                     }
@@ -213,6 +242,34 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${getWorkableBaseUrl(connection)}/departments`,
+                            headers: getWorkableHeaders(thirdPartyToken),
+                        });
+
+                        const unifiedDepartments = await Promise.all(
+                            getWorkableCollection(result.data, 'departments').map(async (department: any) => {
+                                return await unifyObject<any, UnifiedDepartment>({
+                                    obj: department,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: undefined,
+                            previous: undefined,
+                            results: unifiedDepartments,
+                        });
+
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -278,6 +335,17 @@ const departmentServiceAts = new DepartmentService(
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
                         });
+
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const result: any = await axios({
+                            method: 'post',
+                            url: `${getWorkableBaseUrl(connection)}/departments`,
+                            headers: getWorkableHeaders(thirdPartyToken),
+                            data: JSON.stringify(department),
+                        });
+                        res.send({ status: 'ok', message: 'Workable department created', result: result.data });
 
                         break;
                     }
@@ -352,6 +420,22 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const result = await axios({
+                            method: 'put',
+                            url: `${getWorkableBaseUrl(connection)}/departments`,
+                            headers: getWorkableHeaders(thirdPartyToken),
+                            data: JSON.stringify({ ...department, id: departmentId }),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Workable department updated',
+                            result: result.data,
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -397,6 +481,20 @@ const departmentServiceAts = new DepartmentService(
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        await axios({
+                            method: 'delete',
+                            url: `${getWorkableBaseUrl(connection)}/departments/${departmentId}`,
+                            headers: getWorkableHeaders(thirdPartyToken),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Workable department deleted',
                         });
 
                         break;
