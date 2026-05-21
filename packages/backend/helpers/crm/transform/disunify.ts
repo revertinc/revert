@@ -467,6 +467,9 @@ export async function disunifyAtsObject<T extends Record<string, any>>({
 
             return processedObj;
         }
+        case TP_ID.workable: {
+            return processedObj;
+        }
     }
 }
 export async function disunifyAccountingObject<T extends Record<string, any>>({

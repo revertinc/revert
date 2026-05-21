@@ -20,7 +20,7 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
     objType,
 }: {
     obj: T;
-    tpId: CRM_TP_ID | TICKET_TP_ID;
+    tpId: CRM_TP_ID | TICKET_TP_ID | ACCOUNTING_TP_ID | ATS_TP_ID;
     objType:
         | StandardObjects
         | ChatStandardObjects
@@ -535,6 +535,50 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.workable]: {
+            [AtsStandardObjects.candidate]: (obj: T) => {
+                const nameParts = typeof obj.name === 'string' ? obj.name.trim().split(/\s+/) : [];
+                const firstName = obj.firstname || obj.first_name || nameParts[0];
+                const lastName = obj.lastname || obj.last_name || nameParts.slice(1).join(' ') || undefined;
+
+                const emailAddresses = obj.email
+                    ? [{ value: obj.email, type: undefined }]
+                    : obj.email_addresses || obj.emails;
+                const phoneNumbers = obj.phone
+                    ? [{ value: obj.phone, type: undefined }]
+                    : obj.phone_numbers || obj.phones;
+                const websiteAddresses = obj.domain ? [{ value: obj.domain, type: undefined }] : obj.website_addresses;
+                const socialMediaAddresses = obj.social_profiles || obj.social_media_addresses;
+                const applicationIds = Array.isArray(obj.jobs)
+                    ? obj.jobs.map((job: any) => job.shortcode || job.id).filter(Boolean)
+                    : obj.application_ids;
+                const attachments = obj.resume_url
+                    ? [{ filename: 'resume', url: obj.resume_url, type: 'resume', created_at: undefined }]
+                    : obj.attachments;
+
+                return {
+                    ...obj,
+                    first_name: firstName,
+                    last_name: lastName,
+                    headline: obj.headline || obj.summary || obj.title,
+                    email_addresses: emailAddresses,
+                    phone_numbers: phoneNumbers,
+                    website_addresses: websiteAddresses,
+                    social_media_addresses: socialMediaAddresses,
+                    application_ids: applicationIds,
+                    attachments,
+                };
+            },
+            [AtsStandardObjects.job]: (obj: T) => {
+                return {
+                    ...obj,
+                    title: obj.title || obj.full_title,
+                    description: obj.description || obj.full_description,
+                    department: obj.department ? [obj.department] : undefined,
+                    location: obj.location ? [obj.location] : undefined,
+                };
+            },
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
@@ -693,6 +737,7 @@ export const postprocessDisUnifyAtsObject = <T extends Record<string, any>>({
     const preprocessMap: Record<ATS_TP_ID, Record<any, Function>> = {
         [TP_ID.greenhouse]: {},
         [TP_ID.lever]: {},
+        [TP_ID.workable]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
