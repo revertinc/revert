@@ -535,6 +535,40 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.workable]: {
+            [AtsStandardObjects.candidate]: (obj: T) => ({
+                ...obj,
+                application_ids: obj.job ? [obj.job.shortcode || obj.job.id].filter(Boolean) : undefined,
+                email_addresses: obj.email ? [{ value: obj.email, type: undefined }] : undefined,
+                phone_numbers: obj.phone ? [{ value: obj.phone, type: undefined }] : undefined,
+                created_at: obj.created_at || obj.created,
+                updated_at: obj.updated_at || obj.updated,
+                last_activity: obj.last_activity_at || obj.updated_at || obj.updated,
+            }),
+            [AtsStandardObjects.job]: (obj: T) => ({
+                ...obj,
+                id: obj.shortcode || obj.id,
+                name: obj.title || obj.name,
+                status: obj.state || obj.status,
+                notes: obj.description || obj.full_description,
+                departments: obj.department ? [{ name: obj.department }] : undefined,
+                created_at: obj.created_at || obj.created,
+                updated_at: obj.updated_at || obj.updated,
+            }),
+            [AtsStandardObjects.offer]: (obj: T) => ({
+                ...obj,
+                id: obj.id || obj.candidate_id,
+                application_id: obj.candidate_id,
+                job_id: obj.job?.shortcode || obj.job_id,
+                candidate_id: obj.candidate_id,
+                created_at: obj.created_at || obj.created,
+                updated_at: obj.updated_at || obj.updated,
+                sent_at: obj.sent_at,
+                resolved_at: obj.resolved_at,
+                starts_at: obj.starts_at || obj.start_date,
+            }),
+            [AtsStandardObjects.department]: (obj: T) => obj,
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
@@ -693,6 +727,7 @@ export const postprocessDisUnifyAtsObject = <T extends Record<string, any>>({
     const preprocessMap: Record<ATS_TP_ID, Record<any, Function>> = {
         [TP_ID.greenhouse]: {},
         [TP_ID.lever]: {},
+        [TP_ID.workable]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
