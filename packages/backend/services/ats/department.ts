@@ -9,6 +9,7 @@ import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedDepartment } from '../../models/unified/department';
 import { DepartmentService } from '../../generated/typescript/api/resources/ats/resources/department/service/DepartmentService';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
+import { getWorkableCollection, getWorkableNextCursor, getWorkableResource, requestWorkable } from './workable';
 
 const objType = AtsStandardObjects.department;
 
@@ -62,6 +63,35 @@ const departmentServiceAts = new DepartmentService(
                         res.send({
                             status: 'ok',
                             result: 'This endpoint is currently not supported.',
+                        });
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const result = await requestWorkable({
+                            connection,
+                            method: 'get',
+                            path: 'departments',
+                        });
+
+                        const department = getWorkableCollection(result.data, 'departments').find(
+                            (item: any) => String(item.id) === String(departmentId),
+                        );
+
+                        if (!department) {
+                            throw new NotFoundError({ error: 'Department not found' });
+                        }
+
+                        const unifiedDepartment: any = await unifyObject<any, UnifiedDepartment>({
+                            obj: department,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedDepartment,
                         });
                         break;
                     }
@@ -213,6 +243,35 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const result = await requestWorkable({
+                            connection,
+                            method: 'get',
+                            path: 'departments',
+                            params: fields,
+                        });
+
+                        const unifiedDepartments = await Promise.all(
+                            getWorkableCollection(result.data, 'departments').map(async (department: any) => {
+                                return await unifyObject<any, UnifiedDepartment>({
+                                    obj: department,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: getWorkableNextCursor(result.data),
+                            previous: undefined,
+                            results: unifiedDepartments,
+                        });
+
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -277,6 +336,22 @@ const departmentServiceAts = new DepartmentService(
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const result = await requestWorkable({
+                            connection,
+                            method: 'post',
+                            path: 'departments',
+                            data: JSON.stringify(department),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Workable department created',
+                            result: getWorkableResource(result.data, 'department'),
                         });
 
                         break;
@@ -352,6 +427,25 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const result = await requestWorkable({
+                            connection,
+                            method: 'put',
+                            path: 'departments',
+                            data: JSON.stringify({
+                                ...department,
+                                id: department.id || departmentId,
+                            }),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Workable department updated',
+                            result: getWorkableResource(result.data, 'department'),
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -397,6 +491,20 @@ const departmentServiceAts = new DepartmentService(
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        await requestWorkable({
+                            connection,
+                            method: 'delete',
+                            path: `departments/${departmentId}`,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Workable department deleted',
                         });
 
                         break;
