@@ -6,6 +6,8 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
+import config from '../../config';
+import { AppConfig } from '../../constants/common';
 import { ProxyService } from '../../generated/typescript/api/resources/ats/resources/proxy/service/ProxyService';
 
 const proxyServiceAts = new ProxyService(
@@ -57,6 +59,24 @@ const proxyServiceAts = new ProxyService(
                         const result: any = await axios({
                             method: method,
                             url: `https://api.lever.co/v1/${path}`,
+                            headers: headers,
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const baseUrl =
+                            (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = {
+                            Authorization: 'Bearer ' + thirdPartyToken,
+                        };
+                        const result: any = await axios({
+                            method: method,
+                            url: `${baseUrl}/${path}`,
                             headers: headers,
                             data: body,
                             params: queryParams,
