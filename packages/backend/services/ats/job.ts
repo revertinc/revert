@@ -183,6 +183,10 @@ const jobServiceAts = new JobService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        res.send({ status: 'ok', message: 'This endpoint is currently not supported' });
+                        break;
+                    }
                     case TP_ID.lever: {
                         const headers = { Authorization: `Bearer ${thirdPartyToken}` };
 
@@ -238,6 +242,10 @@ const jobServiceAts = new JobService(
                             results: unifiedJobs,
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        res.send({ status: 'ok', message: 'This endpoint is currently not supported' });
                         break;
                     }
                     default: {
@@ -470,6 +478,14 @@ const jobServiceAts = new JobService(
                         break;
                     }
                     case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workday: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
