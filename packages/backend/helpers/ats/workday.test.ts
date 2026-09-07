@@ -32,7 +32,23 @@ describe('Workday tenant URL handling', () => {
         expect(parsed.recruitingBase).toBe('https://wd2-impl-services1.workday.com/ccx/api/recruiting/v1/acme_tenant');
         expect(parsed.staffingBase).toBe('https://wd2-impl-services1.workday.com/ccx/api/staffing/v1/acme_tenant');
         expect(parsed.tokenUrl).toBe('https://wd2-impl-services1.workday.com/ccx/oauth2/acme_tenant/token');
-        expect(parsed.authorizeUrl).toBe('https://wd2-impl-services1.workday.com/acme_tenant/authorize');
+        expect(parsed.authorizeUrl).toBe('https://wd2-impl-services1.workday.com/ccx/oauth2/acme_tenant/authorize');
+    });
+
+    it('parses the generic REST base /ccx/api/v1/{tenant} without treating ccx as the tenant', () => {
+        const parsed = parseWorkdayOrgUrl('https://wd2-impl-services1.workday.com/ccx/api/v1/acme_tenant');
+        expect(parsed.tenant).toBe('acme_tenant');
+        expect(parsed.recruitingBase).toBe('https://wd2-impl-services1.workday.com/ccx/api/recruiting/v1/acme_tenant');
+        expect(parsed.staffingBase).toBe('https://wd2-impl-services1.workday.com/ccx/api/staffing/v1/acme_tenant');
+        expect(parsed.tokenUrl).toBe('https://wd2-impl-services1.workday.com/ccx/oauth2/acme_tenant/token');
+        expect(parsed.authorizeUrl).toBe('https://wd2-impl-services1.workday.com/ccx/oauth2/acme_tenant/authorize');
+    });
+
+    it('parses a token endpoint and still derives recruiting/staffing bases', () => {
+        const parsed = parseWorkdayOrgUrl('https://wd2-impl-services1.workday.com/ccx/oauth2/acme_tenant/token');
+        expect(parsed.tenant).toBe('acme_tenant');
+        expect(parsed.tokenUrl).toBe('https://wd2-impl-services1.workday.com/ccx/oauth2/acme_tenant/token');
+        expect(parsed.recruitingBase).toBe('https://wd2-impl-services1.workday.com/ccx/api/recruiting/v1/acme_tenant');
     });
 
     it('parses host + tenant and builds recruiting v1 as the ATS REST root', () => {
@@ -40,6 +56,7 @@ describe('Workday tenant URL handling', () => {
         expect(parsed.tenant).toBe('northstar');
         expect(parsed.recruitingBase).toBe('https://impl.workday.com/ccx/api/recruiting/v1/northstar');
         expect(parsed.tokenUrl).toBe('https://impl.workday.com/ccx/oauth2/northstar/token');
+        expect(parsed.authorizeUrl).toBe('https://impl.workday.com/ccx/oauth2/northstar/authorize');
     });
 
     it('keeps staffing URLs on the staffing service while mapping recruiting resources separately', () => {

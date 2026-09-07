@@ -61,8 +61,10 @@ export function workdayNotSupportedBody(kind: 'message' | 'result' = 'message'):
  * Parse a Workday tenant URL into REST + OAuth endpoints.
  *
  * Accepted `org_url` shapes:
- * - Full REST base: https://{host}/ccx/api/recruiting/v1/{tenant}
+ * - Recruiting REST base: https://{host}/ccx/api/recruiting/v1/{tenant}
  * - Staffing REST base: https://{host}/ccx/api/staffing/v1/{tenant}
+ * - Generic REST base: https://{host}/ccx/api/v1/{tenant}
+ * - OAuth token URL: https://{host}/ccx/oauth2/{tenant}/token
  * - Host + tenant: https://{host}/{tenant}
  * - Host only: https://{host}  (token/authorize require WORKDAY_TOKEN_URL / WORKDAY_AUTH_URL)
  */
@@ -84,20 +86,32 @@ export function parseWorkdayOrgUrl(
     const url = new URL(trimmed);
     const origin = url.origin;
     const pathname = url.pathname.replace(/\/+$/, '');
-    const restMatch = pathname.match(/^\/ccx\/api\/([^/]+)\/([^/]+)\/([^/]+)(?:\/.*)?$/);
+    const recruitingStaffingMatch = pathname.match(/^\/ccx\/api\/(recruiting|staffing)\/([^/]+)\/([^/]+)(?:\/.*)?$/);
+    const genericRestMatch = pathname.match(/^\/ccx\/api\/(v\d+)\/([^/]+)(?:\/.*)?$/);
+    const oauthMatch = pathname.match(/^\/ccx\/oauth2\/([^/]+)(?:\/.*)?$/);
 
     let tenant: string | undefined;
     let version = 'v1';
     let recruitingBase: string;
     let staffingBase: string;
 
-    if (restMatch) {
-        version = restMatch[2];
-        tenant = restMatch[3];
+    if (recruitingStaffingMatch) {
+        version = recruitingStaffingMatch[2];
+        tenant = recruitingStaffingMatch[3];
+        recruitingBase = `${origin}/ccx/api/recruiting/${version}/${tenant}`;
+        staffingBase = `${origin}/ccx/api/staffing/${version}/${tenant}`;
+    } else if (genericRestMatch) {
+        version = genericRestMatch[1];
+        tenant = genericRestMatch[2];
+        recruitingBase = `${origin}/ccx/api/recruiting/${version}/${tenant}`;
+        staffingBase = `${origin}/ccx/api/staffing/${version}/${tenant}`;
+    } else if (oauthMatch) {
+        tenant = oauthMatch[1];
         recruitingBase = `${origin}/ccx/api/recruiting/${version}/${tenant}`;
         staffingBase = `${origin}/ccx/api/staffing/${version}/${tenant}`;
     } else if (pathname && pathname !== '/') {
-        tenant = pathname.split('/').filter(Boolean)[0];
+        const parts = pathname.split('/').filter(Boolean);
+        tenant = parts[0] === 'wday' ? parts[1] : parts[0];
         recruitingBase = `${origin}/ccx/api/recruiting/${version}/${tenant}`;
         staffingBase = `${origin}/ccx/api/staffing/${version}/${tenant}`;
     } else {
@@ -108,7 +122,7 @@ export function parseWorkdayOrgUrl(
     const tokenUrl =
         stripTrailingSlash(overrides?.tokenUrl || '') || (tenant ? `${origin}/ccx/oauth2/${tenant}/token` : '');
     const authorizeUrl =
-        stripTrailingSlash(overrides?.authUrl || '') || (tenant ? `${origin}/${tenant}/authorize` : '');
+        stripTrailingSlash(overrides?.authUrl || '') || (tenant ? `${origin}/ccx/oauth2/${tenant}/authorize` : '');
 
     return { origin, tenant, recruitingBase, staffingBase, tokenUrl, authorizeUrl };
 }
