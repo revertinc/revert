@@ -9,6 +9,20 @@ import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedCandidate } from '../../models/unified/candidate';
 import { CandidateService } from '../../generated/typescript/api/resources/ats/resources/candidate/service/CandidateService';
+import config from '../../config';
+import {
+    appendQueryParams,
+    extractWorkdayCollection,
+    extractWorkdayResource,
+    getWorkdayAuthHeaders,
+    hasWorkdayTenantUrl,
+    missingWorkdayTenantMessage,
+    nextWorkdayCursor,
+    resolveWorkdayResourceUrl,
+    workdayEnvFromConfig,
+    workdayListPaging,
+    workdayNotSupportedBody,
+} from '../../helpers/ats/workday';
 
 const objType = AtsStandardObjects.candidate;
 
@@ -84,6 +98,35 @@ const candidateServiceAts = new CandidateService(
                             accountFieldMappingConfig: account.accountFieldMappingConfig,
                         });
 
+                        res.send({
+                            status: 'ok',
+                            result: unifiedCandidate,
+                        });
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const workdayEnv = workdayEnvFromConfig(config);
+                        if (!hasWorkdayTenantUrl(connection, workdayEnv)) {
+                            throw new NotFoundError({ error: missingWorkdayTenantMessage() });
+                        }
+                        const result = await axios({
+                            method: 'get',
+                            url: resolveWorkdayResourceUrl(
+                                connection,
+                                'candidates',
+                                candidateId,
+                                undefined,
+                                workdayEnv,
+                            ),
+                            headers: getWorkdayAuthHeaders(thirdPartyToken),
+                        });
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: extractWorkdayResource(result.data),
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({
                             status: 'ok',
                             result: unifiedCandidate,
@@ -237,6 +280,43 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        const workdayEnv = workdayEnvFromConfig(config);
+                        if (!hasWorkdayTenantUrl(connection, workdayEnv)) {
+                            throw new NotFoundError({ error: missingWorkdayTenantMessage() });
+                        }
+                        const { pagingString, offset, limit } = workdayListPaging(pageSize, cursor as string);
+                        const result = await axios({
+                            method: 'get',
+                            url: resolveWorkdayResourceUrl(
+                                connection,
+                                'candidates',
+                                undefined,
+                                appendQueryParams(pagingString, fields),
+                                workdayEnv,
+                            ),
+                            headers: getWorkdayAuthHeaders(thirdPartyToken),
+                        });
+                        const { items, total } = extractWorkdayCollection(result.data);
+                        const unifiedCandidates = await Promise.all(
+                            items.map(async (candidate: any) => {
+                                return await unifyObject<any, UnifiedCandidate>({
+                                    obj: candidate,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: nextWorkdayCursor(offset, items.length, total, limit),
+                            previous: undefined,
+                            results: unifiedCandidates,
+                        });
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -330,6 +410,24 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        const workdayEnv = workdayEnvFromConfig(config);
+                        if (!hasWorkdayTenantUrl(connection, workdayEnv)) {
+                            throw new NotFoundError({ error: missingWorkdayTenantMessage() });
+                        }
+                        const result = await axios({
+                            method: 'post',
+                            url: resolveWorkdayResourceUrl(connection, 'candidates', undefined, undefined, workdayEnv),
+                            headers: getWorkdayAuthHeaders(thirdPartyToken),
+                            data: JSON.stringify(candidate),
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Workday candidate created',
+                            result: extractWorkdayResource(result.data),
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -402,6 +500,10 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        res.send(workdayNotSupportedBody('message'));
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -469,6 +571,10 @@ const candidateServiceAts = new CandidateService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        res.send(workdayNotSupportedBody('message'));
                         break;
                     }
                     default: {

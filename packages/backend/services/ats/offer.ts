@@ -9,6 +9,20 @@ import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedOffer } from '../../models/unified/offer';
 import { OfferService } from '../../generated/typescript/api/resources/ats/resources/offer/service/OfferService';
+import config from '../../config';
+import {
+    appendQueryParams,
+    extractWorkdayCollection,
+    extractWorkdayResource,
+    getWorkdayAuthHeaders,
+    hasWorkdayTenantUrl,
+    missingWorkdayTenantMessage,
+    nextWorkdayCursor,
+    resolveWorkdayResourceUrl,
+    workdayEnvFromConfig,
+    workdayListPaging,
+    workdayNotSupportedBody,
+} from '../../helpers/ats/workday';
 
 const objType = AtsStandardObjects.offer;
 
@@ -62,6 +76,29 @@ const offerServiceAts = new OfferService(
                         res.send({
                             status: 'ok',
                             result: 'This endpoint is currently not supported.',
+                        });
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const workdayEnv = workdayEnvFromConfig(config);
+                        if (!hasWorkdayTenantUrl(connection, workdayEnv)) {
+                            throw new NotFoundError({ error: missingWorkdayTenantMessage() });
+                        }
+                        const result = await axios({
+                            method: 'get',
+                            url: resolveWorkdayResourceUrl(connection, 'jobOffers', offerId, undefined, workdayEnv),
+                            headers: getWorkdayAuthHeaders(thirdPartyToken),
+                        });
+                        const unifiedOffer: any = await unifyObject<any, UnifiedOffer>({
+                            obj: extractWorkdayResource(result.data),
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({
+                            status: 'ok',
+                            result: unifiedOffer,
                         });
                         break;
                     }
@@ -213,6 +250,43 @@ const offerServiceAts = new OfferService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        const workdayEnv = workdayEnvFromConfig(config);
+                        if (!hasWorkdayTenantUrl(connection, workdayEnv)) {
+                            throw new NotFoundError({ error: missingWorkdayTenantMessage() });
+                        }
+                        const { pagingString, offset, limit } = workdayListPaging(pageSize, cursor as string);
+                        const result = await axios({
+                            method: 'get',
+                            url: resolveWorkdayResourceUrl(
+                                connection,
+                                'jobOffers',
+                                undefined,
+                                appendQueryParams(pagingString, fields),
+                                workdayEnv,
+                            ),
+                            headers: getWorkdayAuthHeaders(thirdPartyToken),
+                        });
+                        const { items, total } = extractWorkdayCollection(result.data);
+                        const unifiedOffers = await Promise.all(
+                            items.map(async (offer: any) => {
+                                return await unifyObject<any, UnifiedOffer>({
+                                    obj: offer,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: nextWorkdayCursor(offset, items.length, total, limit),
+                            previous: undefined,
+                            results: unifiedOffers,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -261,6 +335,10 @@ const offerServiceAts = new OfferService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        res.send(workdayNotSupportedBody('message'));
                         break;
                     }
                     default: {
@@ -335,6 +413,10 @@ const offerServiceAts = new OfferService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        res.send(workdayNotSupportedBody('message'));
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -382,6 +464,10 @@ const offerServiceAts = new OfferService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        res.send(workdayNotSupportedBody('message'));
                         break;
                     }
                     default: {
