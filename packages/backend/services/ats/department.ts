@@ -9,6 +9,20 @@ import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedDepartment } from '../../models/unified/department';
 import { DepartmentService } from '../../generated/typescript/api/resources/ats/resources/department/service/DepartmentService';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
+import config from '../../config';
+import {
+    appendQueryParams,
+    extractWorkdayCollection,
+    extractWorkdayResource,
+    getWorkdayAuthHeaders,
+    hasWorkdayTenantUrl,
+    missingWorkdayTenantMessage,
+    nextWorkdayCursor,
+    resolveWorkdayResourceUrl,
+    workdayEnvFromConfig,
+    workdayListPaging,
+    workdayNotSupportedBody,
+} from '../../helpers/ats/workday';
 
 const objType = AtsStandardObjects.department;
 
@@ -62,6 +76,35 @@ const departmentServiceAts = new DepartmentService(
                         res.send({
                             status: 'ok',
                             result: 'This endpoint is currently not supported.',
+                        });
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const workdayEnv = workdayEnvFromConfig(config);
+                        if (!hasWorkdayTenantUrl(connection, workdayEnv)) {
+                            throw new NotFoundError({ error: missingWorkdayTenantMessage() });
+                        }
+                        const result = await axios({
+                            method: 'get',
+                            url: resolveWorkdayResourceUrl(
+                                connection,
+                                'organizations',
+                                departmentId,
+                                undefined,
+                                workdayEnv,
+                            ),
+                            headers: getWorkdayAuthHeaders(thirdPartyToken),
+                        });
+                        const UnifiedDepartment: any = await unifyObject<any, UnifiedDepartment>({
+                            obj: extractWorkdayResource(result.data),
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({
+                            status: 'ok',
+                            result: UnifiedDepartment,
                         });
                         break;
                     }
@@ -213,6 +256,43 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        const workdayEnv = workdayEnvFromConfig(config);
+                        if (!hasWorkdayTenantUrl(connection, workdayEnv)) {
+                            throw new NotFoundError({ error: missingWorkdayTenantMessage() });
+                        }
+                        const { pagingString, offset, limit } = workdayListPaging(pageSize, cursor as string);
+                        const result = await axios({
+                            method: 'get',
+                            url: resolveWorkdayResourceUrl(
+                                connection,
+                                'organizations',
+                                undefined,
+                                appendQueryParams(pagingString, fields),
+                                workdayEnv,
+                            ),
+                            headers: getWorkdayAuthHeaders(thirdPartyToken),
+                        });
+                        const { items, total } = extractWorkdayCollection(result.data);
+                        const unifiedDepartments = await Promise.all(
+                            items.map(async (department: any) => {
+                                return await unifyObject<any, UnifiedDepartment>({
+                                    obj: department,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: nextWorkdayCursor(offset, items.length, total, limit),
+                            previous: undefined,
+                            results: unifiedDepartments,
+                        });
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -279,6 +359,10 @@ const departmentServiceAts = new DepartmentService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        res.send(workdayNotSupportedBody('message'));
                         break;
                     }
                     default: {
@@ -352,6 +436,10 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        res.send(workdayNotSupportedBody('message'));
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -399,6 +487,10 @@ const departmentServiceAts = new DepartmentService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        res.send(workdayNotSupportedBody('message'));
                         break;
                     }
                     default: {

@@ -467,6 +467,28 @@ export async function disunifyAtsObject<T extends Record<string, any>>({
 
             return processedObj;
         }
+
+        case TP_ID.workday: {
+            if (objType === 'candidate') {
+                return {
+                    ...transformedObj,
+                    emailAddresses: obj.email_addresses,
+                    phones: obj.phone_numbers,
+                    applications: obj.applications,
+                };
+            } else if (objType === 'job') {
+                return {
+                    ...transformedObj,
+                    departments: obj.departments,
+                };
+            } else if (objType === 'offer' || objType === 'department') {
+                return {
+                    ...transformedObj,
+                };
+            }
+
+            return processedObj;
+        }
     }
 }
 export async function disunifyAccountingObject<T extends Record<string, any>>({
