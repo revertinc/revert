@@ -535,6 +535,129 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.workable]: {
+            [AtsStandardObjects.candidate]: (obj: T) => {
+                const first_name = obj.firstname || (obj.name ? obj.name.split(' ')[0] : undefined);
+                const last_name =
+                    obj.lastname ||
+                    (obj.name && obj.name.includes(' ') ? obj.name.split(' ').slice(1).join(' ') : undefined);
+                const email_addresses = obj.email
+                    ? [{ value: obj.email, type: undefined }]
+                    : Array.isArray(obj.emails)
+                      ? obj.emails.map((e: any) => (typeof e === 'string' ? { value: e, type: undefined } : e))
+                      : undefined;
+                const phone_numbers = obj.phone
+                    ? [{ value: obj.phone, type: undefined }]
+                    : Array.isArray(obj.phones)
+                      ? obj.phones.map((p: any) => (typeof p === 'string' ? { value: p, type: undefined } : p))
+                      : undefined;
+                const application_ids = obj.job?.shortcode
+                    ? [obj.job.shortcode]
+                    : obj.job?.id
+                      ? [String(obj.job.id)]
+                      : Array.isArray(obj.application_ids)
+                        ? obj.application_ids
+                        : [];
+
+                return {
+                    ...obj,
+                    first_name,
+                    last_name,
+                    company: obj.account?.name || obj.company,
+                    title: obj.headline || obj.title,
+                    created_at: obj.created_at || obj.created,
+                    updated_at: obj.updated_at || obj.updated,
+                    last_activity: obj.last_activity_at || obj.updated_at || obj.updated || obj.created_at,
+                    photo_url: obj.image_url || obj.photo_url,
+                    application_ids,
+                    tags: Array.isArray(obj.tags) ? obj.tags : [],
+                    phone_numbers,
+                    email_addresses,
+                    applications: obj.job
+                        ? [
+                              {
+                                  id: obj.id,
+                                  candidate_id: obj.id,
+                                  job_post_id: obj.job?.shortcode || obj.job?.id,
+                                  status: obj.stage,
+                                  current_stage: obj.stage,
+                              },
+                          ]
+                        : undefined,
+                };
+            },
+            [AtsStandardObjects.job]: (obj: T) => {
+                let state: string | undefined;
+                switch (obj.state) {
+                    case 'published':
+                        state = 'open';
+                        break;
+                    case 'closed':
+                    case 'archived':
+                        state = 'closed';
+                        break;
+                    case 'draft':
+                        state = 'draft';
+                        break;
+                    default:
+                        state = obj.status || obj.state;
+                        break;
+                }
+
+                const departments = obj.department
+                    ? typeof obj.department === 'string'
+                        ? [{ name: obj.department }]
+                        : [obj.department]
+                    : Array.isArray(obj.departments)
+                      ? obj.departments
+                      : undefined;
+
+                return {
+                    ...obj,
+                    id: obj.shortcode || obj.id,
+                    name: obj.title || obj.name,
+                    notes: obj.description || obj.full_description || obj.notes,
+                    status: state,
+                    departments,
+                    created_at: obj.created_at || obj.created,
+                    updated_at: obj.updated_at || obj.updated,
+                };
+            },
+            [AtsStandardObjects.offer]: (obj: T) => {
+                let offerStatus: string | undefined;
+                switch (obj.status) {
+                    case 'accepted':
+                        offerStatus = 'accepted';
+                        break;
+                    case 'rejected':
+                    case 'declined':
+                        offerStatus = 'rejected';
+                        break;
+                    default:
+                        offerStatus = 'unresolved';
+                        break;
+                }
+
+                return {
+                    ...obj,
+                    id: obj.id || obj.candidate_id || obj.candidate?.id,
+                    application_id: obj.candidate_id || obj.candidate?.id || obj.application_id,
+                    job_id: obj.job?.shortcode || obj.job?.id || obj.job_id,
+                    candidate_id: obj.candidate_id || obj.candidate?.id,
+                    status: offerStatus,
+                    created_at: obj.created_at || obj.created,
+                    updated_at: obj.updated_at || obj.updated,
+                    sent_at: obj.sent_at,
+                    resolved_at: obj.resolved_at,
+                    starts_at: obj.starts_at || obj.start_date,
+                };
+            },
+            [AtsStandardObjects.department]: (obj: T) => ({
+                ...obj,
+                id: obj.id ? String(obj.id) : undefined,
+                name: obj.name || obj.text,
+            }),
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
@@ -693,6 +816,7 @@ export const postprocessDisUnifyAtsObject = <T extends Record<string, any>>({
     const preprocessMap: Record<ATS_TP_ID, Record<any, Function>> = {
         [TP_ID.greenhouse]: {},
         [TP_ID.lever]: {},
+        [TP_ID.workable]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

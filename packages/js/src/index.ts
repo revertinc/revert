@@ -1541,6 +1541,47 @@ const createIntegrationBlock = function (self, integration) {
                             state,
                         )}&scope=${encodedScopes}`,
                     );
+                } else if (selectedIntegration.integrationId === 'workable') {
+                    if (selectedIntegration.clientId) {
+                        const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/workable`);
+                        window.open(
+                            `https://www.workable.com/oauth/authorize?client_id=${
+                                selectedIntegration.clientId
+                            }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(state)}`,
+                        );
+                    } else {
+                        const apiKey = await this.modalForApiKeyInputBasicAuth();
+                        const url = `${this.CORE_API_BASE_URL}v1/ats/oauth-callback?integrationId=${
+                            selectedIntegration.integrationId
+                        }&t_id=${this.tenantId}&code=${apiKey}&x_revert_public_token=${this.API_REVERT_PUBLIC_TOKEN}${
+                            this.#USER_REDIRECT_URL ? `&redirectUrl=${this.#USER_REDIRECT_URL}` : ``
+                        }`;
+                        fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        })
+                            .then((d) => {
+                                return d.json();
+                            })
+                            .then((data) => {
+                                if (data.error) {
+                                    const errorMessage =
+                                        data.error?.code === 'P2002'
+                                            ? ': Already connected another app. Please disconnect first.'
+                                            : '';
+
+                                    console.log('error:', errorMessage);
+                                } else {
+                                    console.log('OAuth flow succeeded', data);
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                                return this.renderFailedStage();
+                            });
+                    }
                 }
                 this.clearInitialOrProcessingOrSuccessStage();
                 if (!this.closeAfterOAuthFlow) {

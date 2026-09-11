@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot' | 'closecrm' | 'ms_dynamics_365_sales';
 export type CHAT_TP_ID = 'slack' | 'discord';
 export type ACCOUNTING_TP_ID = 'quickbooks' | 'xero';
-export type ATS_TP_ID = 'greenhouse' | 'lever';
+export type ATS_TP_ID = 'greenhouse' | 'lever' | 'workable';
 export type TICKET_TP_ID = 'linear' | 'clickup' | 'asana' | 'jira' | 'trello' | 'bitbucket' | 'github';
 
 export const DEFAULT_SCOPE = {
@@ -86,6 +86,7 @@ export const DEFAULT_SCOPE = {
         'metadata:read',
         'repository_projects:read',
     ],
+    [TP_ID.workable]: [],
 };
 
 export const mapIntegrationIdToIntegrationName = {
@@ -108,6 +109,7 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.greenhouse]: 'Greenhouse',
     [TP_ID.lever]: 'Lever',
     [TP_ID.github]: 'GitHub',
+    [TP_ID.workable]: 'Workable',
 };
 
 export const rootSchemaMappingId = 'revertRootSchemaMapping';
