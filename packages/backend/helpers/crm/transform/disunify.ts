@@ -467,6 +467,33 @@ export async function disunifyAtsObject<T extends Record<string, any>>({
 
             return processedObj;
         }
+
+        case TP_ID.workable: {
+            if (objType === 'candidate') {
+                const candidatePayload: any = {
+                    name: obj.name || [obj.first_name, obj.last_name].filter(Boolean).join(' ') || undefined,
+                    firstname: obj.first_name || (obj.name ? obj.name.split(' ')[0] : undefined),
+                    lastname:
+                        obj.last_name ||
+                        (obj.name && obj.name.includes(' ') ? obj.name.split(' ').slice(1).join(' ') : undefined),
+                    headline: obj.title || obj.headline || transformedObj.headline,
+                    email: obj.email_addresses?.[0]?.value || obj.email,
+                    phone: obj.phone_numbers?.[0]?.value || obj.phone || obj.phone_number,
+                    address: obj.addresses?.[0]?.value || obj.address,
+                    summary: obj.summary,
+                    skills: obj.skills,
+                    tags: obj.tags,
+                };
+
+                return {
+                    ...transformedObj,
+                    candidate: candidatePayload,
+                    ...candidatePayload,
+                };
+            }
+
+            return processedObj;
+        }
     }
 }
 export async function disunifyAccountingObject<T extends Record<string, any>>({

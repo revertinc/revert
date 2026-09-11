@@ -6,6 +6,12 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
+import {
+    extractWorkableCollection,
+    extractWorkableResource,
+    nextWorkableCursor,
+    requestWorkable,
+} from '../../helpers/ats/workable';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedOffer } from '../../models/unified/offer';
 import { OfferService } from '../../generated/typescript/api/resources/ats/resources/offer/service/OfferService';
@@ -62,6 +68,27 @@ const offerServiceAts = new OfferService(
                         res.send({
                             status: 'ok',
                             result: 'This endpoint is currently not supported.',
+                        });
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const result = await requestWorkable({
+                            connection,
+                            method: 'get',
+                            path: `offers/${offerId}`,
+                        });
+
+                        const unifiedOffer: any = await unifyObject<any, UnifiedOffer>({
+                            obj: extractWorkableResource(result.data, 'offer'),
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedOffer,
                         });
                         break;
                     }
@@ -213,6 +240,54 @@ const offerServiceAts = new OfferService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        let path = 'offers';
+                        if (fields?.candidateId) {
+                            path = `candidates/${fields.candidateId}/offer`;
+                        }
+
+                        let params: Record<string, any> = {};
+                        if (fields) {
+                            params = { ...params, ...fields };
+                            delete params.candidateId;
+                        }
+                        if (pageSize) {
+                            params.limit = pageSize;
+                        }
+                        if (cursor) {
+                            params.since_id = cursor;
+                        }
+
+                        const result = await requestWorkable({
+                            connection,
+                            method: 'get',
+                            path,
+                            params,
+                        });
+
+                        const offers = extractWorkableCollection(result.data, 'offers');
+                        const unifiedOffers = await Promise.all(
+                            offers.map(async (offer: any) => {
+                                return await unifyObject<any, UnifiedOffer>({
+                                    obj: offer,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        const nextCursor = nextWorkableCursor(result.data);
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
+                            results: unifiedOffers,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -256,6 +331,14 @@ const offerServiceAts = new OfferService(
                         break;
                     }
                     case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workable: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
@@ -335,6 +418,14 @@ const offerServiceAts = new OfferService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -377,6 +468,14 @@ const offerServiceAts = new OfferService(
                         break;
                     }
                     case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workable: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',

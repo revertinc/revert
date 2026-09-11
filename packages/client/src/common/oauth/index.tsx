@@ -522,7 +522,7 @@ export const OAuthCallback = (props) => {
                         console.error(err);
                         setStatus('Errored out');
                     });
-            } else if (integrationId === 'lever') {
+            } else if (integrationId === 'lever' || integrationId === 'workable') {
                 console.log('Post ats app installation', integrationId, params);
                 const { tenantId, revertPublicToken, redirectUrl } = JSON.parse(decodeURIComponent(params.state));
                 fetch(
