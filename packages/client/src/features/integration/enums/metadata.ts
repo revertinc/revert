@@ -86,6 +86,11 @@ export const appsInfo = {
         logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/hwlwhz2lnum3hfcabqc4',
         description: 'Configure your Lever ATS App from here.',
     },
+    workday: {
+        name: 'Workday',
+        logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Workday_Logo.png/320px-Workday_Logo.png',
+        description: 'Configure your Workday ATS App from here. Set the tenant REST base as Organisation URL.',
+    },
     github: {
         name: 'GitHub',
         logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/v1722418192/RevertAppLogos/cmeafzqvnvvconohfnnr.png',
