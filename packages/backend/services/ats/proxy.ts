@@ -7,6 +7,7 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { ProxyService } from '../../generated/typescript/api/resources/ats/resources/proxy/service/ProxyService';
+import { workableBaseUrl, workableHeaders, workableProxyPath } from '../../helpers/ats/workable';
 
 const proxyServiceAts = new ProxyService(
     {
@@ -58,6 +59,23 @@ const proxyServiceAts = new ProxyService(
                             method: method,
                             url: `https://api.lever.co/v1/${path}`,
                             headers: headers,
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        if (!thirdPartyToken) {
+                            throw new NotFoundError({ error: 'Workable API token missing on connection' });
+                        }
+                        const safePath = workableProxyPath(path);
+                        const result: any = await axios({
+                            method: method,
+                            url: `${workableBaseUrl(connection)}/${safePath}`,
+                            headers: workableHeaders(thirdPartyToken),
                             data: body,
                             params: queryParams,
                         });

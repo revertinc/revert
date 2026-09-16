@@ -9,6 +9,7 @@ import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedDepartment } from '../../models/unified/department';
 import { DepartmentService } from '../../generated/typescript/api/resources/ats/resources/department/service/DepartmentService';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
+import { workableBaseUrl, workableHeaders, workableListQuery, workableNextCursor } from '../../helpers/ats/workable';
 
 const objType = AtsStandardObjects.department;
 
@@ -66,6 +67,36 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${workableBaseUrl(connection)}/departments`,
+                            headers: workableHeaders(thirdPartyToken),
+                        });
+                        const departments = Array.isArray(result.data?.departments)
+                            ? result.data.departments
+                            : Array.isArray(result.data)
+                              ? result.data
+                              : [];
+                        const match = departments.find(
+                            (d: any) => String(d.id) === String(departmentId) || String(d.name) === String(departmentId),
+                        );
+                        if (!match) {
+                            throw new NotFoundError({ error: 'Department not found' });
+                        }
+                        const UnifiedDepartment: any = await unifyObject<any, UnifiedDepartment>({
+                            obj: match,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({
+                            status: 'ok',
+                            result: UnifiedDepartment,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -214,6 +245,37 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        const query = workableListQuery(pageSize, cursor, fields);
+                        const result = await axios({
+                            method: 'get',
+                            url: `${workableBaseUrl(connection)}/departments${query}`,
+                            headers: workableHeaders(thirdPartyToken),
+                        });
+                        const departments = Array.isArray(result.data?.departments)
+                            ? result.data.departments
+                            : Array.isArray(result.data)
+                              ? result.data
+                              : [];
+                        const unifiedDepartments = await Promise.all(
+                            departments.map(async (department: any) => {
+                                return await unifyObject<any, UnifiedDepartment>({
+                                    obj: department,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: workableNextCursor(result.data?.paging),
+                            previous: undefined,
+                            results: unifiedDepartments,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -279,6 +341,13 @@ const departmentServiceAts = new DepartmentService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
                         break;
                     }
                     default: {
@@ -352,6 +421,13 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -399,6 +475,13 @@ const departmentServiceAts = new DepartmentService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
                         break;
                     }
                     default: {
