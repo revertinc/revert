@@ -1481,6 +1481,43 @@ const createIntegrationBlock = function (self, integration) {
                             console.log(error);
                             return this.renderFailedStage();
                         });
+                } else if (selectedIntegration.integrationId === 'workable') {
+                    const apiKey = await this.modalForApiKeyInputBasicAuth();
+                    const subdomain = window.prompt(
+                        'Enter your Workable subdomain (e.g. acme for https://acme.workable.com)',
+                    );
+                    const url = `${this.CORE_API_BASE_URL}v1/ats/oauth-callback?integrationId=${
+                        selectedIntegration.integrationId
+                    }&t_id=${this.tenantId}&code=${encodeURIComponent(apiKey)}&subdomain=${encodeURIComponent(
+                        subdomain || '',
+                    )}&x_revert_public_token=${this.API_REVERT_PUBLIC_TOKEN}${
+                        this.#USER_REDIRECT_URL ? `&redirectUrl=${this.#USER_REDIRECT_URL}` : ``
+                    }`;
+                    fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                        .then((d) => {
+                            return d.json();
+                        })
+                        .then((data) => {
+                            if (data.error) {
+                                const errorMessage =
+                                    data.error?.code === 'P2002'
+                                        ? ': Already connected another CRM. Please disconnect first.'
+                                        : '';
+
+                                console.log('error:', errorMessage);
+                            } else {
+                                console.log('OAuth flow succeeded', data);
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            return this.renderFailedStage();
+                        });
                 } else if (selectedIntegration.integrationId === 'lever') {
                     const encodedScopes = encodeURIComponent(scopes.join(' '));
                     const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/lever`);

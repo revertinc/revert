@@ -9,6 +9,7 @@ import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedCandidate } from '../../models/unified/candidate';
 import { CandidateService } from '../../generated/typescript/api/resources/ats/resources/candidate/service/CandidateService';
+import { workableBaseUrl, workableHeaders, workableListQuery, workableNextCursor } from '../../helpers/ats/workable';
 
 const objType = AtsStandardObjects.candidate;
 
@@ -91,6 +92,26 @@ const candidateServiceAts = new CandidateService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${workableBaseUrl(connection)}/candidates/${candidateId}`,
+                            headers: workableHeaders(thirdPartyToken),
+                        });
+                        const candidateObj = result.data?.candidate ?? result.data;
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: candidateObj,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({
+                            status: 'ok',
+                            result: unifiedCandidate,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -238,6 +259,37 @@ const candidateServiceAts = new CandidateService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        const query = workableListQuery(pageSize, cursor, fields);
+                        const result = await axios({
+                            method: 'get',
+                            url: `${workableBaseUrl(connection)}/candidates${query}`,
+                            headers: workableHeaders(thirdPartyToken),
+                        });
+                        const candidates = Array.isArray(result.data?.candidates)
+                            ? result.data.candidates
+                            : Array.isArray(result.data)
+                              ? result.data
+                              : [];
+                        const unifiedCandidates = await Promise.all(
+                            candidates.map(async (candidate: any) => {
+                                return await unifyObject<any, UnifiedCandidate>({
+                                    obj: candidate,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: workableNextCursor(result.data?.paging),
+                            previous: undefined,
+                            results: unifiedCandidates,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -330,6 +382,25 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        if (!fields || !fields.shortcode) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "shortcode" (Workable job shortcode) is required in the "fields" parameter to create a candidate.',
+                            });
+                        }
+                        const result = await axios({
+                            method: 'post',
+                            url: `${workableBaseUrl(connection)}/jobs/${fields.shortcode}/candidates`,
+                            headers: workableHeaders(thirdPartyToken),
+                            data: JSON.stringify(candidate),
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Workable candidate created',
+                            result: result.data?.candidate ?? result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -402,6 +473,20 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const result = await axios({
+                            method: 'patch',
+                            url: `${workableBaseUrl(connection)}/candidates/${candidateId}`,
+                            headers: workableHeaders(thirdPartyToken),
+                            data: JSON.stringify(candidate),
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Workable candidate updated',
+                            result: result.data?.candidate ?? result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -469,6 +554,13 @@ const candidateServiceAts = new CandidateService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
                         break;
                     }
                     default: {

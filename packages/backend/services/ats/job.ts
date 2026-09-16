@@ -9,6 +9,7 @@ import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedJob } from '../../models/unified/job';
 import { JobService } from '../../generated/typescript/api/resources/ats/resources/job/service/JobService';
+import { workableBaseUrl, workableHeaders, workableListQuery, workableNextCursor } from '../../helpers/ats/workable';
 
 const objType = AtsStandardObjects.job;
 
@@ -84,6 +85,26 @@ const jobServiceAts = new JobService(
                             accountFieldMappingConfig: account.accountFieldMappingConfig,
                         });
 
+                        res.send({
+                            status: 'ok',
+                            result: unifiedJob,
+                        });
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const result = await axios({
+                            method: 'get',
+                            url: `${workableBaseUrl(connection)}/jobs/${jobId}`,
+                            headers: workableHeaders(thirdPartyToken),
+                        });
+                        const jobObj = result.data?.job ?? result.data;
+                        const unifiedJob: any = await unifyObject<any, UnifiedJob>({
+                            obj: jobObj,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({
                             status: 'ok',
                             result: unifiedJob,
@@ -240,6 +261,38 @@ const jobServiceAts = new JobService(
 
                         break;
                     }
+
+                    case TP_ID.workable: {
+                        const query = workableListQuery(pageSize, cursor, fields);
+                        const result = await axios({
+                            method: 'get',
+                            url: `${workableBaseUrl(connection)}/jobs${query}`,
+                            headers: workableHeaders(thirdPartyToken),
+                        });
+                        const jobs = Array.isArray(result.data?.jobs)
+                            ? result.data.jobs
+                            : Array.isArray(result.data)
+                              ? result.data
+                              : [];
+                        const unifiedJobs = await Promise.all(
+                            jobs.map(async (job: any) => {
+                                return await unifyObject<any, UnifiedJob>({
+                                    obj: job,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: workableNextCursor(result.data?.paging),
+                            previous: undefined,
+                            results: unifiedJobs,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -328,6 +381,14 @@ const jobServiceAts = new JobService(
                             status: 'ok',
                             message: 'Lever job created',
                             result: result.data.data,
+                        });
+                        break;
+                    }
+
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            message: 'Workable job create is not supported via SPI; create jobs in Workable UI or use the proxy tunnel.',
                         });
                         break;
                     }
@@ -428,6 +489,14 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            message: 'Workable job update is not supported via SPI; update jobs in Workable UI or use the proxy tunnel.',
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -475,6 +544,14 @@ const jobServiceAts = new JobService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
                         break;
                     }
                     default: {

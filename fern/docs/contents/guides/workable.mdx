@@ -1,0 +1,16 @@
+#### Obtaining a Workable API token
+
+- Open your [Workable](https://www.workable.com/) account.
+- Go to **Settings → Integrations → API Access Tokens** and generate a token with the scopes you need (`r_jobs`, `r_candidates`, `r_account`, `r_offers`, etc.).
+- Note your account subdomain (for `https://acme.workable.com`, use `acme`).
+
+Docs: https://workable.readme.io/reference/generate-an-access-token
+
+#### Connect to Workable via Revert
+
+- Create an account on Revert if you don't already have one. (https://app.revert.dev/sign-up)
+- Login to your revert dashboard (https://app.revert.dev/sign-in) and create an ATS app for **Workable**.
+- Set `app_config.subdomain` to your Workable subdomain (or pass `subdomain` when connecting).
+- Connect with your API token (basic auth / API key flow), same pattern as Greenhouse.
+
+SPI base URL used by Revert: `https://{subdomain}.workable.com/spi/v3`

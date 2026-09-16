@@ -114,6 +114,8 @@ const EditCredentials: React.FC<{
             setAppConfig({ bot_token: val });
         } else if (app.tp_id === 'ms_dynamics_365_sales') {
             setAppConfig({ org_url: val });
+        } else if (app.tp_id === 'workable') {
+            setAppConfig({ subdomain: val });
         }
     };
 
@@ -183,6 +185,18 @@ const EditCredentials: React.FC<{
                                 value={app?.app_config?.org_url}
                                 onChange={handleAppConfigFieldChange}
                                 error={!app?.app_config?.org_url}
+                            />
+                        </Row>
+                    )}
+
+                    {app.tp_id === 'workable' && (
+                        <Row>
+                            <span className="font-bold">Workable subdomain: </span>
+                            <Input
+                                className="app_subdomain"
+                                value={app?.app_config?.subdomain}
+                                onChange={handleAppConfigFieldChange}
+                                error={!app?.app_config?.subdomain}
                             />
                         </Row>
                     )}
