@@ -1,0 +1,13 @@
+## Obtaining a Workable API token
+
+-   Open the Workable developer settings and create a personal API token.
+-   Copy the token; it is used only to create the connection.
+
+## Connect Workable via Revert
+
+-   Open the Revert dashboard and choose **Create App → Workable**.
+-   Paste the Workable API token when prompted.
+-   Revert stores the token with the connection and emits the normal connection-added event.
+
+Workable tokens do not use an OAuth refresh flow. Keep the token private and
+rotate it in Workable if it is exposed.

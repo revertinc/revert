@@ -1,0 +1,1 @@
+ALTER TYPE "TP_ID" ADD VALUE IF NOT EXISTS 'workable';

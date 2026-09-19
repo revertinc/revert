@@ -26,6 +26,7 @@ enum TP_ID {
   xero
   greenhouse
   lever
+  workable
   github
 }
 
