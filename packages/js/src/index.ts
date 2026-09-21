@@ -1508,6 +1508,31 @@ const createIntegrationBlock = function (self, integration) {
                                 );
                             }
                         });
+                } else if (selectedIntegration.integrationId === 'workday') {
+                    const encodedScopes = encodeURIComponent(scopes.join(' '));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/workday`);
+
+                    fetch(
+                        `${this.CORE_API_BASE_URL}ats/workday-app_config?revertPublicToken=${this.API_REVERT_PUBLIC_TOKEN}`,
+                    )
+                        .then((data) => data.json())
+                        .then((data) => {
+                            const authorizeUrl = data.authorizeUrl;
+                            if (!authorizeUrl) {
+                                console.log(
+                                    'Workday Organisation URL is not configured. Set app_config.org_url or WORKDAY_AUTH_URL.',
+                                );
+                                return;
+                            }
+                            const scopeQuery = encodedScopes ? `&scope=${encodedScopes}` : '';
+                            window.open(
+                                `${authorizeUrl}?client_id=${
+                                    selectedIntegration.clientId
+                                }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                                    state,
+                                )}${scopeQuery}`,
+                            );
+                        });
                 } else if (selectedIntegration.integrationId === 'github') {
                     const encodedScopes = encodeURIComponent(scopes.join(','));
                     const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/github`);
