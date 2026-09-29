@@ -30,7 +30,13 @@ const xprisma = prisma.$extends({
                     args.create.id = newConnectionId;
                 }
 
-                if (!(args.update?.tp_id === TP_ID.discord || args.update?.tp_id === TP_ID.ms_dynamics_365_sales)) {
+                if (
+                    !(
+                        args.update?.tp_id === TP_ID.discord ||
+                        args.update?.tp_id === TP_ID.ms_dynamics_365_sales ||
+                        args.update?.tp_id === TP_ID.workable
+                    )
+                ) {
                     args.update.app_config = Prisma.DbNull;
                 }
 
@@ -43,7 +49,8 @@ const xprisma = prisma.$extends({
                             tpId === TP_ID.sfdc ||
                             tpId === TP_ID.pipedrive ||
                             tpId === TP_ID.jira ||
-                            tpId === TP_ID.ms_dynamics_365_sales
+                            tpId === TP_ID.ms_dynamics_365_sales ||
+                            tpId === TP_ID.workable
                         )
                     ) {
                         args.update.tp_account_url = null;

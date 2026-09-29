@@ -9,6 +9,13 @@ import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedCandidate } from '../../models/unified/candidate';
 import { CandidateService } from '../../generated/typescript/api/resources/ats/resources/candidate/service/CandidateService';
+import {
+    getWorkableCandidatePayload,
+    getWorkableListParams,
+    getWorkableNextCursor,
+    requestWorkable,
+    workableUnsupported,
+} from '../../helpers/ats/workable';
 
 const objType = AtsStandardObjects.candidate;
 
@@ -91,6 +98,23 @@ const candidateServiceAts = new CandidateService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        const result = await requestWorkable({
+                            connection,
+                            method: 'get',
+                            path: `candidates/${candidateId}`,
+                        });
+                        const source = result.data?.candidate || result.data;
+                        const unifiedCandidate = await unifyObject<any, UnifiedCandidate>({
+                            obj: source,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedCandidate });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -238,6 +262,33 @@ const candidateServiceAts = new CandidateService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        const result = await requestWorkable({
+                            connection,
+                            method: 'get',
+                            path: 'candidates',
+                            params: getWorkableListParams(pageSize, cursor, fields),
+                        });
+                        const source = Array.isArray(result.data?.candidates) ? result.data.candidates : [];
+                        const results = await Promise.all(
+                            source.map((item: any) =>
+                                unifyObject<any, UnifiedCandidate>({
+                                    obj: item,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                }),
+                            ),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: getWorkableNextCursor(result.data),
+                            previous: undefined,
+                            results,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -330,6 +381,26 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const shortcode = fields?.shortcode;
+                        if (!shortcode) {
+                            throw new NotFoundError({
+                                error: 'The Workable job shortcode is required in the "fields" query parameter.',
+                            });
+                        }
+                        const result = await requestWorkable({
+                            connection,
+                            method: 'post',
+                            path: `jobs/${shortcode}/candidates`,
+                            data: getWorkableCandidatePayload(candidate, 'create'),
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Workable candidate created',
+                            result: result.data?.candidate || result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -402,6 +473,20 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const result = await requestWorkable({
+                            connection,
+                            method: 'patch',
+                            path: `candidates/${candidateId}`,
+                            data: getWorkableCandidatePayload(candidate),
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Workable candidate updated',
+                            result: result.data?.candidate || result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -469,6 +554,10 @@ const candidateServiceAts = new CandidateService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        res.send(workableUnsupported);
                         break;
                     }
                     default: {
