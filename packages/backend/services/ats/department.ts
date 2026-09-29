@@ -9,6 +9,7 @@ import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedDepartment } from '../../models/unified/department';
 import { DepartmentService } from '../../generated/typescript/api/resources/ats/resources/department/service/DepartmentService';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
+import { requestWorkable, workableUnsupported } from '../../helpers/ats/workable';
 
 const objType = AtsStandardObjects.department;
 
@@ -66,6 +67,23 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        const result = await requestWorkable({ connection, method: 'get', path: 'departments' });
+                        const departments = Array.isArray(result.data?.departments) ? result.data.departments : [];
+                        const source = departments.find(
+                            (item: any) => String(item.id) === String(departmentId) || item.name === departmentId,
+                        );
+                        if (!source) throw new NotFoundError({ error: 'Workable department not found' });
+                        const unifiedDepartment = await unifyObject<any, UnifiedDepartment>({
+                            obj: source,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedDepartment });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -214,6 +232,23 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        const result = await requestWorkable({ connection, method: 'get', path: 'departments' });
+                        const source = Array.isArray(result.data?.departments) ? result.data.departments : [];
+                        const results = await Promise.all(
+                            source.map((item: any) =>
+                                unifyObject<any, UnifiedDepartment>({
+                                    obj: item,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                }),
+                            ),
+                        );
+                        res.send({ status: 'ok', next: undefined, previous: undefined, results });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -279,6 +314,10 @@ const departmentServiceAts = new DepartmentService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        res.send(workableUnsupported);
                         break;
                     }
                     default: {
@@ -352,6 +391,10 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        res.send(workableUnsupported);
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -399,6 +442,10 @@ const departmentServiceAts = new DepartmentService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        res.send(workableUnsupported);
                         break;
                     }
                     default: {

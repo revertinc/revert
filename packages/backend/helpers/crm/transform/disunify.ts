@@ -321,6 +321,26 @@ export async function disunifyAtsObject<T extends Record<string, any>>({
     const processedObj = postprocessDisUnifyAtsObject({ obj: transformedObj, tpId, objType });
 
     switch (tpId) {
+        case TP_ID.workable: {
+            if (objType === 'candidate') {
+                const email = Array.isArray(obj.email_addresses)
+                    ? obj.email_addresses.find((item: any) => item?.value)?.value
+                    : obj.email_addresses;
+                const phone = Array.isArray(obj.phone_numbers)
+                    ? obj.phone_numbers.find((item: any) => item?.value)?.value
+                    : obj.phone_numbers;
+
+                return {
+                    ...processedObj,
+                    firstname: obj.first_name ?? processedObj.firstname,
+                    lastname: obj.last_name ?? processedObj.lastname,
+                    headline: obj.title ?? obj.company ?? processedObj.headline,
+                    email: email ?? processedObj.email,
+                    phone: phone ?? processedObj.phone,
+                };
+            }
+            return processedObj;
+        }
         case TP_ID.lever: {
             if (objType === 'candidate') {
                 const confidential = obj.is_private ? 'confidential' : 'non-confidential';

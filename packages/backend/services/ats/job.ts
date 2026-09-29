@@ -9,6 +9,12 @@ import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedJob } from '../../models/unified/job';
 import { JobService } from '../../generated/typescript/api/resources/ats/resources/job/service/JobService';
+import {
+    getWorkableListParams,
+    getWorkableNextCursor,
+    requestWorkable,
+    workableUnsupported,
+} from '../../helpers/ats/workable';
 
 const objType = AtsStandardObjects.job;
 
@@ -88,6 +94,18 @@ const jobServiceAts = new JobService(
                             status: 'ok',
                             result: unifiedJob,
                         });
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const result = await requestWorkable({ connection, method: 'get', path: `jobs/${jobId}` });
+                        const unifiedJob = await unifyObject<any, UnifiedJob>({
+                            obj: result.data?.job || result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedJob });
                         break;
                     }
                     default: {
@@ -240,6 +258,33 @@ const jobServiceAts = new JobService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const result = await requestWorkable({
+                            connection,
+                            method: 'get',
+                            path: 'jobs',
+                            params: getWorkableListParams(pageSize, cursor, fields),
+                        });
+                        const source = Array.isArray(result.data?.jobs) ? result.data.jobs : [];
+                        const results = await Promise.all(
+                            source.map((item: any) =>
+                                unifyObject<any, UnifiedJob>({
+                                    obj: item,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                }),
+                            ),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: getWorkableNextCursor(result.data),
+                            previous: undefined,
+                            results,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -329,6 +374,10 @@ const jobServiceAts = new JobService(
                             message: 'Lever job created',
                             result: result.data.data,
                         });
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        res.send(workableUnsupported);
                         break;
                     }
                     default: {
@@ -428,6 +477,10 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        res.send(workableUnsupported);
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -475,6 +528,10 @@ const jobServiceAts = new JobService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        res.send(workableUnsupported);
                         break;
                     }
                     default: {

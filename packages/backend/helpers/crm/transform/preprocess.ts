@@ -535,6 +535,36 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.workable]: {
+            [AtsStandardObjects.candidate]: (obj: T) => ({
+                ...obj,
+                email: obj.email ? [{ value: obj.email, type: undefined }] : [],
+                phone: obj.phone ? [{ value: obj.phone, type: undefined }] : [],
+                jobs: Array.isArray(obj.jobs)
+                    ? obj.jobs
+                          .map((job: any) => (typeof job === 'string' ? job : job?.shortcode || job?.id))
+                          .filter(Boolean)
+                    : obj.job?.shortcode
+                      ? [obj.job.shortcode]
+                      : [],
+            }),
+            [AtsStandardObjects.job]: (obj: T) => ({
+                ...obj,
+                department: obj.department
+                    ? Array.isArray(obj.department)
+                        ? obj.department
+                        : [{ name: obj.department }]
+                    : [],
+                locations: Array.isArray(obj.locations)
+                    ? obj.locations.map((location: any) => {
+                          const name = [location?.city, location?.state, location?.country_name]
+                              .filter(Boolean)
+                              .join(', ');
+                          return { ...location, name, location: { name } };
+                      })
+                    : [],
+            }),
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
@@ -693,6 +723,7 @@ export const postprocessDisUnifyAtsObject = <T extends Record<string, any>>({
     const preprocessMap: Record<ATS_TP_ID, Record<any, Function>> = {
         [TP_ID.greenhouse]: {},
         [TP_ID.lever]: {},
+        [TP_ID.workable]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

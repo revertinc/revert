@@ -69,6 +69,7 @@ const LoadingButton = styled(MuiLoadingButton)`
 interface AppConfig {
     bot_token?: string;
     org_url?: string;
+    subdomain?: string;
     env?: string;
 }
 
@@ -183,6 +184,17 @@ const EditCredentials: React.FC<{
                                 value={app?.app_config?.org_url}
                                 onChange={handleAppConfigFieldChange}
                                 error={!app?.app_config?.org_url}
+                            />
+                        </Row>
+                    )}
+                    {app.tp_id === 'workable' && (
+                        <Row>
+                            <span className="font-bold">Workable subdomain: </span>
+                            <Input
+                                className="app_subdomain"
+                                value={app?.app_config?.subdomain || ''}
+                                onChange={handleAppConfigFieldChange}
+                                placeholder="your-company"
                             />
                         </Row>
                     )}
