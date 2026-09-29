@@ -53,11 +53,21 @@ export function getWorkableHeaders(token: string | null | undefined) {
 export function getWorkableProxyPath(path: unknown): string {
     if (typeof path !== 'string') throw new Error('Workable proxy path is required');
     const normalized = path.trim().replace(/^\/+/, '');
+    let decodedPath: string;
+
+    try {
+        decodedPath = decodeURIComponent(normalized);
+    } catch {
+        throw new Error('Invalid Workable proxy path');
+    }
+
+    const pathOnly = decodedPath.split(/[?#]/, 1)[0].replace(/\\/g, '/');
     if (
         !normalized ||
         normalized.includes('://') ||
         normalized.startsWith('//') ||
-        normalized.split('/').includes('..')
+        normalized.includes('\\') ||
+        pathOnly.split('/').some((segment) => segment === '..' || segment === '.')
     ) {
         throw new Error('Invalid Workable proxy path');
     }
@@ -70,9 +80,9 @@ export function getWorkableNextCursor(payload: any): string | undefined {
 
     try {
         const parsed = new URL(next);
-        return parsed.searchParams.get('since_id') || parsed.searchParams.get('max_id') || next;
+        return parsed.searchParams.get('since_id') || parsed.searchParams.get('max_id') || undefined;
     } catch {
-        return next;
+        return undefined;
     }
 }
 

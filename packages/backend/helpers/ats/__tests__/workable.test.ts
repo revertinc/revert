@@ -26,6 +26,10 @@ describe('Workable ATS helpers', () => {
             }),
         ).toBe('abc123');
         expect(getWorkableNextCursor({ paging: {} })).toBeUndefined();
+        expect(
+            getWorkableNextCursor({ paging: { next: 'https://acme.workable.com/spi/v3/candidates?limit=50' } }),
+        ).toBeUndefined();
+        expect(getWorkableNextCursor({ paging: { next: 'not-a-url' } })).toBeUndefined();
     });
 
     test('caps page size and preserves supported filters', () => {
@@ -40,6 +44,12 @@ describe('Workable ATS helpers', () => {
         expect(getWorkableProxyPath('/jobs?state=published')).toBe('jobs?state=published');
         expect(() => getWorkableProxyPath('https://attacker.example')).toThrow();
         expect(() => getWorkableProxyPath('../secrets')).toThrow();
+        expect(() => getWorkableProxyPath('jobs/../secrets')).toThrow();
+        expect(() => getWorkableProxyPath('jobs\\..\\secrets')).toThrow();
+        expect(() => getWorkableProxyPath('jobs/%2e%2e/secrets')).toThrow();
+        expect(() => getWorkableProxyPath('jobs/%2E%2E%2Fsecrets')).toThrow();
+        expect(() => getWorkableProxyPath('jobs/%5c..%5csecrets')).toThrow();
+        expect(() => getWorkableProxyPath('jobs/%E0%A4%A')).toThrow();
     });
 
     test('whitelists documented candidate update fields and strips provider-only fields', () => {
