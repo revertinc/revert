@@ -5,6 +5,16 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
+import config from '../../config';
+import {
+    workdayCollection,
+    workdayEnv,
+    workdayHeaders,
+    workdayListParams,
+    workdayNextCursor,
+    workdayResource,
+    workdayResourceUrl,
+} from '../../helpers/ats/workday';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedOffer } from '../../models/unified/offer';
@@ -63,6 +73,24 @@ const offerServiceAts = new OfferService(
                             status: 'ok',
                             result: 'This endpoint is currently not supported.',
                         });
+                        break;
+                    }
+
+                    case TP_ID.workday: {
+                        const env = workdayEnv(config);
+                        const result = await axios({
+                            method: 'get',
+                            url: workdayResourceUrl(connection, 'jobOffers', offerId, undefined, env),
+                            headers: workdayHeaders(thirdPartyToken),
+                        });
+                        const unifiedOffer = await unifyObject<any, UnifiedOffer>({
+                            obj: workdayResource(result.data),
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedOffer });
                         break;
                     }
 
@@ -213,6 +241,37 @@ const offerServiceAts = new OfferService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        const env = workdayEnv(config);
+                        const params = workdayListParams(pageSize, cursor as string, fields);
+                        const result = await axios({
+                            method: 'get',
+                            url: workdayResourceUrl(connection, 'jobOffers', undefined, params, env),
+                            headers: workdayHeaders(thirdPartyToken),
+                        });
+                        const { items, total } = workdayCollection(result.data);
+                        const unifiedOffers = await Promise.all(
+                            items.map((item: any) =>
+                                unifyObject<any, UnifiedOffer>({
+                                    obj: item,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                }),
+                            ),
+                        );
+                        const offset = Number(params.get('offset') || 0);
+                        const limit = params.has('limit') ? Number(params.get('limit')) : undefined;
+                        res.send({
+                            status: 'ok',
+                            next: workdayNextCursor(offset, items.length, total, limit),
+                            previous: undefined,
+                            results: unifiedOffers,
+                        });
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -261,6 +320,10 @@ const offerServiceAts = new OfferService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        res.send({ status: 'ok', message: 'This endpoint is currently not supported' });
                         break;
                     }
                     default: {
@@ -335,6 +398,10 @@ const offerServiceAts = new OfferService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        res.send({ status: 'ok', message: 'This endpoint is currently not supported' });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -382,6 +449,10 @@ const offerServiceAts = new OfferService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        res.send({ status: 'ok', message: 'This endpoint is currently not supported' });
                         break;
                     }
                     default: {
