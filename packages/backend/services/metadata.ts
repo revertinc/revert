@@ -196,6 +196,15 @@ const metadataService = new MetadataService({
                 },
 
                 {
+                    integrationId: TP_ID.workday,
+                    name: 'Workday',
+                    imageSrc: 'https://www.workday.com/content/dam/web/en-us/images/logos/workday-logo.svg',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.workday),
+                    clientId: getClientId(apps, TP_ID.workday) || config.WORKDAY_CLIENT_ID,
+                },
+
+                {
                     integrationId: TP_ID.github,
                     name: 'GitHub',
                     imageSrc: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/d4jdtttg8ptk2ab9kpz7',
