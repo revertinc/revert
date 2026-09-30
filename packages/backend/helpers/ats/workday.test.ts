@@ -79,10 +79,28 @@ describe('Workday ATS helpers', () => {
         );
     });
 
-    test('blocks same-origin paths outside CCX', () => {
+    test('blocks same-origin paths outside the configured tenant API', () => {
         expect(() => workdayProxyUrl(connection, 'https://wd2.example.workday.com/not-workday')).toThrow(
-            'Workday CCX API',
+            'configured tenant API',
         );
+    });
+
+    test('blocks same-origin OAuth endpoints so bearer tokens cannot be forwarded there', () => {
+        expect(() => workdayProxyUrl(connection, 'https://wd2.example.workday.com/ccx/oauth2/acme/token')).toThrow(
+            'configured tenant API',
+        );
+    });
+
+    test('blocks another tenant on the same Workday origin', () => {
+        expect(() =>
+            workdayProxyUrl(connection, 'https://wd2.example.workday.com/ccx/api/recruiting/v1/other/candidates'),
+        ).toThrow('configured tenant API');
+    });
+
+    test('allows the configured tenant staffing API as well as recruiting', () => {
+        expect(
+            workdayProxyUrl(connection, 'https://wd2.example.workday.com/ccx/api/staffing/v1/acme/organizations'),
+        ).toBe('https://wd2.example.workday.com/ccx/api/staffing/v1/acme/organizations');
     });
 });
 

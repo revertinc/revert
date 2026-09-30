@@ -167,8 +167,13 @@ export function workdayProxyUrl(connection: WorkdayConnection, path: string, cfg
     if (target.origin !== endpoints.origin) {
         throw new Error('Workday proxy target must stay on the configured tenant origin');
     }
-    if (!target.pathname.startsWith('/ccx/')) {
-        throw new Error('Workday proxy target must stay within the Workday CCX API');
+
+    const allowedBases = [endpoints.recruitingBase, endpoints.staffingBase].map((value) => new URL(value).pathname);
+    const staysInConfiguredTenantApi = allowedBases.some(
+        (allowed) => target.pathname === allowed || target.pathname.startsWith(allowed + '/'),
+    );
+    if (!staysInConfiguredTenantApi) {
+        throw new Error('Workday proxy target must stay within the configured tenant API');
     }
     return target.toString();
 }
