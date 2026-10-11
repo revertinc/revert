@@ -34,7 +34,7 @@ const xprisma = prisma.$extends({
                     args.update.app_config = Prisma.DbNull;
                 }
 
-                // tp_account_url: zohocrm sfdc pipedrive jira
+                // tp_account_url: zohocrm sfdc pipedrive jira workable
                 if (args.update?.tp_id) {
                     const tpId = args.update.tp_id;
                     if (
@@ -43,6 +43,7 @@ const xprisma = prisma.$extends({
                             tpId === TP_ID.sfdc ||
                             tpId === TP_ID.pipedrive ||
                             tpId === TP_ID.jira ||
+                            tpId === TP_ID.workable ||
                             tpId === TP_ID.ms_dynamics_365_sales
                         )
                     ) {

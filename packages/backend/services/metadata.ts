@@ -203,6 +203,16 @@ const metadataService = new MetadataService({
                     scopes: getScope(apps, TP_ID.github),
                     clientId: getClientId(apps, TP_ID.github) || config.GITHUB_CLIENT_ID,
                 },
+
+                {
+                    integrationId: TP_ID.workable,
+                    name: 'Workable',
+                    imageSrc:
+                        'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/workable_logo',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.workable),
+                    clientId: undefined,
+                },
             ];
             res.send({
                 status: 'ok',

@@ -112,7 +112,7 @@ const EditCredentials: React.FC<{
         const val = (ev.target.value || '').trim();
         if (app.tp_id === 'discord') {
             setAppConfig({ bot_token: val });
-        } else if (app.tp_id === 'ms_dynamics_365_sales') {
+        } else if (app.tp_id === 'ms_dynamics_365_sales' || app.tp_id === 'workable') {
             setAppConfig({ org_url: val });
         }
     };
@@ -175,14 +175,22 @@ const EditCredentials: React.FC<{
                             />
                         </Row>
                     )}
-                    {app.tp_id === 'ms_dynamics_365_sales' && (
+                    {(app.tp_id === 'ms_dynamics_365_sales' || app.tp_id === 'workable') && (
                         <Row>
-                            <span className="font-bold">Organisation URL: </span>
+                            <span className="font-bold">
+                                {app.tp_id === 'workable' ? 'Workable Subdomain: ' : 'Organisation URL: '}
+                            </span>
                             <Input
                                 className="app_org_url"
-                                value={app?.app_config?.org_url}
+                                value={appConfig?.org_url !== undefined ? appConfig.org_url : app?.app_config?.org_url}
                                 onChange={handleAppConfigFieldChange}
-                                error={!app?.app_config?.org_url}
+                                error={
+                                    !(
+                                        appConfig?.org_url !== undefined
+                                            ? appConfig.org_url
+                                            : app?.app_config?.org_url
+                                    )
+                                }
                             />
                         </Row>
                     )}
@@ -197,7 +205,7 @@ const EditCredentials: React.FC<{
                             ></Dropdown>
                         </Row>
                     )}
-                    {!(app.tp_id === 'closecrm' || app.tp_id === 'pipedrive' || app.tp_id === 'clickup') && (
+                    {!(app.tp_id === 'closecrm' || app.tp_id === 'pipedrive' || app.tp_id === 'clickup' || app.tp_id === 'workable') && (
                         <Row>
                             <span className="font-bold">Scopes: </span>
                             {/* <p className="break-words">{scopes}</p> */}

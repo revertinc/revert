@@ -8,6 +8,7 @@ import redis from '../../../redis/client';
 import { ATS_TP_ID, mapIntegrationIdToIntegrationName } from '../../../constants/common';
 import greenhouse from './authHandlers/greenhouse';
 import lever from './authHandlers/lever';
+import workable from './authHandlers/workable';
 
 const authRouter = express.Router({ mergeParams: true });
 
@@ -48,6 +49,13 @@ authRouter.get('/oauth-callback', async (req, res) => {
         const svixAppId = account!.id; // breaking change
         const environmentId = account?.id;
 
+        // Workable: the JS SDK passes the account subdomain via header at connect time;
+        // it is merged into the app_config that the auth handler reads.
+        const workableSubdomain = req.headers['x-revert-tp-subdomain'] as string | undefined;
+        if (integrationId === TP_ID.workable && workableSubdomain && account?.apps?.[0]) {
+            account.apps[0].app_config = { ...((account.apps[0].app_config as object) || {}), org_url: workableSubdomain };
+        }
+
         const handleAuthProps = {
             account,
             clientId,
@@ -70,6 +78,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     return greenhouse.handleBasicAuth(handleAuthProps);
                 case TP_ID.lever:
                     return lever.handleOAuth(handleAuthProps);
+                case TP_ID.workable:
+                    return workable.handleBasicAuth(handleAuthProps);
 
                 default:
                     return processOAuthResult({
