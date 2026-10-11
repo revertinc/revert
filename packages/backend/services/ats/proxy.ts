@@ -7,6 +7,7 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { ProxyService } from '../../generated/typescript/api/resources/ats/resources/proxy/service/ProxyService';
+import { getWorkableAuthHeaders, getWorkableBaseUrl } from '../../helpers/ats/workable';
 
 const proxyServiceAts = new ProxyService(
     {
@@ -66,6 +67,23 @@ const proxyServiceAts = new ProxyService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                            const baseUrl = getWorkableBaseUrl(connection);
+                            const normalizedPath = (path || '').replace(/^\/+/, '');
+                            const result: any = await axios({
+                            method: method,
+                            url: `${baseUrl}/${normalizedPath}`,
+                            headers: getWorkableAuthHeaders(thirdPartyToken),
+                            data: body,
+                            params: queryParams,
+                            });
+                            res.send({
+                            result: result.data,
+                            });
+
+                            break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app!' });
                     }

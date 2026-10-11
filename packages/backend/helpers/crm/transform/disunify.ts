@@ -467,6 +467,34 @@ export async function disunifyAtsObject<T extends Record<string, any>>({
 
             return processedObj;
         }
+
+        case TP_ID.workable: {
+            if (objType === 'candidate') {
+                // Workable candidate create/update payload:
+                // required: firstname+lastname (or name) + email; the job shortcode goes in the
+                // URL (POST /jobs/{shortcode}/candidates), never in the body.
+                const name =
+                    obj.name || [obj.first_name, obj.last_name].filter(Boolean).join(' ') || undefined;
+
+                return {
+                    candidate: {
+                        name,
+                        firstname: obj.first_name || (obj.name ? obj.name.split(' ')[0] : undefined),
+                        lastname:
+                            obj.last_name ||
+                            (obj.name && obj.name.includes(' ') ? obj.name.split(' ').slice(1).join(' ') : undefined),
+                        email: obj.email_addresses?.[0]?.value || undefined,
+                        phone: obj.phone_numbers?.[0]?.value || undefined,
+                        address: obj.addresses?.[0]?.value || undefined,
+                        headline: obj.title || undefined,
+                        summary: obj.summary || undefined,
+                        tags: Array.isArray(obj.tags) ? obj.tags : undefined,
+                    },
+                };
+            }
+
+            return processedObj;
+        }
     }
 }
 export async function disunifyAccountingObject<T extends Record<string, any>>({

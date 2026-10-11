@@ -1328,6 +1328,85 @@ const createIntegrationBlock = function (self, integration) {
             });
         };
 
+        modalForWorkableSubdomainAndApiKeyInput = function () {
+            return new Promise((resolve, reject) => {
+                const container = document.getElementById('revert-signin-container');
+                container.style.height = '534px';
+
+                // Remove all children of the container
+                while (container.firstChild) {
+                    container.removeChild(container.firstChild);
+                }
+
+                this.showAndRemoveLoader().then(() => {
+                    //close button
+                    const closeButton = createCloseButton();
+                    closeButton.style.position = 'absolute';
+                    closeButton.style.right = '20px';
+                    closeButton.style.top = '20px';
+                    closeButton.addEventListener('click', () => {
+                        reject('Modal closed by user');
+                        this.close();
+                    });
+
+                    const apiKeyInputContainer = this.apiKeyInputContainerFunction();
+                    container.appendChild(closeButton);
+                    container.appendChild(apiKeyInputContainer);
+
+                    // extra input for the Workable account subdomain
+                    const subdomainContainer = document.createElement('div');
+                    subdomainContainer.style.display = 'flex';
+                    subdomainContainer.style.alignItems = 'center';
+                    subdomainContainer.style.width = '100%';
+                    subdomainContainer.style.marginTop = '15px';
+
+                    const subdomainLabel = document.createElement('label');
+                    subdomainLabel.textContent = 'Subdomain:';
+                    subdomainLabel.setAttribute('for', 'workable-subdomain-input');
+                    subdomainLabel.style.marginRight = '10px';
+                    subdomainLabel.style.fontWeight = 'bold';
+
+                    const subdomainInput = document.createElement('input');
+                    subdomainInput.setAttribute('type', 'text');
+                    subdomainInput.setAttribute('id', 'workable-subdomain-input');
+                    subdomainInput.setAttribute('placeholder', 'acme (from acme.workable.com)');
+                    subdomainInput.style.flexGrow = '1';
+                    subdomainInput.style.padding = '4px';
+
+                    subdomainContainer.appendChild(subdomainLabel);
+                    subdomainContainer.appendChild(subdomainInput);
+
+                    const inputParentContainer = apiKeyInputContainer.querySelector('#parentDiv');
+                    inputParentContainer.insertBefore(subdomainContainer, inputParentContainer.firstChild);
+
+                    const inputElementForApiInput = apiKeyInputContainer.querySelector('#api-key-input');
+                    const inputElementForSubdomain = apiKeyInputContainer.querySelector('#workable-subdomain-input');
+                    const submitButtonForApiInputSubmission =
+                        apiKeyInputContainer.querySelector('#submitButtonBasicAuth');
+
+                    const updateSubmitState = () => {
+                        const valid =
+                            inputElementForApiInput.value.trim() !== '' && inputElementForSubdomain.value.trim() !== '';
+                        submitButtonForApiInputSubmission.disabled = !valid;
+                        submitButtonForApiInputSubmission.style.opacity = valid ? '1' : '0.5';
+                    };
+
+                    inputElementForApiInput.addEventListener('input', updateSubmitState);
+                    inputElementForSubdomain.addEventListener('input', updateSubmitState);
+
+                    submitButtonForApiInputSubmission.addEventListener('click', () => {
+                        submitButtonForApiInputSubmission.disabled = true;
+                        submitButtonForApiInputSubmission.style.opacity = '0.5';
+
+                        resolve({
+                            apiKey: inputElementForApiInput.value,
+                            subdomain: inputElementForSubdomain.value.trim(),
+                        });
+                    });
+                });
+            });
+        };
+
         handleIntegrationRedirect = async function (selectedIntegration) {
             if (selectedIntegration) {
                 const scopes = selectedIntegration.scopes;
@@ -1470,6 +1549,39 @@ const createIntegrationBlock = function (self, integration) {
                                 const errorMessage =
                                     data.error?.code === 'P2002'
                                         ? ': Already connected another CRM. Please disconnect first.'
+                                        : '';
+
+                                console.log('error:', errorMessage);
+                            } else {
+                                console.log('OAuth flow succeeded', data);
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            return this.renderFailedStage();
+                        });
+                } else if (selectedIntegration.integrationId === 'workable') {
+                    const { apiKey, subdomain } = await this.modalForWorkableSubdomainAndApiKeyInput();
+                    const url = `${this.CORE_API_BASE_URL}v1/ats/oauth-callback?integrationId=${
+                        selectedIntegration.integrationId
+                    }&t_id=${this.tenantId}&code=${apiKey}&x_revert_public_token=${this.API_REVERT_PUBLIC_TOKEN}${
+                        this.#USER_REDIRECT_URL ? `&redirectUrl=${this.#USER_REDIRECT_URL}` : ``
+                    }`;
+                    fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-revert-tp-subdomain': subdomain,
+                        },
+                    })
+                        .then((d) => {
+                            return d.json();
+                        })
+                        .then((data) => {
+                            if (data.error) {
+                                const errorMessage =
+                                    data.error?.code === 'P2002'
+                                        ? ': Already connected another ATS. Please disconnect first.'
                                         : '';
 
                                 console.log('error:', errorMessage);
