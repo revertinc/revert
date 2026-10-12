@@ -76,6 +76,11 @@ export const appsInfo = {
         logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/jhqummxaixtrzfhyc6yr',
         description: 'Configure your Xero Accounting App from here.',
     },
+    workable: {
+        name: 'Workable',
+        logo: 'https://www.workable.com/favicon.ico',
+        description: 'Use the default app. Customers enter their Workable API token and subdomain when connecting.',
+    },
     greenhouse: {
         name: 'Greenhouse',
         logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/rhqhzzrt6zmefncg3uid',

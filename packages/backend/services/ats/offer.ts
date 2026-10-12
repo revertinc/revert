@@ -7,6 +7,7 @@ import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
+import { requestWorkable } from '../../helpers/ats/workable';
 import { UnifiedOffer } from '../../models/unified/offer';
 import { OfferService } from '../../generated/typescript/api/resources/ats/resources/offer/service/OfferService';
 
@@ -64,6 +65,12 @@ const offerServiceAts = new OfferService(
                             result: 'This endpoint is currently not supported.',
                         });
                         break;
+                    }
+
+                    case TP_ID.workable: {
+                        throw new NotFoundError({
+                            error: 'Workable does not expose offers through its API',
+                        });
                     }
 
                     default: {
@@ -213,6 +220,12 @@ const offerServiceAts = new OfferService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        throw new NotFoundError({
+                            error: 'Workable does not expose offers through its API',
+                        });
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -263,6 +276,12 @@ const offerServiceAts = new OfferService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        throw new NotFoundError({
+                            error: 'Workable does not expose offers through its API',
+                        });
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -335,6 +354,12 @@ const offerServiceAts = new OfferService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        throw new NotFoundError({
+                            error: 'Workable does not expose offers through its API',
+                        });
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -384,6 +409,12 @@ const offerServiceAts = new OfferService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        throw new NotFoundError({
+                            error: 'Workable does not expose offers through its API',
+                        });
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }

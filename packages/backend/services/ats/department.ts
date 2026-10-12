@@ -6,6 +6,7 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
+import { requestWorkable } from '../../helpers/ats/workable';
 import { UnifiedDepartment } from '../../models/unified/department';
 import { DepartmentService } from '../../generated/typescript/api/resources/ats/resources/department/service/DepartmentService';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
@@ -63,6 +64,29 @@ const departmentServiceAts = new DepartmentService(
                             status: 'ok',
                             result: 'This endpoint is currently not supported.',
                         });
+                        break;
+                    }
+
+                    case TP_ID.workable: {
+                        // no single-department endpoint — list and match
+                        const result = await requestWorkable(connection.tp_customer_id, thirdPartyToken, {
+                            method: 'get',
+                            path: 'departments',
+                        });
+                        const dept = (result.data?.departments ?? []).find(
+                            (d: any) => String(d.id) === String(departmentId),
+                        );
+                        if (!dept) {
+                            throw new NotFoundError({ error: 'Workable department not found' });
+                        }
+                        const unifiedDepartment: any = await unifyObject<any, UnifiedDepartment>({
+                            obj: dept,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedDepartment });
                         break;
                     }
 
@@ -214,6 +238,31 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        const result = await requestWorkable(connection.tp_customer_id, thirdPartyToken, {
+                            method: 'get',
+                            path: 'departments',
+                        });
+                        const unifiedDepartments = await Promise.all(
+                            (result.data?.departments ?? []).map(async (dept: any) => {
+                                return await unifyObject<any, UnifiedDepartment>({
+                                    obj: dept,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: undefined,
+                            previous: undefined,
+                            results: unifiedDepartments,
+                        });
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -281,6 +330,12 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        throw new NotFoundError({
+                            error: 'Workable does not expose department management through its API',
+                        });
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -352,6 +407,12 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        throw new NotFoundError({
+                            error: 'Workable does not expose department management through its API',
+                        });
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -401,6 +462,12 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        throw new NotFoundError({
+                            error: 'Workable does not expose department management through its API',
+                        });
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }

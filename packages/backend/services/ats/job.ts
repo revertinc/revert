@@ -7,6 +7,7 @@ import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
+import { requestWorkable } from '../../helpers/ats/workable';
 import { UnifiedJob } from '../../models/unified/job';
 import { JobService } from '../../generated/typescript/api/resources/ats/resources/job/service/JobService';
 
@@ -90,6 +91,22 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        const result = await requestWorkable(connection.tp_customer_id, thirdPartyToken, {
+                            method: 'get',
+                            path: `jobs/${encodeURIComponent(jobId)}`,
+                        });
+                        const unifiedJob: any = await unifyObject<any, UnifiedJob>({
+                            obj: result.data?.job ?? result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedJob });
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -240,6 +257,49 @@ const jobServiceAts = new JobService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const params: Record<string, any> = {};
+                        if (pageSize) params.limit = pageSize;
+                        if (cursor) params.since_id = cursor;
+                        if (fields) {
+                            for (const k of ['state', 'created_after', 'updated_after']) {
+                                if (fields[k] !== undefined) params[k] = fields[k];
+                            }
+                        }
+                        const result = await requestWorkable(connection.tp_customer_id, thirdPartyToken, {
+                            method: 'get',
+                            path: 'jobs',
+                            params,
+                        });
+                        const unifiedJobs = await Promise.all(
+                            (result.data?.jobs ?? []).map(async (job: any) => {
+                                return await unifyObject<any, UnifiedJob>({
+                                    obj: job,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        let nextCursor;
+                        const nextUrl = result.data?.paging?.next;
+                        if (nextUrl) {
+                            try {
+                                nextCursor = new URL(nextUrl).searchParams.get('since_id') ?? undefined;
+                            } catch {
+                                nextCursor = undefined;
+                            }
+                        }
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
+                            results: unifiedJobs,
+                        });
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -331,6 +391,12 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        throw new NotFoundError({
+                            error: 'Workable does not support creating jobs through its API',
+                        });
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -428,6 +494,12 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        throw new NotFoundError({
+                            error: 'Workable does not support updating jobs through its API',
+                        });
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -477,6 +549,12 @@ const jobServiceAts = new JobService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        throw new NotFoundError({
+                            error: 'Workable does not support deleting jobs through its API',
+                        });
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
