@@ -1275,7 +1275,7 @@ const createIntegrationBlock = function (self, integration) {
             return parentDiv;
         };
 
-        modalForApiKeyInputBasicAuth = function () {
+        modalForApiKeyInputBasicAuth = function (requireSubdomain = false) {
             return new Promise((resolve, reject) => {
                 const container = document.getElementById('revert-signin-container');
                 container.style.height = '534px';
@@ -1304,9 +1304,29 @@ const createIntegrationBlock = function (self, integration) {
                     const submitButtonForApiInputSubmission =
                         apiKeyInputContainer.querySelector('#submitButtonBasicAuth');
 
+                    let subdomainInput;
+                    if (requireSubdomain) {
+                        inputElementForApiInput.type = 'password';
+                        const label = document.createElement('label');
+                        label.textContent = 'Workable account subdomain:';
+                        subdomainInput = document.createElement('input');
+                        subdomainInput.id = 'workable-subdomain';
+                        subdomainInput.placeholder = 'your-company';
+                        label.htmlFor = subdomainInput.id;
+                        apiKeyInputContainer.insertBefore(label, apiKeyInputContainer.lastChild);
+                        apiKeyInputContainer.insertBefore(subdomainInput, apiKeyInputContainer.lastChild);
+                        const updateSubmit = () => {
+                            const valid = inputElementForApiInput.value.trim() && subdomainInput.value.trim();
+                            submitButtonForApiInputSubmission.disabled = !valid;
+                            submitButtonForApiInputSubmission.style.opacity = valid ? '1' : '0.5';
+                        };
+                        subdomainInput.addEventListener('input', updateSubmit);
+                        inputElementForApiInput.addEventListener('input', updateSubmit);
+                    }
+
                     //event listener on input to change the disability of submit
                     inputElementForApiInput.addEventListener('input', function () {
-                        if (inputElementForApiInput.value.trim() !== '') {
+                        if (inputElementForApiInput.value.trim() !== '' && (!subdomainInput || subdomainInput.value.trim())) {
                             submitButtonForApiInputSubmission.disabled = false;
                             submitButtonForApiInputSubmission.style.opacity = '1';
                         } else {
@@ -1322,7 +1342,7 @@ const createIntegrationBlock = function (self, integration) {
 
                         const apiKey = inputElementForApiInput.value;
 
-                        resolve(apiKey);
+                        resolve(requireSubdomain ? { apiKey, subdomain: subdomainInput.value.trim() } : apiKey);
                     });
                 });
             });
@@ -1449,6 +1469,23 @@ const createIntegrationBlock = function (self, integration) {
                             selectedIntegration.clientId
                         }&response_type=code&state=${encodeURIComponent(state)}`,
                     );
+                } else if (selectedIntegration.integrationId === 'workable') {
+                    try {
+                        const { apiKey, subdomain } = await this.modalForApiKeyInputBasicAuth(true);
+                        const query = new URLSearchParams({
+                            integrationId: 'workable',
+                            t_id: this.tenantId,
+                            code: apiKey,
+                            subdomain,
+                            x_revert_public_token: this.API_REVERT_PUBLIC_TOKEN,
+                            ...(this.#USER_REDIRECT_URL && { redirect_url: this.#USER_REDIRECT_URL }),
+                        });
+                        const response = await fetch(`${this.CORE_API_BASE_URL}v1/ats/oauth-callback?${query}`);
+                        const result = await response.json();
+                        if (!response.ok || result.status !== 'ok') this.renderFailedStage();
+                    } catch {
+                        this.renderFailedStage();
+                    }
                 } else if (selectedIntegration.integrationId === 'greenhouse') {
                     const apiKey = await this.modalForApiKeyInputBasicAuth();
                     const url = `${this.CORE_API_BASE_URL}v1/ats/oauth-callback?integrationId=${

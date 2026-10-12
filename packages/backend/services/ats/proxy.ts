@@ -6,6 +6,7 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
+import { requestWorkable } from '../../helpers/ats/workable';
 import { ProxyService } from '../../generated/typescript/api/resources/ats/resources/proxy/service/ProxyService';
 
 const proxyServiceAts = new ProxyService(
@@ -27,10 +28,19 @@ const proxyServiceAts = new ProxyService(
                     connection.app?.env?.accountId,
                     tenantId,
                     thirdPartyId,
-                    thirdPartyToken,
                 );
 
                 switch (thirdPartyId) {
+                    case TP_ID.workable: {
+                        const result = await requestWorkable(connection.tp_customer_id, thirdPartyToken, {
+                            path,
+                            method,
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({ result: result.data });
+                        break;
+                    }
                     case TP_ID.greenhouse: {
                         const apiToken = thirdPartyToken;
                         const credentials = Buffer.from(apiToken + ':').toString('base64');

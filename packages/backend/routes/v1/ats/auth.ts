@@ -8,11 +8,12 @@ import redis from '../../../redis/client';
 import { ATS_TP_ID, mapIntegrationIdToIntegrationName } from '../../../constants/common';
 import greenhouse from './authHandlers/greenhouse';
 import lever from './authHandlers/lever';
+import workable from './authHandlers/workable';
 
 const authRouter = express.Router({ mergeParams: true });
 
 authRouter.get('/oauth-callback', async (req, res) => {
-    logInfo('OAuth callback', req.query);
+    logInfo('OAuth callback', req.query.integrationId);
     const integrationId = req.query.integrationId as ATS_TP_ID;
     const revertPublicKey = req.query.x_revert_public_token as string;
     const redirect_url = req.query?.redirect_url;
@@ -66,6 +67,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
 
         if (req.query.code && req.query.t_id && revertPublicKey) {
             switch (integrationId) {
+                case TP_ID.workable:
+                    return workable.handleBasicAuth(handleAuthProps);
                 case TP_ID.greenhouse:
                     return greenhouse.handleBasicAuth(handleAuthProps);
                 case TP_ID.lever:

@@ -7,6 +7,7 @@ import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
+import { requestWorkable } from '../../helpers/ats/workable';
 import { UnifiedCandidate } from '../../models/unified/candidate';
 import { CandidateService } from '../../generated/typescript/api/resources/ats/resources/candidate/service/CandidateService';
 
@@ -88,6 +89,31 @@ const candidateServiceAts = new CandidateService(
                             status: 'ok',
                             result: unifiedCandidate,
                         });
+                        break;
+                    }
+
+                    case TP_ID.workable: {
+                        // Workable nests candidates under jobs — fields.shortcode
+                        // names the job the candidate belongs to
+                        const fields: any =
+                            req.query.fields && JSON.parse(req.query.fields as string);
+                        if (!fields || !fields.shortcode) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "shortcode" is required for Workable and should be included in the "fields" parameter.',
+                            });
+                        }
+                        const result = await requestWorkable(connection.tp_customer_id, thirdPartyToken, {
+                            method: 'get',
+                            path: `jobs/${encodeURIComponent(fields.shortcode)}/candidates/${encodeURIComponent(candidateId)}`,
+                        });
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: result.data?.candidate ?? result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedCandidate });
                         break;
                     }
 
@@ -238,6 +264,49 @@ const candidateServiceAts = new CandidateService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        const params: Record<string, any> = {};
+                        if (pageSize) params.limit = pageSize;
+                        if (cursor) params.since_id = cursor;
+                        if (fields) {
+                            for (const k of ['shortcode', 'stage', 'email', 'created_after', 'updated_after']) {
+                                if (fields[k] !== undefined) params[k] = fields[k];
+                            }
+                        }
+                        const result = await requestWorkable(connection.tp_customer_id, thirdPartyToken, {
+                            method: 'get',
+                            path: 'candidates',
+                            params,
+                        });
+                        const unifiedCandidates = await Promise.all(
+                            (result.data?.candidates ?? []).map(async (candidate: any) => {
+                                return await unifyObject<any, UnifiedCandidate>({
+                                    obj: candidate,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        let nextCursor;
+                        const nextUrl = result.data?.paging?.next;
+                        if (nextUrl) {
+                            try {
+                                nextCursor = new URL(nextUrl).searchParams.get('since_id') ?? undefined;
+                            } catch {
+                                nextCursor = undefined;
+                            }
+                        }
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
+                            results: unifiedCandidates,
+                        });
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -330,6 +399,21 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        if (!fields || !fields.shortcode) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "shortcode" is required for Workable and should be included in the "fields" parameter.',
+                            });
+                        }
+                        const result = await requestWorkable(connection.tp_customer_id, thirdPartyToken, {
+                            method: 'post',
+                            path: `jobs/${encodeURIComponent(fields.shortcode)}/candidates`,
+                            data: candidate,
+                        });
+                        res.send({ status: 'ok', message: 'Workable candidate created', result: result.data });
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -402,6 +486,12 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        throw new NotFoundError({
+                            error: 'Workable does not support updating candidates through its API',
+                        });
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -471,6 +561,12 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        throw new NotFoundError({
+                            error: 'Workable does not support deleting candidates through its API',
+                        });
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
