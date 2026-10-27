@@ -86,6 +86,11 @@ export const appsInfo = {
         logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/hwlwhz2lnum3hfcabqc4',
         description: 'Configure your Lever ATS App from here.',
     },
+    workable: {
+        name: 'Workable',
+        logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/workable',
+        description: 'Configure your Workable ATS App from here.',
+    },
     github: {
         name: 'GitHub',
         logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/v1722418192/RevertAppLogos/cmeafzqvnvvconohfnnr.png',

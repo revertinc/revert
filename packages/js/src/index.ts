@@ -1508,6 +1508,16 @@ const createIntegrationBlock = function (self, integration) {
                                 );
                             }
                         });
+                } else if (selectedIntegration.integrationId === 'workable') {
+                    const encodedScopes = encodeURIComponent(scopes.join(' '));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/workable`);
+                    window.open(
+                        `https://www.workable.com/oauth/authorize?client_id=${
+                            selectedIntegration.clientId
+                        }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                            state,
+                        )}&scope=${encodedScopes}`,
+                    );
                 } else if (selectedIntegration.integrationId === 'github') {
                     const encodedScopes = encodeURIComponent(scopes.join(','));
                     const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/github`);
