@@ -49,6 +49,23 @@ const proxyServiceAts = new ProxyService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        const token = thirdPartyToken;
+                        const headers = {
+                            Authorization: 'Bearer ' + token,
+                        };
+                        const result: any = await axios({
+                            method: method,
+                            url: `https://impl.workday.com/ccx/api/v1/${path}`,
+                            headers: headers,
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
                     case TP_ID.lever: {
                         const token = thirdPartyToken;
                         const headers = {

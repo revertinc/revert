@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 export type CRM_TP_ID = 'zohocrm' | 'sfdc' | 'pipedrive' | 'hubspot' | 'closecrm' | 'ms_dynamics_365_sales';
 export type CHAT_TP_ID = 'slack' | 'discord';
 export type ACCOUNTING_TP_ID = 'quickbooks' | 'xero';
-export type ATS_TP_ID = 'greenhouse' | 'lever';
+export type ATS_TP_ID = 'greenhouse' | 'lever' | 'workday';
 export type TICKET_TP_ID = 'linear' | 'clickup' | 'asana' | 'jira' | 'trello' | 'bitbucket' | 'github';
 
 export const DEFAULT_SCOPE = {
@@ -54,6 +54,7 @@ export const DEFAULT_SCOPE = {
     [TP_ID.quickbooks]: ['com.intuit.quickbooks.accounting'],
     [TP_ID.xero]: ['offline_access', 'accounting.contacts', 'accounting.transactions', 'accounting.settings'],
     [TP_ID.greenhouse]: [],
+    [TP_ID.workday]: [],
     [TP_ID.lever]: [
         'applications:read:admin',
         'archive_reasons:read:admin',
@@ -107,6 +108,7 @@ export const mapIntegrationIdToIntegrationName = {
     [TP_ID.xero]: 'Xero',
     [TP_ID.greenhouse]: 'Greenhouse',
     [TP_ID.lever]: 'Lever',
+    [TP_ID.workday]: 'Workday',
     [TP_ID.github]: 'GitHub',
 };
 
