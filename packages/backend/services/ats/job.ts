@@ -7,6 +7,14 @@ import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
+import {
+    buildWorkdayListParams,
+    extractWorkdayList,
+    getWorkdayServiceUrl,
+    hasNextWorkdayPage,
+    parseWorkdayTenantUrl,
+    unwrapWorkdayEntity,
+} from '../../helpers/ats/workday';
 import { UnifiedJob } from '../../models/unified/job';
 import { JobService } from '../../generated/typescript/api/resources/ats/resources/job/service/JobService';
 
@@ -84,6 +92,31 @@ const jobServiceAts = new JobService(
                             accountFieldMappingConfig: account.accountFieldMappingConfig,
                         });
 
+                        res.send({
+                            status: 'ok',
+                            result: unifiedJob,
+                        });
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const tenant = parseWorkdayTenantUrl(
+                            (connection.app?.app_config as any)?.tenantUrl,
+                            connection.tp_customer_id || undefined,
+                        );
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const result = await axios({
+                            method: 'get',
+                            url: `${getWorkdayServiceUrl(tenant, 'recruiting')}/job_requisitions/${jobId}`,
+                            headers,
+                        });
+                        const job = unwrapWorkdayEntity(result.data, 'jobRequisitionData');
+                        const unifiedJob: any = await unifyObject<any, UnifiedJob>({
+                            obj: job,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
                         res.send({
                             status: 'ok',
                             result: unifiedJob,
@@ -238,6 +271,41 @@ const jobServiceAts = new JobService(
                             results: unifiedJobs,
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const tenant = parseWorkdayTenantUrl(
+                            (connection.app?.app_config as any)?.tenantUrl,
+                            connection.tp_customer_id || undefined,
+                        );
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const page = cursor ? Number(cursor) : 1;
+                        const result = await axios({
+                            method: 'get',
+                            url: `${getWorkdayServiceUrl(tenant, 'recruiting')}/job_requisitions`,
+                            headers,
+                            params: buildWorkdayListParams(page),
+                        });
+                        const { data, total } = extractWorkdayList(result.data);
+                        const unifiedJobs = await Promise.all(
+                            data.map(async (job: any) => {
+                                const flat = unwrapWorkdayEntity(job, 'jobRequisitionData',
+                                );
+                                return await unifyObject<any, UnifiedJob>({
+                                    obj: flat,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: hasNextWorkdayPage(data, total, page) ? String(page + 1) : undefined,
+                            previous: undefined,
+                            results: unifiedJobs,
+                        });
                         break;
                     }
                     default: {

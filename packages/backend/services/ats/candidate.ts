@@ -7,6 +7,14 @@ import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
+import {
+    buildWorkdayListParams,
+    extractWorkdayList,
+    getWorkdayServiceUrl,
+    hasNextWorkdayPage,
+    parseWorkdayTenantUrl,
+    unwrapWorkdayEntity,
+} from '../../helpers/ats/workday';
 import { UnifiedCandidate } from '../../models/unified/candidate';
 import { CandidateService } from '../../generated/typescript/api/resources/ats/resources/candidate/service/CandidateService';
 
@@ -91,6 +99,31 @@ const candidateServiceAts = new CandidateService(
                         break;
                     }
 
+                    case TP_ID.workday: {
+                        const tenant = parseWorkdayTenantUrl(
+                            (connection.app?.app_config as any)?.tenantUrl,
+                            connection.tp_customer_id || undefined,
+                        );
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const result = await axios({
+                            method: 'get',
+                            url: `${getWorkdayServiceUrl(tenant, 'recruiting')}/candidates/${candidateId}`,
+                            headers,
+                        });
+                        const candidate = unwrapWorkdayEntity(result.data, 'candidateData');
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: candidate,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({
+                            status: 'ok',
+                            result: unifiedCandidate,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -235,6 +268,41 @@ const candidateServiceAts = new CandidateService(
                             results: unifiedCandidates,
                         });
 
+                        break;
+                    }
+
+                    case TP_ID.workday: {
+                        const tenant = parseWorkdayTenantUrl(
+                            (connection.app?.app_config as any)?.tenantUrl,
+                            connection.tp_customer_id || undefined,
+                        );
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const page = cursor ? Number(cursor) : 1;
+                        const result = await axios({
+                            method: 'get',
+                            url: `${getWorkdayServiceUrl(tenant, 'recruiting')}/candidates`,
+                            headers,
+                            params: buildWorkdayListParams(page),
+                        });
+                        const { data, total } = extractWorkdayList(result.data);
+                        const unifiedCandidates = await Promise.all(
+                            data.map(async (candidate: any) => {
+                                const flat = unwrapWorkdayEntity(candidate, 'candidateData');
+                                return await unifyObject<any, UnifiedCandidate>({
+                                    obj: flat,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: hasNextWorkdayPage(data, total, page) ? String(page + 1) : undefined,
+                            previous: undefined,
+                            results: unifiedCandidates,
+                        });
                         break;
                     }
 

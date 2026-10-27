@@ -5,6 +5,7 @@ import authRouter from './auth';
 import { logError } from '../../../helpers/logger';
 import { InternalServerError } from '../../../generated/typescript/api/resources/common';
 import { AppConfig } from '../../../constants/common';
+import { getWorkdayOAuthUrls, parseWorkdayTenantUrl } from '../../../helpers/ats/workday';
 
 const atsRouter = express.Router();
 
@@ -38,6 +39,40 @@ atsRouter.get('/lever-app_config', async (req, res) => {
         }
 
         return res.send({ status: 'ok', env: 'Sandbox' });
+    } catch (error: any) {
+        logError(error);
+        throw new InternalServerError({
+            error: 'Internal Server error',
+        });
+    }
+});
+
+atsRouter.get('/workday-app_config', async (req, res) => {
+    try {
+        const { revertPublicToken } = req.query;
+
+        const app = await prisma.environments.findFirst({
+            where: {
+                public_token: String(revertPublicToken),
+            },
+            include: {
+                apps: {
+                    select: { app_config: true },
+                    where: { tp_id: 'workday' },
+                },
+            },
+        });
+
+        const appConfig = app && (app.apps[0].app_config as AppConfig);
+        const tenantUrl = (appConfig as any)?.tenantUrl;
+
+        if (!tenantUrl) {
+            return res.send({ status: 'ok', env: appConfig?.env, tenantUrl: null, authorizeUrl: null });
+        }
+
+        const { authorizeUrl } = getWorkdayOAuthUrls(parseWorkdayTenantUrl(tenantUrl));
+
+        return res.send({ status: 'ok', env: appConfig?.env, tenantUrl, authorizeUrl });
     } catch (error: any) {
         logError(error);
         throw new InternalServerError({

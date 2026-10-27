@@ -7,6 +7,7 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { ProxyService } from '../../generated/typescript/api/resources/ats/resources/proxy/service/ProxyService';
+import { parseWorkdayTenantUrl } from '../../helpers/ats/workday';
 
 const proxyServiceAts = new ProxyService(
     {
@@ -58,6 +59,29 @@ const proxyServiceAts = new ProxyService(
                             method: method,
                             url: `https://api.lever.co/v1/${path}`,
                             headers: headers,
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        // Never forward the bearer token to an arbitrary URL: the
+                        // request path is always resolved against the connection's
+                        // own Workday tenant origin.
+                        const tenant = parseWorkdayTenantUrl(
+                            (connection.app?.app_config as any)?.tenantUrl,
+                            connection.tp_customer_id || undefined,
+                        );
+                        const headers = {
+                            Authorization: 'Bearer ' + thirdPartyToken,
+                        };
+                        const result: any = await axios({
+                            method: method,
+                            url: `${tenant.baseUrl}/${String(path).replace(/^\/+/, '')}`,
+                            headers,
                             data: body,
                             params: queryParams,
                         });

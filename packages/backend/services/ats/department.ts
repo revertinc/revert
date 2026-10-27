@@ -6,6 +6,14 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
+import {
+    buildWorkdayListParams,
+    extractWorkdayList,
+    getWorkdayServiceUrl,
+    hasNextWorkdayPage,
+    parseWorkdayTenantUrl,
+    unwrapWorkdayEntity,
+} from '../../helpers/ats/workday';
 import { UnifiedDepartment } from '../../models/unified/department';
 import { DepartmentService } from '../../generated/typescript/api/resources/ats/resources/department/service/DepartmentService';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
@@ -66,6 +74,32 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
 
+                    case TP_ID.workday: {
+                        const tenant = parseWorkdayTenantUrl(
+                            (connection.app?.app_config as any)?.tenantUrl,
+                            connection.tp_customer_id || undefined,
+                        );
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const result = await axios({
+                            method: 'get',
+                            url: `${getWorkdayServiceUrl(tenant, 'staffing')}/organizations/${departmentId}`,
+                            headers,
+                        });
+                        const department = unwrapWorkdayEntity(result.data, 'organizationData',
+                        );
+                        const unifiedDepartment: any = await unifyObject<any, UnifiedDepartment>({
+                            obj: department,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({
+                            status: 'ok',
+                            result: unifiedDepartment,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -214,6 +248,41 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
 
+                    case TP_ID.workday: {
+                        const tenant = parseWorkdayTenantUrl(
+                            (connection.app?.app_config as any)?.tenantUrl,
+                            connection.tp_customer_id || undefined,
+                        );
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const page = cursor ? Number(cursor) : 1;
+                        const result = await axios({
+                            method: 'get',
+                            url: `${getWorkdayServiceUrl(tenant, 'staffing')}/organizations`,
+                            headers,
+                            params: buildWorkdayListParams(page),
+                        });
+                        const { data, total } = extractWorkdayList(result.data);
+                        const unifiedDepartments = await Promise.all(
+                            data.map(async (department: any) => {
+                                const flat = unwrapWorkdayEntity(department, 'organizationData',
+                                );
+                                return await unifyObject<any, UnifiedDepartment>({
+                                    obj: flat,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: hasNextWorkdayPage(data, total, page) ? String(page + 1) : undefined,
+                            previous: undefined,
+                            results: unifiedDepartments,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }

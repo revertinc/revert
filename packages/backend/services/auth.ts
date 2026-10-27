@@ -7,6 +7,7 @@ import isWorkEmail from '../helpers/isWorkEmail';
 import { ENV, TP_ID } from '@prisma/client';
 import { logInfo, logError } from '../helpers/logger';
 import { AppConfig, DEFAULT_SCOPE } from '../constants/common';
+import { getWorkdayOAuthUrls, parseWorkdayTenantUrl } from '../helpers/ats/workday';
 import redis from '../redis/client';
 
 class AuthService {
@@ -425,6 +426,47 @@ class AuthService {
                                     tp_refresh_token: result.data.refresh_token,
                                 },
                             });
+                        } else if (connection.tp_id === TP_ID.workday) {
+                            // Workday tokens are refreshed against the connection's
+                            // own tenant token endpoint with Basic client auth.
+                            const tenant = parseWorkdayTenantUrl(
+                                (connection.app?.app_config as any)?.tenantUrl,
+                                connection.tp_customer_id || undefined,
+                            );
+                            const { tokenUrl } = getWorkdayOAuthUrls(tenant);
+                            const clientId = connection.app?.is_revert_app
+                                ? config.WORKDAY_CLIENT_ID
+                                : connection.app_client_id || config.WORKDAY_CLIENT_ID;
+                            const clientSecret = connection.app?.is_revert_app
+                                ? config.WORKDAY_CLIENT_SECRET
+                                : connection.app_client_secret || config.WORKDAY_CLIENT_SECRET;
+                            const basicToken = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+                            const formData = {
+                                grant_type: 'refresh_token',
+                                refresh_token: connection.tp_refresh_token,
+                            };
+                            const result: any = await axios({
+                                method: 'post',
+                                url: tokenUrl,
+                                data: qs.stringify(formData),
+                                headers: {
+                                    Authorization: 'Basic ' + basicToken,
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                            });
+                            if (result.data && result.data.access_token) {
+                                await prisma.connections.update({
+                                    where: {
+                                        id: connection.id,
+                                    },
+                                    data: {
+                                        tp_access_token: result.data.access_token,
+                                        tp_refresh_token: result.data.refresh_token || connection.tp_refresh_token,
+                                    },
+                                });
+                            } else {
+                                logInfo('Workday connection could not be refreshed', result);
+                            }
                         }
                     } catch (error: any) {
                         logError(error.response?.data);

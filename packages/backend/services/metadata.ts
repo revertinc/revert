@@ -194,6 +194,15 @@ const metadataService = new MetadataService({
                     scopes: getScope(apps, TP_ID.lever),
                     clientId: getClientId(apps, TP_ID.lever) || config.LEVER_CLIENT_ID,
                 },
+                {
+                    integrationId: TP_ID.workday,
+                    name: 'Workday',
+                    // TODO: upload the Workday logo to RevertAppLogos and set imageSrc
+                    imageSrc: '',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.workday),
+                    clientId: getClientId(apps, TP_ID.workday) || config.WORKDAY_CLIENT_ID,
+                },
 
                 {
                     integrationId: TP_ID.github,

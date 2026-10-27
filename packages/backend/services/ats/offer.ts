@@ -7,6 +7,14 @@ import { TP_ID } from '@prisma/client';
 import axios from 'axios';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
+import {
+    buildWorkdayListParams,
+    extractWorkdayList,
+    getWorkdayServiceUrl,
+    hasNextWorkdayPage,
+    parseWorkdayTenantUrl,
+    unwrapWorkdayEntity,
+} from '../../helpers/ats/workday';
 import { UnifiedOffer } from '../../models/unified/offer';
 import { OfferService } from '../../generated/typescript/api/resources/ats/resources/offer/service/OfferService';
 
@@ -66,6 +74,31 @@ const offerServiceAts = new OfferService(
                         break;
                     }
 
+                    case TP_ID.workday: {
+                        const tenant = parseWorkdayTenantUrl(
+                            (connection.app?.app_config as any)?.tenantUrl,
+                            connection.tp_customer_id || undefined,
+                        );
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const result = await axios({
+                            method: 'get',
+                            url: `${getWorkdayServiceUrl(tenant, 'recruiting')}/job_applications/${offerId}`,
+                            headers,
+                        });
+                        const offer = unwrapWorkdayEntity(result.data, 'jobApplicationData');
+                        const unifiedOffer: any = await unifyObject<any, UnifiedOffer>({
+                            obj: offer,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({
+                            status: 'ok',
+                            result: unifiedOffer,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -208,6 +241,41 @@ const offerServiceAts = new OfferService(
                         res.send({
                             status: 'ok',
                             next: nextCursor,
+                            previous: undefined,
+                            results: unifiedOffers,
+                        });
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const tenant = parseWorkdayTenantUrl(
+                            (connection.app?.app_config as any)?.tenantUrl,
+                            connection.tp_customer_id || undefined,
+                        );
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const page = cursor ? Number(cursor) : 1;
+                        const result = await axios({
+                            method: 'get',
+                            url: `${getWorkdayServiceUrl(tenant, 'recruiting')}/job_applications`,
+                            headers,
+                            params: buildWorkdayListParams(page),
+                        });
+                        const { data, total } = extractWorkdayList(result.data);
+                        const unifiedOffers = await Promise.all(
+                            data.map(async (offer: any) => {
+                                const flat = unwrapWorkdayEntity(offer, 'jobApplicationData',
+                                );
+                                return await unifyObject<any, UnifiedOffer>({
+                                    obj: flat,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: hasNextWorkdayPage(data, total, page) ? String(page + 1) : undefined,
                             previous: undefined,
                             results: unifiedOffers,
                         });

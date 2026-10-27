@@ -1508,6 +1508,30 @@ const createIntegrationBlock = function (self, integration) {
                                 );
                             }
                         });
+                } else if (selectedIntegration.integrationId === 'workday') {
+                    const encodedScopes = encodeURIComponent(scopes.join(' '));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/workday`);
+
+                    fetch(
+                        `${this.CORE_API_BASE_URL}ats/workday-app_config?revertPublicToken=${this.API_REVERT_PUBLIC_TOKEN}`,
+                    )
+                        .then((data) => data.json())
+                        .then((data) => {
+                            if (!data.authorizeUrl) {
+                                return this.renderFailedStage();
+                            }
+                            window.open(
+                                `${data.authorizeUrl}?client_id=${
+                                    selectedIntegration.clientId
+                                }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                                    state,
+                                )}&scope=${encodedScopes}`,
+                            );
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            return this.renderFailedStage();
+                        });
                 } else if (selectedIntegration.integrationId === 'github') {
                     const encodedScopes = encodeURIComponent(scopes.join(','));
                     const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/github`);
