@@ -8,6 +8,7 @@ import { ENV, TP_ID } from '@prisma/client';
 import { logInfo, logError } from '../helpers/logger';
 import { AppConfig, DEFAULT_SCOPE } from '../constants/common';
 import redis from '../redis/client';
+import { resolveWorkdayEndpoints, workdayEnv } from '../helpers/ats/workday';
 
 class AuthService {
     async refreshOAuthTokensForThirdParty() {
@@ -423,6 +424,31 @@ class AuthService {
                                 data: {
                                     tp_access_token: result.data.access_token,
                                     tp_refresh_token: result.data.refresh_token,
+                                },
+                            });
+                        } else if (connection.tp_id === TP_ID.workday) {
+                            const endpoints = resolveWorkdayEndpoints(connection, workdayEnv(config));
+                            if (!endpoints.tokenUrl) continue;
+                            const result: any = await axios({
+                                method: 'post',
+                                url: endpoints.tokenUrl,
+                                data: qs.stringify({
+                                    grant_type: 'refresh_token',
+                                    client_id: connection.app?.is_revert_app
+                                        ? config.WORKDAY_CLIENT_ID
+                                        : connection.app_client_id || config.WORKDAY_CLIENT_ID,
+                                    client_secret: connection.app?.is_revert_app
+                                        ? config.WORKDAY_CLIENT_SECRET
+                                        : connection.app_client_secret || config.WORKDAY_CLIENT_SECRET,
+                                    refresh_token: connection.tp_refresh_token,
+                                }),
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            });
+                            await prisma.connections.update({
+                                where: { id: connection.id },
+                                data: {
+                                    tp_access_token: result.data.access_token,
+                                    tp_refresh_token: result.data.refresh_token || connection.tp_refresh_token,
                                 },
                             });
                         }

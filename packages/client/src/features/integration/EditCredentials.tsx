@@ -80,7 +80,7 @@ const EditCredentials: React.FC<{
     const [clientId, setClientId] = React.useState<string>(app.app_client_id);
     const [clientSecret, setClientSecret] = React.useState<string>(app.app_client_secret);
     const [botToken, setBotToken] = React.useState<string>(app.app_bot_token);
-    const [appConfig, setAppConfig] = React.useState<AppConfig>({});
+    const [appConfig, setAppConfig] = React.useState<AppConfig>(app.app_config || {});
     const [scopes, setScopes] = React.useState<string[]>(app.scope);
     const [newScope, setNewScope] = React.useState<string>('');
     const [isRevertApp, setIsRevertApp] = React.useState(app.is_revert_app);
@@ -112,7 +112,7 @@ const EditCredentials: React.FC<{
         const val = (ev.target.value || '').trim();
         if (app.tp_id === 'discord') {
             setAppConfig({ bot_token: val });
-        } else if (app.tp_id === 'ms_dynamics_365_sales') {
+        } else if (app.tp_id === 'ms_dynamics_365_sales' || app.tp_id === 'workday') {
             setAppConfig({ org_url: val });
         }
     };
@@ -175,12 +175,12 @@ const EditCredentials: React.FC<{
                             />
                         </Row>
                     )}
-                    {app.tp_id === 'ms_dynamics_365_sales' && (
+                    {(app.tp_id === 'ms_dynamics_365_sales' || app.tp_id === 'workday') && (
                         <Row>
                             <span className="font-bold">Organisation URL: </span>
                             <Input
                                 className="app_org_url"
-                                value={app?.app_config?.org_url}
+                                value={appConfig?.org_url || app?.app_config?.org_url || ''}
                                 onChange={handleAppConfigFieldChange}
                                 error={!app?.app_config?.org_url}
                             />

@@ -1508,6 +1508,30 @@ const createIntegrationBlock = function (self, integration) {
                                 );
                             }
                         });
+                } else if (selectedIntegration.integrationId === 'workday') {
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/workday`);
+                    fetch(
+                        `${this.CORE_API_BASE_URL}ats/workday-app_config?revertPublicToken=${this.API_REVERT_PUBLIC_TOKEN}`,
+                    )
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (!data.authorizeUrl) {
+                                throw new Error(data.error || 'Workday tenant URL is not configured');
+                            }
+                            const authorize = new URL(data.authorizeUrl);
+                            authorize.searchParams.set('client_id', selectedIntegration.clientId || '');
+                            authorize.searchParams.set('redirect_uri', encodedRedirectUri);
+                            authorize.searchParams.set('response_type', 'code');
+                            authorize.searchParams.set('state', state);
+                            if (scopes.length) {
+                                authorize.searchParams.set('scope', scopes.join(' '));
+                            }
+                            window.open(authorize.toString());
+                        })
+                        .catch((error) => {
+                            console.error('Unable to start Workday OAuth flow', error);
+                            this.renderFailedStage();
+                        });
                 } else if (selectedIntegration.integrationId === 'github') {
                     const encodedScopes = encodeURIComponent(scopes.join(','));
                     const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/github`);

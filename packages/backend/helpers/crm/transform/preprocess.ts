@@ -20,7 +20,7 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
     objType,
 }: {
     obj: T;
-    tpId: CRM_TP_ID | TICKET_TP_ID;
+    tpId: CRM_TP_ID | TICKET_TP_ID | ATS_TP_ID | ACCOUNTING_TP_ID;
     objType:
         | StandardObjects
         | ChatStandardObjects
@@ -535,6 +535,42 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.workday]: {
+            [AtsStandardObjects.candidate]: (obj: T) => {
+                const descriptor = typeof obj.descriptor === 'string' ? obj.descriptor.trim() : '';
+                const names = descriptor ? descriptor.split(/\s+/) : [];
+                const primaryEmail = obj.email || obj.primaryEmail;
+                const primaryPhone = obj.phone || obj.primaryPhone;
+                return {
+                    ...obj,
+                    firstName: obj.name?.firstName || obj.firstName || names[0],
+                    lastName:
+                        obj.name?.lastName || obj.lastName || (names.length > 1 ? names.slice(1).join(' ') : undefined),
+                    emailAddresses: obj.emailAddresses || (primaryEmail ? [{ value: primaryEmail }] : undefined),
+                    phones: obj.phones || obj.phoneNumbers || (primaryPhone ? [{ value: primaryPhone }] : undefined),
+                    createdOn: obj.createdOn || obj.createdMoment,
+                };
+            },
+            [AtsStandardObjects.job]: (obj: T) => ({
+                ...obj,
+                title: obj.title || obj.descriptor,
+                jobRequisitionId: obj.jobRequisition?.id || obj.jobRequisitionId,
+                status: obj.jobPostingStatus?.descriptor || obj.status,
+                createdOn: obj.createdOn || obj.postedOn,
+            }),
+            [AtsStandardObjects.offer]: (obj: T) => ({
+                ...obj,
+                jobApplicationId: obj.jobApplication?.id || obj.jobApplicationId,
+                jobPostingId: obj.jobPosting?.id || obj.jobPostingId,
+                candidateId: obj.candidate?.id || obj.candidateId,
+                status: obj.status?.descriptor || obj.status,
+            }),
+            [AtsStandardObjects.department]: (obj: T) => ({
+                ...obj,
+                descriptor: obj.descriptor || obj.name,
+                parentId: obj.parent?.id || obj.parentId,
+            }),
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
@@ -693,6 +729,7 @@ export const postprocessDisUnifyAtsObject = <T extends Record<string, any>>({
     const preprocessMap: Record<ATS_TP_ID, Record<any, Function>> = {
         [TP_ID.greenhouse]: {},
         [TP_ID.lever]: {},
+        [TP_ID.workday]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

@@ -5,6 +5,16 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
+import config from '../../config';
+import {
+    workdayCollection,
+    workdayEnv,
+    workdayHeaders,
+    workdayListParams,
+    workdayNextCursor,
+    workdayResource,
+    workdayResourceUrl,
+} from '../../helpers/ats/workday';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedDepartment } from '../../models/unified/department';
 import { DepartmentService } from '../../generated/typescript/api/resources/ats/resources/department/service/DepartmentService';
@@ -63,6 +73,24 @@ const departmentServiceAts = new DepartmentService(
                             status: 'ok',
                             result: 'This endpoint is currently not supported.',
                         });
+                        break;
+                    }
+
+                    case TP_ID.workday: {
+                        const env = workdayEnv(config);
+                        const result = await axios({
+                            method: 'get',
+                            url: workdayResourceUrl(connection, 'organizations', departmentId, undefined, env),
+                            headers: workdayHeaders(thirdPartyToken),
+                        });
+                        const unifiedDepartment = await unifyObject<any, UnifiedDepartment>({
+                            obj: workdayResource(result.data),
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedDepartment });
                         break;
                     }
 
@@ -214,6 +242,37 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
 
+                    case TP_ID.workday: {
+                        const env = workdayEnv(config);
+                        const params = workdayListParams(pageSize, cursor as string, fields);
+                        const result = await axios({
+                            method: 'get',
+                            url: workdayResourceUrl(connection, 'organizations', undefined, params, env),
+                            headers: workdayHeaders(thirdPartyToken),
+                        });
+                        const { items, total } = workdayCollection(result.data);
+                        const unifiedDepartments = await Promise.all(
+                            items.map((item: any) =>
+                                unifyObject<any, UnifiedDepartment>({
+                                    obj: item,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                }),
+                            ),
+                        );
+                        const offset = Number(params.get('offset') || 0);
+                        const limit = params.has('limit') ? Number(params.get('limit')) : undefined;
+                        res.send({
+                            status: 'ok',
+                            next: workdayNextCursor(offset, items.length, total, limit),
+                            previous: undefined,
+                            results: unifiedDepartments,
+                        });
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -279,6 +338,10 @@ const departmentServiceAts = new DepartmentService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        res.send({ status: 'ok', message: 'This endpoint is currently not supported' });
                         break;
                     }
                     default: {
@@ -352,6 +415,10 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        res.send({ status: 'ok', message: 'This endpoint is currently not supported' });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -399,6 +466,10 @@ const departmentServiceAts = new DepartmentService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        res.send({ status: 'ok', message: 'This endpoint is currently not supported' });
                         break;
                     }
                     default: {

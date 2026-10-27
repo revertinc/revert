@@ -6,6 +6,8 @@ import { InternalServerError, NotFoundError } from '../../generated/typescript/a
 
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
+import config from '../../config';
+import { workdayEnv, workdayHeaders, workdayProxyUrl } from '../../helpers/ats/workday';
 import { ProxyService } from '../../generated/typescript/api/resources/ats/resources/proxy/service/ProxyService';
 
 const proxyServiceAts = new ProxyService(
@@ -64,6 +66,17 @@ const proxyServiceAts = new ProxyService(
                         res.send({
                             result: result.data,
                         });
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const result: any = await axios({
+                            method,
+                            url: workdayProxyUrl(connection, path, workdayEnv(config)),
+                            headers: workdayHeaders(thirdPartyToken),
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({ result: result.data });
                         break;
                     }
                     default: {

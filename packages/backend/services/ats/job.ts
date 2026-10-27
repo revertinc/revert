@@ -5,6 +5,16 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
+import config from '../../config';
+import {
+    workdayCollection,
+    workdayEnv,
+    workdayHeaders,
+    workdayListParams,
+    workdayNextCursor,
+    workdayResource,
+    workdayResourceUrl,
+} from '../../helpers/ats/workday';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedJob } from '../../models/unified/job';
@@ -90,6 +100,24 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        const env = workdayEnv(config);
+                        const result = await axios({
+                            method: 'get',
+                            url: workdayResourceUrl(connection, 'jobPostings', jobId, undefined, env),
+                            headers: workdayHeaders(thirdPartyToken),
+                        });
+                        const unifiedJob = await unifyObject<any, UnifiedJob>({
+                            obj: workdayResource(result.data),
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedJob });
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -240,6 +268,37 @@ const jobServiceAts = new JobService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        const env = workdayEnv(config);
+                        const params = workdayListParams(pageSize, cursor as string, fields);
+                        const result = await axios({
+                            method: 'get',
+                            url: workdayResourceUrl(connection, 'jobPostings', undefined, params, env),
+                            headers: workdayHeaders(thirdPartyToken),
+                        });
+                        const { items, total } = workdayCollection(result.data);
+                        const unifiedJobs = await Promise.all(
+                            items.map((item: any) =>
+                                unifyObject<any, UnifiedJob>({
+                                    obj: item,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                }),
+                            ),
+                        );
+                        const offset = Number(params.get('offset') || 0);
+                        const limit = params.has('limit') ? Number(params.get('limit')) : undefined;
+                        res.send({
+                            status: 'ok',
+                            next: workdayNextCursor(offset, items.length, total, limit),
+                            previous: undefined,
+                            results: unifiedJobs,
+                        });
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -331,6 +390,22 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        const env = workdayEnv(config);
+                        const result = await axios({
+                            method: 'post',
+                            url: workdayResourceUrl(connection, 'jobPostings', undefined, undefined, env),
+                            headers: workdayHeaders(thirdPartyToken),
+                            data: job,
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Workday job created',
+                            result: workdayResource(result.data),
+                        });
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -428,6 +503,22 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        const env = workdayEnv(config);
+                        const result = await axios({
+                            method: 'put',
+                            url: workdayResourceUrl(connection, 'jobPostings', jobId, undefined, env),
+                            headers: workdayHeaders(thirdPartyToken),
+                            data: job,
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Workday job updated',
+                            result: workdayResource(result.data),
+                        });
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -475,6 +566,10 @@ const jobServiceAts = new JobService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        res.send({ status: 'ok', message: 'This endpoint is currently not supported' });
                         break;
                     }
                     default: {
