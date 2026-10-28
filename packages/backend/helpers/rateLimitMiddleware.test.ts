@@ -1,9 +1,7 @@
+import { jest, describe, expect, it, beforeEach } from '@jest/globals';
 import { Response } from 'express';
-
 import rateLimitMiddleware from './rateLimitMiddleware';
 import { skipRateLimitRoutes } from './utils';
-
-import { jest, describe, expect, it, beforeEach } from '@jest/globals';
 
 type StatusFn = (code: number) => Response;
 type SendFn = (body?: any) => Response;

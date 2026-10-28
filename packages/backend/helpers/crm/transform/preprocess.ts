@@ -20,7 +20,7 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
     objType,
 }: {
     obj: T;
-    tpId: CRM_TP_ID | TICKET_TP_ID;
+    tpId: CRM_TP_ID | TICKET_TP_ID | ATS_TP_ID;
     objType:
         | StandardObjects
         | ChatStandardObjects
@@ -535,6 +535,102 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.workable]: {
+            [AtsStandardObjects.candidate]: (obj: T) => {
+                const first_name = obj.firstname || (obj.name ? obj.name.split(' ')[0] : undefined);
+                const last_name =
+                    obj.lastname ||
+                    (obj.name && obj.name.includes(' ') ? obj.name.split(' ').slice(1).join(' ') : undefined);
+
+                const email_addresses = obj.email
+                    ? [{ value: obj.email, type: undefined }]
+                    : Array.isArray(obj.emails)
+                      ? obj.emails.map((email: any) =>
+                            typeof email === 'string' ? { value: email, type: undefined } : email,
+                        )
+                      : undefined;
+
+                const phone_numbers = obj.phone
+                    ? [{ value: obj.phone, type: undefined }]
+                    : Array.isArray(obj.phones)
+                      ? obj.phones.map((phone: any) =>
+                            typeof phone === 'string' ? { value: phone, type: undefined } : phone,
+                        )
+                      : undefined;
+
+                const addresses = obj.address ? [{ value: obj.address, type: undefined }] : undefined;
+
+                const social_media_addresses = Array.isArray(obj.social_profiles)
+                    ? obj.social_profiles.map((profile: any) => ({ value: profile.url, type: profile.type }))
+                    : undefined;
+
+                const application_ids = obj.job?.shortcode ? [obj.job.shortcode] : [];
+
+                const applications = obj.job
+                    ? [
+                          {
+                              id: obj.id,
+                              candidate_id: obj.id,
+                              job_post_id: obj.job?.shortcode,
+                              status: undefined,
+                              current_stage: obj.stage ? { name: obj.stage } : undefined,
+                              applied_at: undefined,
+                          },
+                      ]
+                    : undefined;
+
+                return {
+                    ...obj,
+                    first_name,
+                    last_name,
+                    company: obj.account?.name || obj.company,
+                    title: obj.headline || obj.title,
+                    email_addresses,
+                    phone_numbers,
+                    addresses,
+                    social_media_addresses,
+                    application_ids,
+                    applications,
+                    photo_url: obj.image_url,
+                    last_activity: obj.updated_at || obj.last_activity,
+                };
+            },
+            [AtsStandardObjects.job]: (obj: T) => {
+                return {
+                    ...obj,
+                    id: obj.shortcode || obj.id,
+                    name: obj.title || obj.name,
+                    status: obj.state === 'published' ? 'open' : obj.state === 'closed' ? 'closed' : obj.state,
+                    departments: obj.department ? [{ name: obj.department }] : undefined,
+                    notes: obj.description || obj.notes,
+                };
+            },
+            [AtsStandardObjects.department]: (obj: T) => {
+                return {
+                    ...obj,
+                    id: String(obj.id),
+                    name: obj.name || obj.title,
+                };
+            },
+            [AtsStandardObjects.offer]: (obj: T) => {
+                let starts_at;
+                if (Array.isArray(obj.document_variables)) {
+                    const startVar = obj.document_variables.find(
+                        (v: any) =>
+                            v.document_variable?.slug === 'start_date' || v.document_variable?.name === 'Start Date',
+                    );
+                    starts_at = startVar?.value?.body;
+                }
+                return {
+                    ...obj,
+                    candidate_id: obj.candidate?.id || obj.candidate_id,
+                    application_id: obj.candidate?.id || obj.application_id,
+                    status: obj.state || obj.status,
+                    resolved_at: obj.resolved_at || (obj.state === 'accepted' ? obj.updated_at : undefined),
+                    starts_at: starts_at || obj.starts_at,
+                };
+            },
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
@@ -693,6 +789,7 @@ export const postprocessDisUnifyAtsObject = <T extends Record<string, any>>({
     const preprocessMap: Record<ATS_TP_ID, Record<any, Function>> = {
         [TP_ID.greenhouse]: {},
         [TP_ID.lever]: {},
+        [TP_ID.workable]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

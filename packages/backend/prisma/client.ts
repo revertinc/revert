@@ -43,6 +43,7 @@ const xprisma = prisma.$extends({
                             tpId === TP_ID.sfdc ||
                             tpId === TP_ID.pipedrive ||
                             tpId === TP_ID.jira ||
+                            tpId === TP_ID.workable ||
                             tpId === TP_ID.ms_dynamics_365_sales
                         )
                     ) {
