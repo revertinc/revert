@@ -8,6 +8,7 @@ import axios from 'axios';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedDepartment } from '../../models/unified/department';
 import { DepartmentService } from '../../generated/typescript/api/resources/ats/resources/department/service/DepartmentService';
+import { extractWorkableCollection, nextWorkableCursor, requestWorkable } from '../../helpers/ats/workable';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
 
 const objType = AtsStandardObjects.department;
@@ -63,6 +64,34 @@ const departmentServiceAts = new DepartmentService(
                             status: 'ok',
                             result: 'This endpoint is currently not supported.',
                         });
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const result = await requestWorkable({
+                            connection,
+                            method: 'get',
+                            path: 'departments',
+                        });
+
+                        const departments = extractWorkableCollection(result.data, 'departments');
+                        const department = departments.find((d: any) => String(d.id) === String(departmentId));
+                        if (!department) {
+                            throw new NotFoundError({ error: 'Department not found' });
+                        }
+
+                        const unifiedDepartment: any = await unifyObject<any, UnifiedDepartment>({
+                            obj: department,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedDepartment,
+                        });
+
                         break;
                     }
 
@@ -213,6 +242,35 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const result = await requestWorkable({
+                            connection,
+                            method: 'get',
+                            path: 'departments',
+                        });
+
+                        const departments = extractWorkableCollection(result.data, 'departments');
+                        const unifiedDepartments = await Promise.all(
+                            departments.map(async (department: any) => {
+                                return await unifyObject<any, UnifiedDepartment>({
+                                    obj: department,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: nextWorkableCursor(result.data),
+                            previous: undefined,
+                            results: unifiedDepartments,
+                        });
+
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -274,6 +332,14 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
                     case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workable: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
@@ -352,6 +418,14 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -394,6 +468,14 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
                     case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workable: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
