@@ -46,6 +46,34 @@ atsRouter.get('/lever-app_config', async (req, res) => {
     }
 });
 
+
+atsRouter.get('/workday-app_config', async (req, res) => {
+    try {
+        const { revertPublicToken } = req.query;
+
+        const app = await prisma.environments.findFirst({
+            where: {
+                public_token: String(revertPublicToken),
+            },
+            include: {
+                apps: {
+                    select: { app_config: true },
+                    where: { tp_id: 'workday' },
+                },
+            },
+        });
+
+        const appConfig = app && (app.apps?.[0]?.app_config as AppConfig);
+
+        return res.send({ status: 'ok', org_url: (appConfig as any)?.org_url ?? '' });
+    } catch (error: any) {
+        logError(error);
+        throw new InternalServerError({
+            error: 'Internal Server error',
+        });
+    }
+});
+
 atsRouter.use('/', authRouter);
 
 export default atsRouter;

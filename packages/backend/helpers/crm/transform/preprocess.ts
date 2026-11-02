@@ -20,7 +20,7 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
     objType,
 }: {
     obj: T;
-    tpId: CRM_TP_ID | TICKET_TP_ID;
+    tpId: CRM_TP_ID | TICKET_TP_ID | ATS_TP_ID;
     objType:
         | StandardObjects
         | ChatStandardObjects
@@ -332,6 +332,37 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                     });
 
                 return { ...obj, UpdatedDateUTC: updated_at, DateString: date, LineItems: line };
+            },
+        },
+        [TP_ID.workday]: {
+            [AtsStandardObjects.candidate]: (obj: T) => {
+                const fullName = obj.descriptor || obj.name || "";
+                const parts = typeof fullName === "string" ? fullName.trim().split(/\s+/) : [];
+                const firstName = obj.firstName || obj.name?.givenName || parts[0] || "";
+                const lastName = obj.lastName || obj.name?.familyName || parts.slice(1).join(" ") || "";
+                return {
+                    ...obj,
+                    firstName,
+                    lastName,
+                    name: typeof fullName === "string" && fullName ? fullName : `${firstName} ${lastName}`.trim(),
+                };
+            },
+            [AtsStandardObjects.job]: (obj: T) => {
+                return {
+                    ...obj,
+                    text: obj.text || obj.jobPostingTitle || obj.descriptor || obj.name,
+                };
+            },
+            [AtsStandardObjects.offer]: (obj: T) => {
+                return {
+                    ...obj,
+                };
+            },
+            [AtsStandardObjects.department]: (obj: T) => {
+                return {
+                    ...obj,
+                    name: obj.name || obj.descriptor || obj.text,
+                };
             },
         },
         [TP_ID.lever]: {
@@ -693,6 +724,7 @@ export const postprocessDisUnifyAtsObject = <T extends Record<string, any>>({
     const preprocessMap: Record<ATS_TP_ID, Record<any, Function>> = {
         [TP_ID.greenhouse]: {},
         [TP_ID.lever]: {},
+        [TP_ID.workday]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
