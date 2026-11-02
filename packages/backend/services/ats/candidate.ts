@@ -90,6 +90,31 @@ const candidateServiceAts = new CandidateService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = (connection.tp_account_url ?? '').replace(/\/+$/, '');
+                        const url = `${baseUrl}/spi/v3/candidates/${candidateId}`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: url,
+                            headers: headers,
+                        });
+
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: result.data?.candidate ?? result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedCandidate,
+                        });
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -237,6 +262,39 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = (connection.tp_account_url ?? '').replace(/\/+$/, '');
+                        let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&since_id=${cursor}` : ''}`;
+                        const url = `${baseUrl}/spi/v3/candidates?${pagingString}`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: url,
+                            headers: headers,
+                        });
+                        const items = Array.isArray(result.data?.candidates) ? result.data.candidates : Array.isArray(result.data) ? result.data : [];
+                        const unifiedCandidates = await Promise.all(
+                            items.map(async (candidate: any) => {
+                                return await unifyObject<any, UnifiedCandidate>({
+                                    obj: candidate,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: result.data?.paging?.next,
+                            previous: undefined,
+                            results: unifiedCandidates,
+                        });
+
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -330,6 +388,30 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const baseUrl = (connection.tp_account_url ?? '').replace(/\/+$/, '');
+                        const shortcode = fields?.shortcode;
+                        const url = shortcode
+                            ? `${baseUrl}/spi/v3/jobs/${shortcode}/candidates`
+                            : `${baseUrl}/spi/v3/candidates`;
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        };
+                        const result = await axios({
+                            method: 'post',
+                            url: url,
+                            headers: headers,
+                            data: JSON.stringify({ candidate }),
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Workable candidate created',
+                            result: result.data?.candidate ?? result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -402,6 +484,25 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const baseUrl = (connection.tp_account_url ?? '').replace(/\/+$/, '');
+                        const result = await axios({
+                            method: 'patch',
+                            url: `${baseUrl}/spi/v3/candidates/${candidateId}`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify({ candidate }),
+                        });
+                        res.send({
+                            status: 'ok',
+                            message: 'Workable Candidate updated',
+                            result: result.data?.candidate ?? result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -469,6 +570,13 @@ const candidateServiceAts = new CandidateService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
                         break;
                     }
                     default: {

@@ -1481,6 +1481,28 @@ const createIntegrationBlock = function (self, integration) {
                             console.log(error);
                             return this.renderFailedStage();
                         });
+                } else if (selectedIntegration.integrationId === 'workable') {
+                    const encodedScopes = encodeURIComponent(scopes.join(' '));
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/workable`);
+
+                    fetch(
+                        `${this.CORE_API_BASE_URL}ats/workable-app_config?revertPublicToken=${this.API_REVERT_PUBLIC_TOKEN}`,
+                    )
+                        .then((data) => data.json())
+                        .then((data) => {
+                            const cleanOrgUrl = String(data.org_url || 'https://www.workable.com').replace(/\/+$/, '');
+                            window.open(
+                                `${cleanOrgUrl}/oauth/authorize?client_id=${
+                                    selectedIntegration.clientId
+                                }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                                    state,
+                                )}&scope=${encodedScopes}`,
+                            );
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            return this.renderFailedStage();
+                        });
                 } else if (selectedIntegration.integrationId === 'lever') {
                     const encodedScopes = encodeURIComponent(scopes.join(' '));
                     const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/lever`);

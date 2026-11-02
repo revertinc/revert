@@ -389,7 +389,24 @@ class AuthService {
                 const connection = connections[i];
                 if (connection.tp_refresh_token) {
                     try {
-                        if (connection.tp_id === TP_ID.lever) {
+                        if (connection.tp_id === TP_ID.workable) {
+                    const orgUrl = (connection.tp_account_url || config.WORKABLE_ORG_URL || 'https://www.workable.com').replace(/\/+$/, '');
+                    url = `${orgUrl}/oauth/token`;
+                    data = qs.stringify({
+                        grant_type: 'refresh_token',
+                        client_id: connection.apps?.is_Revert_app
+                            ? config.WORKABLE_CLIENT_ID
+                            : connection.apps?.client_id ?? config.WORKABLE_CLIENT_ID,
+                        client_secret: connection.apps?.is_Revert_app
+                            ? config.WORKABLE_CLIENT_SECRET
+                            : connection.apps?.client_secret ?? config.WORKABLE_CLIENT_SECRET,
+                        refresh_token: connection.tp_refresh_token,
+                    });
+                    headers = {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    };
+                }
+                if (connection.tp_id === TP_ID.lever) {
                             const env = (connection?.app?.app_config as AppConfig)?.env;
 
                             let url =

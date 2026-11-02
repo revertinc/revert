@@ -431,6 +431,24 @@ export async function disunifyAtsObject<T extends Record<string, any>>({
             return processedObj;
         }
 
+        case TP_ID.workable: {
+            if (objType === 'candidate') {
+                const firstName = obj.first_name ?? obj.firstName ?? '';
+                const lastName = obj.last_name ?? obj.lastName ?? '';
+                const email = obj.email_addresses?.[0]?.value ?? obj.email;
+                const phone = obj.phone_numbers?.[0]?.value ?? obj.phone;
+                return {
+                    ...transformedObj,
+                    firstname: firstName,
+                    lastname: lastName,
+                    name: `${firstName} ${lastName}`.trim(),
+                    email,
+                    phone,
+                };
+            }
+            return processedObj;
+        }
+
         case TP_ID.greenhouse: {
             if (objType === 'candidate') {
                 // every field below is an array

@@ -65,6 +65,13 @@ const departmentServiceAts = new DepartmentService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            result: 'This endpoint is currently not supported.',
+                        });
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -211,6 +218,34 @@ const departmentServiceAts = new DepartmentService(
                             results: unifiedDepartments,
                         });
 
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = (connection.tp_account_url ?? '').replace(/\/+$/, '');
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/spi/v3/departments`,
+                            headers: headers,
+                        });
+                        const items = Array.isArray(result.data?.departments) ? result.data.departments : Array.isArray(result.data) ? result.data : [];
+                        const unifiedDepartments = await Promise.all(
+                            items.map(async (department: any) => {
+                                return await unifyObject<any, UnifiedDepartment>({
+                                    obj: department,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: undefined,
+                            previous: undefined,
+                            results: unifiedDepartments,
+                        });
                         break;
                     }
 
