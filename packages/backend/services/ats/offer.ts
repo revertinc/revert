@@ -65,6 +65,27 @@ const offerServiceAts = new OfferService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = (connection.tp_account_url ?? '').replace(/\/+$/, '');
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/spi/v3/candidates/${offerId}/offer`,
+                            headers: headers,
+                        });
+                        const unifiedOffer: any = await unifyObject<any, UnifiedOffer>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({
+                            status: 'ok',
+                            result: unifiedOffer,
+                        });
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -210,6 +231,15 @@ const offerServiceAts = new OfferService(
                             next: nextCursor,
                             previous: undefined,
                             results: unifiedOffers,
+                        });
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            next: undefined,
+                            previous: undefined,
+                            results: [],
                         });
                         break;
                     }

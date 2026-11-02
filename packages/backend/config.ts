@@ -65,6 +65,9 @@ const config = {
 
     LEVER_CLIENT_ID: process.env.LEVER_CLIENT_ID!,
     LEVER_CLIENT_SECRET: process.env.LEVER_CLIENT_SECRET!,
+    WORKABLE_CLIENT_ID: process.env.WORKABLE_CLIENT_ID!,
+    WORKABLE_CLIENT_SECRET: process.env.WORKABLE_CLIENT_SECRET!,
+    WORKABLE_ORG_URL: process.env.WORKABLE_ORG_URL!,
 };
 
 export default config;

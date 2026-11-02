@@ -90,6 +90,31 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = (connection.tp_account_url ?? '').replace(/\/+$/, '');
+                        const url = `${baseUrl}/spi/v3/jobs/${jobId}`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: url,
+                            headers: headers,
+                        });
+
+                        const unifiedJob: any = await unifyObject<any, UnifiedJob>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedJob,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -234,6 +259,40 @@ const jobServiceAts = new JobService(
                         res.send({
                             status: 'ok',
                             next: nextCursor,
+                            previous: undefined,
+                            results: unifiedJobs,
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = (connection.tp_account_url ?? '').replace(/\/+$/, '');
+                        let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&since_id=${cursor}` : ''}`;
+                        const url = `${baseUrl}/spi/v3/jobs?${pagingString}`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: url,
+                            headers: headers,
+                        });
+
+                        const items = Array.isArray(result.data?.jobs) ? result.data.jobs : Array.isArray(result.data) ? result.data : [];
+                        const unifiedJobs = await Promise.all(
+                            items.map(async (jobItem: any) => {
+                                return await unifyObject<any, UnifiedJob>({
+                                    obj: jobItem,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: result.data?.paging?.next,
                             previous: undefined,
                             results: unifiedJobs,
                         });
