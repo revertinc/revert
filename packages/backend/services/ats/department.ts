@@ -65,6 +65,27 @@ const departmentServiceAts = new DepartmentService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = (connection.tp_account_url ?? '').replace(/\/+$/, '');
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/recruiting/v2/Supervisory_Organizations/${departmentId}`,
+                            headers: headers,
+                        });
+                        const unifiedDept: any = await unifyObject<any, UnifiedDepartment>({
+                            obj: result.data?.data ?? result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({
+                            status: 'ok',
+                            result: unifiedDept,
+                        });
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -211,6 +232,35 @@ const departmentServiceAts = new DepartmentService(
                             results: unifiedDepartments,
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = (connection.tp_account_url ?? '').replace(/\/+$/, '');
+                        let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&offset=${cursor}` : ''}`;
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/recruiting/v2/Supervisory_Organizations?${pagingString}`,
+                            headers: headers,
+                        });
+                        const items = Array.isArray(result.data?.data) ? result.data.data : Array.isArray(result.data) ? result.data : [];
+                        const unifiedDepartments = await Promise.all(
+                            items.map(async (department: any) => {
+                                return await unifyObject<any, UnifiedDepartment>({
+                                    obj: department,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: result.data?.next,
+                            previous: undefined,
+                            results: unifiedDepartments,
+                        });
                         break;
                     }
 

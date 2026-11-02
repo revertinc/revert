@@ -65,6 +65,27 @@ const offerServiceAts = new OfferService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = (connection.tp_account_url ?? '').replace(/\/+$/, '');
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/recruiting/v2/jobOffers/${offerId}`,
+                            headers: headers,
+                        });
+                        const unifiedOffer: any = await unifyObject<any, UnifiedOffer>({
+                            obj: result.data?.data ?? result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({
+                            status: 'ok',
+                            result: unifiedOffer,
+                        });
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -208,6 +229,35 @@ const offerServiceAts = new OfferService(
                         res.send({
                             status: 'ok',
                             next: nextCursor,
+                            previous: undefined,
+                            results: unifiedOffers,
+                        });
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = (connection.tp_account_url ?? '').replace(/\/+$/, '');
+                        let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&offset=${cursor}` : ''}`;
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/recruiting/v2/jobOffers?${pagingString}`,
+                            headers: headers,
+                        });
+                        const items = Array.isArray(result.data?.data) ? result.data.data : Array.isArray(result.data) ? result.data : [];
+                        const unifiedOffers = await Promise.all(
+                            items.map(async (offerItem: any) => {
+                                return await unifyObject<any, UnifiedOffer>({
+                                    obj: offerItem,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+                        res.send({
+                            status: 'ok',
+                            next: result.data?.next,
                             previous: undefined,
                             results: unifiedOffers,
                         });
