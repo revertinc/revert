@@ -58,7 +58,8 @@ const offerServiceAts = new OfferService(
                         });
                         break;
                     }
-                    case TP_ID.lever: {
+                    case TP_ID.lever:
+                    case TP_ID.workday: {
                         res.send({
                             status: 'ok',
                             result: 'This endpoint is currently not supported.',
@@ -213,6 +214,15 @@ const offerServiceAts = new OfferService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        res.send({
+                            status: 'ok',
+                            next: undefined,
+                            previous: undefined,
+                            results: [],
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -255,7 +265,8 @@ const offerServiceAts = new OfferService(
 
                         break;
                     }
-                    case TP_ID.lever: {
+                    case TP_ID.lever:
+                    case TP_ID.workday: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
@@ -327,7 +338,8 @@ const offerServiceAts = new OfferService(
 
                         break;
                     }
-                    case TP_ID.lever: {
+                    case TP_ID.lever:
+                    case TP_ID.workday: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
@@ -376,7 +388,8 @@ const offerServiceAts = new OfferService(
 
                         break;
                     }
-                    case TP_ID.lever: {
+                    case TP_ID.lever:
+                    case TP_ID.workday: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',

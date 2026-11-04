@@ -1,0 +1,10 @@
+#### Obtaining Workday API Client Credentials
+
+-   In your Workday tenant, run the **Register API Client** task to create an OAuth 2.0 API Client with Recruiting / Staffing functional area scopes.
+-   Set the Redirect URI to `https://app.revert.dev/oauth-callback/workday` (or your self-hosted callback URL) and copy the **Client ID**, **Client Secret**, and **Workday REST API Endpoint** (`https://<host>/ccx/api/v1/<tenant>`).
+
+#### Connect to Workday via Revert
+
+-   Create an account on Revert if you don't already have one. (https://app.revert.dev/sign-up)
+-   Login to your Revert dashboard (https://app.revert.dev/sign-in) and go to the Integrations section and click on `Create App` - `Workday`.
+-   Enter your `client_id`, `client_secret`, and `Organisation URL` (`https://<host>/ccx/api/v1/<tenant>`) into the App credentials and click `Submit`.

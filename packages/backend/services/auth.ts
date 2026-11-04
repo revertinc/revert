@@ -275,6 +275,49 @@ class AuthService {
                                     tp_refresh_token: result.data.refresh_token,
                                 },
                             });
+                        } else if (connection.tp_id === TP_ID.workday) {
+                            const rawOrgUrl =
+                                connection.tp_account_url ||
+                                (connection?.app?.app_config as AppConfig)?.org_url ||
+                                config.WORKDAY_ORG_URL;
+                            const parsed = new URL(
+                                /^https?:\/\//i.test(rawOrgUrl) ? rawOrgUrl : `https://${rawOrgUrl}`,
+                            );
+                            const segments = parsed.pathname.split('/').filter(Boolean);
+                            const tenant = segments[segments.length - 1] || 'tenant';
+                            const tokenUrl = `${parsed.protocol}//${parsed.host}/ccx/oauth2/${tenant}/token`;
+
+                            const clientId = connection.app?.is_revert_app
+                                ? config.WORKDAY_CLIENT_ID
+                                : connection.app_client_id || config.WORKDAY_CLIENT_ID;
+                            const clientSecret = connection.app?.is_revert_app
+                                ? config.WORKDAY_CLIENT_SECRET
+                                : connection.app_client_secret || config.WORKDAY_CLIENT_SECRET;
+                            const basicCredentials = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+
+                            const formData = {
+                                grant_type: 'refresh_token',
+                                refresh_token: connection.tp_refresh_token,
+                            };
+                            const result: any = await axios({
+                                method: 'post',
+                                url: tokenUrl,
+                                data: qs.stringify(formData),
+                                headers: {
+                                    Authorization: `Basic ${basicCredentials}`,
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                    Accept: 'application/json',
+                                },
+                            });
+                            await prisma.connections.update({
+                                where: {
+                                    id: connection.id,
+                                },
+                                data: {
+                                    tp_access_token: result.data.access_token,
+                                    tp_refresh_token: result.data.refresh_token || connection.tp_refresh_token,
+                                },
+                            });
                         }
                     } catch (error: any) {
                         logError(error.response?.data);
