@@ -1508,6 +1508,26 @@ const createIntegrationBlock = function (self, integration) {
                                 );
                             }
                         });
+                } else if (selectedIntegration.integrationId === 'workday') {
+                    const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/workday`);
+
+                    fetch(
+                        `${this.CORE_API_BASE_URL}ats/workday-app_config?revertPublicToken=${this.API_REVERT_PUBLIC_TOKEN}`,
+                    )
+                        .then((data) => data.json())
+                        .then((data) => {
+                            const rawOrgUrl = data?.org_url || 'https://wd2-impl-services1.workday.com/ccx/api/v1/tenant';
+                            const parsed = new URL(/^https?:\/\//i.test(rawOrgUrl) ? rawOrgUrl : `https://${rawOrgUrl}`);
+                            const segments = parsed.pathname.split('/').filter(Boolean);
+                            const tenant = segments[segments.length - 1] || 'tenant';
+                            window.open(
+                                `${parsed.protocol}//${parsed.host}/${tenant}/authorize?client_id=${
+                                    selectedIntegration.clientId
+                                }&redirect_uri=${encodedRedirectUri}&response_type=code&state=${encodeURIComponent(
+                                    state,
+                                )}`,
+                            );
+                        });
                 } else if (selectedIntegration.integrationId === 'github') {
                     const encodedScopes = encodeURIComponent(scopes.join(','));
                     const encodedRedirectUri = encodeURI(`${this.#REDIRECT_URL_BASE}/github`);

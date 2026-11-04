@@ -203,6 +203,14 @@ const metadataService = new MetadataService({
                     scopes: getScope(apps, TP_ID.github),
                     clientId: getClientId(apps, TP_ID.github) || config.GITHUB_CLIENT_ID,
                 },
+                {
+                    integrationId: TP_ID.workday,
+                    name: 'Workday',
+                    imageSrc: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/workday',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.workday),
+                    clientId: getClientId(apps, TP_ID.workday) || config.WORKDAY_CLIENT_ID,
+                },
             ];
             res.send({
                 status: 'ok',

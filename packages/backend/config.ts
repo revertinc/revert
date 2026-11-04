@@ -65,6 +65,10 @@ const config = {
 
     LEVER_CLIENT_ID: process.env.LEVER_CLIENT_ID!,
     LEVER_CLIENT_SECRET: process.env.LEVER_CLIENT_SECRET!,
+
+    WORKDAY_CLIENT_ID: process.env.WORKDAY_CLIENT_ID!,
+    WORKDAY_CLIENT_SECRET: process.env.WORKDAY_CLIENT_SECRET!,
+    WORKDAY_ORG_URL: process.env.WORKDAY_ORG_URL!,
 };
 
 export default config;

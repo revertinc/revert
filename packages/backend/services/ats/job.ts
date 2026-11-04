@@ -90,6 +90,31 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        const baseUrl =
+                            connection.tp_account_url || (connection?.app?.app_config as AppConfig)?.org_url || '';
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl.replace(/\/+$/, '')}/jobPostings/${jobId}`,
+                            headers,
+                        });
+
+                        const unifiedJob: any = await unifyObject<any, UnifiedJob>({
+                            obj: result.data?.data ?? result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedJob,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -240,6 +265,54 @@ const jobServiceAts = new JobService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        const baseUrl =
+                            connection.tp_account_url || (connection?.app?.app_config as AppConfig)?.org_url || '';
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        let otherParams = '';
+                        if (fields) {
+                            otherParams = Object.keys(fields)
+                                .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(fields[key])}`)
+                                .join('&');
+                        }
+
+                        const limit = pageSize || 20;
+                        const offset = cursor ? parseInt(String(cursor), 10) : 0;
+                        const pagingString = `limit=${limit}&offset=${offset}${otherParams ? `&${otherParams}` : ''}`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl.replace(/\/+$/, '')}/jobPostings?${pagingString}`,
+                            headers,
+                        });
+
+                        const rawJobs = result.data?.data || [];
+                        const unifiedJobs = await Promise.all(
+                            rawJobs.map(async (job: any) => {
+                                return await unifyObject<any, UnifiedJob>({
+                                    obj: job,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        const total = result.data?.total ?? 0;
+                        const nextCursor = offset + rawJobs.length < total ? String(offset + limit) : undefined;
+                        const previousCursor = offset > 0 ? String(Math.max(0, offset - limit)) : undefined;
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: previousCursor,
+                            results: unifiedJobs,
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -328,6 +401,13 @@ const jobServiceAts = new JobService(
                             status: 'ok',
                             message: 'Lever job created',
                             result: result.data.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
                         });
                         break;
                     }
@@ -428,6 +508,13 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -469,7 +556,8 @@ const jobServiceAts = new JobService(
 
                         break;
                     }
-                    case TP_ID.lever: {
+                    case TP_ID.lever:
+                    case TP_ID.workday: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',

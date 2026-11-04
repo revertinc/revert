@@ -467,6 +467,52 @@ export async function disunifyAtsObject<T extends Record<string, any>>({
 
             return processedObj;
         }
+
+        case TP_ID.workday: {
+            if (objType === 'candidate') {
+                const emails =
+                    obj.email_addresses && obj.email_addresses.length > 0
+                        ? obj.email_addresses.map((email: any) => ({
+                              emailAddress: email.value,
+                              type: email.type || 'work',
+                          }))
+                        : undefined;
+                const phoneNumbers =
+                    obj.phone_numbers && obj.phone_numbers.length > 0
+                        ? obj.phone_numbers.map((phone: any) => ({
+                              phoneNumber: phone.value,
+                              type: phone.type || 'mobile',
+                          }))
+                        : undefined;
+                const addresses =
+                    obj.addresses && obj.addresses.length > 0
+                        ? obj.addresses.map((addr: any) => ({
+                              addressLine1: addr.value,
+                              type: addr.type || 'home',
+                          }))
+                        : undefined;
+
+                return {
+                    ...transformedObj,
+                    ...(emails !== undefined && { emails }),
+                    ...(phoneNumbers !== undefined && { phoneNumbers }),
+                    ...(addresses !== undefined && { addresses }),
+                };
+            } else if (objType === 'job') {
+                return {
+                    ...transformedObj,
+                    ...(obj.departments &&
+                        obj.departments.length > 0 && {
+                            supervisoryOrganization: {
+                                id: obj.departments[0].id,
+                                descriptor: obj.departments[0].name,
+                            },
+                        }),
+                };
+            }
+
+            return processedObj;
+        }
     }
 }
 export async function disunifyAccountingObject<T extends Record<string, any>>({

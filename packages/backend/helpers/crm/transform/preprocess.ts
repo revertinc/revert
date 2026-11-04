@@ -535,6 +535,112 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.workday]: {
+            [AtsStandardObjects.candidate]: (obj: T) => {
+                const firstName = obj.firstName || obj.name?.firstName || obj.descriptor?.split(' ')?.[0];
+                const lastName =
+                    obj.lastName || obj.name?.lastName || obj.descriptor?.split(' ')?.slice(1)?.join(' ') || undefined;
+                const emails = Array.isArray(obj.emails)
+                    ? obj.emails.map((email: any) => ({
+                          value: email?.emailAddress || email?.value || email,
+                          type: email?.type || 'work',
+                      }))
+                    : obj.email
+                      ? [{ value: obj.email, type: 'work' }]
+                      : undefined;
+                const phoneNumbers = Array.isArray(obj.phoneNumbers)
+                    ? obj.phoneNumbers.map((phone: any) => ({
+                          value: phone?.phoneNumber || phone?.value || phone,
+                          type: phone?.type || 'mobile',
+                      }))
+                    : obj.phoneNumber
+                      ? [{ value: obj.phoneNumber, type: 'mobile' }]
+                      : undefined;
+                const applicationIds = Array.isArray(obj.jobApplications)
+                    ? obj.jobApplications.map((app: any) => app?.id || app)
+                    : obj.applicationIds;
+
+                return {
+                    ...obj,
+                    firstName,
+                    lastName,
+                    emails,
+                    phoneNumbers,
+                    applicationIds,
+                };
+            },
+            [AtsStandardObjects.job]: (obj: T) => {
+                let status: string | undefined;
+                const rawStatus = String(obj.status?.descriptor || obj.status || '').toLowerCase();
+                if (rawStatus === 'open' || rawStatus === 'posted' || rawStatus === 'active') {
+                    status = 'open';
+                } else if (rawStatus === 'closed' || rawStatus === 'filled' || rawStatus === 'canceled') {
+                    status = 'closed';
+                } else if (rawStatus === 'draft' || rawStatus === 'frozen') {
+                    status = 'draft';
+                }
+
+                const supervisoryOrganizations = obj.supervisoryOrganization
+                    ? [
+                          {
+                              id: obj.supervisoryOrganization.id,
+                              name: obj.supervisoryOrganization.descriptor || obj.supervisoryOrganization.name,
+                          },
+                      ]
+                    : obj.supervisoryOrganizations;
+
+                const hiringManager = obj.hiringManager
+                    ? [
+                          {
+                              id: obj.hiringManager.id,
+                              first_name: undefined,
+                              last_name: undefined,
+                              name: obj.hiringManager.descriptor || obj.hiringManager.name,
+                              employee_id: obj.hiringManager.id,
+                              responsible: undefined,
+                          },
+                      ]
+                    : undefined;
+
+                return {
+                    ...obj,
+                    title: obj.title || obj.descriptor,
+                    status,
+                    supervisoryOrganizations,
+                    hiringManager,
+                };
+            },
+            [AtsStandardObjects.offer]: (obj: T) => {
+                let status: string | undefined;
+                const rawStatus = String(obj.status?.descriptor || obj.status || '').toLowerCase();
+                if (rawStatus === 'accepted') {
+                    status = 'accepted';
+                } else if (rawStatus === 'declined' || rawStatus === 'rejected' || rawStatus === 'rescinded') {
+                    status = 'rejected';
+                } else if (rawStatus) {
+                    status = 'unresolved';
+                }
+
+                return {
+                    ...obj,
+                    status,
+                    jobApplicationId: obj.jobApplication?.id || obj.jobApplicationId,
+                    jobRequisitionId: obj.jobRequisition?.id || obj.jobRequisitionId,
+                    candidateId: obj.candidate?.id || obj.candidateId,
+                };
+            },
+            [AtsStandardObjects.department]: (obj: T) => {
+                const subordinateOrganizations = Array.isArray(obj.subordinateOrganizations)
+                    ? obj.subordinateOrganizations.map((item: any) => item?.id || item)
+                    : undefined;
+
+                return {
+                    ...obj,
+                    name: obj.name || obj.descriptor,
+                    subordinateOrganizations,
+                };
+            },
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
@@ -693,6 +799,7 @@ export const postprocessDisUnifyAtsObject = <T extends Record<string, any>>({
     const preprocessMap: Record<ATS_TP_ID, Record<any, Function>> = {
         [TP_ID.greenhouse]: {},
         [TP_ID.lever]: {},
+        [TP_ID.workday]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
