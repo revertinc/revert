@@ -90,6 +90,34 @@ const candidateServiceAts = new CandidateService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        const baseUrl =
+                            connection.tp_account_url ||
+                            (connection?.app?.app_config as AppConfig)?.org_url ||
+                            'https://www.workable.com';
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl.replace(/\/+$/, '')}/spi/v3/candidates/${candidateId}`,
+                            headers,
+                        });
+
+                        const rawCandidate = result.data?.candidate ?? result.data;
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: rawCandidate,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedCandidate,
+                        });
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -237,6 +265,59 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const baseUrl =
+                            connection.tp_account_url ||
+                            (connection?.app?.app_config as AppConfig)?.org_url ||
+                            'https://www.workable.com';
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        let otherParams = '';
+                        if (fields) {
+                            otherParams = Object.keys(fields)
+                                .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(fields[key])}`)
+                                .join('&');
+                        }
+
+                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&since_id=${cursor}` : ''
+                        }${otherParams ? `&${otherParams}` : ''}`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl.replace(/\/+$/, '')}/spi/v3/candidates?${pagingString}`,
+                            headers,
+                        });
+
+                        const rawCandidates = result.data?.candidates || [];
+                        const unifiedCandidates = await Promise.all(
+                            rawCandidates.map(async (candidate: any) => {
+                                return await unifyObject<any, UnifiedCandidate>({
+                                    obj: candidate,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        let nextCursor: string | undefined;
+                        const nextUrl = result.data?.paging?.next;
+                        if (nextUrl) {
+                            const match = String(nextUrl).match(/[?&]since_id=([^&]+)/);
+                            nextCursor = match ? decodeURIComponent(match[1]) : String(nextUrl);
+                        }
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
+                            results: unifiedCandidates,
+                        });
+
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -330,6 +411,37 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        if (!fields || !fields.shortcode) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "shortcode" is required and should be included in the "fields" parameter.',
+                            });
+                        }
+
+                        const baseUrl =
+                            connection.tp_account_url ||
+                            (connection?.app?.app_config as AppConfig)?.org_url ||
+                            'https://www.workable.com';
+
+                        const result = await axios({
+                            method: 'post',
+                            url: `${baseUrl.replace(/\/+$/, '')}/spi/v3/jobs/${fields.shortcode}/candidates`,
+                            headers: {
+                                Authorization: `Bearer ${thirdPartyToken}`,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            data: JSON.stringify({ candidate }),
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Workable candidate created',
+                            result: result.data?.candidate ?? result.data,
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -394,7 +506,8 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
-                    case TP_ID.lever: {
+                    case TP_ID.lever:
+                    case TP_ID.workable: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
@@ -463,7 +576,8 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
-                    case TP_ID.lever: {
+                    case TP_ID.lever:
+                    case TP_ID.workable: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',

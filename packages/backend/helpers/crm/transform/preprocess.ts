@@ -535,6 +535,105 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.workable]: {
+            [AtsStandardObjects.candidate]: (obj: T) => {
+                const phone = obj.phone
+                    ? Array.isArray(obj.phone)
+                        ? obj.phone
+                        : [{ value: obj.phone, type: 'mobile' }]
+                    : undefined;
+                const email = obj.email
+                    ? Array.isArray(obj.email)
+                        ? obj.email
+                        : [{ value: obj.email, type: 'personal' }]
+                    : undefined;
+                const address = obj.address
+                    ? Array.isArray(obj.address)
+                        ? obj.address
+                        : [{ value: obj.address, type: 'home' }]
+                    : undefined;
+                const domain = obj.domain
+                    ? Array.isArray(obj.domain)
+                        ? obj.domain
+                        : [{ value: obj.domain, type: 'website' }]
+                    : undefined;
+                const social_profiles = Array.isArray(obj.social_profiles)
+                    ? obj.social_profiles.map((profile: any) => ({
+                          value: profile?.url || profile?.value || '',
+                          type: profile?.type,
+                      }))
+                    : undefined;
+
+                return {
+                    ...obj,
+                    phone,
+                    email,
+                    address,
+                    domain,
+                    social_profiles,
+                };
+            },
+            [AtsStandardObjects.job]: (obj: T) => {
+                let state: string | undefined;
+                switch (obj.state) {
+                    case 'published':
+                        state = 'open';
+                        break;
+                    case 'closed':
+                    case 'archived':
+                        state = 'closed';
+                        break;
+                    case 'draft':
+                        state = 'draft';
+                        break;
+                    default:
+                        state = undefined;
+                        break;
+                }
+
+                const department = obj.department
+                    ? Array.isArray(obj.department)
+                        ? obj.department
+                        : [{ id: undefined, name: obj.department }]
+                    : undefined;
+
+                return {
+                    ...obj,
+                    state,
+                    department,
+                };
+            },
+            [AtsStandardObjects.offer]: (obj: T) => {
+                let state: string | undefined;
+                switch (obj.state) {
+                    case 'accepted':
+                        state = 'accepted';
+                        break;
+                    case 'rejected':
+                        state = 'rejected';
+                        break;
+                    case 'draft':
+                    case 'pending':
+                    case 'sent':
+                        state = 'unresolved';
+                        break;
+                    default:
+                        state = undefined;
+                        break;
+                }
+
+                return {
+                    ...obj,
+                    state,
+                };
+            },
+            [AtsStandardObjects.department]: (obj: T) => {
+                return {
+                    ...obj,
+                    name: obj.name || obj.department,
+                };
+            },
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
@@ -693,6 +792,7 @@ export const postprocessDisUnifyAtsObject = <T extends Record<string, any>>({
     const preprocessMap: Record<ATS_TP_ID, Record<any, Function>> = {
         [TP_ID.greenhouse]: {},
         [TP_ID.lever]: {},
+        [TP_ID.workable]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

@@ -467,6 +467,68 @@ export async function disunifyAtsObject<T extends Record<string, any>>({
 
             return processedObj;
         }
+
+        case TP_ID.workable: {
+            if (objType === 'candidate') {
+                const email =
+                    obj.email_addresses && obj.email_addresses.length > 0
+                        ? obj.email_addresses[0].value
+                        : transformedObj.email;
+                const phone =
+                    obj.phone_numbers && obj.phone_numbers.length > 0
+                        ? obj.phone_numbers[0].value
+                        : transformedObj.phone;
+                const address =
+                    obj.addresses && obj.addresses.length > 0 ? obj.addresses[0].value : transformedObj.address;
+                const domain =
+                    obj.website_addresses && obj.website_addresses.length > 0
+                        ? obj.website_addresses[0].value
+                        : transformedObj.domain;
+                const social_profiles =
+                    obj.social_media_addresses && obj.social_media_addresses.length > 0
+                        ? obj.social_media_addresses.map((item: any) => ({
+                              type: item.type,
+                              url: item.value,
+                          }))
+                        : undefined;
+
+                return {
+                    ...transformedObj,
+                    ...(email !== undefined && { email }),
+                    ...(phone !== undefined && { phone }),
+                    ...(address !== undefined && { address }),
+                    ...(domain !== undefined && { domain }),
+                    ...(social_profiles !== undefined && { social_profiles }),
+                    ...(obj.tags !== undefined && { tags: obj.tags }),
+                };
+            } else if (objType === 'job') {
+                let state: string | undefined;
+                switch (obj.status) {
+                    case 'open':
+                        state = 'published';
+                        break;
+                    case 'closed':
+                        state = 'closed';
+                        break;
+                    case 'draft':
+                        state = 'draft';
+                        break;
+                    default:
+                        state = undefined;
+                        break;
+                }
+                const department =
+                    obj.departments && obj.departments.length > 0 ? obj.departments[0].name : transformedObj.department;
+
+                return {
+                    ...transformedObj,
+                    ...(state !== undefined && { state }),
+                    ...(department !== undefined && { department }),
+                };
+            }
+
+            return processedObj;
+        }
     }
 }
 export async function disunifyAccountingObject<T extends Record<string, any>>({
