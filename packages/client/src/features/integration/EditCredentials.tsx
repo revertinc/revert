@@ -112,7 +112,7 @@ const EditCredentials: React.FC<{
         const val = (ev.target.value || '').trim();
         if (app.tp_id === 'discord') {
             setAppConfig({ bot_token: val });
-        } else if (app.tp_id === 'ms_dynamics_365_sales') {
+        } else if (app.tp_id === 'ms_dynamics_365_sales' || app.tp_id === 'workable') {
             setAppConfig({ org_url: val });
         }
     };
@@ -175,7 +175,7 @@ const EditCredentials: React.FC<{
                             />
                         </Row>
                     )}
-                    {app.tp_id === 'ms_dynamics_365_sales' && (
+                    {(app.tp_id === 'ms_dynamics_365_sales' || app.tp_id === 'workable') && (
                         <Row>
                             <span className="font-bold">Organisation URL: </span>
                             <Input
