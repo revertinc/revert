@@ -9,6 +9,7 @@ import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedJob } from '../../models/unified/job';
 import { JobService } from '../../generated/typescript/api/resources/ats/resources/job/service/JobService';
+import { WorkableAdapter, WorkdayAdapter } from './adapters';
 
 const objType = AtsStandardObjects.job;
 
@@ -84,6 +85,31 @@ const jobServiceAts = new JobService(
                             accountFieldMappingConfig: account.accountFieldMappingConfig,
                         });
 
+                        res.send({
+                            status: 'ok',
+                            result: unifiedJob,
+                        });
+                        break;
+                    }
+                    case 'workable' as any: {
+                        const adapter = new WorkableAdapter({
+                            apiToken: thirdPartyToken,
+                            subdomain: connection?.app?.app_config?.subdomain,
+                        });
+                        const unifiedJob = await adapter.getJob(jobId);
+                        res.send({
+                            status: 'ok',
+                            result: unifiedJob,
+                        });
+                        break;
+                    }
+                    case 'workday' as any: {
+                        const adapter = new WorkdayAdapter({
+                            apiToken: thirdPartyToken,
+                            host: connection?.app?.app_config?.host,
+                            tenant: connection?.app?.app_config?.tenant,
+                        });
+                        const unifiedJob = await adapter.getJob(jobId);
                         res.send({
                             status: 'ok',
                             result: unifiedJob,
@@ -238,6 +264,35 @@ const jobServiceAts = new JobService(
                             results: unifiedJobs,
                         });
 
+                        break;
+                    }
+                    case 'workable' as any: {
+                        const adapter = new WorkableAdapter({
+                            apiToken: thirdPartyToken,
+                            subdomain: connection?.app?.app_config?.subdomain,
+                        });
+                        const response = await adapter.getJobs({ limit: pageSize });
+                        res.send({
+                            status: 'ok',
+                            next: response.nextCursor,
+                            previous: undefined,
+                            results: response.results,
+                        });
+                        break;
+                    }
+                    case 'workday' as any: {
+                        const adapter = new WorkdayAdapter({
+                            apiToken: thirdPartyToken,
+                            host: connection?.app?.app_config?.host,
+                            tenant: connection?.app?.app_config?.tenant,
+                        });
+                        const response = await adapter.getJobs({ limit: pageSize });
+                        res.send({
+                            status: 'ok',
+                            next: undefined,
+                            previous: undefined,
+                            results: response.results,
+                        });
                         break;
                     }
                     default: {
