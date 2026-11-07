@@ -1,7 +1,7 @@
 import { WorkableAdapter } from './workable';
 import { WorkdayAdapter } from './workday';
 
-describe('ATS Adapters - Workable (#551) & Workday (#372)', () => {
+describe('ATS Adapters - Workable & Workday', () => {
     describe('WorkableAdapter', () => {
         const workable = new WorkableAdapter({
             apiToken: 'test_workable_token',
