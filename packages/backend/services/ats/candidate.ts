@@ -9,6 +9,7 @@ import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedCandidate } from '../../models/unified/candidate';
 import { CandidateService } from '../../generated/typescript/api/resources/ats/resources/candidate/service/CandidateService';
+import { WorkableAdapter, WorkdayAdapter } from './adapters';
 
 const objType = AtsStandardObjects.candidate;
 
@@ -84,6 +85,31 @@ const candidateServiceAts = new CandidateService(
                             accountFieldMappingConfig: account.accountFieldMappingConfig,
                         });
 
+                        res.send({
+                            status: 'ok',
+                            result: unifiedCandidate,
+                        });
+                        break;
+                    }
+                    case 'workable' as any: {
+                        const adapter = new WorkableAdapter({
+                            apiToken: thirdPartyToken,
+                            subdomain: connection?.app?.app_config?.subdomain,
+                        });
+                        const unifiedCandidate = await adapter.getCandidate(candidateId);
+                        res.send({
+                            status: 'ok',
+                            result: unifiedCandidate,
+                        });
+                        break;
+                    }
+                    case 'workday' as any: {
+                        const adapter = new WorkdayAdapter({
+                            apiToken: thirdPartyToken,
+                            host: connection?.app?.app_config?.host,
+                            tenant: connection?.app?.app_config?.tenant,
+                        });
+                        const unifiedCandidate = await adapter.getCandidate(candidateId);
                         res.send({
                             status: 'ok',
                             result: unifiedCandidate,
@@ -235,6 +261,35 @@ const candidateServiceAts = new CandidateService(
                             results: unifiedCandidates,
                         });
 
+                        break;
+                    }
+                    case 'workable' as any: {
+                        const adapter = new WorkableAdapter({
+                            apiToken: thirdPartyToken,
+                            subdomain: connection?.app?.app_config?.subdomain,
+                        });
+                        const response = await adapter.getCandidates({ limit: pageSize });
+                        res.send({
+                            status: 'ok',
+                            next: response.nextCursor,
+                            previous: undefined,
+                            results: response.results,
+                        });
+                        break;
+                    }
+                    case 'workday' as any: {
+                        const adapter = new WorkdayAdapter({
+                            apiToken: thirdPartyToken,
+                            host: connection?.app?.app_config?.host,
+                            tenant: connection?.app?.app_config?.tenant,
+                        });
+                        const response = await adapter.getCandidates({ limit: pageSize });
+                        res.send({
+                            status: 'ok',
+                            next: undefined,
+                            previous: undefined,
+                            results: response.results,
+                        });
                         break;
                     }
 
