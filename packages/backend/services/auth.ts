@@ -425,6 +425,39 @@ class AuthService {
                                     tp_refresh_token: result.data.refresh_token,
                                 },
                             });
+                        } else if (connection.tp_id === TP_ID.workday) {
+                            const clientId = connection.app?.is_revert_app
+                                ? config.WORKDAY_CLIENT_ID
+                                : connection.app_client_id || config.WORKDAY_CLIENT_ID;
+                            const clientSecret = connection.app?.is_revert_app
+                                ? config.WORKDAY_CLIENT_SECRET
+                                : connection.app_client_secret || config.WORKDAY_CLIENT_SECRET;
+                            const basicToken = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+                            const baseUrl =
+                                connection.tp_account_url || 'https://wd2-impl-services1.workday.com/ccx/oauth2/default';
+                            const url = `${baseUrl.replace(/\/+$/, '')}/token`;
+                            const formData = {
+                                grant_type: 'refresh_token',
+                                refresh_token: connection.tp_refresh_token,
+                            };
+                            const result: any = await axios({
+                                method: 'post',
+                                url,
+                                data: qs.stringify(formData),
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                    Authorization: `Basic ${basicToken}`,
+                                },
+                            });
+                            await prisma.connections.update({
+                                where: {
+                                    id: connection.id,
+                                },
+                                data: {
+                                    tp_access_token: result.data.access_token,
+                                    tp_refresh_token: result.data.refresh_token || connection.tp_refresh_token,
+                                },
+                            });
                         }
                     } catch (error: any) {
                         logError(error.response?.data);
