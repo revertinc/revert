@@ -90,6 +90,33 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const baseUrl =
+                            connection.tp_account_url ||
+                            `https://${(connection?.app?.app_config as AppConfig)?.subdomain}.workable.com`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/spi/v3/jobs/${jobId}`,
+                            headers: headers,
+                        });
+
+                        const unifiedJob: any = await unifyObject<any, UnifiedJob>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedJob,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -240,6 +267,59 @@ const jobServiceAts = new JobService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const baseUrl =
+                            connection.tp_account_url ||
+                            `https://${(connection?.app?.app_config as AppConfig)?.subdomain}.workable.com`;
+
+                        let otherParams = '';
+                        if (fields) {
+                            otherParams = Object.keys(fields)
+                                .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(fields[key])}`)
+                                .join('&');
+                        }
+
+                        let pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${
+                            cursor ? `&since_id=${cursor}` : ''
+                        }${otherParams ? `&${otherParams}` : ''}`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/spi/v3/jobs?${pagingString}`,
+                            headers: headers,
+                        });
+
+                        const unifiedJobs = await Promise.all(
+                            result.data.jobs.map(async (job: any) => {
+                                return await unifyObject<any, UnifiedJob>({
+                                    obj: job,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        // Workable paginates with a `since_id` cursor and returns the
+                        // url of the next page in `paging.next`.
+                        let nextCursor;
+                        if (result.data.paging && result.data.paging.next) {
+                            const match = result.data.paging.next.match(/since_id=(\d+)/);
+                            nextCursor = match ? match[1] : undefined;
+                        }
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
+                            results: unifiedJobs,
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -328,6 +408,14 @@ const jobServiceAts = new JobService(
                             status: 'ok',
                             message: 'Lever job created',
                             result: result.data.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        // The Workable API does not support creating jobs.
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
                         });
                         break;
                     }
@@ -428,6 +516,14 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        // The Workable API does not support updating jobs.
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -470,6 +566,14 @@ const jobServiceAts = new JobService(
                         break;
                     }
                     case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workable: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',

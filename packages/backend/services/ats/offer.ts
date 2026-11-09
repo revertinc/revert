@@ -65,6 +65,15 @@ const offerServiceAts = new OfferService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        // Workable exposes offers per candidate, not by offer id;
+                        // use getOffers with the "candidateId" fields parameter instead.
+                        res.send({
+                            status: 'ok',
+                            result: 'This endpoint is currently not supported.',
+                        });
+                        break;
+                    }
 
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
@@ -213,6 +222,48 @@ const offerServiceAts = new OfferService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        if (!fields || (fields && !fields.candidateId)) {
+                            throw new NotFoundError({
+                                error: 'The query parameter "candidateId" is required and should be included in the "fields" parameter.',
+                            });
+                        }
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const baseUrl =
+                            connection.tp_account_url ||
+                            `https://${(connection?.app?.app_config as AppConfig)?.subdomain}.workable.com`;
+
+                        // Workable returns the single current offer of a candidate and
+                        // responds with a 404 when the candidate has no offer yet.
+                        let unifiedOffers: UnifiedOffer[] = [];
+                        try {
+                            const result = await axios({
+                                method: 'get',
+                                url: `${baseUrl}/spi/v3/candidates/${fields.candidateId}/offer`,
+                                headers: headers,
+                            });
+                            const unifiedOffer: any = await unifyObject<any, UnifiedOffer>({
+                                obj: result.data,
+                                tpId: thirdPartyId,
+                                objType,
+                                tenantSchemaMappingId: connection.schema_mapping_id,
+                                accountFieldMappingConfig: account.accountFieldMappingConfig,
+                            });
+                            unifiedOffers = [unifiedOffer];
+                        } catch (e: any) {
+                            if (e?.response?.status !== 404) {
+                                throw e;
+                            }
+                        }
+                        res.send({
+                            status: 'ok',
+                            next: undefined,
+                            previous: undefined,
+                            results: unifiedOffers,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -256,6 +307,14 @@ const offerServiceAts = new OfferService(
                         break;
                     }
                     case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workable: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
@@ -335,6 +394,14 @@ const offerServiceAts = new OfferService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -377,6 +444,14 @@ const offerServiceAts = new OfferService(
                         break;
                     }
                     case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workable: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',

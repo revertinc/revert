@@ -535,6 +535,61 @@ export const preprocessUnifyObject = <T extends Record<string, any>>({
                 };
             },
         },
+        [TP_ID.workable]: {
+            [AtsStandardObjects.candidate]: (obj: T) => {
+                // Workable returns a single `email`, `phone` and `address` string and a
+                // `social_profiles` list of { type, name, url }; the unified candidate model
+                // expects { value, type } arrays for all of these.
+                const emails = obj.email ? [{ value: obj.email, type: undefined }] : [];
+                const phones = obj.phone ? [{ value: obj.phone, type: undefined }] : [];
+                const addresses = obj.address ? [{ value: obj.address, type: undefined }] : [];
+
+                let socialProfiles: { value: string; type: string | undefined }[] = [];
+                if (obj.social_profiles && obj.social_profiles.length > 0) {
+                    socialProfiles = obj.social_profiles.map((profile: any) => {
+                        return { value: profile.url, type: profile.type };
+                    });
+                }
+
+                return {
+                    ...obj,
+                    email: emails,
+                    phone: phones,
+                    address: addresses,
+                    social_profiles: socialProfiles,
+                };
+            },
+            [AtsStandardObjects.job]: (obj: T) => {
+                let state: string | undefined = '';
+                switch (obj.state) {
+                    case 'published':
+                        state = 'open';
+                        break;
+                    case 'closed':
+                        state = 'closed';
+                        break;
+                    case 'archived':
+                        state = 'closed';
+                        break;
+                    case 'draft':
+                        state = 'draft';
+                        break;
+                    default:
+                        state = undefined;
+                        break;
+                }
+
+                // Workable returns the department as a plain name string while the
+                // unified job model expects a list of department objects.
+                const departments = obj.department ? [{ name: obj.department }] : [];
+
+                return {
+                    ...obj,
+                    state: state,
+                    department: departments,
+                };
+            },
+        },
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;
@@ -693,6 +748,7 @@ export const postprocessDisUnifyAtsObject = <T extends Record<string, any>>({
     const preprocessMap: Record<ATS_TP_ID, Record<any, Function>> = {
         [TP_ID.greenhouse]: {},
         [TP_ID.lever]: {},
+        [TP_ID.workable]: {},
     };
     const transformFn = (preprocessMap[tpId] || {})[objType];
     return transformFn ? transformFn(obj) : obj;

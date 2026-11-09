@@ -5,6 +5,7 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 
 import { TP_ID } from '@prisma/client';
+import { AppConfig } from '../../constants/common';
 import axios from 'axios';
 import { ProxyService } from '../../generated/typescript/api/resources/ats/resources/proxy/service/ProxyService';
 
@@ -57,6 +58,26 @@ const proxyServiceAts = new ProxyService(
                         const result: any = await axios({
                             method: method,
                             url: `https://api.lever.co/v1/${path}`,
+                            headers: headers,
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const token = thirdPartyToken;
+                        const headers = {
+                            Authorization: 'Bearer ' + token,
+                        };
+                        const baseUrl =
+                            connection.tp_account_url ||
+                            `https://${(connection?.app?.app_config as AppConfig)?.subdomain}.workable.com`;
+                        const result: any = await axios({
+                            method: method,
+                            url: `${baseUrl}/spi/v3/${path}`,
                             headers: headers,
                             data: body,
                             params: queryParams,

@@ -1,0 +1,16 @@
+<img src="https://www.workable.com/favicon.ico" />
+
+#### Obtaining a Workable API access token
+
+-   Open a [Workable account](https://www.workable.com/).
+-   Workable uses API access tokens instead of OAuth. A Super Admin can create one by following the steps mentioned [here](https://help.workable.com/hc/en-us/articles/115012774588-How-do-I-generate-an-API-access-token-) (Settings → Integrations → API Access Tokens). Make sure the token is given the `r_jobs`, `r_candidates` and `w_candidates` scopes.
+-   Note your Workable subdomain — the part before `.workable.com` when you are logged in to Workable (e.g. `yourcompany` for `yourcompany.workable.com`).
+
+#### Connect to Workable via Revert
+
+-   Create an account on Revert if you don't already have one. (https://app.revert.dev/sign-up)
+-   Login to your revert dashboard (https://app.revert.dev/sign-in) and click on `Create App` - `Workable`
+
+<img src="https://res.cloudinary.com/dfcnic8wq/image/upload/v1705652583/Revert/Docs/nwlrrom2sw5xj7dsgznv.png" />
+
+-   When connecting a tenant, enter the tenant's Workable `subdomain` and the `API access token` created in the previous step.

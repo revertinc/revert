@@ -1328,6 +1328,138 @@ const createIntegrationBlock = function (self, integration) {
             });
         };
 
+        workableCredentialsInputContainerFunction = function () {
+            const parentDiv = document.createElement('div');
+            parentDiv.id = 'parentDiv';
+            parentDiv.style.display = 'flex';
+            parentDiv.style.flexDirection = 'column';
+            parentDiv.style.alignItems = 'center';
+            parentDiv.style.justifyContent = 'center';
+            parentDiv.style.position = 'relative';
+            parentDiv.style.width = '100%';
+
+            // Create heading
+            const heading = document.createElement('h3');
+            heading.textContent = 'Enter your Workable subdomain and API access token';
+            heading.style.textAlign = 'center';
+            heading.style.textDecoration = 'underline';
+            heading.style.marginBottom = '25px';
+            parentDiv.appendChild(heading);
+
+            const inputParentContainer = document.createElement('div');
+            inputParentContainer.style.display = 'flex';
+            inputParentContainer.style.alignItems = 'end';
+            inputParentContainer.style.justifyContent = 'space-between';
+            inputParentContainer.style.width = '100%';
+            inputParentContainer.style.marginTop = '20px';
+            inputParentContainer.style.flexDirection = 'column';
+            inputParentContainer.style.gap = '10px';
+
+            const createInputRow = function (labelText, inputId) {
+                const inputContainer = document.createElement('div');
+                inputContainer.style.display = 'flex';
+                inputContainer.style.alignItems = 'center';
+                inputContainer.style.flexGrow = '1';
+                inputContainer.style.width = '100%';
+
+                const label = document.createElement('label');
+                label.textContent = labelText;
+                label.setAttribute('for', inputId);
+                label.style.marginRight = '10px';
+                label.style.fontWeight = 'bold';
+
+                const input = document.createElement('input');
+                input.setAttribute('type', 'text');
+                input.setAttribute('id', inputId);
+                input.style.flexGrow = '1';
+                input.style.padding = '4px';
+
+                inputContainer.appendChild(label);
+                inputContainer.appendChild(input);
+                return inputContainer;
+            };
+
+            inputParentContainer.appendChild(createInputRow('Subdomain:', 'workable-subdomain-input'));
+            inputParentContainer.appendChild(createInputRow('API Access Token:', 'workable-api-key-input'));
+
+            // Create submit button
+            const submitButton = document.createElement('button');
+            submitButton.id = 'submitButtonWorkableAuth';
+            submitButton.textContent = 'Submit';
+            submitButton.style.marginLeft = '10px';
+            submitButton.style.background = 'rgb(39 45 192)';
+            submitButton.style.borderRadius = '5px';
+            submitButton.style.display = 'flex';
+            submitButton.style.alignItems = 'center';
+            submitButton.style.justifyContent = 'center';
+            submitButton.style.padding = '10px';
+            submitButton.style.color = '#fff';
+            submitButton.style.cursor = 'pointer';
+            submitButton.style.position = 'relative';
+            submitButton.disabled = true; // Initially disable the button
+            submitButton.style.opacity = '0.5';
+
+            inputParentContainer.appendChild(submitButton);
+            parentDiv.appendChild(inputParentContainer);
+
+            return parentDiv;
+        };
+
+        modalForWorkableCredentialsInput = function () {
+            return new Promise((resolve, reject) => {
+                const container = document.getElementById('revert-signin-container');
+                container.style.height = '534px';
+
+                // Remove all children of the container
+                while (container.firstChild) {
+                    container.removeChild(container.firstChild);
+                }
+
+                this.showAndRemoveLoader().then(() => {
+                    //close button
+                    const closeButton = createCloseButton();
+                    closeButton.style.position = 'absolute';
+                    closeButton.style.right = '20px';
+                    closeButton.style.top = '20px';
+                    closeButton.addEventListener('click', () => {
+                        reject('Modal closed by user');
+                        this.close();
+                    });
+
+                    const credentialsInputContainer = this.workableCredentialsInputContainerFunction();
+                    container.appendChild(closeButton);
+                    container.appendChild(credentialsInputContainer);
+
+                    const subdomainInput = credentialsInputContainer.querySelector('#workable-subdomain-input');
+                    const apiKeyInput = credentialsInputContainer.querySelector('#workable-api-key-input');
+                    const submitButton = credentialsInputContainer.querySelector('#submitButtonWorkableAuth');
+
+                    const toggleSubmitButton = function () {
+                        if (subdomainInput.value.trim() !== '' && apiKeyInput.value.trim() !== '') {
+                            submitButton.disabled = false;
+                            submitButton.style.opacity = '1';
+                        } else {
+                            submitButton.disabled = true;
+                            submitButton.style.opacity = '0.5';
+                        }
+                    };
+                    subdomainInput.addEventListener('input', toggleSubmitButton);
+                    apiKeyInput.addEventListener('input', toggleSubmitButton);
+
+                    //event listener for submission of the workable credentials
+                    submitButton.addEventListener('click', () => {
+                        submitButton.disabled = true;
+                        submitButton.style.opacity = '0.5';
+
+                        resolve({
+                            subdomain: subdomainInput.value.trim(),
+                            apiKey: apiKeyInput.value,
+                        });
+                    });
+                });
+            });
+        };
+
         handleIntegrationRedirect = async function (selectedIntegration) {
             if (selectedIntegration) {
                 const scopes = selectedIntegration.scopes;
@@ -1454,6 +1586,40 @@ const createIntegrationBlock = function (self, integration) {
                     const url = `${this.CORE_API_BASE_URL}v1/ats/oauth-callback?integrationId=${
                         selectedIntegration.integrationId
                     }&t_id=${this.tenantId}&code=${apiKey}&x_revert_public_token=${this.API_REVERT_PUBLIC_TOKEN}${
+                        this.#USER_REDIRECT_URL ? `&redirectUrl=${this.#USER_REDIRECT_URL}` : ``
+                    }`;
+                    fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                        .then((d) => {
+                            return d.json();
+                        })
+                        .then((data) => {
+                            if (data.error) {
+                                const errorMessage =
+                                    data.error?.code === 'P2002'
+                                        ? ': Already connected another CRM. Please disconnect first.'
+                                        : '';
+
+                                console.log('error:', errorMessage);
+                            } else {
+                                console.log('OAuth flow succeeded', data);
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            return this.renderFailedStage();
+                        });
+                } else if (selectedIntegration.integrationId === 'workable') {
+                    const { subdomain, apiKey } = await this.modalForWorkableCredentialsInput();
+                    const url = `${this.CORE_API_BASE_URL}v1/ats/oauth-callback?integrationId=${
+                        selectedIntegration.integrationId
+                    }&t_id=${this.tenantId}&code=${apiKey}&subdomain=${encodeURIComponent(
+                        subdomain,
+                    )}&x_revert_public_token=${this.API_REVERT_PUBLIC_TOKEN}${
                         this.#USER_REDIRECT_URL ? `&redirectUrl=${this.#USER_REDIRECT_URL}` : ``
                     }`;
                     fetch(url, {
