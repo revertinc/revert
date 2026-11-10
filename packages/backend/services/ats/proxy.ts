@@ -66,6 +66,26 @@ const proxyServiceAts = new ProxyService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        const token = thirdPartyToken;
+                        const baseUrl = connection.tp_account_url
+                            ? connection.tp_account_url.replace(/\/$/, '')
+                            : 'https://www.workable.com';
+                        const headers = {
+                            Authorization: 'Bearer ' + token,
+                        };
+                        const result: any = await axios({
+                            method: method,
+                            url: `${baseUrl}/spi/v3/${path}`,
+                            headers: headers,
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app!' });
                     }
