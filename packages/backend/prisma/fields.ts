@@ -1275,6 +1275,7 @@ export const atsFields = {
             source_field_name: {
                 [TP_ID.greenhouse]: 'id',
                 [TP_ID.lever]: 'id',
+                [TP_ID.workday]: 'id',
             },
             target_field_name: 'id',
         },
@@ -1282,6 +1283,7 @@ export const atsFields = {
             source_field_name: {
                 [TP_ID.greenhouse]: 'first_name',
                 [TP_ID.lever]: 'name',
+                [TP_ID.workday]: 'first_name',
             },
             target_field_name: 'first_name',
         },
@@ -1289,6 +1291,7 @@ export const atsFields = {
             source_field_name: {
                 [TP_ID.greenhouse]: 'last_name',
                 [TP_ID.lever]: undefined,
+                [TP_ID.workday]: 'last_name',
             },
             target_field_name: 'last_name',
         },
@@ -1296,6 +1299,7 @@ export const atsFields = {
             source_field_name: {
                 [TP_ID.greenhouse]: 'company',
                 [TP_ID.lever]: 'headline',
+                [TP_ID.workday]: 'company',
             },
             target_field_name: 'company',
         },
@@ -1303,6 +1307,7 @@ export const atsFields = {
             source_field_name: {
                 [TP_ID.greenhouse]: 'title',
                 [TP_ID.lever]: undefined,
+                [TP_ID.workday]: 'title',
             },
             target_field_name: 'title',
         },
@@ -1310,6 +1315,7 @@ export const atsFields = {
             source_field_name: {
                 [TP_ID.greenhouse]: 'created_at',
                 [TP_ID.lever]: 'createdAt',
+                [TP_ID.workday]: 'created_at',
             },
             target_field_name: 'created_at',
         },
@@ -1317,6 +1323,7 @@ export const atsFields = {
             source_field_name: {
                 [TP_ID.greenhouse]: 'updated_at',
                 [TP_ID.lever]: 'updatedAt',
+                [TP_ID.workday]: 'updated_at',
             },
             target_field_name: 'updated_at',
         },
@@ -1324,6 +1331,7 @@ export const atsFields = {
             source_field_name: {
                 [TP_ID.greenhouse]: 'last_activity',
                 [TP_ID.lever]: 'lastInteractionAt',
+                [TP_ID.workday]: 'last_activity',
             },
             target_field_name: 'last_activity',
         },
@@ -1502,6 +1510,7 @@ export const atsFields = {
             source_field_name: {
                 [TP_ID.greenhouse]: 'id',
                 [TP_ID.lever]: 'id',
+                [TP_ID.workday]: 'id',
             },
             target_field_name: 'id',
         },
@@ -1509,6 +1518,7 @@ export const atsFields = {
             source_field_name: {
                 [TP_ID.greenhouse]: 'name',
                 [TP_ID.lever]: 'text',
+                [TP_ID.workday]: 'title',
             },
             target_field_name: 'name',
         },
@@ -1516,6 +1526,7 @@ export const atsFields = {
             source_field_name: {
                 [TP_ID.greenhouse]: 'requisition_id',
                 [TP_ID.lever]: 'reqCode',
+                [TP_ID.workday]: 'requisitionId',
             },
             target_field_name: 'requisition_id',
         },
@@ -1523,6 +1534,7 @@ export const atsFields = {
             source_field_name: {
                 [TP_ID.greenhouse]: 'notes',
                 [TP_ID.lever]: 'content.description',
+                [TP_ID.workday]: 'description',
             },
             target_field_name: 'notes',
         },
@@ -1530,6 +1542,7 @@ export const atsFields = {
             source_field_name: {
                 [TP_ID.greenhouse]: 'confidential',
                 [TP_ID.lever]: 'confidentiality',
+                [TP_ID.workday]: undefined,
             },
             target_field_name: 'confidential',
         },
@@ -1537,6 +1550,7 @@ export const atsFields = {
             source_field_name: {
                 [TP_ID.greenhouse]: 'status',
                 [TP_ID.lever]: 'state',
+                [TP_ID.workday]: 'status',
             },
             target_field_name: 'status',
         },
@@ -1544,6 +1558,7 @@ export const atsFields = {
             source_field_name: {
                 [TP_ID.greenhouse]: 'created_at',
                 [TP_ID.lever]: 'createdAt',
+                [TP_ID.workday]: 'created_at',
             },
             target_field_name: 'created_at',
         },
