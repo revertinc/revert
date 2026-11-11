@@ -66,6 +66,32 @@ const proxyServiceAts = new ProxyService(
                         });
                         break;
                     }
+                    case TP_ID.bullhorn: {
+                        let bhRestToken = thirdPartyToken;
+                        let restUrl = 'https://rest.bullhornstaffing.com/rest-services/';
+                        try {
+                            const parsed = JSON.parse(thirdPartyToken);
+                            if (parsed.BhRestToken) bhRestToken = parsed.BhRestToken;
+                            if (parsed.restUrl) restUrl = parsed.restUrl;
+                        } catch {
+                            // use raw token
+                        }
+                        const cleanUrl = restUrl.endsWith('/') ? restUrl : `${restUrl}/`;
+                        const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+                        const result: any = await axios({
+                            method: method,
+                            url: `${cleanUrl}${cleanPath}`,
+                            headers: {
+                                BhRestToken: bhRestToken,
+                            },
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app!' });
                     }

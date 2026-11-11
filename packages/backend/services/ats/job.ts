@@ -10,6 +10,26 @@ import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedJob } from '../../models/unified/job';
 import { JobService } from '../../generated/typescript/api/resources/ats/resources/job/service/JobService';
 
+function getBullhornContext(thirdPartyToken: string) {
+    let bhRestToken = thirdPartyToken;
+    let restUrl = 'https://rest.bullhornstaffing.com/rest-services/';
+    try {
+        const parsed = JSON.parse(thirdPartyToken);
+        if (parsed.BhRestToken) bhRestToken = parsed.BhRestToken;
+        if (parsed.restUrl) restUrl = parsed.restUrl;
+    } catch {
+        // use raw token
+    }
+    const cleanUrl = restUrl.endsWith('/') ? restUrl : `${restUrl}/`;
+    return {
+        bhRestToken,
+        restUrl: cleanUrl,
+        headers: {
+            BhRestToken: bhRestToken,
+        },
+    };
+}
+
 const objType = AtsStandardObjects.job;
 
 const jobServiceAts = new JobService(
@@ -78,6 +98,29 @@ const jobServiceAts = new JobService(
 
                         const unifiedJob: any = await unifyObject<any, UnifiedJob>({
                             obj: result.data.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedJob,
+                        });
+                        break;
+                    }
+                    case TP_ID.bullhorn: {
+                        const { headers, restUrl } = getBullhornContext(thirdPartyToken);
+                        const result = await axios({
+                            method: 'get',
+                            url: `${restUrl}entity/JobOrder/${jobId}?fields=id,title,description,employmentType,status,dateAdded,isOpen`,
+                            headers,
+                        });
+
+                        const jobData = result.data?.data || result.data;
+                        const unifiedJob: any = await unifyObject<any, UnifiedJob>({
+                            obj: jobData,
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -231,6 +274,46 @@ const jobServiceAts = new JobService(
                             nextCursor = undefined;
                         }
 
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
+                            results: unifiedJobs,
+                        });
+
+                        break;
+                    }
+                    case TP_ID.bullhorn: {
+                        const { headers, restUrl } = getBullhornContext(thirdPartyToken);
+                        const limit = pageSize || 20;
+                        const offset = cursor ? Number(cursor) : 0;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${restUrl}query/JobOrder`,
+                            headers,
+                            params: {
+                                where: 'isOpen=true',
+                                fields: 'id,title,description,employmentType,status,dateAdded,isOpen',
+                                count: limit,
+                                start: offset,
+                            },
+                        });
+
+                        const rawJobs = result.data?.data || [];
+                        const unifiedJobs = await Promise.all(
+                            rawJobs.map(async (job: any) => {
+                                return await unifyObject<any, UnifiedJob>({
+                                    obj: job,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        const nextCursor = rawJobs.length === limit ? String(offset + limit) : undefined;
                         res.send({
                             status: 'ok',
                             next: nextCursor,

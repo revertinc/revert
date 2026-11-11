@@ -10,6 +10,26 @@ import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedCandidate } from '../../models/unified/candidate';
 import { CandidateService } from '../../generated/typescript/api/resources/ats/resources/candidate/service/CandidateService';
 
+function getBullhornContext(thirdPartyToken: string) {
+    let bhRestToken = thirdPartyToken;
+    let restUrl = 'https://rest.bullhornstaffing.com/rest-services/';
+    try {
+        const parsed = JSON.parse(thirdPartyToken);
+        if (parsed.BhRestToken) bhRestToken = parsed.BhRestToken;
+        if (parsed.restUrl) restUrl = parsed.restUrl;
+    } catch {
+        // use raw token
+    }
+    const cleanUrl = restUrl.endsWith('/') ? restUrl : `${restUrl}/`;
+    return {
+        bhRestToken,
+        restUrl: cleanUrl,
+        headers: {
+            BhRestToken: bhRestToken,
+        },
+    };
+}
+
 const objType = AtsStandardObjects.candidate;
 
 const candidateServiceAts = new CandidateService(
@@ -78,6 +98,30 @@ const candidateServiceAts = new CandidateService(
 
                         const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
                             obj: result.data.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedCandidate,
+                        });
+                        break;
+                    }
+
+                    case TP_ID.bullhorn: {
+                        const { headers, restUrl } = getBullhornContext(thirdPartyToken);
+                        const result = await axios({
+                            method: 'get',
+                            url: `${restUrl}entity/Candidate/${candidateId}?fields=id,firstName,lastName,name,email,phone,address,occupation,status,dateAdded,dateLastModified`,
+                            headers,
+                        });
+
+                        const candidateData = result.data?.data || result.data;
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: candidateData,
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -238,6 +282,47 @@ const candidateServiceAts = new CandidateService(
                         break;
                     }
 
+                    case TP_ID.bullhorn: {
+                        const { headers, restUrl } = getBullhornContext(thirdPartyToken);
+                        const limit = pageSize || 20;
+                        const offset = cursor ? Number(cursor) : 0;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${restUrl}query/Candidate`,
+                            headers,
+                            params: {
+                                where: 'isDeleted=false',
+                                fields: 'id,firstName,lastName,name,email,phone,address,occupation,status,dateAdded,dateLastModified',
+                                count: limit,
+                                start: offset,
+                            },
+                        });
+
+                        const rawCandidates = result.data?.data || [];
+                        const unifiedCandidates = await Promise.all(
+                            rawCandidates.map(async (candidate: any) => {
+                                return await unifyObject<any, UnifiedCandidate>({
+                                    obj: candidate,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        const nextCursor = rawCandidates.length === limit ? String(offset + limit) : undefined;
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
+                            results: unifiedCandidates,
+                        });
+
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -330,6 +415,39 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.bullhorn: {
+                        const { headers, restUrl } = getBullhornContext(thirdPartyToken);
+                        const transformedData = candidate as any;
+
+                        const payload = {
+                            firstName: candidateData.first_name || transformedData.firstName,
+                            lastName: candidateData.last_name || transformedData.lastName,
+                            email: candidateData.email_addresses?.[0] || transformedData.email,
+                            phone: candidateData.phone_numbers?.[0] || transformedData.phone,
+                            occupation: candidateData.title || transformedData.occupation,
+                            status: 'Active',
+                            ...transformedData,
+                        };
+
+                        const result = await axios({
+                            method: 'put',
+                            url: `${restUrl}entity/Candidate`,
+                            headers,
+                            data: payload,
+                        });
+
+                        const createdId = result.data?.changedEntityId || result.data?.id;
+                        res.send({
+                            status: 'ok',
+                            message: 'Bullhorn candidate created',
+                            result: {
+                                id: String(createdId),
+                                ...candidateData,
+                            },
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -402,6 +520,37 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.bullhorn: {
+                        const { headers, restUrl } = getBullhornContext(thirdPartyToken);
+                        const transformedData = candidate as any;
+
+                        const payload = {
+                            firstName: candidateData.first_name || transformedData.firstName,
+                            lastName: candidateData.last_name || transformedData.lastName,
+                            email: candidateData.email_addresses?.[0] || transformedData.email,
+                            phone: candidateData.phone_numbers?.[0] || transformedData.phone,
+                            occupation: candidateData.title || transformedData.occupation,
+                            ...transformedData,
+                        };
+
+                        await axios({
+                            method: 'post',
+                            url: `${restUrl}entity/Candidate/${candidateId}`,
+                            headers,
+                            data: payload,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Bullhorn candidate updated',
+                            result: {
+                                id: candidateId,
+                                ...candidateData,
+                            },
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -467,6 +616,24 @@ const candidateServiceAts = new CandidateService(
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.bullhorn: {
+                        const { headers, restUrl } = getBullhornContext(thirdPartyToken);
+                        await axios({
+                            method: 'delete',
+                            url: `${restUrl}entity/Candidate/${candidateId}`,
+                            headers,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            message: 'Bullhorn candidate deleted',
+                            result: {
+                                id: candidateId,
+                            },
                         });
 
                         break;
