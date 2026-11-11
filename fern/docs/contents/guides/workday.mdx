@@ -1,0 +1,8 @@
+---
+title: "Workday ATS & Staffing Integration"
+---
+
+Revert supports **Workday REST API v1** (`recruiting/v1` and `staffing/v1`) as an ATS integration (`[REVER-48]`).
+
+## Authentication
+Workday connections authenticate via OAuth 2.0 Refresh Token exchange against `https://{host}/ccx/oauth2/{tenant}/token`.
