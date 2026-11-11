@@ -187,10 +187,11 @@ const connectionService = new ConnectionService({
         }
     },
     async createWebhook(req, res) {
-        // changes(breaking) -> Create Webhooks on SvixAppId -> accoundId_environment that is environmentId
+        // Support event-based webhook subscriptions (Issue #495) as well as tenant-scoped webhooks
         try {
-            const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
-            const webhookUrl = req.body.webhookUrl;
+            const { 'x-revert-api-token': token } = req.headers;
+            const tenantId = req.headers['x-revert-t-id'] || req.body?.t_id || req.body?.tenantId;
+            const { webhookUrl, eventTypes, filterTypes, description, uid } = req.body;
             const environment = await prisma.environments.findFirst({
                 where: {
                     private_token: String(token),
@@ -203,19 +204,38 @@ const connectionService = new ConnectionService({
 
             const svixAppId = environment.id;
             const secret = `whsec_${Buffer.from(uuidv4()).toString('base64')}`;
-            const webhook = await config.svix!.endpoint.create(svixAppId, {
+
+            const endpointPayload: any = {
                 url: webhookUrl,
                 version: 1,
-                description: `Connection Webhook for tenant ${tenantId}`,
-                uid: String(tenantId),
-                channels: [String(tenantId)],
                 secret: secret,
-            });
+            };
+
+            const selectedFilterTypes = filterTypes || eventTypes;
+            if (Array.isArray(selectedFilterTypes) && selectedFilterTypes.length > 0) {
+                endpointPayload.filterTypes = selectedFilterTypes;
+            }
+
+            if (tenantId) {
+                endpointPayload.uid = uid ? String(uid) : String(tenantId);
+                endpointPayload.description = description || `Connection Webhook for tenant ${tenantId}`;
+                endpointPayload.channels = [String(tenantId)];
+            } else {
+                endpointPayload.uid = uid ? String(uid) : `wh_${uuidv4()}`;
+                endpointPayload.description = description || 'Global Event Webhook Subscription';
+                // Channels is omitted so endpoint receives events across all tenants
+            }
+
+            const webhook = await config.svix!.endpoint.create(svixAppId, endpointPayload);
             res.send({
                 status: 'ok',
+                webhookId: webhook.id || webhook.uid || endpointPayload.uid,
+                uid: webhook.uid || endpointPayload.uid,
                 webhookUrl: webhook.url,
                 createdAt: String(webhook.createdAt),
                 secret: secret,
+                channels: webhook.channels || endpointPayload.channels,
+                filterTypes: webhook.filterTypes || endpointPayload.filterTypes,
             });
         } catch (error: any) {
             logError(error);
@@ -231,9 +251,9 @@ const connectionService = new ConnectionService({
         }
     },
     async getWebhook(req, res) {
-        // changes(breaking) -> Get Webhooks on SvixAppId -> accoundId_environment that is environmentId
         try {
-            const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
+            const { 'x-revert-api-token': token } = req.headers;
+            const webhookId = (req as any).params?.webhookId || (req as any).query?.webhookId || (req as any).query?.id || req.headers['x-revert-t-id'];
             const environment = await prisma.environments.findFirst({
                 where: {
                     private_token: String(token),
@@ -245,8 +265,13 @@ const connectionService = new ConnectionService({
             }
 
             const svixAppId = environment.id;
-            const webhook = await config.svix!.endpoint.get(svixAppId, String(tenantId));
-            res.send({ status: 'ok', webhook: webhook });
+            if (webhookId) {
+                const webhook = await config.svix!.endpoint.get(svixAppId, String(webhookId));
+                res.send({ status: 'ok', webhook: webhook });
+            } else {
+                const webhooks = await config.svix!.endpoint.list(svixAppId);
+                res.send({ status: 'ok', webhooks: (webhooks as any)?.data || webhooks });
+            }
         } catch (error: any) {
             logError(error);
             console.error(error);
@@ -259,10 +284,9 @@ const connectionService = new ConnectionService({
     },
 
     async deleteWebhook(req, res) {
-        // changes(breaking) -> delete Webhooks on SvixAppId -> accoundId_environment that is environmentId
         try {
-            const { 'x-revert-api-token': token, 'x-revert-t-id': tenantId } = req.headers;
-            const webhookId = String(tenantId);
+            const { 'x-revert-api-token': token } = req.headers;
+            const webhookId = (req as any).params?.webhookId || req.body?.webhookId || (req as any).query?.webhookId || (req as any).query?.id || req.headers['x-revert-t-id'];
             const environment = await prisma.environments.findFirst({
                 where: {
                     private_token: String(token),
@@ -273,8 +297,17 @@ const connectionService = new ConnectionService({
                 throw new UnAuthorizedError({ error: 'Api unauthorized' });
             }
 
+            if (!webhookId) {
+                res.send({
+                    status: 'error',
+                    error: 'Error deleting webhook!',
+                    errorMessage: 'webhookId or x-revert-t-id header is required',
+                });
+                return;
+            }
+
             const svixAppId = environment.id;
-            await config.svix!.endpoint.delete(svixAppId, webhookId);
+            await config.svix!.endpoint.delete(svixAppId, String(webhookId));
             res.send({ status: 'ok' });
         } catch (error: any) {
             logError(error);

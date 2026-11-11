@@ -1,5 +1,8 @@
 {
   "roots": [
     "./"
-  ]
+  ],
+  "moduleNameMapper": {
+    "^.*generated/typescript.*$": "<rootDir>/__mocks__/generatedTypescript.js"
+  }
 }
