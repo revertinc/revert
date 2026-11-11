@@ -194,6 +194,15 @@ const metadataService = new MetadataService({
                     scopes: getScope(apps, TP_ID.lever),
                     clientId: getClientId(apps, TP_ID.lever) || config.LEVER_CLIENT_ID,
                 },
+                {
+                    integrationId: TP_ID.bullhorn,
+                    name: 'Bullhorn',
+                    imageSrc:
+                        'https://res.cloudinary.com/dwoiwg0t5/image/upload/v1700000000/RevertAppLogos/bullhorn.png',
+                    status: 'active',
+                    scopes: getScope(apps, TP_ID.bullhorn),
+                    clientId: getClientId(apps, TP_ID.bullhorn) || config.BULLHORN_CLIENT_ID,
+                },
 
                 {
                     integrationId: TP_ID.github,

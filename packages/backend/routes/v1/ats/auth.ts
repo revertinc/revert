@@ -8,6 +8,7 @@ import redis from '../../../redis/client';
 import { ATS_TP_ID, mapIntegrationIdToIntegrationName } from '../../../constants/common';
 import greenhouse from './authHandlers/greenhouse';
 import lever from './authHandlers/lever';
+import bullhorn from './authHandlers/bullhorn';
 
 const authRouter = express.Router({ mergeParams: true });
 
@@ -70,6 +71,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
                     return greenhouse.handleBasicAuth(handleAuthProps);
                 case TP_ID.lever:
                     return lever.handleOAuth(handleAuthProps);
+                case TP_ID.bullhorn:
+                    return bullhorn.handleOAuth(handleAuthProps);
 
                 default:
                     return processOAuthResult({

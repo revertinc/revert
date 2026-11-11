@@ -65,6 +65,9 @@ const config = {
 
     LEVER_CLIENT_ID: process.env.LEVER_CLIENT_ID!,
     LEVER_CLIENT_SECRET: process.env.LEVER_CLIENT_SECRET!,
+
+    BULLHORN_CLIENT_ID: process.env.BULLHORN_CLIENT_ID!,
+    BULLHORN_CLIENT_SECRET: process.env.BULLHORN_CLIENT_SECRET!,
 };
 
 export default config;
