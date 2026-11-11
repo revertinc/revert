@@ -3,7 +3,7 @@ import { Response } from 'express';
 import rateLimitMiddleware from './rateLimitMiddleware';
 import { skipRateLimitRoutes } from './utils';
 
-import { jest, describe, expect, it, beforeEach } from '@jest/globals';
+// Global jest is available in jest environment
 
 type StatusFn = (code: number) => Response;
 type SendFn = (body?: any) => Response;
