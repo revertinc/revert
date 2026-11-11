@@ -1,0 +1,12 @@
+---
+title: "Workable ATS Integration"
+---
+
+Revert supports **Workable** (`spi/v3`) as a first-class ATS integration (`[REVER-51]`).
+
+## Supported Unified Objects
+- **Job** (`GET /spi/v3/jobs`, `GET /spi/v3/jobs/:shortcode`)
+- **Candidate** (`GET /spi/v3/candidates`, `POST /spi/v3/jobs/:shortcode/candidates`)
+- **Department** (`GET /spi/v3/departments`)
+- **Offer** (`GET /spi/v3/candidates/:id/offer`)
+- **Proxy** (`POST /v1/ats/proxy`)
