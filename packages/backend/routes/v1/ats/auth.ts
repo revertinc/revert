@@ -7,6 +7,7 @@ import processOAuthResult from '../../../helpers/auth/processOAuthResult';
 import redis from '../../../redis/client';
 import { ATS_TP_ID, mapIntegrationIdToIntegrationName } from '../../../constants/common';
 import greenhouse from './authHandlers/greenhouse';
+import workable from './authHandlers/workable';
 import lever from './authHandlers/lever';
 
 const authRouter = express.Router({ mergeParams: true });
@@ -68,6 +69,8 @@ authRouter.get('/oauth-callback', async (req, res) => {
             switch (integrationId) {
                 case TP_ID.greenhouse:
                     return greenhouse.handleBasicAuth(handleAuthProps);
+                case TP_ID.workable:
+                    return workable.handleBasicAuth(handleAuthProps);
                 case TP_ID.lever:
                     return lever.handleOAuth(handleAuthProps);
 

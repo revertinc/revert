@@ -66,6 +66,40 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = `https://${connection.tp_customer_id}.workable.com/spi/v3`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/departments`,
+                            headers: headers,
+                        });
+
+                        const department = (result.data.departments ?? []).find(
+                            (d: any) => String(d.id) === String(departmentId),
+                        );
+                        if (!department) {
+                            throw new NotFoundError({
+                                name: 'DEPARTMENT_NOT_FOUND',
+                                message: `No Workable department found with id ${departmentId}.`,
+                            } as any);
+                        }
+
+                        const unifiedDepartment: any = await unifyObject<any, UnifiedDepartment>({
+                            obj: department,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedDepartment,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -214,6 +248,34 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = `https://${connection.tp_customer_id}.workable.com/spi/v3`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/departments`,
+                            headers: headers,
+                        });
+
+                        const unifiedDepartments: any = await Promise.all(
+                            (result.data.departments ?? []).map(async (department: any) => {
+                                return await unifyObject<any, UnifiedDepartment>({
+                                    obj: department,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedDepartments,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
