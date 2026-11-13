@@ -90,6 +90,30 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = `https://${connection.tp_customer_id}.workable.com/spi/v3`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/jobs/${jobId}`,
+                            headers: headers,
+                        });
+
+                        const unifiedJob: any = await unifyObject<any, UnifiedJob>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedJob,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -238,6 +262,43 @@ const jobServiceAts = new JobService(
                             results: unifiedJobs,
                         });
 
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = `https://${connection.tp_customer_id}.workable.com/spi/v3`;
+
+                        // Workable paginates list responses (max 100 per page) and returns a
+                        // `paging.next` URL while more pages exist; collect every page so the
+                        // unified list is complete.
+                        const workableJobs: any[] = [];
+                        let nextUrl: string | null = `${baseUrl}/jobs?limit=100`;
+                        while (nextUrl) {
+                            const page: any = await axios({
+                                method: 'get',
+                                url: nextUrl,
+                                headers: headers,
+                            });
+                            workableJobs.push(...(page.data.jobs ?? []));
+                            nextUrl = page.data.paging?.next ?? null;
+                        }
+
+                        const unifiedJobs: any = await Promise.all(
+                            workableJobs.map(async (job: any) => {
+                                return await unifyObject<any, UnifiedJob>({
+                                    obj: job,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedJobs,
+                        });
                         break;
                     }
                     default: {

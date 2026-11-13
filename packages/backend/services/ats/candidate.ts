@@ -91,6 +91,30 @@ const candidateServiceAts = new CandidateService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = `https://${connection.tp_customer_id}.workable.com/spi/v3`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/candidates/${candidateId}`,
+                            headers: headers,
+                        });
+
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedCandidate,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -238,6 +262,43 @@ const candidateServiceAts = new CandidateService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+                        const baseUrl = `https://${connection.tp_customer_id}.workable.com/spi/v3`;
+
+                        // Workable paginates list responses (max 100 per page) and returns a
+                        // `paging.next` URL while more pages exist; collect every page so the
+                        // unified list is complete.
+                        const workableCandidates: any[] = [];
+                        let nextUrl: string | null = `${baseUrl}/candidates?limit=100`;
+                        while (nextUrl) {
+                            const page: any = await axios({
+                                method: 'get',
+                                url: nextUrl,
+                                headers: headers,
+                            });
+                            workableCandidates.push(...(page.data.candidates ?? []));
+                            nextUrl = page.data.paging?.next ?? null;
+                        }
+
+                        const unifiedCandidates: any = await Promise.all(
+                            workableCandidates.map(async (candidate: any) => {
+                                return await unifyObject<any, UnifiedCandidate>({
+                                    obj: candidate,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedCandidates,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -328,6 +389,54 @@ const candidateServiceAts = new CandidateService(
 
                         res.send({ status: 'ok', message: 'Lever candidate created', result: result.data.data });
 
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            'Content-Type': 'application/json',
+                        };
+                        const baseUrl = `https://${connection.tp_customer_id}.workable.com/spi/v3`;
+
+                        // Workable creates a candidate under a job:
+                        // POST /jobs/{job_shortcode}/candidates. The unified create payload
+                        // carries the target job in `job_post_id` (falling back to the first
+                        // entry of `application_ids`-style job references when present).
+                        const disunifiedCandidate: any = await disunifyAtsObject({
+                            obj: req.body,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        const jobShortcode = req.body.job_post_id ?? disunifiedCandidate.job?.shortcode;
+                        if (!jobShortcode) {
+                            throw new NotFoundError({
+                                name: 'JOB_NOT_FOUND',
+                                message: 'Creating a Workable candidate requires the shortcode of the job it applies to.',
+                            } as any);
+                        }
+
+                        const result = await axios({
+                            method: 'post',
+                            url: `${baseUrl}/jobs/${jobShortcode}/candidates`,
+                            headers: headers,
+                            data: disunifiedCandidate,
+                        });
+
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedCandidate,
+                        });
                         break;
                     }
                     default: {
