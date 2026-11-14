@@ -59,7 +59,7 @@ class WorkdayAuthHandler extends BaseOAuthHandler {
                 create: {
                     id: tenantId,
                     t_id: tenantId,
-                    tp_id: TP_ID.workday,
+                    tp_id: integrationId,
                     tp_access_token: result.data.access_token,
                     tp_refresh_token: result.data.refresh_token,
                     tp_customer_id: 'workday_user',
@@ -75,7 +75,7 @@ class WorkdayAuthHandler extends BaseOAuthHandler {
                     tp_refresh_token: result.data.refresh_token,
                     app_client_id: clientId || config.WORKDAY_CLIENT_ID,
                     app_client_secret: clientSecret || config.WORKDAY_CLIENT_SECRET,
-                    tp_id: TP_ID.workday,
+                    tp_id: integrationId,
                     appId: account?.apps[0]?.id,
                     tp_customer_id: 'workday_user',
                     tp_account_url: workdayTenant,
@@ -85,7 +85,7 @@ class WorkdayAuthHandler extends BaseOAuthHandler {
             await sendConnectionAddedEvent(
                 svixAppId,
                 tenantId,
-                TP_ID.workday,
+                integrationId,
                 result.data.access_token,
                 'workday_user',
             );
