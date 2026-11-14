@@ -66,6 +66,26 @@ const proxyServiceAts = new ProxyService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        const token = thirdPartyToken;
+                        const tenantId = connection.tp_account_url;
+                        const headers = {
+                            Authorization: 'Bearer ' + token,
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        };
+                        const result: any = await axios({
+                            method: method,
+                            url: `https://wd2-impl.workdays.com/api/ats/v1/${tenantId}/${path}`,
+                            headers: headers,
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app!' });
                     }
