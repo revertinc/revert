@@ -59,6 +59,33 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        const orgSubdomain = (account?.apps[0]?.app_config as AppConfig)?.org_url || 'www';
+                        const baseUrl = orgSubdomain.startsWith('http')
+                            ? orgSubdomain.replace(/\/$/, '')
+                            : `https://${orgSubdomain}.workable.com/spi/v3`;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/jobs/${jobId}`,
+                            headers: headers,
+                        });
+
+                        const unifiedJob: any = await unifyObject<any, UnifiedJob>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedJob,
+                        });
+                        break;
+                    }
                     case TP_ID.lever: {
                         const headers = { Authorization: `Bearer ${thirdPartyToken}` };
 
@@ -78,6 +105,33 @@ const jobServiceAts = new JobService(
 
                         const unifiedJob: any = await unifyObject<any, UnifiedJob>({
                             obj: result.data.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedJob,
+                        });
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const orgSubdomain = (account?.apps[0]?.app_config as AppConfig)?.org_url || 'www';
+                        const baseUrl = orgSubdomain.startsWith('http')
+                            ? orgSubdomain.replace(/\/$/, '')
+                            : `https://${orgSubdomain}.workable.com/spi/v3`;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/jobs/${jobId}`,
+                            headers: headers,
+                        });
+
+                        const unifiedJob: any = await unifyObject<any, UnifiedJob>({
+                            obj: result.data,
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -234,6 +288,45 @@ const jobServiceAts = new JobService(
                         res.send({
                             status: 'ok',
                             next: nextCursor,
+                            previous: undefined,
+                            results: unifiedJobs,
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const orgSubdomain = (account?.apps[0]?.app_config as AppConfig)?.org_url || 'www';
+                        const baseUrl = orgSubdomain.startsWith('http')
+                            ? orgSubdomain.replace(/\/$/, '')
+                            : `https://${orgSubdomain}.workable.com/spi/v3`;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const pagingString = `${pageSize ? `limit=${pageSize}` : 'limit=50'}${
+                            cursor ? `&since_id=${cursor}` : ''
+                        }`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/jobs?${pagingString}`,
+                            headers: headers,
+                        });
+
+                        const jobs = result.data?.jobs || result.data || [];
+                        const unifiedJobs = await Promise.all(
+                            (Array.isArray(jobs) ? jobs : []).map(async (job: any) => {
+                                return await unifyObject<any, UnifiedJob>({
+                                    obj: job,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: result.data?.paging?.next || undefined,
                             previous: undefined,
                             results: unifiedJobs,
                         });

@@ -59,6 +59,33 @@ const candidateServiceAts = new CandidateService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        const orgSubdomain = (account?.apps[0]?.app_config as AppConfig)?.org_url || 'www';
+                        const baseUrl = orgSubdomain.startsWith('http')
+                            ? orgSubdomain.replace(/\/$/, '')
+                            : `https://${orgSubdomain}.workable.com/spi/v3`;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/candidates/${candidateId}`,
+                            headers: headers,
+                        });
+
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedCandidate,
+                        });
+                        break;
+                    }
                     case TP_ID.lever: {
                         const headers = { Authorization: `Bearer ${thirdPartyToken}` };
 
@@ -78,6 +105,33 @@ const candidateServiceAts = new CandidateService(
 
                         const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
                             obj: result.data.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedCandidate,
+                        });
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const orgSubdomain = (account?.apps[0]?.app_config as AppConfig)?.org_url || 'www';
+                        const baseUrl = orgSubdomain.startsWith('http')
+                            ? orgSubdomain.replace(/\/$/, '')
+                            : `https://${orgSubdomain}.workable.com/spi/v3`;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/candidates/${candidateId}`,
+                            headers: headers,
+                        });
+
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: result.data,
                             tpId: thirdPartyId,
                             objType,
                             tenantSchemaMappingId: connection.schema_mapping_id,
@@ -238,6 +292,46 @@ const candidateServiceAts = new CandidateService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        const orgSubdomain = (account?.apps[0]?.app_config as AppConfig)?.org_url || 'www';
+                        const baseUrl = orgSubdomain.startsWith('http')
+                            ? orgSubdomain.replace(/\/$/, '')
+                            : `https://${orgSubdomain}.workable.com/spi/v3`;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const pagingString = `${pageSize ? `limit=${pageSize}` : 'limit=50'}${
+                            cursor ? `&since_id=${cursor}` : ''
+                        }`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/candidates?${pagingString}`,
+                            headers: headers,
+                        });
+
+                        const candidates = result.data?.candidates || result.data || [];
+                        const unifiedCandidates = await Promise.all(
+                            (Array.isArray(candidates) ? candidates : []).map(async (candidate: any) => {
+                                return await unifyObject<any, UnifiedCandidate>({
+                                    obj: candidate,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: result.data?.paging?.next || undefined,
+                            previous: undefined,
+                            results: unifiedCandidates,
+                        });
+
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -330,6 +424,29 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const orgSubdomain = (account?.apps[0]?.app_config as AppConfig)?.org_url || 'www';
+                        const baseUrl = orgSubdomain.startsWith('http')
+                            ? orgSubdomain.replace(/\/$/, '')
+                            : `https://${orgSubdomain}.workable.com/spi/v3`;
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        };
+
+                        const jobId = fields?.job_id || fields?.jobId;
+                        const url = jobId ? `${baseUrl}/jobs/${jobId}/candidates` : `${baseUrl}/candidates`;
+
+                        const result: any = await axios({
+                            method: 'post',
+                            url,
+                            headers,
+                            data: candidate,
+                        });
+                        res.send({ status: 'ok', message: 'Workable candidate created', result: result.data });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -402,6 +519,26 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workable: {
+                        const orgSubdomain = (account?.apps[0]?.app_config as AppConfig)?.org_url || 'www';
+                        const baseUrl = orgSubdomain.startsWith('http')
+                            ? orgSubdomain.replace(/\/$/, '')
+                            : `https://${orgSubdomain}.workable.com/spi/v3`;
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        };
+
+                        const result = await axios({
+                            method: 'patch',
+                            url: `${baseUrl}/candidates/${candidateId}`,
+                            headers,
+                            data: candidate,
+                        });
+                        res.send({ status: 'ok', message: 'Workable Candidate updated', result: result.data });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -469,6 +606,26 @@ const candidateServiceAts = new CandidateService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const orgSubdomain = (account?.apps[0]?.app_config as AppConfig)?.org_url || 'www';
+                        const baseUrl = orgSubdomain.startsWith('http')
+                            ? orgSubdomain.replace(/\/$/, '')
+                            : `https://${orgSubdomain}.workable.com/spi/v3`;
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        };
+
+                        const result = await axios({
+                            method: 'patch',
+                            url: `${baseUrl}/candidates/${candidateId}`,
+                            headers,
+                            data: candidate,
+                        });
+                        res.send({ status: 'ok', message: 'Workable Candidate updated', result: result.data });
                         break;
                     }
                     default: {

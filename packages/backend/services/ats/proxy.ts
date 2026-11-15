@@ -49,6 +49,27 @@ const proxyServiceAts = new ProxyService(
                         });
                         break;
                     }
+                    case TP_ID.workable: {
+                        const orgSubdomain = (connection?.app?.app_config as AppConfig)?.org_url || 'www';
+                        const baseUrl = orgSubdomain.startsWith('http')
+                            ? orgSubdomain.replace(/\/$/, '')
+                            : `https://${orgSubdomain}.workable.com/spi/v3`;
+                        const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                        };
+                        const result: any = await axios({
+                            method: method,
+                            url: `${baseUrl}/${cleanPath}`,
+                            headers: headers,
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
                     case TP_ID.lever: {
                         const token = thirdPartyToken;
                         const headers = {
@@ -57,6 +78,27 @@ const proxyServiceAts = new ProxyService(
                         const result: any = await axios({
                             method: method,
                             url: `https://api.lever.co/v1/${path}`,
+                            headers: headers,
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.workable: {
+                        const orgSubdomain = (connection?.app?.app_config as AppConfig)?.org_url || 'www';
+                        const baseUrl = orgSubdomain.startsWith('http')
+                            ? orgSubdomain.replace(/\/$/, '')
+                            : `https://${orgSubdomain}.workable.com/spi/v3`;
+                        const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                        };
+                        const result: any = await axios({
+                            method: method,
+                            url: `${baseUrl}/${cleanPath}`,
                             headers: headers,
                             data: body,
                             params: queryParams,

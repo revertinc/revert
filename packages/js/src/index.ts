@@ -1449,7 +1449,7 @@ const createIntegrationBlock = function (self, integration) {
                             selectedIntegration.clientId
                         }&response_type=code&state=${encodeURIComponent(state)}`,
                     );
-                } else if (selectedIntegration.integrationId === 'greenhouse') {
+                } else if (selectedIntegration.integrationId === 'greenhouse' || selectedIntegration.integrationId === 'workable') {
                     const apiKey = await this.modalForApiKeyInputBasicAuth();
                     const url = `${this.CORE_API_BASE_URL}v1/ats/oauth-callback?integrationId=${
                         selectedIntegration.integrationId
