@@ -90,6 +90,34 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        const appConfig = (account?.apps[0]?.app_config || connection?.app?.app_config) as AppConfig;
+                        const orgSubdomain = appConfig?.org_url || 'wd2-impl-services1.workday.com';
+                        const tenant = (appConfig as any)?.tenant || 'default';
+                        const host = orgSubdomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                        const baseUrl = `https://${host}/ccx/api/v1/${tenant}`;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/recruiting/jobPostings/${jobId}`,
+                            headers: headers,
+                        });
+
+                        const unifiedJob: any = await unifyObject<any, UnifiedJob>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedJob,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -240,6 +268,58 @@ const jobServiceAts = new JobService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        const appConfig = (account?.apps[0]?.app_config || connection?.app?.app_config) as AppConfig;
+                        const orgSubdomain = appConfig?.org_url || 'wd2-impl-services1.workday.com';
+                        const tenant = (appConfig as any)?.tenant || 'default';
+                        const host = orgSubdomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                        const baseUrl = `https://${host}/ccx/api/v1/${tenant}`;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        let pagingString = `${pageSize ? `limit=${pageSize}` : 'limit=50'}${
+                            cursor ? `&offset=${cursor}` : ''
+                        }`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/recruiting/jobPostings?${pagingString}`,
+                            headers: headers,
+                        });
+
+                        const rawData = Array.isArray(result.data?.data)
+                            ? result.data.data
+                            : Array.isArray(result.data)
+                            ? result.data
+                            : [];
+
+                        const unifiedJobs = await Promise.all(
+                            rawData.map(async (job: any) => {
+                                return await unifyObject<any, UnifiedJob>({
+                                    obj: job,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        const nextCursor =
+                            result.data?.total && cursor
+                                ? Number(cursor) + rawData.length < result.data.total
+                                    ? String(Number(cursor) + rawData.length)
+                                    : undefined
+                                : undefined;
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
+                            results: unifiedJobs,
+                        });
+
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -328,6 +408,13 @@ const jobServiceAts = new JobService(
                             status: 'ok',
                             message: 'Lever job created',
                             result: result.data.data,
+                        });
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
                         });
                         break;
                     }
@@ -428,6 +515,13 @@ const jobServiceAts = new JobService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -470,6 +564,14 @@ const jobServiceAts = new JobService(
                         break;
                     }
                     case TP_ID.lever: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+                    case TP_ID.workday: {
                         res.send({
                             status: 'ok',
                             message: 'This endpoint is currently not supported',

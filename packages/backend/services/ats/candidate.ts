@@ -91,6 +91,35 @@ const candidateServiceAts = new CandidateService(
                         break;
                     }
 
+                    case TP_ID.workday: {
+                        const appConfig = (account?.apps[0]?.app_config || connection?.app?.app_config) as AppConfig;
+                        const orgSubdomain = appConfig?.org_url || 'wd2-impl-services1.workday.com';
+                        const tenant = (appConfig as any)?.tenant || 'default';
+                        const host = orgSubdomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                        const baseUrl = `https://${host}/ccx/api/v1/${tenant}`;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/recruiting/candidates/${candidateId}`,
+                            headers: headers,
+                        });
+
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedCandidate,
+                        });
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -238,6 +267,59 @@ const candidateServiceAts = new CandidateService(
                         break;
                     }
 
+                    case TP_ID.workday: {
+                        const appConfig = (account?.apps[0]?.app_config || connection?.app?.app_config) as AppConfig;
+                        const orgSubdomain = appConfig?.org_url || 'wd2-impl-services1.workday.com';
+                        const tenant = (appConfig as any)?.tenant || 'default';
+                        const host = orgSubdomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                        const baseUrl = `https://${host}/ccx/api/v1/${tenant}`;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        let pagingString = `${pageSize ? `limit=${pageSize}` : 'limit=50'}${
+                            cursor ? `&offset=${cursor}` : ''
+                        }`;
+
+                        const result = await axios({
+                            method: 'get',
+                            url: `${baseUrl}/recruiting/candidates?${pagingString}`,
+                            headers: headers,
+                        });
+
+                        const rawData = Array.isArray(result.data?.data)
+                            ? result.data.data
+                            : Array.isArray(result.data)
+                            ? result.data
+                            : [];
+
+                        const unifiedCandidates = await Promise.all(
+                            rawData.map(async (candidate: any) => {
+                                return await unifyObject<any, UnifiedCandidate>({
+                                    obj: candidate,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        const nextCursor =
+                            result.data?.total && cursor
+                                ? Number(cursor) + rawData.length < result.data.total
+                                    ? String(Number(cursor) + rawData.length)
+                                    : undefined
+                                : undefined;
+
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor,
+                            previous: undefined,
+                            results: unifiedCandidates,
+                        });
+
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -330,6 +412,27 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        const appConfig = (account?.apps[0]?.app_config || connection?.app?.app_config) as AppConfig;
+                        const orgSubdomain = appConfig?.org_url || 'wd2-impl-services1.workday.com';
+                        const tenant = (appConfig as any)?.tenant || 'default';
+                        const host = orgSubdomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                        const baseUrl = `https://${host}/ccx/api/v1/${tenant}`;
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        };
+
+                        const result = await axios({
+                            method: 'post',
+                            url: `${baseUrl}/recruiting/candidates`,
+                            headers,
+                            data: candidate,
+                        });
+                        res.send({ status: 'ok', message: 'Workday candidate created', result: result.data });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -402,6 +505,27 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        const appConfig = (account?.apps[0]?.app_config || connection?.app?.app_config) as AppConfig;
+                        const orgSubdomain = appConfig?.org_url || 'wd2-impl-services1.workday.com';
+                        const tenant = (appConfig as any)?.tenant || 'default';
+                        const host = orgSubdomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                        const baseUrl = `https://${host}/ccx/api/v1/${tenant}`;
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        };
+
+                        const result = await axios({
+                            method: 'patch',
+                            url: `${baseUrl}/recruiting/candidates/${candidateId}`,
+                            headers,
+                            data: candidate,
+                        });
+                        res.send({ status: 'ok', message: 'Workday Candidate updated', result: result.data });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -469,6 +593,26 @@ const candidateServiceAts = new CandidateService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const appConfig = (account?.apps[0]?.app_config || connection?.app?.app_config) as AppConfig;
+                        const orgSubdomain = appConfig?.org_url || 'wd2-impl-services1.workday.com';
+                        const tenant = (appConfig as any)?.tenant || 'default';
+                        const host = orgSubdomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                        const baseUrl = `https://${host}/ccx/api/v1/${tenant}`;
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        };
+
+                        const result = await axios({
+                            method: 'delete',
+                            url: `${baseUrl}/recruiting/candidates/${candidateId}`,
+                            headers,
+                        });
+                        res.send({ status: 'ok', message: 'Workday Candidate deleted' });
                         break;
                     }
                     default: {

@@ -66,6 +66,28 @@ const proxyServiceAts = new ProxyService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        const appConfig = connection?.app?.app_config as AppConfig;
+                        const orgSubdomain = appConfig?.org_url || 'wd2-impl-services1.workday.com';
+                        const tenant = (appConfig as any)?.tenant || 'default';
+                        const host = orgSubdomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                        const baseUrl = `https://${host}/ccx/api/v1/${tenant}`;
+                        const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+                        const headers = {
+                            Authorization: `Bearer ${thirdPartyToken}`,
+                        };
+                        const result: any = await axios({
+                            method: method,
+                            url: `${baseUrl}/${cleanPath}`,
+                            headers: headers,
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app!' });
                     }
