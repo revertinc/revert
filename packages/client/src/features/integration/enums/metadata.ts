@@ -81,6 +81,11 @@ export const appsInfo = {
         logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/rhqhzzrt6zmefncg3uid',
         description: 'Configure your Greenhouse ATS App from here.',
     },
+    workable: {
+        name: 'Workable',
+        logo: 'https://www.workable.com/favicon.ico',
+        description: 'Configure your Workable ATS App from here.',
+    },
     lever: {
         name: 'Lever',
         logo: 'https://res.cloudinary.com/dwoiwg0t5/image/upload/f_auto,q_auto/v1/RevertAppLogos/hwlwhz2lnum3hfcabqc4',
