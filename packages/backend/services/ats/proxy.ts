@@ -66,6 +66,27 @@ const proxyServiceAts = new ProxyService(
                         });
                         break;
                     }
+case TP_ID.workable: {
+                        if (!connection.tp_account_url) {
+                            throw new NotFoundError({ error: 'Workable account URL is not configured' });
+                        }
+                        const token = thirdPartyToken;
+                        const headers = {
+                            Authorization: 'Bearer ' + token,
+                        };
+                        const result: any = await axios({
+                            method: method,
+                            url: `${connection.tp_account_url}/spi/v3/${path}`,
+                            headers: headers,
+                            data: body,
+                            params: queryParams,
+                        });
+                        res.send({
+                            result: result.data,
+                        });
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app!' });
                     }
