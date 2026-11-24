@@ -207,7 +207,7 @@ async function main() {
 
     Object.values(AtsStandardObjects).forEach((obj) => {
         Object.values(TP_ID).forEach(async (tpId) => {
-            if (!(tpId === 'greenhouse' || tpId === 'lever')) return;
+            if (!(tpId === 'greenhouse' || tpId === 'lever' || tpId === 'workable')) return;
             const objSchema = atsSchemas.find((s: any) => s.object === obj);
             const fieldMappings = objSchema?.fields.map((field: any) => {
                 const sourceFields: any = (atsFields[obj] as { target_field_name: string }[]).find(

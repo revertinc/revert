@@ -66,6 +66,61 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        if (!connection.tp_account_url) {
+                            throw new NotFoundError({ error: 'Workable account URL is not configured' });
+                        }
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const departments: any[] = [];
+                        const departmentIds = new Set();
+                        let jobsUrl = `${connection.tp_account_url}/spi/v3/jobs?limit=100`;
+                        let processedJobs = 0;
+                        while (jobsUrl && processedJobs < 500) {
+                            const result: any = await axios({
+                                method: 'get',
+                                url: jobsUrl,
+                                headers: headers,
+                            });
+                            const jobs: any[] = result.data.jobs || [];
+                            processedJobs += jobs.length;
+                            jobs.forEach((job: any) => {
+                                const departmentHierarchy: any[] = job.department_hierarchy || [];
+                                const leafDepartment = departmentHierarchy[departmentHierarchy.length - 1];
+                                if (leafDepartment && !departmentIds.has(leafDepartment.id)) {
+                                    departmentIds.add(leafDepartment.id);
+                                    departments.push(leafDepartment);
+                                }
+                            });
+                            if (!jobs.length) {
+                                break;
+                            }
+                            jobsUrl = result.data.paging?.next;
+                        }
+
+                        const department = departments.find(
+                            (department: any) => String(department.id) === String(departmentId),
+                        );
+                        if (!department) {
+                            throw new NotFoundError({ error: 'Department not found' });
+                        }
+
+                        const unifiedDepartment: any = await unifyObject<any, UnifiedDepartment>({
+                            obj: department,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+
+                        res.send({
+                            status: 'ok',
+                            result: unifiedDepartment,
+                        });
+                        break;
+                    }
+
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -214,6 +269,61 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
 
+                    case TP_ID.workable: {
+                        if (!connection.tp_account_url) {
+                            throw new NotFoundError({ error: 'Workable account URL is not configured' });
+                        }
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}` };
+
+                        const departments: any[] = [];
+                        const departmentIds = new Set();
+                        let jobsUrl = `${connection.tp_account_url}/spi/v3/jobs?limit=100`;
+                        let processedJobs = 0;
+                        while (jobsUrl && processedJobs < 500) {
+                            const result: any = await axios({
+                                method: 'get',
+                                url: jobsUrl,
+                                headers: headers,
+                            });
+                            const jobs: any[] = result.data.jobs || [];
+                            processedJobs += jobs.length;
+                            jobs.forEach((job: any) => {
+                                const departmentHierarchy: any[] = job.department_hierarchy || [];
+                                const leafDepartment = departmentHierarchy[departmentHierarchy.length - 1];
+                                if (leafDepartment && !departmentIds.has(leafDepartment.id)) {
+                                    departmentIds.add(leafDepartment.id);
+                                    departments.push(leafDepartment);
+                                }
+                            });
+                            if (!jobs.length) {
+                                break;
+                            }
+                            jobsUrl = result.data.paging?.next;
+                        }
+
+                        const unifiedDepartments = await Promise.all(
+                            departments.map(async (department: any) => {
+                                return await unifyObject<any, UnifiedDepartment>({
+                                    obj: department,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            }),
+                        );
+
+                        res.send({
+                            status: 'ok',
+                            next: undefined,
+                            previous: undefined,
+                            results: unifiedDepartments,
+                        });
+
+                        break;
+                    }
+
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -281,6 +391,16 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -352,6 +472,16 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -401,6 +531,16 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+
+                    case TP_ID.workable: {
+                        res.send({
+                            status: 'ok',
+                            message: 'This endpoint is currently not supported',
+                        });
+
+                        break;
+                    }
+
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
