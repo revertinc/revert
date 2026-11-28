@@ -1,0 +1,12 @@
+#### Obtaining Workable OAuth Credentials / Access Token
+
+- Log in to your **Workable** account as an Administrator and navigate to **Settings → Integrations → Apps**.
+- Register an OAuth application (or generate a Partner/API access token following the [Workable API docs](https://workable.readme.io/reference/generate-an-access-token)).
+- Note your **Subdomain** (`<subdomain>.workable.com`), **Client ID**, and **Client Secret**.
+
+#### Connect to Workable via Revert
+
+- Create or log in to your Revert dashboard (`https://app.revert.dev/sign-in`).
+- Go to the **Integrations** section and click **`Create App` → `Workable`**.
+- Enter your `client_id`, `client_secret`, and Workable `subdomain`, then click **Submit**.
+- Use Revert's unified `/ats/jobs`, `/ats/candidates`, and `/ats/departments` endpoints with your `x-revert-api-token` and `x-revert-t-id` headers.
