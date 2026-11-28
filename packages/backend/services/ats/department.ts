@@ -5,6 +5,7 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
+import config from '../../config';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedDepartment } from '../../models/unified/department';
 import { DepartmentService } from '../../generated/typescript/api/resources/ats/resources/department/service/DepartmentService';
@@ -66,6 +67,20 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
 
+                    case TP_ID.workday: {
+                        const baseUrl = (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}`, 'Content-Type': 'application/json', Accept: 'application/json' };
+                        const result = await axios({ method: 'get', url: `${baseUrl}/api/staffing/v6/organizations/${departmentId}`, headers: headers });
+                        const unifiedDepartment: any = await unifyObject<any, UnifiedDepartment>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedDepartment });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -214,6 +229,43 @@ const departmentServiceAts = new DepartmentService(
                         break;
                     }
 
+                    case TP_ID.workday: {
+                        const baseUrl = (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}`, 'Content-Type': 'application/json' };
+                        const otherParams = fields
+                            ? Object.keys(fields).map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(fields[key])}`).join('&')
+                            : '';
+                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&offset=${cursor}` : ''}${otherParams ? `&${otherParams}` : ''}`;
+                        const result = await axios({ method: 'get', url: `${baseUrl}/api/staffing/v6/organizations?${pagingString}`, headers: headers });
+                        const departmentsData = result.data?.data || result.data;
+                        const departments = Array.isArray(departmentsData) ? departmentsData : [];
+                        const unifiedDepartments: any = await Promise.all(
+                            departments.map(async (department: any) => {
+                                return await unifyObject<any, UnifiedDepartment>({
+                                    obj: department,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
+                        );
+                        const total = result.data?.total;
+                        let nextCursor: number | undefined;
+                        if (total) {
+                            nextCursor = cursor ? Number(cursor) + (pageSize || 20) : pageSize || 20;
+                            if (nextCursor >= total) {
+                                nextCursor = undefined;
+                            }
+                        }
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor ? String(nextCursor) : undefined,
+                            previous: undefined,
+                            results: unifiedDepartments,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -279,6 +331,25 @@ const departmentServiceAts = new DepartmentService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const baseUrl = (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}`, 'Content-Type': 'application/json' };
+                        const result = await axios({
+                            method: 'post',
+                            url: `${baseUrl}/api/staffing/v6/organizations`,
+                            headers: headers,
+                            data: JSON.stringify(department),
+                        });
+                        const unifiedDepartment: any = await unifyObject<any, UnifiedDepartment>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedDepartment });
                         break;
                     }
                     default: {
@@ -352,6 +423,25 @@ const departmentServiceAts = new DepartmentService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        const baseUrl = (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}`, 'Content-Type': 'application/json' };
+                        const result = await axios({
+                            method: 'patch',
+                            url: `${baseUrl}/api/staffing/v6/organizations/${departmentId}`,
+                            headers: headers,
+                            data: JSON.stringify(department),
+                        });
+                        const unifiedDepartment: any = await unifyObject<any, UnifiedDepartment>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedDepartment });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -399,6 +489,13 @@ const departmentServiceAts = new DepartmentService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const baseUrl = (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}`, 'Content-Type': 'application/json' };
+                        await axios({ method: 'delete', url: `${baseUrl}/api/staffing/v6/organizations/${departmentId}`, headers: headers });
+                        res.send({ status: 'ok', message: 'Workday Department deleted' });
                         break;
                     }
                     default: {
