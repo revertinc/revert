@@ -27,6 +27,7 @@ enum TP_ID {
   greenhouse
   lever
   github
+  workday
 }
 
 enum ENV {

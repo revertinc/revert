@@ -5,6 +5,7 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
+import config from '../../config';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedCandidate } from '../../models/unified/candidate';
@@ -91,6 +92,20 @@ const candidateServiceAts = new CandidateService(
                         break;
                     }
 
+                    case TP_ID.workday: {
+                        const baseUrl = (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}`, 'Content-Type': 'application/json', Accept: 'application/json' };
+                        const result = await axios({ method: 'get', url: `${baseUrl}/api/staffing/v6/candidates/${candidateId}`, headers: headers });
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedCandidate });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -238,6 +253,43 @@ const candidateServiceAts = new CandidateService(
                         break;
                     }
 
+                    case TP_ID.workday: {
+                        const baseUrl = (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}`, 'Content-Type': 'application/json' };
+                        const otherParams = fields
+                            ? Object.keys(fields).map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(fields[key])}`).join('&')
+                            : '';
+                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&offset=${cursor}` : ''}${otherParams ? `&${otherParams}` : ''}`;
+                        const result = await axios({ method: 'get', url: `${baseUrl}/api/staffing/v6/candidates?${pagingString}`, headers: headers });
+                        const candidatesData = result.data?.data || result.data;
+                        const candidates = Array.isArray(candidatesData) ? candidatesData : [];
+                        const unifiedCandidates: any = await Promise.all(
+                            candidates.map(async (candidate: any) => {
+                                return await unifyObject<any, UnifiedCandidate>({
+                                    obj: candidate,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
+                        );
+                        const total = result.data?.total;
+                        let nextCursor: number | undefined;
+                        if (total) {
+                            nextCursor = cursor ? Number(cursor) + (pageSize || 20) : pageSize || 20;
+                            if (nextCursor >= total) {
+                                nextCursor = undefined;
+                            }
+                        }
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor ? String(nextCursor) : undefined,
+                            previous: undefined,
+                            results: unifiedCandidates,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -330,6 +382,25 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        const baseUrl = (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}`, 'Content-Type': 'application/json' };
+                        const result = await axios({
+                            method: 'post',
+                            url: `${baseUrl}/api/staffing/v6/candidates`,
+                            headers: headers,
+                            data: JSON.stringify(candidate),
+                        });
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedCandidate });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -402,6 +473,25 @@ const candidateServiceAts = new CandidateService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        const baseUrl = (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}`, 'Content-Type': 'application/json' };
+                        const result = await axios({
+                            method: 'patch',
+                            url: `${baseUrl}/api/staffing/v6/candidates/${candidateId}`,
+                            headers: headers,
+                            data: JSON.stringify(candidate),
+                        });
+                        const unifiedCandidate: any = await unifyObject<any, UnifiedCandidate>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedCandidate });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -469,6 +559,13 @@ const candidateServiceAts = new CandidateService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const baseUrl = (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}`, 'Content-Type': 'application/json' };
+                        await axios({ method: 'delete', url: `${baseUrl}/api/staffing/v6/candidates/${candidateId}`, headers: headers });
+                        res.send({ status: 'ok', message: 'Workday Candidate deleted' });
                         break;
                     }
                     default: {

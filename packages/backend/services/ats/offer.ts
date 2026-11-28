@@ -5,6 +5,7 @@ import { isStandardError } from '../../helpers/error';
 import { InternalServerError, NotFoundError } from '../../generated/typescript/api/resources/common';
 import { TP_ID } from '@prisma/client';
 import axios from 'axios';
+import config from '../../config';
 import { AppConfig, AtsStandardObjects } from '../../constants/common';
 import { disunifyAtsObject, unifyObject } from '../../helpers/crm/transform';
 import { UnifiedOffer } from '../../models/unified/offer';
@@ -66,6 +67,20 @@ const offerServiceAts = new OfferService(
                         break;
                     }
 
+                    case TP_ID.workday: {
+                        const baseUrl = (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}`, 'Content-Type': 'application/json', Accept: 'application/json' };
+                        const result = await axios({ method: 'get', url: `${baseUrl}/api/staffing/v6/jobOffers/${offerId}`, headers: headers });
+                        const unifiedOffer: any = await unifyObject<any, UnifiedOffer>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedOffer });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -213,6 +228,43 @@ const offerServiceAts = new OfferService(
                         });
                         break;
                     }
+                    case TP_ID.workday: {
+                        const baseUrl = (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}`, 'Content-Type': 'application/json' };
+                        const otherParams = fields
+                            ? Object.keys(fields).map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(fields[key])}`).join('&')
+                            : '';
+                        const pagingString = `${pageSize ? `&limit=${pageSize}` : ''}${cursor ? `&offset=${cursor}` : ''}${otherParams ? `&${otherParams}` : ''}`;
+                        const result = await axios({ method: 'get', url: `${baseUrl}/api/staffing/v6/jobOffers?${pagingString}`, headers: headers });
+                        const offersData = result.data?.data || result.data;
+                        const offers = Array.isArray(offersData) ? offersData : [];
+                        const unifiedOffers: any = await Promise.all(
+                            offers.map(async (offer: any) => {
+                                return await unifyObject<any, UnifiedOffer>({
+                                    obj: offer,
+                                    tpId: thirdPartyId,
+                                    objType,
+                                    tenantSchemaMappingId: connection.schema_mapping_id,
+                                    accountFieldMappingConfig: account.accountFieldMappingConfig,
+                                });
+                            })
+                        );
+                        const total = result.data?.total;
+                        let nextCursor: number | undefined;
+                        if (total) {
+                            nextCursor = cursor ? Number(cursor) + (pageSize || 20) : pageSize || 20;
+                            if (nextCursor >= total) {
+                                nextCursor = undefined;
+                            }
+                        }
+                        res.send({
+                            status: 'ok',
+                            next: nextCursor ? String(nextCursor) : undefined,
+                            previous: undefined,
+                            results: unifiedOffers,
+                        });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -261,6 +313,25 @@ const offerServiceAts = new OfferService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const baseUrl = (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = { Authorization: `Bearer ${connection.tp_access_token}`, 'Content-Type': 'application/json' };
+                        const result = await axios({
+                            method: 'post',
+                            url: `${baseUrl}/api/staffing/v6/jobOffers`,
+                            headers: headers,
+                            data: JSON.stringify(offer),
+                        });
+                        const unifiedOffer: any = await unifyObject<any, UnifiedOffer>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedOffer });
                         break;
                     }
                     default: {
@@ -335,6 +406,25 @@ const offerServiceAts = new OfferService(
 
                         break;
                     }
+                    case TP_ID.workday: {
+                        const baseUrl = (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}`, 'Content-Type': 'application/json' };
+                        const result = await axios({
+                            method: 'patch',
+                            url: `${baseUrl}/api/staffing/v6/jobOffers/${req.params.id}`,
+                            headers: headers,
+                            data: JSON.stringify(offer),
+                        });
+                        const unifiedOffer: any = await unifyObject<any, UnifiedOffer>({
+                            obj: result.data,
+                            tpId: thirdPartyId,
+                            objType,
+                            tenantSchemaMappingId: connection.schema_mapping_id,
+                            accountFieldMappingConfig: account.accountFieldMappingConfig,
+                        });
+                        res.send({ status: 'ok', result: unifiedOffer });
+                        break;
+                    }
                     default: {
                         throw new NotFoundError({ error: 'Unrecognized app' });
                     }
@@ -382,6 +472,13 @@ const offerServiceAts = new OfferService(
                             message: 'This endpoint is currently not supported',
                         });
 
+                        break;
+                    }
+                    case TP_ID.workday: {
+                        const baseUrl = (connection?.app?.app_config as AppConfig)?.org_url || config.WORKDAY_API_BASE_URL;
+                        const headers = { Authorization: `Bearer ${thirdPartyToken}`, 'Content-Type': 'application/json' };
+                        await axios({ method: 'delete', url: `${baseUrl}/api/staffing/v6/jobOffers/${offerId}`, headers: headers });
+                        res.send({ status: 'ok', message: 'Workday Offer deleted' });
                         break;
                     }
                     default: {
